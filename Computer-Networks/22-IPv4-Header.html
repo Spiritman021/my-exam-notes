@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN IPv4 Header Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="21-CIDR.html">← Ch 21: Classless Addressing (CIDR)</a><a href="index.html">☰ All topics</a><a href="23-IPv6-Header.html">Ch 23: IPv6 Header Format →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 22: IPv4 Header</h1>
+  <p class="sub">Volume 02 · Part 22 · Built from the one-shot CN lecture transcript (section 22), plus the exam points the lecture skipped. Every field of the IPv4 header, slot by slot, with the two scaling factors (×4 and ×8), a full fragmentation walk-through, TTL, protocol numbers, checksum and options.</p>
+  <ul class="tags"><li>Header 20–60 B</li><li>Version 4 bits</li><li>HLEN × 4</li><li>TOS / DSCP</li><li>Total Length 16 bits</li><li>Identification</li><li>Flags DF · MF</li><li>Fragment Offset × 8</li><li>TTL</li><li>Protocol 1 · 2 · 6 · 17</li><li>Header Checksum</li><li>Options · Padding</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">22.0</span>The Header at a Glance (20–60 bytes)</a></li>
+<li><a href="#s1"><span class="n">22.1</span>Version Field</a></li>
+<li><a href="#s2"><span class="n">22.2</span>Header Length (HLEN) and Scaling Factor</a></li>
+<li><a href="#s3"><span class="n">22.3</span>Type of Service (TOS)</a></li>
+<li><a href="#s4"><span class="n">22.4</span>Type of Service (TOS) Bits</a></li>
+<li><a href="#s5"><span class="n">22.5</span>Total Length and Data Length</a></li>
+<li><a href="#s6"><span class="n">22.6</span>IPv4 Fragmentation and MTU</a></li>
+<li><a href="#s7"><span class="n">22.7</span>Identification Field</a></li>
+<li><a href="#s8"><span class="n">22.8</span>Fragment Offset and Scaling Factor</a></li>
+<li><a href="#s9"><span class="n">22.9</span>Flags: MF and DF</a></li>
+<li><a href="#s10"><span class="n">22.10</span>Time to Live (TTL)</a></li>
+<li><a href="#s11"><span class="n">22.11</span>Protocol Field</a></li>
+<li><a href="#s12"><span class="n">22.12</span>Header Checksum</a></li>
+<li><a href="#s13"><span class="n">22.13</span>Options: Record Route</a></li>
+<li><a href="#s14"><span class="n">22.14</span>Options: Strict and Loose Source Routing</a></li>
+<li><a href="#s15"><span class="n">22.15</span>Options: Padding</a></li>
+<li><a href="#s16"><span class="n">22.16</span>Field Summary &amp; Solved Numericals<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 22</div>
+<h2 class="ch">IPv4 Header</h2>
+<p>Every IPv4 packet (datagram) starts with this header. It carries the two addresses from chapter 19, plus everything a router needs to forward the packet: how long it is, whether and how it has been fragmented, how many more hops it may take, and which protocol sits inside. Two fields are too small to hold their real values directly, so they use <b>scaling factors</b>: HLEN counts in 4-byte units and Fragment Offset in 8-byte units. Numericals almost always come from those two and from fragmentation.</p>
+
+<section id="s0">
+<h3><span class="n">22.0</span>The Header at a Glance (20–60 bytes)</h3>
+<figure>
+<svg viewBox="0 0 680 300" role="img" aria-label="IPv4 header as six 32-bit rows: version, HLEN, type of service, total length; identification, flags, fragment offset; TTL, protocol, header checksum; source IP; destination IP; options and padding">
+  <g font-size="12">
+  <text x="40" y="18" class="mut">0</text><text x="190" y="18" class="mut">8</text><text x="340" y="18" class="mut">16</text><text x="490" y="18" class="mut">24</text><text x="630" y="18" class="mut">31</text>
+  </g>
+  <rect x="40" y="26" width="75" height="38" class="ac"/><text x="77" y="42" text-anchor="middle" class="b" font-size="12">VER</text><text x="77" y="57" text-anchor="middle" class="mut">4</text>
+  <rect x="115" y="26" width="75" height="38" class="ac"/><text x="152" y="42" text-anchor="middle" class="b" font-size="12">HLEN</text><text x="152" y="57" text-anchor="middle" class="mut">4</text>
+  <rect x="190" y="26" width="150" height="38" class="ac"/><text x="265" y="42" text-anchor="middle" class="b" font-size="12">Type of Service</text><text x="265" y="57" text-anchor="middle" class="mut">8</text>
+  <rect x="340" y="26" width="300" height="38" class="ac"/><text x="490" y="42" text-anchor="middle" class="b" font-size="12">Total Length</text><text x="490" y="57" text-anchor="middle" class="mut">16</text>
+  <rect x="40" y="64" width="300" height="38" class="gr"/><text x="190" y="80" text-anchor="middle" class="b" font-size="12">Identification</text><text x="190" y="95" text-anchor="middle" class="mut">16</text>
+  <rect x="340" y="64" width="56" height="38" class="gr"/><text x="368" y="80" text-anchor="middle" class="b" font-size="12">Flags</text><text x="368" y="95" text-anchor="middle" class="mut">3</text>
+  <rect x="396" y="64" width="244" height="38" class="gr"/><text x="518" y="80" text-anchor="middle" class="b" font-size="12">Fragment Offset</text><text x="518" y="95" text-anchor="middle" class="mut">13</text>
+  <rect x="40" y="102" width="150" height="38" class="pu"/><text x="115" y="118" text-anchor="middle" class="b" font-size="12">TTL</text><text x="115" y="133" text-anchor="middle" class="mut">8</text>
+  <rect x="190" y="102" width="150" height="38" class="pu"/><text x="265" y="118" text-anchor="middle" class="b" font-size="12">Protocol</text><text x="265" y="133" text-anchor="middle" class="mut">8</text>
+  <rect x="340" y="102" width="300" height="38" class="pu"/><text x="490" y="118" text-anchor="middle" class="b" font-size="12">Header Checksum</text><text x="490" y="133" text-anchor="middle" class="mut">16</text>
+  <rect x="40" y="140" width="600" height="34" class="bx"/><text x="340" y="162" text-anchor="middle" class="b" font-size="12">Source IP address (32)</text>
+  <rect x="40" y="174" width="600" height="34" class="bx"/><text x="340" y="196" text-anchor="middle" class="b" font-size="12">Destination IP address (32)</text>
+  <rect x="40" y="208" width="600" height="34" class="or dash"/><text x="340" y="230" text-anchor="middle" class="b" font-size="12">Options (0 – 40 bytes) + Padding</text>
+  <text x="340" y="268" text-anchor="middle" class="mut">header = 20 (mandatory) + 0–40 (options) = 20 to 60 bytes, then the data / payload</text>
+  <text x="340" y="290" text-anchor="middle" class="mut">rows 1 · 2 · 3 = sizes and fragmentation · forwarding control · addresses · options</text>
+</svg>
+<figcaption>Figure 22.1: IPv4 header, 32 bits per row</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The bit positions run <b>0 to 31</b>: each row is <b>32 bits = 4 bytes</b>, the size of one IP address (the source and destination rows). The header has <b>6 horizontal slots</b>: the first <b>5 are mandatory</b>, the 6th is <b>options</b>, which can be <b>0 to 40 bytes</b>.<br>
+So the minimum header = 5 × 4 = <b>20 bytes</b> (no options) and the maximum = 20 + 40 = <b>60 bytes</b>. After the header comes the data / payload from the layer above. The whole thing (header + data) is called a <b>datagram</b>; its total size can go up to about <b>2¹⁶</b> bytes, which is why the Total Length field is <b>16 bits</b>.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">22.1</span>Version Field</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>VER</b> = <b>4 bits</b>, enough to write 4 or 6. IPv4 = <code>0100</code> (4); IPv6 = <code>0110</code> (2 + 4 = 6).</div>
+<div class="box add"><span class="t">➕ Why it matters</span>
+The version is the <b>first</b> field so a receiver can tell at once how to parse the rest. A router receiving a packet whose version does not match the protocol it is running drops it.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">22.2</span>Header Length (HLEN) and Scaling Factor</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The header is 20 to 60 bytes, but HLEN has only <b>4 bits</b>: values <b>0 to 15</b>. It can't even hold 20! So a <b>scaling factor</b> is used: (maximum header length) ÷ (largest 4-bit value) = 60 ÷ 15 = <b>4</b>.<br>
+HLEN therefore counts in units of <b>4 bytes</b>: header length = <b>HLEN × 4</b>. HLEN = 5 → 5 × 4 = <b>20 bytes</b> (<code>0101</code>); HLEN = 15 → <b>60 bytes</b>. Values 0–4 are never used, because the mandatory 20 bytes must always be there. So HLEN ranges <b>5 to 15</b> (20 to 60 bytes).</div>
+<div class="formula">header length (bytes) = HLEN × 4          valid HLEN: 5 … 15  →  20 … 60 bytes
+options length       = (HLEN × 4) − 20</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">22.3</span>Type of Service (TOS)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+TOS is an <b>8-bit</b> field (4 + 4 + 8 + 16 = the first 32-bit row). Its first <b>3 bits</b> are <b>P = precedence</b>, i.e. priority: 000 to 111, <b>0 = lowest, 7 = highest</b>. Some packets are high priority and must get the road first, just as all vehicles make way for an <b>ambulance</b>.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">22.4</span>Type of Service (TOS) Bits</h3>
+<div class="formula">TOS byte:   P P P | D T R C | 0
+            precedence   TOS bits   unused</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Next come <b>4 TOS bits</b>: <b>D = delay</b>, <b>T = throughput</b>, <b>R = reliability</b>, <b>C = cost</b>. We want low cost, high reliability, high throughput, low delay.<br>
+• <code>0000</code> → <b>default / normal</b> service<br>
+• <code>0001</code> (C set) → <b>minimise cost</b><br>
+• <code>0010</code> (R set) → <b>maximise reliability</b><br>
+• <code>0100</code> (T set) → <b>maximise throughput</b><br>
+• <code>1000</code> (D set) → <b>minimise delay</b></div>
+<div class="box add"><span class="t">➕ Today's meaning: DSCP + ECN</span>
+RFC 2474/3168 redefined this byte as <b>DSCP</b> (6 bits, Differentiated Services Code Point, used for QoS, e.g. EF = 46 for voice) plus <b>ECN</b> (2 bits, Explicit Congestion Notification). Exams on "IPv4 header" usually expect the classic precedence + DTRC view; if "DiffServ" is mentioned, answer DSCP.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">22.5</span>Total Length and Data Length</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Total Length</b> = <b>16 bits</b>, maximum <b>65 535</b> bytes = header length + data length. We have both a total-length field and a header-length field, so the data length is easy: <b>data = total length − header length</b>. Careful: first multiply HLEN by the scaling factor 4, then subtract. The answer can never be negative, since the total includes the header.</div>
+<div class="formula">data length = Total Length − (HLEN × 4)
+max data    = 65 535 − 20 = 65 515 bytes</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">22.6</span>IPv4 Fragmentation and MTU</h3>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Datagram with 20-byte header and 500 bytes of data split for MTU 200 into three fragments carrying 176, 176 and 148 bytes of data, with offsets 0, 22 and 44 and MF flags 1, 1, 0, all with identification 10">
+  <text x="340" y="18" text-anchor="middle" class="b">Original: header 20 + data 500 = 520 bytes · next network MTU = 200</text>
+  <rect x="40" y="30" width="40" height="34" class="ac"/><text x="60" y="52" text-anchor="middle" font-size="11" class="b">H20</text>
+  <rect x="80" y="30" width="560" height="34" class="gr"/><text x="360" y="52" text-anchor="middle" class="b">data 500 bytes (bytes 0 – 499)</text>
+  <path d="M340 70 V84" class="ln"/>
+  <rect x="40" y="90" width="30" height="40" class="ac"/><text x="55" y="114" text-anchor="middle" font-size="10">H</text>
+  <rect x="70" y="90" width="170" height="40" class="gr"/><text x="155" y="108" text-anchor="middle" class="b">176 B (0–175)</text><text x="155" y="123" text-anchor="middle" class="mut">offset 0 · MF 1</text>
+  <rect x="250" y="90" width="30" height="40" class="ac"/><text x="265" y="114" text-anchor="middle" font-size="10">H</text>
+  <rect x="280" y="90" width="170" height="40" class="gr"/><text x="365" y="108" text-anchor="middle" class="b">176 B (176–351)</text><text x="365" y="123" text-anchor="middle" class="mut">offset 176/8 = 22 · MF 1</text>
+  <rect x="460" y="90" width="30" height="40" class="ac"/><text x="475" y="114" text-anchor="middle" font-size="10">H</text>
+  <rect x="490" y="90" width="150" height="40" class="gr"/><text x="565" y="108" text-anchor="middle" class="b">148 B (352–499)</text><text x="565" y="123" text-anchor="middle" class="mut">offset 352/8 = 44 · MF 0</text>
+  <text x="155" y="152" text-anchor="middle" class="mut">total 196</text><text x="365" y="152" text-anchor="middle" class="mut">total 196</text><text x="565" y="152" text-anchor="middle" class="mut">total 168</text>
+  <text x="340" y="182" text-anchor="middle" class="b" style="fill:var(--accent)">all three carry the same Identification (e.g. 10)</text>
+  <text x="340" y="206" text-anchor="middle" class="mut">data per fragment must be a multiple of 8 (except the last) → 180 is cut to 176</text>
+  <text x="340" y="224" text-anchor="middle" class="mut">reassembled only at the final destination</text>
+</svg>
+<figcaption>Figure 22.2: The lecture's fragmentation example, final version</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Sender and receiver are on different networks with a router in between; each network has an <b>MTU</b>. The receiving side says "I can't take more than <b>200 bytes</b> per packet." <b>Biscuit analogy:</b> an adult eats a whole biscuit in one go, but a small child has a tiny mouth, so we <b>break the biscuit into pieces</b> and feed them one by one: that is fragmentation.<br>
+The sender has <b>500 bytes of data + 20-byte header = 520 bytes</b>. Too big. Break the data: first try <b>180 + 180 + 140</b> (= 500). Why 180? To get as close to the MTU as possible, while each fragment still needs its own <b>20-byte header</b>: 200 − 20 = 180. Each fragment is then ≤ 200 bytes and is accepted. (We will adjust 180 shortly; see 22.8.)</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">22.7</span>Identification Field</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Identification</b> = <b>16 bits</b>. When fragments arrive at the receiver, fragments of other packets may be arriving too, so they could get mixed up. <b>School-uniform analogy:</b> at a big city function attended by students from many schools, you recognise each student's school by the <b>uniform</b>. Likewise, every fragment of one original packet gets the <b>same identification number</b> (say <b>10, 10, 10</b>). The receiver sees the same ID and knows these pieces belong to one datagram.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">22.8</span>Fragment Offset and Scaling Factor</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Fragment Offset</b> = <b>13 bits</b>. It says <b>how many bytes of data are ahead of me</b> (before this fragment in the original). First fragment: 0 bytes ahead → offset <b>0</b> (so offset 0 always marks the starting fragment). Second: 180 bytes ahead → 180. Third: 180 + 180 = 360.<br>
+<b>The big problem:</b> data can be up to 65 535 − 20 = <b>65 515</b> bytes. In the worst case the last fragment carries 1 byte with about 65 514 bytes ahead of it, roughly 2¹⁶, which needs <b>16 bits</b>. We only have <b>13</b>.<br>
+<b>Fix: scaling factor</b>, just like HLEN: 2¹⁶ ÷ 2¹³ = 2³ = <b>8</b>. The offset is stored in units of <b>8 bytes</b>, so every fragment's data size (except the last) must be <b>divisible by 8</b>.<br>
+180 ÷ 8 = 22.5: not a whole number! So adjust: take <b>4 bytes</b> off each of the first two fragments (180 → <b>176</b>) and add those 8 bytes to the last (140 → <b>148</b>). Nothing is lost; the bytes just move. Now offsets are 0 ÷ 8 = <b>0</b>, 176 ÷ 8 = <b>22</b>, 352 ÷ 8 = <b>44</b>, all fitting in 13 bits.</div>
+<div class="formula">offset field = (bytes of data before this fragment) ÷ 8
+first byte of this fragment = offset × 8
+max data per fragment = ⌊(MTU − header) ÷ 8⌋ × 8      (except the last fragment)</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">22.9</span>Flags: MF and DF</h3>
+<div class="formula">Flags (3 bits) =  0 (reserved) | DF | MF</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>MF (More Fragments)</b>: more pieces are coming. In every fragment <b>except the last</b>, MF = <b>1</b>; in the last one MF = <b>0</b> (no more fragments after it).<br>
+<b>DF (Don't Fragment)</b>: DF = <b>1</b> means "<b>do not fragment</b> this packet"; DF = <b>0</b> means it may be fragmented.</div>
+<div class="tw"><table>
+<tr><th>MF</th><th>Offset</th><th>This packet is…</th></tr>
+<tr><td>0</td><td>0</td><td>not fragmented at all (whole datagram)</td></tr>
+<tr><td>1</td><td>0</td><td>the <b>first</b> fragment</td></tr>
+<tr><td>1</td><td>&gt; 0</td><td>a <b>middle</b> fragment</td></tr>
+<tr><td>0</td><td>&gt; 0</td><td>the <b>last</b> fragment</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ DF in practice</span>
+If DF = 1 and the packet is larger than the next link's MTU, the router <b>drops</b> it and returns an <b>ICMP "Destination Unreachable: Fragmentation Needed"</b> message. <b>Path MTU Discovery</b> deliberately sets DF = 1 and uses these replies to find the smallest MTU on the path.</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">22.10</span>Time to Live (TTL)</h3>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="Routers R1, R2 and R3 each send an unknown packet to their default router, forming a loop; TTL decreases by one per hop and the packet is discarded when TTL reaches zero at a router">
+  <defs><marker id="tl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <circle cx="120" cy="70" r="24" class="pu"/><text x="120" y="75" text-anchor="middle" class="b">R1</text>
+  <circle cx="300" cy="70" r="24" class="pu"/><text x="300" y="75" text-anchor="middle" class="b">R2</text>
+  <circle cx="210" cy="130" r="18" class="pu"/><text x="210" y="135" text-anchor="middle" class="b" font-size="12">R3</text>
+  <path d="M146 64 H272" class="lna" marker-end="url(#tl)"/><text x="209" y="56" text-anchor="middle" class="mut">TTL 3 → 2</text>
+  <path d="M290 94 L228 122" class="lna" marker-end="url(#tl)"/><text x="290" y="120" class="mut">2 → 1</text>
+  <path d="M192 124 L136 92" class="lna" marker-end="url(#tl)"/><text x="80" y="126" class="mut">1 → 0: drop</text>
+  <text x="360" y="40" class="b">Default-router loop</text>
+  <text x="360" y="64">R1 → R2 → R3 → R1 → … for ever</text>
+  <text x="360" y="88">Fix: every router does TTL − 1;</text>
+  <text x="360" y="112">at 0 the packet is discarded</text>
+  <text x="360" y="136" class="mut">(and an ICMP Time Exceeded goes back)</text>
+</svg>
+<figcaption>Figure 22.3: TTL stops a packet looping for ever</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A router doesn't know where to send a packet, so it hands it to its <b>default router</b> ("I don't know, go ask him"). R1's default is R2, R2's is R3, and R3's default is R1. The packet keeps going round: an <b>infinite loop</b> that creates congestion.<br>
+<b>TTL (Time To Live)</b> fixes it: at every hop the TTL is <b>decremented by 1</b>. If a router finds it has reached <b>0</b>, the packet is <b>discarded</b>. Example: the sender knows the receiver is 3 hops away and sets TTL = 3; 3 → 2 → 1 → 0 on arrival. In the loop, TTL 3 → 2 → 1 → 0 at a router → <b>dropped</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The lecture says TTL "should be 0 at the receiver". In reality the sender sets a <b>generous</b> TTL (commonly <b>64</b> on Linux/macOS, <b>128</b> on Windows, max <b>255</b>, since the field is <b>8 bits</b>); it simply has to stay above 0 until delivery. Exam facts: TTL is 8 bits; it is decremented by each router; at 0 the router drops the packet and sends <b>ICMP Time Exceeded</b>; <b>traceroute</b> exploits this by sending TTL = 1, 2, 3 …</div>
+</section>
+
+<section id="s11">
+<h3><span class="n">22.11</span>Protocol Field</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Protocol</b> = <b>8 bits</b>: which protocol's data is inside, so the receiver knows whom to hand it to. Numbers: <b>ICMP = 1</b>, <b>IGMP = 2</b>, <b>TCP = 6</b>, <b>UDP = 17</b>.<br>
+The lecture also describes a priority use: when a router's buffer is <b>full</b> and a TCP packet arrives, the router throws out a lower-priority packet (it looks for ICMP first) to make room. Priority order given: <b>TCP &gt; UDP &gt; IGMP &gt; ICMP</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The protocol numbers are standard and asked very often: <b>1 ICMP, 2 IGMP, 6 TCP, 17 UDP</b> (also 89 OSPF, 41 IPv6-in-IPv4, 50 ESP, 51 AH). The "drop ICMP first" priority order is the lecture's teaching example, <b>not part of the IP standard</b>. Real routers decide what to drop by queue policy (tail drop, RED) and QoS marking.</div>
+</section>
+
+<section id="s12">
+<h3><span class="n">22.12</span>Header Checksum</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>16-bit</b> field. Divide the <b>header</b> into 16-bit (2-byte) parts and compute a checksum the same way as in chapter 14 (wraparound sum + one's complement); store it here.<br>
+It is recomputed at <b>every router / node on the path</b>, because header fields change in transit: the <b>TTL</b> drops at every hop, options may change, and corruption can hit total length or HLEN.</div>
+<div class="box add"><span class="t">➕ Precise points</span>
+It covers the <b>header only</b>, not the data (TCP/UDP have their own checksums for the payload). During computation the checksum field itself is taken as <b>0</b>. A router that finds a mismatch <b>drops</b> the packet silently. IPv6 removed the header checksum entirely to speed up routers.</div>
+</section>
+
+<section id="s13">
+<h3><span class="n">22.13</span>Options: Record Route</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Options: 0 bytes (header = 20) up to full capacity (header = 60). <b>Record route:</b> as the packet goes from source to destination, every router it passes <b>writes its IP address</b> into the options field: R1, then R2 … At the destination you know the whole route. Like a traveller texting "reached X, now Y, now Z" on the way to Delhi, and relatives at the destination saying "you took the long way, you should have asked me!"<br>
+How many routers fit? One IP address = 4 bytes; options = 40 bytes, so in theory <b>10</b>. But some space must be kept (for the option's own header, padding and so on), so in practice a maximum of <b>9 router addresses</b> can be recorded.</div>
+<div class="box add"><span class="t">➕ Why exactly 9</span>
+The record-route option itself needs 3 bytes (type, length, pointer). 40 − 3 = 37 bytes → ⌊37/4⌋ = <b>9</b> addresses. That is why <b>ping -R</b> shows at most 9 hops; traceroute (TTL-based) has no such limit.</div>
+</section>
+
+<section id="s14">
+<h3><span class="n">22.14</span>Options: Strict and Loose Source Routing</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Source routing:</b> the <b>source</b> specifies the path to the destination, stored in the options field.<br>
+<b>Strict source routing = Mummy's advice.</b> Going to <b>mama's house</b>, Mummy knows the safe road, where the danger and the traffic are, and tells you exactly: "go R1, then straight to R2, don't even dare look at R4, then R3, then the destination." You must follow this path <b>exactly</b>, however free or busy the other roads are.<br>
+<b>Loose source routing = Papa's advice.</b> Papa is chill: "You'll pass the R1 chowk after leaving home and the R3 chowk before mama's house. Between them, go via R2 or R4, your call." Only some <b>landmarks</b> are fixed; the rest of the path is your choice.</div>
+<div class="tw"><table>
+<tr><th></th><th>Strict source route</th><th>Loose source route</th></tr>
+<tr><td>Routers listed</td><td>every router, in order</td><td>some routers that must be visited</td></tr>
+<tr><td>Other routers allowed?</td><td>no: only direct hops between the listed ones</td><td>yes, in between the listed ones</td></tr>
+<tr><td>Analogy</td><td>Mummy</td><td>Papa</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Security note</span>
+Source routing lets an attacker steer packets around firewalls, so almost all routers today <b>block</b> source-routed packets. It is an exam topic, not a practical tool.</div>
+</section>
+
+<section id="s15">
+<h3><span class="n">22.15</span>Options: Padding</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The header length must fit HLEN's 4-byte units. Suppose the header comes to <b>30 bytes</b>: 30 ÷ 4 is <b>not a whole number</b>. So <b>pad</b> the options field with extra bytes until it divides: add <b>2 bytes</b> → 32 bytes → 32 ÷ 4 = <b>8</b>, which HLEN can hold. That is what the leftover option bytes are used for.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+30 ÷ 4 = <b>7.5</b> (the transcript says 7.2). Rule: the header length must always be a <b>multiple of 4 bytes</b>; padding (zeros) fills the gap. Padding needed = (4 − header mod 4) mod 4.</div>
+</section>
+
+<section id="s16">
+<h3><span class="n">22.16</span>Field Summary &amp; Solved Numericals <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Field</th><th>Bits</th><th>Key fact</th></tr>
+<tr><td>Version</td><td>4</td><td>4 = IPv4 (0100), 6 = IPv6</td></tr>
+<tr><td>HLEN</td><td>4</td><td>× 4 bytes; 5–15 → 20–60 bytes</td></tr>
+<tr><td>TOS / DSCP+ECN</td><td>8</td><td>PPP + DTRC + 0</td></tr>
+<tr><td>Total Length</td><td>16</td><td>header + data, max 65 535</td></tr>
+<tr><td>Identification</td><td>16</td><td>same for all fragments of a datagram</td></tr>
+<tr><td>Flags</td><td>3</td><td>reserved, DF, MF</td></tr>
+<tr><td>Fragment Offset</td><td>13</td><td>× 8 bytes</td></tr>
+<tr><td>TTL</td><td>8</td><td>−1 per hop; drop at 0 (max 255)</td></tr>
+<tr><td>Protocol</td><td>8</td><td>1 ICMP · 2 IGMP · 6 TCP · 17 UDP</td></tr>
+<tr><td>Header Checksum</td><td>16</td><td>header only, recomputed at every hop</td></tr>
+<tr><td>Source / Destination IP</td><td>32 + 32</td><td>never change on the way (except through NAT)</td></tr>
+<tr><td>Options + padding</td><td>0–320</td><td>0–40 bytes; record route, source routing, timestamp</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved numericals</span>
+<b>Q1.</b> HLEN = 8. Header size and options size? 8 × 4 = <b>32 bytes</b>; options = 32 − 20 = <b>12 bytes</b>.<br><br>
+<b>Q2.</b> Total Length = 1000, HLEN = 5. Data length? 1000 − 20 = <b>980 bytes</b>.<br><br>
+<b>Q3.</b> A fragment has offset 100, HLEN 5, Total Length 500, MF = 1. First and last data byte numbers? Is it the last fragment?<br>
+First byte = 100 × 8 = <b>800</b>; data = 500 − 20 = 480 → last byte = 800 + 480 − 1 = <b>1279</b>. MF = 1 → <b>not</b> the last fragment.<br><br>
+<b>Q4.</b> A 4000-byte datagram (20 header + 3980 data) enters an Ethernet link (MTU 1500). Fragments?<br>
+Max data = ⌊(1500 − 20)/8⌋ × 8 = <b>1480</b>. Fragments: data 1480 / 1480 / 1020; offsets <b>0 / 185 / 370</b>; MF 1 / 1 / 0; total lengths 1500 / 1500 / 1040. <b>3 fragments.</b><br><br>
+<b>Q5.</b> A packet arrives with MF = 0 and offset = 0. → It was <b>never fragmented</b>.<br><br>
+<b>Q6.</b> Header length 26 bytes before padding. Padding and HLEN? 26 → 28 (pad <b>2</b>), HLEN = 28/4 = <b>7</b>.<br><br>
+<b>Q7.</b> TTL arrives as 1 at a router that is not the destination. → Router decrements to 0, <b>drops</b> it, sends ICMP Time Exceeded.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Fast facts: min/max header <b>20/60</b>; HLEN unit <b>4</b>; offset unit <b>8</b>; total length max <b>65 535</b>; fragmentation fields = <b>Identification, Flags, Fragment Offset</b>; TTL and Protocol are <b>8 bits</b>; reassembly happens only at the <b>destination</b>; checksum covers the <b>header only</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 22</h3>
+<ul>
+<li>Header = 5 mandatory rows × 4 bytes = <b>20</b> + options 0–40 → <b>20–60 bytes</b>. Datagram ≤ 65 535 bytes.</li>
+<li>Version 4 bits (0100). <b>HLEN</b> 4 bits × <b>4</b> (5–15 → 20–60). Data = Total Length − HLEN×4.</li>
+<li>TOS 8 bits: PPP precedence (ambulance) + D T R C (min delay, max throughput, max reliability, min cost).</li>
+<li>Fragmentation (biscuit for a child): 500 B data, MTU 200 → <b>176 + 176 + 148</b>, offsets <b>0, 22, 44</b>, MF 1,1,0, same <b>Identification</b> (school uniform).</li>
+<li><b>Fragment Offset</b> 13 bits × <b>8</b> → data in every fragment but the last must be a multiple of 8.</li>
+<li>Flags: <b>DF = 1</b> don't fragment; <b>MF = 1</b> more fragments follow (0 on the last).</li>
+<li><b>TTL</b> 8 bits, −1 per hop, drop at 0 → kills default-router loops; traceroute uses it.</li>
+<li><b>Protocol</b> 8 bits: 1 ICMP, 2 IGMP, 6 TCP, 17 UDP.</li>
+<li><b>Header checksum</b> 16 bits, header only, recomputed at every router (TTL changes).</li>
+<li>Options: <b>record route</b> (max 9 IPs), <b>strict</b> (Mummy: exact path) vs <b>loose</b> (Papa: landmarks) source routing, <b>padding</b> to a multiple of 4.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 22 · Next: Chapter 23 — IPv6 Header Format</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="21-CIDR.html">← Ch 21: Classless Addressing (CIDR)</a><a href="index.html">☰ All topics</a><a href="23-IPv6-Header.html">Ch 23: IPv6 Header Format →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

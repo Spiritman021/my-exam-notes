@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN ARP and RARP Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="23-IPv6-Header.html">← Ch 23: IPv6 Header Format</a><a href="index.html">☰ All topics</a><a href="25-ICMP.html">Ch 25: ICMP →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 24: ARP and RARP</h1>
+  <p class="sub">Volume 02 · Part 24 · Built from the one-shot CN lecture transcript (section 24), plus the exam points the lecture skipped. The glue between layer 3 and layer 2: ARP finds a MAC address from a known IP address; RARP finds your own IP address from your MAC address.</p>
+  <ul class="tags"><li>ARP: IP → MAC</li><li>RARP: MAC → IP</li><li>Request = Broadcast</li><li>Reply = Unicast</li><li>FF:FF:FF:FF:FF:FF</li><li>ARP Cache</li><li>RARP Server Table</li><li>EtherType 0x0806</li><li>Proxy / Gratuitous ARP</li><li>BOOTP → DHCP</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">24.0</span>Why Address Resolution?</a></li>
+<li><a href="#s1"><span class="n">24.1</span>ARP Request and Reply</a></li>
+<li><a href="#s2"><span class="n">24.2</span>Reverse ARP (RARP)</a></li>
+<li><a href="#s3"><span class="n">24.3</span>ARP Cache, Packet Format &amp; Remote Destinations<span class="x">ADDED</span></a></li>
+<li><a href="#s4"><span class="n">24.4</span>ARP Variants, Attacks &amp; RARP's Successors<span class="x">ADDED</span></a></li>
+<li><a href="#s5"><span class="n">24.5</span>Comparison &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 24</div>
+<h2 class="ch">ARP and RARP</h2>
+<p>A host knows where it wants to send a packet in <b>IP</b> terms (layer 3), but on the wire the frame needs a <b>MAC</b> destination (layer 2, chapters 15–16). <b>ARP</b> bridges the gap: it asks the whole LAN "who has this IP?" and the owner answers with its MAC. <b>RARP</b> does the reverse for a machine that knows only its own MAC and needs to learn its IP. In both, the question is <b>broadcast</b> and the answer comes back <b>unicast</b>.</p>
+
+<section id="s0">
+<h3><span class="n">24.0</span>Why Address Resolution?</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>ARP = Address Resolution Protocol</b>; <b>RARP = Reverse Address Resolution Protocol</b>. ARP's situation: <b>I know the IP address, but not the MAC address</b>. That MAC is what we must find (resolve, locate). To do it, ARP sends a <b>request</b> packet and gets a <b>response</b>.</div>
+<div class="tw"><table>
+<tr><th>Protocol</th><th>Known</th><th>Wanted</th><th>Who answers</th></tr>
+<tr><td><b>ARP</b></td><td>target's IP address</td><td>target's MAC address</td><td>the host that owns that IP</td></tr>
+<tr><td><b>RARP</b></td><td>my own MAC address</td><td>my own IP address</td><td>the RARP server</td></tr>
+</table></div>
+</section>
+
+<section id="s1">
+<h3><span class="n">24.1</span>ARP Request and Reply</h3>
+<figure>
+<svg viewBox="0 0 680 280" role="img" aria-label="Host A broadcasts an ARP request to every host on the bus asking for the MAC of IP B; only host B replies with a unicast ARP reply carrying MAC B">
+  <defs><marker id="aq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--alert)"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker></defs>
+  <path d="M40 140 H640" style="stroke:var(--muted);stroke-width:4"/>
+  <rect x="60" y="70" width="80" height="40" rx="5" class="ac"/><text x="100" y="95" text-anchor="middle" class="b">Host A</text><path d="M100 110 V140" class="ln"/>
+  <rect x="230" y="170" width="80" height="40" rx="5" class="ac"/><text x="270" y="195" text-anchor="middle" class="b">Host B</text><path d="M270 140 V170" class="ln"/>
+  <rect x="380" y="70" width="80" height="40" rx="5" class="bx"/><text x="420" y="95" text-anchor="middle">Host C</text><path d="M420 110 V140" class="ln"/>
+  <rect x="530" y="170" width="80" height="40" rx="5" class="pu"/><text x="570" y="195" text-anchor="middle" class="b">Router</text><path d="M570 140 V170" class="ln"/>
+  <path d="M140 80 C 250 58, 370 58, 410 66" style="stroke:var(--alert);stroke-width:2;fill:none" class="dash" marker-end="url(#aq)"/>
+  <path d="M140 100 C 200 130, 230 150, 258 166" style="stroke:var(--alert);stroke-width:2;fill:none" class="dash" marker-end="url(#aq)"/>
+  <text x="275" y="26" text-anchor="middle" style="fill:var(--alert)" class="b">① ARP request: BROADCAST (dest MAC FF:FF:FF:FF:FF:FF)</text>
+  <text x="275" y="44" text-anchor="middle" class="mut">"Who has IP_B? Tell IP_A / MAC_A"</text>
+  <path d="M232 200 C 160 240, 110 200, 100 118" style="stroke:var(--ok);stroke-width:2.5;fill:none" marker-end="url(#ar)"/>
+  <text x="140" y="262" text-anchor="middle" style="fill:var(--ok)" class="b">② ARP reply: UNICAST to MAC_A</text>
+  <text x="140" y="278" text-anchor="middle" class="mut">"IP_B is at MAC_B"</text>
+  <text x="470" y="250" class="mut">C and the router receive the request,</text><text x="470" y="266" class="mut">see it isn't their IP, and ignore it</text>
+</svg>
+<figcaption>Figure 24.1: ARP: broadcast question, unicast answer</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A network (bus topology) has hosts <b>A, B, C …</b> and a router. Host <b>A</b> wants to send data to host <b>B</b>. A knows B's <b>IP address (I<sub>B</sub>)</b> but not B's <b>MAC address (M<sub>B</sub>)</b>.<br>
+Going down the layers: at the <b>network layer</b> A can fill in source IP = I<sub>A</sub> and destination IP = I<sub>B</sub>. But at the <b>data link layer</b> it needs B's MAC. It knows its own MAC (source), but the destination MAC is unknown.<br>
+So A asks a question: "I know your IP, I don't know your MAC (?). My MAC is M<sub>A</sub>; send your MAC to this address." This is the <b>ARP request packet</b>. Why all those Fs? An ARP request is <b>broadcast</b> throughout the network: the destination MAC is the broadcast address, <b>12 Fs</b> (ch 16). It reaches <b>everyone</b>, but only the host whose <b>IP matches</b> reads it and responds.<br>
+B receives it: "I know my MAC." It sends the <b>ARP reply</b>: the IP A asked about (I<sub>B</sub>) with the answer attached (M<sub>B</sub>); source MAC = M<sub>B</sub>, destination MAC = <b>M<sub>A</sub></b>. This time it is <b>unicast</b>, one-to-one between B and A, because now the address is known. A notes "your MAC is M<sub>B</sub>", fills it in, and sends the data.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Golden rule (lecture): <b>ARP request = broadcast; ARP reply = unicast.</b> ARP works only <b>within one local network</b> (one broadcast domain), because routers do not forward broadcasts.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">24.2</span>Reverse ARP (RARP)</h3>
+<figure>
+<svg viewBox="0 0 680 270" role="img" aria-label="Host A knows its MAC but not its IP; it broadcasts a RARP request; only the RARP server, which holds a static MAC-to-IP table, replies by unicast with IP A">
+  <defs><marker id="rq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--alert)"/></marker><marker id="rp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker></defs>
+  <path d="M40 130 H640" style="stroke:var(--muted);stroke-width:4"/>
+  <rect x="60" y="60" width="90" height="40" rx="5" class="ac"/><text x="105" y="85" text-anchor="middle" class="b">Host A</text><path d="M105 100 V130" class="ln"/>
+  <rect x="250" y="60" width="80" height="40" rx="5" class="bx"/><text x="290" y="85" text-anchor="middle">Host B</text><path d="M290 100 V130" class="ln"/>
+  <rect x="430" y="150" width="120" height="40" rx="5" class="pu"/><text x="490" y="175" text-anchor="middle" class="b">RARP server</text><path d="M490 130 V150" class="ln"/>
+  <rect x="560" y="200" width="110" height="64" class="bx"/><text x="615" y="216" text-anchor="middle" class="b" font-size="11">MAC → IP table</text>
+  <text x="615" y="232" text-anchor="middle" font-size="11" font-family="monospace">M1 → I1</text><text x="615" y="246" text-anchor="middle" font-size="11" font-family="monospace">M2 → I2</text><text x="615" y="260" text-anchor="middle" font-size="11" font-family="monospace" style="fill:var(--ok)">M_A → I_A ✔</text>
+  <path d="M150 72 C 300 10, 420 60, 480 146" style="stroke:var(--alert);stroke-width:2;fill:none" class="dash" marker-end="url(#rq)"/>
+  <text x="330" y="22" text-anchor="middle" style="fill:var(--alert)" class="b">① RARP request: BROADCAST</text>
+  <text x="330" y="40" text-anchor="middle" class="mut">"My MAC is M_A, my IP is 0.0.0.0: who am I?"</text>
+  <path d="M432 180 C 300 230, 140 210, 108 104" style="stroke:var(--ok);stroke-width:2.5;fill:none" marker-end="url(#rp)"/>
+  <text x="250" y="244" text-anchor="middle" style="fill:var(--ok)" class="b">② RARP reply: UNICAST to M_A</text>
+  <text x="250" y="262" text-anchor="middle" class="mut">"Your IP is I_A"</text>
+</svg>
+<figcaption>Figure 24.2: RARP: only the RARP server can answer</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The situation flips: host A <b>knows its own MAC address</b> (M<sub>A</sub>) but <b>not its own IP address</b>, and must find it.<br>
+A builds a <b>RARP request</b>: "I know my MAC (M<sub>A</sub>), but not my IP." Since the IP is unknown, the 4 bytes of the IP field are filled with <b>0.0.0.0</b>.<br>
+Who can answer? The <b>RARP server</b>, a very important station on the network. It holds a <b>static table</b> mapping every host's <b>MAC address to its IP address</b>. But the host doesn't know the server's MAC either, so just like ARP, the RARP request is <b>broadcast</b> over the whole network. Everyone is alerted, but only the <b>RARP server</b> reads and responds, because only it has the mapping table and the authority.<br>
+The server searches its table for M<sub>A</sub>: M1? no. M2? no. M<sub>A</sub>? match → its IP is <b>I<sub>A</sub></b>. It replies: your MAC (as sent) plus the answer, I<sub>A</sub>; source MAC = the server's MAC, destination MAC = <b>M<sub>A</sub></b>, sent <b>unicast</b>. Host A receives it and is happy: it finally knows its IP.<br>
+Always remember: <b>ARP or RARP, the request is always broadcast and the response is always unicast.</b></div>
+<div class="box add"><span class="t">➕ Who needed RARP?</span>
+<b>Diskless workstations</b> booting from the network: they had a MAC burned into the NIC but nowhere to store an IP configuration. Today this job is done by <b>DHCP</b> (24.4).</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">24.3</span>ARP Cache, Packet Format &amp; Remote Destinations <span class="badge">ADDED</span></h3>
+<div class="def"><b>ARP cache:</b> a table of recently resolved <b>IP → MAC</b> pairs kept by every host, so it doesn't broadcast for every packet. Entries are <b>dynamic</b> (learned, expire after a timeout, typically a few minutes) or <b>static</b> (configured by hand). View it with <code>arp -a</code>. When B receives A's request it also caches A's mapping, since A's IP and MAC are in the request.</div>
+<div class="tw"><table>
+<tr><th>ARP packet field</th><th>Size</th><th>Typical value (Ethernet + IPv4)</th></tr>
+<tr><td>Hardware type</td><td>2 B</td><td>1 = Ethernet</td></tr>
+<tr><td>Protocol type</td><td>2 B</td><td>0x0800 = IPv4</td></tr>
+<tr><td>Hardware length</td><td>1 B</td><td>6 (MAC bytes)</td></tr>
+<tr><td>Protocol length</td><td>1 B</td><td>4 (IPv4 bytes)</td></tr>
+<tr><td>Operation</td><td>2 B</td><td><b>1 = request, 2 = reply</b> (RARP: 3 = request, 4 = reply)</td></tr>
+<tr><td>Sender MAC / Sender IP</td><td>6 B / 4 B</td><td>the asker's addresses</td></tr>
+<tr><td>Target MAC / Target IP</td><td>6 B / 4 B</td><td>target MAC = 0s in a request (unknown)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Where ARP sits</span>
+The ARP packet is <b>28 bytes</b>, carried <b>directly inside an Ethernet frame</b> (EtherType <b>0x0806</b>; RARP = 0x8035), <b>not inside an IP packet</b>. That is why it is often described as a layer-2.5 protocol; Forouzan places it in the <b>network layer</b>, and many exams accept "network layer".</div>
+<div class="box add"><span class="t">➕ Destination on another network</span>
+If B is <b>not on A's network</b> (A sees this by ANDing B's IP with its subnet mask, ch 20), A does <b>not</b> ARP for B. It ARPs for its <b>default gateway (router)</b>, sends the frame to the router's MAC, and the router repeats the process on the next network. The IP addresses stay the same end to end; the MAC addresses change at every hop.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">24.4</span>ARP Variants, Attacks &amp; RARP's Successors <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td><b>Proxy ARP</b></td><td>a router answers ARP requests on behalf of hosts on another network (with its own MAC), so they appear to be local</td></tr>
+<tr><td><b>Gratuitous ARP</b></td><td>a host sends an ARP about <b>its own</b> IP, unasked: to announce a new MAC (e.g. failover) or to detect a <b>duplicate IP</b> conflict</td></tr>
+<tr><td><b>Inverse ARP (InARP)</b></td><td>finds the IP from a known hardware address on Frame Relay / ATM virtual circuits</td></tr>
+<tr><td><b>ARP spoofing / poisoning</b></td><td>an attacker sends fake ARP replies ("IP of the gateway is at <i>my</i> MAC"), since ARP has <b>no authentication</b>; this enables man-in-the-middle attacks. Defences: static entries, Dynamic ARP Inspection, port security</td></tr>
+<tr><td><b>IPv6</b></td><td>no ARP: <b>Neighbour Discovery Protocol (NDP)</b>, built on ICMPv6, does the job using multicast instead of broadcast</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th></th><th>RARP</th><th>BOOTP</th><th>DHCP</th></tr>
+<tr><td>Gives</td><td>IP address only</td><td>IP, mask, gateway, boot file …</td><td>everything BOOTP gives + more</td></tr>
+<tr><td>Allocation</td><td>static table</td><td>static table</td><td><b>dynamic</b> (leases from a pool) or static</td></tr>
+<tr><td>Works across routers?</td><td>no (layer-2 broadcast; one server per network)</td><td>yes (runs over UDP, relay agents)</td><td>yes (UDP ports <b>67 server / 68 client</b>)</td></tr>
+<tr><td>Status</td><td>obsolete</td><td>legacy</td><td>used everywhere today</td></tr>
+</table></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">24.5</span>Comparison &amp; Solved Questions <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Point</th><th>ARP</th><th>RARP</th></tr>
+<tr><td>Full form</td><td>Address Resolution Protocol</td><td>Reverse Address Resolution Protocol</td></tr>
+<tr><td>Maps</td><td><b>IP → MAC</b> (logical → physical)</td><td><b>MAC → IP</b> (physical → logical)</td></tr>
+<tr><td>Asked about</td><td>another host's MAC</td><td>my own IP</td></tr>
+<tr><td>Request</td><td>broadcast</td><td>broadcast</td></tr>
+<tr><td>Reply from</td><td>the target host (unicast)</td><td>the RARP server (unicast)</td></tr>
+<tr><td>Needs a server?</td><td>no</td><td>yes, with a static MAC–IP table</td></tr>
+<tr><td>Operation codes</td><td>1 request, 2 reply</td><td>3 request, 4 reply</td></tr>
+<tr><td>Used today?</td><td>yes (every IPv4 LAN)</td><td>no (replaced by BOOTP, then DHCP)</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> Which protocol finds the MAC address for a known IP address? <b>ARP</b>.<br><br>
+<b>Q2.</b> A diskless workstation knows only its MAC. Which protocol gives it an IP? <b>RARP</b> (today: DHCP).<br><br>
+<b>Q3.</b> Destination MAC in an ARP request frame? <b>FF:FF:FF:FF:FF:FF</b> (broadcast). In the reply? the <b>requester's MAC</b> (unicast).<br><br>
+<b>Q4.</b> Host 192.168.1.10/24 wants to send to 8.8.8.8. Whose MAC does it ARP for? The <b>default gateway's</b>, since 8.8.8.8 is on another network.<br><br>
+<b>Q5.</b> Which command shows the ARP cache? <b>arp -a</b>.<br><br>
+<b>Q6.</b> Which IPv6 mechanism replaces ARP? <b>Neighbour Discovery (ICMPv6)</b>.<br><br>
+<b>Q7.</b> Which attack exploits ARP's lack of authentication? <b>ARP spoofing / poisoning</b> (man-in-the-middle).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 24</h3>
+<ul>
+<li><b>ARP</b>: know the IP, need the MAC (IP → MAC). <b>RARP</b>: know my MAC, need my IP (MAC → IP).</li>
+<li>Network layer fills both IPs; the DLL needs the destination MAC → ask with ARP.</li>
+<li>ARP request goes to <b>FF:FF:FF:FF:FF:FF</b> (12 Fs, broadcast); everyone hears, only the IP owner answers.</li>
+<li>ARP reply: source MAC_B, destination MAC_A → <b>unicast</b>.</li>
+<li>RARP: request carries IP 0.0.0.0; broadcast; only the <b>RARP server</b> (static MAC→IP table) replies, unicast.</li>
+<li>Golden rule: <b>request = broadcast, reply = unicast</b>, for both.</li>
+<li>ARP cache (<code>arp -a</code>), 28-byte packet, EtherType 0x0806, op 1/2 (RARP 3/4). Remote destination → ARP for the gateway.</li>
+<li>Proxy ARP, gratuitous ARP (duplicate-IP check), ARP spoofing (MITM). IPv6 uses NDP. RARP → BOOTP → <b>DHCP</b> (UDP 67/68).</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 24 · Next: Chapter 25 — ICMP (Internet Control Message Protocol)</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="23-IPv6-Header.html">← Ch 23: IPv6 Header Format</a><a href="index.html">☰ All topics</a><a href="25-ICMP.html">Ch 25: ICMP →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS System Calls Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="02-OS-Structure.html">← Ch 2: OS Structure</a><a href="index.html">☰ All topics</a><a href="04-Threads.html">Ch 4: Threads →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Operating System — Chapter 3: System Calls</h1>
+  <p class="sub">Volume 01 · Part 3 · Built from the one-shot OS lecture transcript (section 3), plus the exam points the lecture skipped.</p>
+  <ul class="tags">
+    <li>What is a System Call</li><li>API vs System Call</li><li>Parameter Passing</li><li>6 Types of System Calls</li>
+    <li>User / Kernel Mode</li><li>Mode Bit</li><li>Privileged Instructions</li><li>Trap &amp; Interrupt</li>
+    <li>printf → write()</li><li>fork()</li><li>2ⁿ Numericals</li><li>exec / wait / exit</li><li>Zombie &amp; Orphan</li><li>Copy-on-Write</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s0"><span class="n">3.0</span>What is a System Call?</a></li>
+    <li><a href="#s0a"><span class="n">3.0A</span>How a System Call Works (API, Trap, Parameters)<span class="x">ADDED</span></a></li>
+    <li><a href="#s1"><span class="n">3.1</span>Types of System Calls</a></li>
+    <li><a href="#s2"><span class="n">3.2</span>User Mode and Kernel Mode (Mode Bit)</a></li>
+    <li><a href="#s2a"><span class="n">3.2A</span>Privileged Instructions, Traps &amp; Interrupts<span class="x">ADDED</span></a></li>
+    <li><a href="#s3"><span class="n">3.3</span>Mode Switching via System Call (printf)</a></li>
+    <li><a href="#s4"><span class="n">3.4</span>fork() System Call</a></li>
+    <li><a href="#s5"><span class="n">3.5</span>Numerical: Child Processes from n fork() Calls</a></li>
+    <li><a href="#s6"><span class="n">3.6</span>Need for fork() and Its Overhead</a></li>
+    <li><a href="#s6a"><span class="n">3.6A</span>exec(), wait(), exit(), Zombie &amp; Orphan<span class="x">ADDED</span></a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 3</div>
+<h2 class="ch">System Calls</h2>
+<p>Chapter 2 split the OS into <b>user space</b> and <b>kernel space</b>, with the hardware under the kernel's control. That raises a question: if a user program is not allowed to touch the hardware, how does it print, read a file or create a process? The answer is the <b>system call</b>, a controlled doorway from user space into the kernel. The lecture calls this "very important; many questions are asked on it".</p>
+
+<!-- 3.0 -->
+<section id="s0">
+<h3><span class="n">3.0</span>What is a System Call?</h3>
+<div class="def"><b>System call:</b> the <b>programmatic way</b> in which a user program <b>requests a service from the kernel</b> of the OS, for anything that needs the hardware or privileged operations. It is the <b>interface between a running process and the operating system</b>.</div>
+
+<div class="box lec"><span class="t">🎓 From the lecture — "Mummy &amp; the kitchen" analogy</span>
+You are on the sofa watching "Five Minutes Engineering" before tomorrow's exam, and you get hungry. Two options:
+<ol>
+<li><b>Option 1:</b> go into the kitchen yourself, gather the Maggi ingredients and masala, chop the vegetables, cook, plate and eat. But with Mummy at home, the kitchen is <b>her "Mahishmati Samrajya"</b>, and you don't dare step in. This option doesn't really exist.</li>
+<li><b>Option 2:</b> say, "Mummy, I'm hungry, give me something to eat." Mummy does the whole task <b>on your behalf</b> and hands you <b>ready-made food</b>. You get the same end result.</li>
+</ol>
+In the same way, the <b>user program</b> needs something from the <b>hardware</b>, but the <b>OS has sole authority over the hardware</b>. So the program "gives a call" to the OS, a <b>system call (SC)</b>, and the OS gets the work done from the hardware on its behalf.</div>
+
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="Analogy mapping: you to user program, mummy to OS, kitchen to hardware">
+  <defs><marker id="a31" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="20" width="160" height="60" rx="6" class="or"/><text x="90" y="45" text-anchor="middle" class="b">You (hungry)</text><text x="90" y="64" text-anchor="middle" class="mut">= User program</text>
+  <rect x="260" y="20" width="160" height="60" rx="6" class="ac"/><text x="340" y="45" text-anchor="middle" class="b">Mummy</text><text x="340" y="64" text-anchor="middle" class="mut">= Operating System</text>
+  <rect x="510" y="20" width="160" height="60" rx="6" class="gr"/><text x="590" y="45" text-anchor="middle" class="b">Kitchen</text><text x="590" y="64" text-anchor="middle" class="mut">= Hardware</text>
+  <path d="M170 40 H258" class="lna" marker-end="url(#a31)"/><text x="214" y="33" text-anchor="middle" class="mut">"bhook lagi"</text><text x="214" y="102" text-anchor="middle" class="mut">= system call</text>
+  <path d="M420 40 H508" class="lna" marker-end="url(#a31)"/><text x="464" y="33" text-anchor="middle" class="mut">only she enters</text>
+  <path d="M508 66 H422" class="lna" marker-end="url(#a31)"/>
+  <path d="M258 66 H172" class="lna" marker-end="url(#a31)"/><text x="214" y="84" text-anchor="middle" class="mut">ready food = result</text>
+  <path d="M90 80 V150 H590 V80" class="ln dash"/><text x="340" y="170" text-anchor="middle" style="fill:var(--bad)">✗ Option 1 — entering the kitchen directly is not allowed</text>
+</svg>
+<figcaption>Figure 3.1: The lecture's analogy mapped to OS concepts</figcaption>
+</figure>
+</section>
+
+<!-- 3.0A -->
+<section id="s0a">
+<h3><span class="n">3.0A</span>How a System Call Works (API, Trap, Parameters) <span class="badge">ADDED</span></h3>
+<p>Programmers rarely call system calls directly. They call an <b>API (Application Programming Interface)</b> function from a library, which in turn makes the system call.</p>
+<div class="tw"><table>
+<tr><th>API</th><th>Used on</th></tr>
+<tr><td><b>POSIX API</b> (via the C library <code>libc</code>)</td><td>UNIX, Linux, macOS</td></tr>
+<tr><td><b>Win32 / Windows API</b></td><td>Windows</td></tr>
+<tr><td><b>Java API</b> (runs via the JVM)</td><td>Any OS with a JVM</td></tr>
+</table></div>
+<figure>
+<svg viewBox="0 0 680 300" role="img" aria-label="Flow of a system call: user program calls API, library executes trap, kernel looks up system call table, runs handler, returns">
+  <defs><marker id="a32" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="10" width="660" height="110" rx="6" class="or" style="fill-opacity:.35"/>
+  <text x="24" y="30" class="b">USER MODE (mode bit = 1)</text>
+  <rect x="30" y="45" width="170" height="56" rx="5" class="bx"/><text x="115" y="68" text-anchor="middle" class="b">User program</text><text x="115" y="86" text-anchor="middle" class="mut">calls open("a.txt")</text>
+  <rect x="250" y="45" width="190" height="56" rx="5" class="bx"/><text x="345" y="68" text-anchor="middle" class="b">API / C library</text><text x="345" y="86" text-anchor="middle" class="mut">puts syscall no. in register</text>
+  <rect x="490" y="45" width="160" height="56" rx="5" class="pu"/><text x="570" y="68" text-anchor="middle" class="b">TRAP instruction</text><text x="570" y="86" text-anchor="middle" class="mut">(syscall / int 0x80)</text>
+  <path d="M200 73 H248 M440 73 H488" class="lna" marker-end="url(#a32)"/>
+  <path d="M570 101 V150" class="lna" marker-end="url(#a32)"/><text x="580" y="132" class="mut">mode bit 1 → 0</text>
+  <rect x="10" y="150" width="660" height="140" rx="6" class="ac" style="fill-opacity:.6"/>
+  <text x="24" y="170" class="b">KERNEL MODE (mode bit = 0)</text>
+  <rect x="470" y="182" width="180" height="56" rx="5" class="bx"/><text x="560" y="205" text-anchor="middle" class="b">System-call interface</text><text x="560" y="223" text-anchor="middle" class="mut">index into syscall table</text>
+  <rect x="250" y="182" width="190" height="56" rx="5" class="bx"/><text x="345" y="205" text-anchor="middle" class="b">Handler: sys_open()</text><text x="345" y="223" text-anchor="middle" class="mut">does the real work</text>
+  <rect x="30" y="182" width="170" height="56" rx="5" class="gr"/><text x="115" y="205" text-anchor="middle" class="b">Hardware</text><text x="115" y="223" text-anchor="middle" class="mut">disk controller</text>
+  <path d="M470 210 H442 M250 210 H202" class="lna" marker-end="url(#a32)"/>
+  <path d="M345 238 V270 H120 V150" class="ln dash" marker-end="url(#a32)"/>
+  <text x="230" y="284" text-anchor="middle" class="mut">return value + mode bit 0 → 1 (return-from-trap)</text>
+</svg>
+<figcaption>Figure 3.2: Life of a system call — API → trap → system-call table → handler → return</figcaption>
+</figure>
+<ul>
+<li>Each system call has a <b>number</b>. The <b>system-call interface</b> keeps a <b>table indexed by these numbers</b> and invokes the matching kernel routine.</li>
+<li>The caller does not need to know how the call is implemented. It only obeys the API and understands the result; the OS hides the details.</li>
+<li>Most system calls are written in <b>C/C++</b>, with the lowest-level parts in <b>assembly</b>.</li>
+</ul>
+<h4>Three ways to pass parameters to the OS</h4>
+<div class="tw"><table>
+<tr><th>Method</th><th>How</th><th>Note</th></tr>
+<tr><td>1. <b>Registers</b></td><td>Put parameters in CPU registers</td><td>Fastest, but limited by the number of registers</td></tr>
+<tr><td>2. <b>Block / table in memory</b></td><td>Store parameters in a memory block and pass its <b>address</b> in a register</td><td>No limit on count or length. Used by <b>Linux and Solaris</b>.</td></tr>
+<tr><td>3. <b>Stack</b></td><td>The program <b>pushes</b> parameters onto the stack; the OS <b>pops</b> them</td><td>No limit on count or length</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Library function vs system call)</span>
+<code>printf()</code>, <code>scanf()</code>, <code>malloc()</code> and <code>fopen()</code> are <b>library functions</b>, not system calls. Internally they call system calls: <code>printf → write()</code>, <code>scanf → read()</code>, <code>malloc → brk()/mmap()</code>, <code>fopen → open()</code>. Library functions run in user mode; system calls switch to kernel mode.</div>
+</section>
+
+<!-- 3.1 -->
+<section id="s1">
+<h3><span class="n">3.1</span>Types of System Calls</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Different system calls exist for different scenarios and tasks. The lecture groups them into <b>process control</b> (create, end, load, execute, terminate, wait, allocate/free memory, fork), <b>file management</b> (create, open, close, delete, read, write, get/set attributes, permissions), <b>device management</b> (request/release device, read, write, reposition), <b>information maintenance</b> (get system time, system data, process ID, attributes) and <b>communication</b> (create/delete connection, pipe, send/receive data).</div>
+
+<div class="tw"><table>
+<tr><th>Category</th><th>Typical operations</th><th>UNIX / Linux</th><th>Windows</th></tr>
+<tr><td><b>1. Process control</b></td><td>create, terminate, end, abort, load, execute, wait for time/event, signal event, allocate/free memory</td><td><code>fork()</code>, <code>exec()</code>, <code>exit()</code>, <code>wait()</code></td><td><code>CreateProcess()</code>, <code>ExitProcess()</code>, <code>WaitForSingleObject()</code></td></tr>
+<tr><td><b>2. File management</b></td><td>create, delete, open, close, read, write, reposition, get/set file attributes</td><td><code>open()</code>, <code>read()</code>, <code>write()</code>, <code>close()</code>, <code>lseek()</code></td><td><code>CreateFile()</code>, <code>ReadFile()</code>, <code>WriteFile()</code>, <code>CloseHandle()</code></td></tr>
+<tr><td><b>3. Device management</b></td><td>request/release device, read, write, reposition, get/set device attributes, attach/detach</td><td><code>ioctl()</code>, <code>read()</code>, <code>write()</code></td><td><code>SetConsoleMode()</code>, <code>ReadConsole()</code>, <code>WriteConsole()</code></td></tr>
+<tr><td><b>4. Information maintenance</b></td><td>get/set time or date, get system data, get/set process, file or device attributes</td><td><code>getpid()</code>, <code>alarm()</code>, <code>sleep()</code>, <code>time()</code></td><td><code>GetCurrentProcessID()</code>, <code>SetTimer()</code>, <code>Sleep()</code></td></tr>
+<tr><td><b>5. Communication</b></td><td>create/delete connection, send/receive messages, transfer status, attach/detach remote devices; <b>message passing</b> and <b>shared memory</b></td><td><code>pipe()</code>, <code>shm_open()</code>, <code>mmap()</code></td><td><code>CreatePipe()</code>, <code>CreateFileMapping()</code>, <code>MapViewOfFile()</code></td></tr>
+<tr><td><b>6. Protection</b> <span class="badge">ADDED</span></td><td>get/set permissions, allow/deny user access</td><td><code>chmod()</code>, <code>umask()</code>, <code>chown()</code></td><td><code>SetFileSecurity()</code>, <code>InitializeSecurityDescriptor()</code></td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Galvin lists <b>six</b> categories: Process control, File management, Device management, Information maintenance, Communication and <b>Protection</b>. The lecture covered five, so don't forget Protection. Typical MCQ: "<code>getpid()</code> belongs to?" → <b>Information maintenance</b>. "<code>pipe()</code>?" → <b>Communication</b>. "<code>chmod()</code>?" → <b>Protection</b>.</div>
+</section>
+
+<!-- 3.2 -->
+<section id="s2">
+<h3><span class="n">3.2</span>User Mode and Kernel Mode (Mode Bit)</h3>
+<div class="def"><b>Dual-mode operation:</b> the CPU runs in one of two modes, set by a hardware <b>mode bit</b>. <b>Mode bit = 1 → User mode</b>; <b>mode bit = 0 → Kernel mode</b>. This protects the OS and hardware from errant or malicious user programs.</div>
+
+<div class="box lec"><span class="t">🎓 From the lecture — Mode bit &amp; the kitchen again</span>
+<ul>
+<li><b>m = 1 (User mode)</b>: you are anywhere in the house (hall, bedroom, bathroom) <b>except the kitchen</b>. Your <b>application programs</b> run here.</li>
+<li><b>m = 0 (Kernel mode)</b>: you have stepped into the <b>"Mahishmati Samrajya"</b>, the kitchen, where the core OS functionality runs.</li>
+<li>Other names for <b>kernel mode</b>: <b>master mode, privileged mode, system mode</b>. It is privileged enough to perform core functions.</li>
+<li>Other names for <b>user mode</b>: <b>slave mode, unprivileged (non-privileged) mode</b>.</li>
+</ul></div>
+
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Dual mode transition: user process executing, system call traps to kernel mode, returns to user mode">
+  <defs><marker id="a33" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="10" width="660" height="90" rx="6" class="or" style="fill-opacity:.35"/>
+  <text x="24" y="30" class="b">User mode (mode bit = 1)</text>
+  <rect x="40" y="45" width="170" height="40" rx="5" class="bx"/><text x="125" y="70" text-anchor="middle">user process executing</text>
+  <rect x="250" y="45" width="140" height="40" rx="5" class="bx"/><text x="320" y="70" text-anchor="middle">calls system call</text>
+  <rect x="480" y="45" width="170" height="40" rx="5" class="bx"/><text x="565" y="70" text-anchor="middle">return from system call</text>
+  <path d="M210 65 H248" class="lna" marker-end="url(#a33)"/>
+  <rect x="10" y="130" width="660" height="90" rx="6" class="ac" style="fill-opacity:.6"/>
+  <text x="24" y="150" class="b">Kernel mode (mode bit = 0)</text>
+  <rect x="250" y="165" width="250" height="40" rx="5" class="bx"/><text x="375" y="190" text-anchor="middle">execute system call (privileged)</text>
+  <path d="M320 85 V163" class="lna" marker-end="url(#a33)"/><text x="330" y="118" class="mut">trap: mode bit = 0</text>
+  <path d="M500 185 H565 V87" class="lna" marker-end="url(#a33)"/><text x="575" y="118" class="mut">return: mode bit = 1</text>
+</svg>
+<figcaption>Figure 3.3: Transition from user mode to kernel mode and back</figcaption>
+</figure>
+
+<div class="tw"><table>
+<tr><th>Basis</th><th>User mode</th><th>Kernel mode</th></tr>
+<tr><td>Mode bit</td><td><b>1</b></td><td><b>0</b></td></tr>
+<tr><td>Also called</td><td>Slave / unprivileged / non-privileged mode</td><td>Master / privileged / system / supervisor mode</td></tr>
+<tr><td>Who runs here</td><td>Application programs</td><td>OS kernel, device drivers (in monolithic kernels)</td></tr>
+<tr><td>Hardware access <span class="badge">ADDED</span></td><td>No direct access; must use system calls</td><td>Full access to hardware and all memory</td></tr>
+<tr><td>Privileged instructions <span class="badge">ADDED</span></td><td>Not allowed: an attempt causes a trap to the OS</td><td>Allowed</td></tr>
+<tr><td>Crash impact <span class="badge">ADDED</span></td><td>Only that process dies</td><td>The whole system can crash (BSOD / kernel panic)</td></tr>
+<tr><td>Address space <span class="badge">ADDED</span></td><td>Private virtual address space per process</td><td>Single shared kernel address space</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam — Beyond two modes</span>
+Intel x86 CPUs have <b>4 protection rings</b> (Ring 0 to Ring 3). <b>Ring 0 = kernel</b>, <b>Ring 3 = user</b>; Rings 1 and 2 are rarely used. CPUs with virtualisation support add a <b>VMM / hypervisor mode</b> (sometimes called "Ring −1"). MULTICS used 8 rings.</div>
+</section>
+
+<!-- 3.2A -->
+<section id="s2a">
+<h3><span class="n">3.2A</span>Privileged Instructions, Traps &amp; Interrupts <span class="badge">ADDED</span></h3>
+<div class="def"><b>Privileged instruction:</b> a machine instruction that can harm the system if misused. The hardware lets it run <b>only in kernel mode</b>. If a user program tries one, the hardware treats it as illegal and <b>traps</b> to the OS.</div>
+<div class="tw"><table>
+<tr><th>Privileged (kernel mode only)</th><th>Non-privileged (allowed in user mode)</th></tr>
+<tr><td><ul>
+<li><b>I/O instructions</b></li>
+<li>Setting the <b>timer</b></li>
+<li><b>Turning interrupts on/off</b> (enable/disable)</li>
+<li><b>Setting the mode bit</b> to kernel</li>
+<li>Modifying memory-management registers (base/limit, page table)</li>
+<li>Clearing memory, <b>halt</b> instruction, context-switch instructions</li></ul></td>
+<td><ul>
+<li><b>Reading the clock / time</b></li>
+<li><b>Generating a trap</b> (issuing a system call)</li>
+<li>Arithmetic and logic operations</li>
+<li>Reading the status of the processor</li>
+<li>Sending the final printout to the printer via a system call</li></ul></td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Favourite MCQ)</span>
+"Which is <b>NOT</b> privileged?" → <b>Read the clock</b> / <b>Issue a trap instruction</b>. "<b>Set the timer</b>" and "<b>Disable interrupts</b>" <b>are</b> privileged. Note the subtle pair: <b>reading</b> the clock is non-privileged, <b>setting</b> it is privileged. The <b>switch from user to kernel mode</b> itself happens through a non-privileged trap; switching back is privileged.</div>
+<h4>Trap vs interrupt</h4>
+<div class="tw"><table>
+<tr><th>Interrupt (hardware)</th><th>Trap / exception (software)</th></tr>
+<tr><td>Generated by <b>hardware devices</b> (keyboard, disk, timer)</td><td>Generated by <b>software</b>: a system call or an error (divide by zero, invalid memory access)</td></tr>
+<tr><td><b>Asynchronous</b>: can occur at any time</td><td><b>Synchronous</b>: caused by the current instruction</td></tr>
+<tr><td>Handled via the <b>interrupt vector table</b> → ISR (Interrupt Service Routine)</td><td>Also called a <b>software interrupt</b>. Also switches to kernel mode.</td></tr>
+</table></div>
+<p>A <b>timer</b> interrupt prevents a user program from hogging the CPU forever (e.g. an infinite loop). The OS sets the timer, which is privileged, before giving the CPU to a user program, and gets control back when it fires.</p>
+</section>
+
+<!-- 3.3 -->
+<section id="s3">
+<h3><span class="n">3.3</span>Example: Mode Switching via System Call (printf)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — printf()</span>
+<ol>
+<li>The program runs in <b>user mode</b> and reaches <code>printf(...)</code>. Printing or displaying output <b>needs hardware</b>.</li>
+<li>So a <b>system call must be executed</b> in the kernel. The CPU switches from the <b>user context to the kernel context</b> (user space → kernel space). The lecture calls this a "context switch".</li>
+<li>The kernel executes the required system call.</li>
+<li>Then it <b>returns</b>, switching back to <b>user mode</b>, and the rest of the program continues.</li>
+</ol>
+<b>"Bhasha anek, bhavna ek"</b>: the kernel does not care whether you wrote the program in C, C++, Python or Java. All of them ultimately want the hardware to do something, and the kernel uses its fixed set of system calls to do it.</div>
+
+<figure>
+<svg viewBox="0 0 680 220" role="img" aria-label="Timeline: user mode executes code, printf triggers trap into kernel, write system call runs, returns to user mode">
+  <defs><marker id="a34" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="12" y="52" class="b">User</text><text x="12" y="68" class="mut">m = 1</text>
+  <text x="12" y="152" class="b">Kernel</text><text x="12" y="168" class="mut">m = 0</text>
+  <rect x="80" y="35" width="150" height="40" rx="4" class="or"/><text x="155" y="54" text-anchor="middle">x = a + b;</text><text x="155" y="69" text-anchor="middle" class="mut">user code</text>
+  <rect x="230" y="35" width="90" height="40" rx="4" class="pu"/><text x="275" y="60" text-anchor="middle" class="b">printf()</text>
+  <path d="M320 75 L360 133" class="lna" marker-end="url(#a34)"/><text x="290" y="110" class="mut">trap</text>
+  <rect x="360" y="135" width="160" height="40" rx="4" class="ac"/><text x="440" y="154" text-anchor="middle" class="b">write() handler</text><text x="440" y="169" text-anchor="middle" class="mut">talks to display / stdout</text>
+  <path d="M520 135 L560 77" class="lna" marker-end="url(#a34)"/><text x="548" y="110" class="mut">return</text>
+  <rect x="560" y="35" width="110" height="40" rx="4" class="or"/><text x="615" y="54" text-anchor="middle">rest of</text><text x="615" y="69" text-anchor="middle">program</text>
+  <path d="M80 200 H670" class="ln" marker-end="url(#a34)"/><text x="660" y="216" text-anchor="end" class="mut">time</text>
+</svg>
+<figcaption>Figure 3.4: printf() leads to a write() system call and a user → kernel → user switch</figcaption>
+</figure>
+
+<div class="box lec"><span class="t">🎓 From the lecture — The police station analogy</span>
+A man whose house was robbed comes crying to the police station. Does he grab the FIR register, write the FIR himself and then go hunting for the thief himself? <b>No.</b> He says: "Sir, please <b>write the FIR</b> and catch the thief <b>on my behalf</b>." Writing FIRs is within the <b>police officer's authority</b>. Likewise, any work that interacts with the hardware is within the <b>authority of the kernel / OS</b>.</div>
+
+<div class="box trap"><span class="t">⚠️ Exam trap (Mode switch ≠ context switch)</span>
+The lecture uses "context switch" for user → kernel. In textbook terms:
+<ul>
+<li><b>Mode switch</b>: the <b>same process</b> moves from user mode to kernel mode (system call or interrupt). It is cheap, because only the mode bit and some registers change.</li>
+<li><b>Context switch</b>: the CPU switches from <b>one process to another</b>. The OS saves the old process's state in its <b>PCB</b> and loads the new one's. This is more expensive and is <b>pure overhead</b>.</li>
+</ul>
+A context switch always involves mode switches, but a mode switch does <b>not</b> always cause a context switch.</div>
+</section>
+
+<!-- 3.4 -->
+<section id="s4">
+<h3><span class="n">3.4</span>fork() System Call</h3>
+<div class="def"><b>fork():</b> a UNIX/Linux <b>process-control</b> system call that <b>creates a new process (child)</b> by <b>duplicating</b> the calling process (parent). After <code>fork()</code>, <b>both parent and child continue executing from the next instruction</b> after the fork.</div>
+
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+When <code>fork()</code> returns <b>0</b>, we are in the <b>child process</b>. In the lecture's words, "1 means parent process". The child is an identical <b>copy of the parent</b>: "the son looks exactly like his father".</div>
+
+<div class="box trap"><span class="t">⚠️ Exam trap (Correction: fork() return values)</span>
+The lecture says fork returns "1" in the parent. That is <b>not exact</b>. The correct values are:
+<div class="tw"><table>
+<tr><th>Return value</th><th>Meaning</th></tr>
+<tr><td><b>0</b></td><td>Returned <b>in the child</b> process</td></tr>
+<tr><td><b>Positive (&gt; 0)</b></td><td>Returned <b>in the parent</b>: it is the <b>PID of the newly created child</b> (e.g. 4521), not literally 1</td></tr>
+<tr><td><b>Negative (−1)</b></td><td><b>fork failed</b>; no child was created (e.g. the process limit was reached or memory ran out)</td></tr>
+</table></div>
+Remember: <b>0 → child, &gt;0 → parent (child's PID), &lt;0 → error</b>. The child can find its parent with <code>getppid()</code> and itself with <code>getpid()</code>.</div>
+
+<figure>
+<svg viewBox="0 0 680 250" role="img" aria-label="fork creates a child copy; parent receives child PID, child receives 0">
+  <defs><marker id="a35" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="250" y="10" width="180" height="56" rx="6" class="ac"/><text x="340" y="33" text-anchor="middle" class="b">Parent (PID 100)</text><text x="340" y="52" text-anchor="middle" class="mut">pid = fork();</text>
+  <path d="M300 66 L170 120 M380 66 L510 120" class="lna" marker-end="url(#a35)"/>
+  <rect x="60" y="122" width="220" height="70" rx="6" class="ac"/><text x="170" y="145" text-anchor="middle" class="b">Parent continues</text><text x="170" y="163" text-anchor="middle">pid = 101 (child's PID)</text><text x="170" y="181" text-anchor="middle" class="mut">→ runs "else" branch</text>
+  <rect x="400" y="122" width="220" height="70" rx="6" class="gr"/><text x="510" y="145" text-anchor="middle" class="b">Child (PID 101)</text><text x="510" y="163" text-anchor="middle">pid = 0</text><text x="510" y="181" text-anchor="middle" class="mut">→ runs "if (pid == 0)" branch</text>
+  <text x="340" y="220" text-anchor="middle" class="mut">Child gets a COPY of the parent's code, data, heap, stack, open files and registers;</text>
+  <text x="340" y="238" text-anchor="middle" class="mut">it gets a NEW PID and its own PCB. Both run concurrently from the next statement.</text>
+</svg>
+<figcaption>Figure 3.5: fork() — one call, two returns</figcaption>
+</figure>
+
+<div class="num"><span class="t">Code: typical fork() usage</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">pid_t pid = fork();
+if (pid &lt; 0) {            // error
+    printf("fork failed");
+} else if (pid == 0) {    // CHILD
+    printf("I am child, my PID = %d", getpid());
+} else {                  // PARENT (pid = child's PID)
+    wait(NULL);           // wait for the child to finish
+    printf("I am parent, child PID = %d", pid);
+}</pre>
+<b>Order of output:</b> the parent and child run <b>concurrently</b>, so without <code>wait()</code> the order of their output is <b>not guaranteed</b>. It depends on the CPU scheduler.</div>
+
+<div class="box add"><span class="t">➕ Added for exam — What the child does and does not inherit</span>
+<div class="tw"><table>
+<tr><th>Inherited (copied) from parent</th><th>Different in the child</th></tr>
+<tr><td>Code (text), data, heap, stack (a copy of the address space), open file descriptors, environment, current working directory, signal handlers, user ID</td><td><b>PID</b> (new), <b>PPID</b> (= parent's PID), <b>fork() return value</b> (0), CPU time counters reset, pending signals and locks not inherited</td></tr>
+</table></div>
+After the fork, parent and child have <b>separate address spaces</b>: if the child changes a variable, the parent's copy is <b>not</b> affected. (Threads, by contrast, share memory; see Chapter 4.)</div>
+</section>
+
+<!-- 3.5 -->
+<section id="s5">
+<h3><span class="n">3.5</span>Numerical Example: Child Processes Created by n fork() Calls</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — Building the tree</span>
+<ul>
+<li><b>1 fork()</b>: parent P creates child C1. Leaf nodes = <b>P, C1 = 2</b>, children = 1.</li>
+<li><b>2 fork()s</b>: at level 2, <b>each existing process forks again</b>. C1 creates C2, and P creates C3, while P and C1 remain. Leaves = <b>4</b>, children = <b>3</b>.</li>
+<li><b>n fork()s</b>: leaf nodes = <b>2ⁿ</b> (total processes), and since <b>one leaf is always the original parent</b>, children = <b>2ⁿ − 1</b>.</li>
+</ul></div>
+
+<figure>
+<svg viewBox="0 0 680 300" role="img" aria-label="Process tree for three successive fork calls showing 8 total processes">
+  <text x="20" y="30" class="mut">Start</text><text x="20" y="100" class="mut">after fork #1</text><text x="20" y="170" class="mut">after fork #2</text><text x="20" y="240" class="mut">after fork #3</text>
+  <circle cx="380" cy="25" r="16" class="ac"/><text x="380" y="30" text-anchor="middle" class="b">P</text>
+  <path d="M380 41 L250 79 M380 41 L510 79" class="ln"/>
+  <circle cx="250" cy="95" r="16" class="ac"/><text x="250" y="100" text-anchor="middle" class="b">P</text>
+  <circle cx="510" cy="95" r="16" class="gr"/><text x="510" y="100" text-anchor="middle" class="b">C1</text>
+  <path d="M250 111 L190 149 M250 111 L310 149 M510 111 L450 149 M510 111 L570 149" class="ln"/>
+  <circle cx="190" cy="165" r="16" class="ac"/><text x="190" y="170" text-anchor="middle" class="b">P</text>
+  <circle cx="310" cy="165" r="16" class="gr"/><text x="310" y="170" text-anchor="middle" class="b">C3</text>
+  <circle cx="450" cy="165" r="16" class="gr"/><text x="450" y="170" text-anchor="middle" class="b">C1</text>
+  <circle cx="570" cy="165" r="16" class="gr"/><text x="570" y="170" text-anchor="middle" class="b">C2</text>
+  <path d="M190 181 L160 219 M190 181 L220 219 M310 181 L280 219 M310 181 L340 219 M450 181 L420 219 M450 181 L480 219 M570 181 L540 219 M570 181 L600 219" class="ln"/>
+  <circle cx="160" cy="235" r="16" class="ac"/><text x="160" y="240" text-anchor="middle" class="b">P</text>
+  <circle cx="220" cy="235" r="16" class="gr"/><text x="220" y="240" text-anchor="middle">C7</text>
+  <circle cx="280" cy="235" r="16" class="gr"/><text x="280" y="240" text-anchor="middle">C3</text>
+  <circle cx="340" cy="235" r="16" class="gr"/><text x="340" y="240" text-anchor="middle">C6</text>
+  <circle cx="420" cy="235" r="16" class="gr"/><text x="420" y="240" text-anchor="middle">C1</text>
+  <circle cx="480" cy="235" r="16" class="gr"/><text x="480" y="240" text-anchor="middle">C5</text>
+  <circle cx="540" cy="235" r="16" class="gr"/><text x="540" y="240" text-anchor="middle">C2</text>
+  <circle cx="600" cy="235" r="16" class="gr"/><text x="600" y="240" text-anchor="middle">C4</text>
+  <text x="380" y="285" text-anchor="middle" class="mut">n = 1 → 2 processes · n = 2 → 4 · n = 3 → 8 = 2³ (1 parent + 7 children)</text>
+</svg>
+<figcaption>Figure 3.6: Process tree for successive fork() calls (each level doubles)</figcaption>
+</figure>
+
+<div class="num"><span class="t">Essential formulas: fork()</span>
+<div class="formula">n fork() calls in sequence (no conditions):
+  Total processes (leaf nodes)  = 2ⁿ
+  Child processes created       = 2ⁿ − 1
+  A printf() after all n forks is printed 2ⁿ times</div>
+<div class="formula">for (i = 0; i &lt; n; i++) { fork(); printf("X"); }
+  "X" printed = 2¹ + 2² + … + 2ⁿ = 2ⁿ⁺¹ − 2 times</div>
+</div>
+
+<div class="num"><span class="t">Numerical 1: two fork() calls (lecture)</span>
+<code>fork(); fork();</code><br>
+<b>Step 1:</b> n = 2.<br>
+<b>Step 2:</b> Total = 2² = <b>4 processes</b>.<br>
+<b>Step 3:</b> Children = 2² − 1 = <b>3</b> (C1, C2, C3) plus 1 parent.<br>
+<b>Conclusion:</b> 4 leaf nodes, matching the tree in Figure 3.6.</div>
+
+<div class="num"><span class="t">Numerical 2: how many times is "Hello" printed?</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0">fork(); fork(); fork();
+printf("Hello\n");</pre>
+<b>Step 1:</b> n = 3, so after 3 forks there are 2³ = 8 processes.<br>
+<b>Step 2:</b> Each of the 8 processes executes <code>printf</code> once.<br>
+<b>Conclusion:</b> "Hello" is printed <b>8 times</b>, and <b>7 child processes</b> are created.</div>
+
+<div class="num"><span class="t">Numerical 3: fork inside a loop, printf inside the loop</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0">for (int i = 0; i &lt; 3; i++) {
+    fork();
+    printf("X");
+}</pre>
+<b>Step 1:</b> i = 0: 1 → 2 processes, so 2 prints.<br>
+<b>Step 2:</b> i = 1: 2 → 4 processes, so 4 prints.<br>
+<b>Step 3:</b> i = 2: 4 → 8 processes, so 8 prints.<br>
+<b>Conclusion:</b> "X" is printed 2 + 4 + 8 = <b>14 times</b> (= 2⁴ − 2). There are 8 processes in total and <b>7 children</b>.</div>
+
+<div class="num"><span class="t">Numerical 4: only the child forks again</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0">if (fork() == 0)   // only the child enters
+    fork();
+printf("A");</pre>
+<b>Step 1:</b> The first fork gives P and C1. Only C1 (return value 0) enters the <code>if</code>.<br>
+<b>Step 2:</b> C1 forks again and creates C2. P does not.<br>
+<b>Conclusion:</b> 3 processes (P, C1, C2), so "A" is printed <b>3 times</b> and <b>2 children</b> are created. The 2ⁿ formula only applies to <b>unconditional</b> forks.</div>
+
+<div class="num"><span class="t">Numerical 5: the classic <code>fork() &amp;&amp; fork() || fork()</code></span>
+<b>Rule:</b> <code>&amp;&amp;</code> evaluates its right side only if the left is non-zero (the parent). <code>||</code> evaluates its right side only if the left is zero (false).<br>
+<b>Step 1:</b> The first <code>fork()</code> gives P (gets &gt;0) and C1 (gets 0).<br>
+<b>Step 2:</b> In P, the left side is true, so the second <code>fork()</code> runs, giving P (&gt;0) and C2 (0). P's <code>&amp;&amp;</code> is true, so it skips <code>|| fork()</code>. C2's <code>&amp;&amp;</code> is false, so it runs the third <code>fork()</code>, creating C3.<br>
+<b>Step 3:</b> In C1, the left side is 0, so <code>&amp;&amp;</code> short-circuits to false and C1 runs the third <code>fork()</code>, creating C4.<br>
+<b>Conclusion:</b> processes = P, C1, C2, C3, C4 = <b>5 in total</b> (4 children). This is a common GATE / bank-IT question.</div>
+</section>
+
+<!-- 3.6 -->
+<section id="s6">
+<h3><span class="n">3.6</span>Need for fork() and Its Overhead</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — The contractor &amp; the wall</span>
+The question: if the parent is running fine, why make identical copies of it?
+<ul>
+<li>A contractor wants a <b>1,000-brick wall built in one day</b>. One worker with only <b>two hands</b> says "have mercy, I'm human!"</li>
+<li>The contractor brings in more workers of the <b>same capacity, strength, build and height</b>: identical copies. Now the wall can be built in a day.</li>
+<li>Likewise, when many users ask for the <b>same behaviour/task</b>, creating each process <b>from scratch</b> would be a <b>big overhead</b> for the OS. With <b>just one call</b>, <code>fork()</code> creates an identical process with the same behaviour.</li>
+</ul>
+<b>The catch (overhead):</b> now the contractor has to pay <b>wages to every worker</b>. Each child, and child of a child, has the <b>same requirements</b> as the parent: its own <b>PCB (Process Control Block)</b>, its own <b>memory space</b> and resources, and it needs CPU time. Solving one problem created another. The lecture leaves the question open ("Is there a way to avoid this? There is…") and answers it in the next chapter: <b>threads</b>.</div>
+
+<div class="box add"><span class="t">➕ Added for exam — Real uses of fork() and how the overhead is reduced</span>
+<ul>
+<li><b>Real uses:</b> the <b>shell</b> forks a child for every command you type (fork + exec); <b>web servers</b> such as Apache (prefork) handle each client in a child process; <b>parallel work</b> splits a task across child processes.</li>
+<li><b>Copy-on-Write (COW):</b> modern kernels do <b>not</b> copy the parent's memory at fork time. Parent and child <b>share the same physical pages, marked read-only</b>. A page is copied only <b>when one of them writes to it</b>. This makes <code>fork()</code> fast, especially when <code>exec()</code> follows immediately.</li>
+<li><b>vfork()</b>: an older variant where the child <b>borrows</b> the parent's address space with no copy, and the parent is <b>suspended</b> until the child calls <code>exec()</code> or <code>exit()</code>.</li>
+<li><b>Threads</b> (next chapter): "lightweight processes" that <b>share</b> code, data and files and have only their own stack and registers. They are far cheaper than forking full processes.</li>
+</ul></div>
+</section>
+
+<!-- 3.6A -->
+<section id="s6a">
+<h3><span class="n">3.6A</span>exec(), wait(), exit(), Zombie &amp; Orphan <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Call</th><th>What it does</th></tr>
+<tr><td><code>fork()</code></td><td>Creates a <b>duplicate</b> child process (new PID, copy of the parent)</td></tr>
+<tr><td><code>exec()</code> family (<code>execl</code>, <code>execv</code>, <code>execvp</code>…)</td><td><b>Replaces</b> the current process's memory image with a <b>new program</b>. The <b>PID stays the same</b>, no new process is created, and it <b>does not return</b> on success.</td></tr>
+<tr><td><code>wait()</code> / <code>waitpid()</code></td><td>The parent <b>blocks until a child terminates</b> and collects its exit status</td></tr>
+<tr><td><code>exit()</code></td><td>Terminates the calling process; its resources are released and the status is passed to the parent</td></tr>
+<tr><td><code>getpid()</code> / <code>getppid()</code></td><td>Returns its own PID / its parent's PID</td></tr>
+<tr><td><code>kill()</code></td><td>Sends a signal to a process (e.g. to terminate it)</td></tr>
+</table></div>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="Shell runs a command: fork, child exec, parent wait, child exit">
+  <defs><marker id="a36" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="20" width="110" height="44" rx="5" class="ac"/><text x="65" y="47" text-anchor="middle" class="b">Shell</text>
+  <path d="M120 42 H160" class="lna" marker-end="url(#a36)"/>
+  <rect x="162" y="20" width="90" height="44" rx="5" class="pu"/><text x="207" y="47" text-anchor="middle" class="b">fork()</text>
+  <path d="M252 42 H300" class="lna" marker-end="url(#a36)"/><text x="276" y="34" text-anchor="middle" class="mut">parent</text>
+  <rect x="302" y="20" width="230" height="44" rx="5" class="ac"/><text x="417" y="47" text-anchor="middle" class="b">wait()  … blocked …</text>
+  <path d="M532 42 H568" class="lna" marker-end="url(#a36)"/>
+  <rect x="570" y="20" width="100" height="44" rx="5" class="ac"/><text x="620" y="40" text-anchor="middle" class="b">resumes</text><text x="620" y="56" text-anchor="middle" class="mut">next prompt</text>
+  <path d="M207 64 V110 H300" class="lna" marker-end="url(#a36)"/><text x="230" y="100" class="mut">child</text>
+  <rect x="302" y="90" width="120" height="44" rx="5" class="gr"/><text x="362" y="110" text-anchor="middle" class="b">exec("ls")</text><text x="362" y="126" text-anchor="middle" class="mut">new program</text>
+  <path d="M422 112 H450" class="lna" marker-end="url(#a36)"/>
+  <rect x="452" y="90" width="90" height="44" rx="5" class="gr"/><text x="497" y="117" text-anchor="middle" class="b">exit()</text>
+  <path d="M542 112 H600 V66" class="lna dash" marker-end="url(#a36)"/><text x="610" y="100" class="mut">status</text>
+  <text x="340" y="160" text-anchor="middle" class="mut">This fork → exec → wait → exit pattern is how every UNIX shell runs a command.</text>
+</svg>
+<figcaption>Figure 3.7: How a shell runs a command using fork, exec, wait and exit</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Zombie (defunct) process</th><th>Orphan process</th></tr>
+<tr><td>The child has <b>terminated</b>, but the parent has <b>not yet called wait()</b>. Its entry (PID, exit status) <b>remains in the process table</b>.</td><td>The <b>parent terminated</b> while the child is <b>still running</b>.</td></tr>
+<tr><td>Uses no CPU or memory, but holds a PID slot. Too many can exhaust the PID table.</td><td>It is <b>adopted by init / systemd (PID 1)</b>, which later calls wait() for it.</td></tr>
+<tr><td>Shown as <b>Z</b> / &lt;defunct&gt; in <code>ps</code></td><td>Runs normally under its new parent</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (fork vs exec)</span>
+<b>fork</b> = same program, <b>new process</b>. <b>exec</b> = <b>same process (same PID)</b>, <b>new program</b>. The first user-space process in Linux is <b>init / systemd with PID 1</b>, and it is the ancestor of every other user process. The Windows equivalent of fork + exec is a single call, <code>CreateProcess()</code>.</div>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 3</h3>
+<ul>
+<li><b>System call</b> = how a user program requests a kernel service. "Mummy, give me food" rather than entering her kitchen (the hardware) yourself. Police analogy: ask the officer to write the FIR.</li>
+<li>Programs usually call an <b>API</b> (POSIX, Win32, Java). The library issues a <b>trap</b>, the system-call interface looks up the <b>syscall table</b> by number, and the handler runs.</li>
+<li><b>Parameter passing</b>: registers, memory block/table (address in a register, used by Linux), stack.</li>
+<li><b>6 types</b>: Process control (fork, exec, exit, wait) · File (open, read, write, close) · Device (ioctl) · Information (getpid, time) · Communication (pipe, shm) · <b>Protection</b> (chmod).</li>
+<li><code>printf</code> is a <b>library function</b> that calls the <code>write()</code> system call.</li>
+<li><b>Mode bit: 1 = user</b> (slave, unprivileged); <b>0 = kernel</b> (master, privileged, system, supervisor).</li>
+<li><b>Privileged</b>: I/O, set timer, enable/disable interrupts, set mode bit, MMU registers, halt. <b>Not privileged</b>: read clock, issue trap.</li>
+<li><b>Interrupt</b> = hardware, asynchronous. <b>Trap</b> = software (system call or error), synchronous.</li>
+<li><b>Mode switch</b> (same process, user↔kernel) ≠ <b>context switch</b> (process → process, saves the PCB).</li>
+<li><b>fork()</b> returns <b>0 in the child</b>, <b>the child's PID (&gt;0) in the parent</b> and <b>−1 on error</b>. The child is a copy of the parent with its own address space, a new PID and its own PCB.</li>
+<li><b>n forks → 2ⁿ processes, 2ⁿ − 1 children</b>. A printf inside a loop of n forks prints 2ⁿ⁺¹ − 2 times. <code>fork() &amp;&amp; fork() || fork()</code> → 5 processes.</li>
+<li><b>Why fork</b>: the "identical workers build the wall" analogy; it is cheaper than creating from scratch. <b>Overhead</b>: each child needs its own PCB, memory and resources ("wages"). The fixes are <b>Copy-on-Write</b>, vfork and <b>threads</b>.</li>
+<li><b>exec</b> replaces the program with the same PID. <b>wait</b> makes the parent block. <b>Zombie</b> = dead child not yet waited for. <b>Orphan</b> = parent died, so init/systemd (PID 1) adopts the child.</li>
+</ul>
+</div>
+<div class="end">End of Volume 01 — Part 3 · Next: Chapter 4 — Threads</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="02-OS-Structure.html">← Ch 2: OS Structure</a><a href="index.html">☰ All topics</a><a href="04-Threads.html">Ch 4: Threads →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('os-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

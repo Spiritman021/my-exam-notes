@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Multiple Access Protocols Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="11-Data-Link-Layer.html">← Ch 11: Data Link Layer</a><a href="index.html">☰ All topics</a><a href="13-Flow-Control.html">Ch 13: Flow Control →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 12: Multiple Access Protocols</h1>
+  <p class="sub">Volume 02 · Part 12 · Built from the one-shot CN lecture transcript (section 12), plus the exam points the lecture skipped. This is the "access control" job of the MAC sublayer.</p>
+  <ul class="tags"><li>Pure ALOHA 18.4%</li><li>Slotted ALOHA 36.8%</li><li>Binary Exponential Back-off</li><li>Vulnerable Time 2Tt / Tt / Tp</li><li>CSMA</li><li>1-, Non-, p-Persistent</li><li>CSMA/CD · Tt ≥ 2Tp</li><li>Min Frame 64 B</li><li>CSMA/CA · IFS · CW · ACK</li><li>RTS / CTS · NAV</li><li>Hidden Station</li><li>Throughput Numericals</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">12.0</span>Why Multiple Access? Classification<span class="x">ADDED</span></a></li>
+<li><a href="#s1"><span class="n">12.1</span>Pure ALOHA</a></li>
+<li><a href="#s2"><span class="n">12.2</span>Back-off Waiting Time (Binary Exponential Backoff)</a></li>
+<li><a href="#s3"><span class="n">12.3</span>Vulnerable Time in Pure ALOHA</a></li>
+<li><a href="#s4"><span class="n">12.4</span>Slotted ALOHA</a></li>
+<li><a href="#s5"><span class="n">12.5</span>CSMA (Carrier Sense Multiple Access)</a></li>
+<li><a href="#s6"><span class="n">12.6</span>Vulnerable Time in CSMA</a></li>
+<li><a href="#s7"><span class="n">12.7</span>CSMA Persistence Methods</a></li>
+<li><a href="#s8"><span class="n">12.8</span>1-Persistent Method</a></li>
+<li><a href="#s9"><span class="n">12.9</span>Non-Persistent Method</a></li>
+<li><a href="#s10"><span class="n">12.10</span>P-Persistent Method</a></li>
+<li><a href="#s11"><span class="n">12.11</span>P-Persistent CSMA</a></li>
+<li><a href="#s12"><span class="n">12.12</span>CSMA/CD (Collision Detection)</a></li>
+<li><a href="#s13"><span class="n">12.13</span>CSMA/CD: Minimum Frame Length (Tt ≥ 2Tp)</a></li>
+<li><a href="#s14"><span class="n">12.14</span>CSMA/CA (Collision Avoidance)</a></li>
+<li><a href="#s15"><span class="n">12.15</span>CSMA/CA: IFS, Contention Window and Acknowledgement</a></li>
+<li><a href="#s16"><span class="n">12.16</span>CSMA/CA Flowchart with RTS/CTS</a></li>
+<li><a href="#s17"><span class="n">12.17</span>Master Comparison &amp; Formula Sheet<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 12</div>
+<h2 class="ch">Multiple Access Protocols</h2>
+<p>Many stations share <b>one channel</b> (a bus cable or the air). If two transmit at the same time, their signals <b>collide</b> and both frames are destroyed. The <b>MAC sublayer</b> (Chapter 11) runs a <b>multiple access protocol</b> to decide <b>who may send, and when</b>. The lecture builds them in order of cleverness: <b>pure ALOHA → slotted ALOHA → CSMA → CSMA/CD and CSMA/CA</b>.</p>
+
+<section id="s0">
+<h3><span class="n">12.0</span>Why Multiple Access? Classification <span class="badge">ADDED</span></h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Many hosts are connected multipoint to one <b>shared cable / link / channel</b>. A host must <b>access</b> the shared channel to transmit. If another host puts its data on the link at the same moment, there is a <b>collision</b>. The goal of access control: <b>keep collisions as few as possible</b>. Spoiler numbers: pure ALOHA ≈ <b>18%</b> efficiency, slotted ALOHA ≈ <b>37%</b> ("double").</div>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="Classification of multiple access protocols into random access, controlled access and channelization">
+  <rect x="230" y="10" width="220" height="32" rx="6" class="ac"/><text x="340" y="31" text-anchor="middle" class="b">Multiple access protocols</text>
+  <rect x="20" y="70" width="200" height="32" rx="6" class="gr"/><text x="120" y="91" text-anchor="middle" class="b">Random access</text>
+  <rect x="240" y="70" width="200" height="32" rx="6" class="or"/><text x="340" y="91" text-anchor="middle" class="b">Controlled access</text>
+  <rect x="460" y="70" width="200" height="32" rx="6" class="pu"/><text x="560" y="91" text-anchor="middle" class="b">Channelization</text>
+  <path d="M340 42 V56 H120 V70 M340 56 V70 M340 56 H560 V70" class="ln"/>
+  <text x="120" y="125" text-anchor="middle">ALOHA (pure, slotted)</text><text x="120" y="145" text-anchor="middle">CSMA</text><text x="120" y="165" text-anchor="middle">CSMA/CD · CSMA/CA</text>
+  <text x="340" y="125" text-anchor="middle">Reservation</text><text x="340" y="145" text-anchor="middle">Polling</text><text x="340" y="165" text-anchor="middle">Token passing</text>
+  <text x="560" y="125" text-anchor="middle">FDMA</text><text x="560" y="145" text-anchor="middle">TDMA</text><text x="560" y="165" text-anchor="middle">CDMA</text>
+  <text x="120" y="185" text-anchor="middle" class="mut">contention · this chapter</text><text x="340" y="185" text-anchor="middle" class="mut">no collisions · take turns</text><text x="560" y="185" text-anchor="middle" class="mut">split by frequency / time / code</text>
+</svg>
+<figcaption>Figure 12.1: Classification of multiple access protocols</figcaption>
+</figure>
+<ul>
+<li><b>Random access (contention)</b>: no station is superior; anyone may send when it wants, and collisions are possible. All of this chapter.</li>
+<li><b>Controlled access</b>: stations agree on who sends. <b>Reservation</b> (book a slot first), <b>polling</b> (a primary asks each secondary in turn: poll/select), <b>token passing</b> (only the holder of the token sends: Token Ring, FDDI).</li>
+<li><b>Channelization</b>: the bandwidth is split. <b>FDMA</b> by frequency bands, <b>TDMA</b> by time slots (GSM), <b>CDMA</b> by codes (all send at once with orthogonal codes).</li>
+</ul>
+</section>
+
+<section id="s1">
+<h3><span class="n">12.1</span>Pure ALOHA</h3>
+<div class="def"><b>Pure ALOHA:</b> the simplest random-access protocol. A station <b>sends whenever it has a frame</b>, without checking the channel. If no acknowledgement comes back, it assumes a <b>collision</b>, waits a <b>random back-off time</b>, and resends. Developed at the <b>University of Hawaii (ALOHAnet, 1970, Norman Abramson)</b> <span class="badge">ADDED</span>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — the flowchart</span>
+<ol>
+<li><b>Start:</b> set the back-off counter <b>K = 0</b> (attempts so far). Also fix a <b>maximum limit</b> (example: 5).</li>
+<li><b>Send the frame</b> on the shared link.</li>
+<li><b>Wait 2 × Tp</b>: one Tp for the data to reach the receiver, one Tp for the <b>acknowledgement</b> ("haan bhaiya, aapki chitthi mil gayi") to come back. Have patience for that long.</li>
+<li><b>ACK received?</b> Yes → <b>success</b>. No → it was a <b>collision</b> (the receiver won't acknowledge a letter it never got).</li>
+<li>On a collision: <b>K = K + 1</b>. Has K reached the limit? Yes → <b>abort</b> ("take a pause, come back later and try"). No → wait the <b>back-off time</b> (12.2) and <b>resend</b>.</li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 680 470" role="img" aria-label="Pure ALOHA flowchart">
+  <defs><marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="230" y="8" width="220" height="30" rx="15" class="ac"/><text x="340" y="28" text-anchor="middle" class="b">Station has a frame</text>
+  <rect x="230" y="55" width="220" height="30" rx="4" class="bx"/><text x="340" y="75" text-anchor="middle">K = 0 (attempts); set Kmax</text>
+  <rect x="230" y="100" width="220" height="30" rx="4" class="gr"/><text x="340" y="120" text-anchor="middle" class="b">Send the frame</text>
+  <rect x="230" y="145" width="220" height="30" rx="4" class="bx"/><text x="340" y="165" text-anchor="middle">Wait time-out = 2 × Tp</text>
+  <path d="M340 190 L420 218 L340 246 L260 218 Z" class="bx"/><text x="340" y="223" text-anchor="middle">ACK received?</text>
+  <rect x="490" y="203" width="150" height="30" rx="15" class="gr"/><text x="565" y="223" text-anchor="middle" class="b">Success</text>
+  <rect x="230" y="265" width="220" height="30" rx="4" class="or"/><text x="340" y="285" text-anchor="middle">Collision → K = K + 1</text>
+  <path d="M340 310 L420 338 L340 366 L260 338 Z" class="bx"/><text x="340" y="343" text-anchor="middle">K &gt; Kmax?</text>
+  <rect x="490" y="323" width="150" height="30" rx="15" class="or"/><text x="565" y="343" text-anchor="middle" class="b">Abort</text>
+  <rect x="230" y="385" width="220" height="30" rx="4" class="bx"/><text x="340" y="405" text-anchor="middle">Pick random R in 0 … 2ᴷ − 1</text>
+  <rect x="230" y="430" width="220" height="30" rx="4" class="pu"/><text x="340" y="450" text-anchor="middle">Wait back-off TB = R × Tp</text>
+  <path d="M340 38 V53 M340 85 V98 M340 130 V143 M340 175 V188 M340 246 V263 M340 295 V308 M340 366 V383 M340 415 V428 M420 218 H488 M420 338 H488" class="lna" marker-end="url(#m1)"/>
+  <path d="M230 445 H170 V115 H228" class="lna" marker-end="url(#m1)"/>
+  <text x="455" y="211" class="mut">Yes</text><text x="348" y="258" class="mut">No</text><text x="455" y="331" class="mut">Yes</text><text x="348" y="378" class="mut">No</text>
+  <text x="160" y="280" text-anchor="end" class="mut">retry</text>
+</svg>
+<figcaption>Figure 12.2: Pure ALOHA procedure</figcaption>
+</figure>
+</section>
+
+<section id="s2">
+<h3><span class="n">12.2</span>Back-off Waiting Time (Binary Exponential Backoff)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>Waiting time <b>T<sub>B</sub> = R × Tp</b>. R (sometimes written t) is a <b>random number between 0 and 2ᴷ − 1</b>, where <b>K = the current back-off value</b> (number of collisions so far).</li>
+<li>The range grows with each collision: K = 1 → 0 to 1; K = 2 → 0 to 3; K = 3 → 0 to 7; K = 4 → 0 to 15.</li>
+<li><b>Why grow the range?</b> With a small range there are few choices, so two stations may <b>pick the same R</b>, finish waiting at the same moment, transmit together and <b>collide again</b>. With a bigger range (0–15), one picks 7 and the other 3: different waits, so they don't send together. <b>Chances of collision decrease</b> (not to zero).</li>
+<li>If collisions keep happening until K reaches the limit: "bhai, tum ruk jao", you are spoiling your own and everyone's work. <b>Abort</b> and give the others a chance.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Collisions K</th><th>Range of R (0 … 2ᴷ − 1)</th><th>Choices</th><th>P(2 stations pick same R) <span class="badge">ADDED</span></th><th>Wait if Tp = 2 ms</th></tr>
+<tr><td>1</td><td>0 – 1</td><td>2</td><td>1/2</td><td>0 or 2 ms</td></tr>
+<tr><td>2</td><td>0 – 3</td><td>4</td><td>1/4</td><td>0, 2, 4, 6 ms</td></tr>
+<tr><td>3</td><td>0 – 7</td><td>8</td><td>1/8</td><td>0 … 14 ms</td></tr>
+<tr><td>4</td><td>0 – 15</td><td>16</td><td>1/16</td><td>0 … 30 ms</td></tr>
+<tr><td>10</td><td>0 – 1023</td><td>1024</td><td>1/1024</td><td>0 … 2046 ms</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Why "binary exponential"?</span>
+The range <b>doubles</b> (×2, binary) after <b>every collision</b> (exponential growth: 2ᴷ). It adapts to load: light traffic means short waits; heavy traffic quickly spreads stations apart. In textbooks (Forouzan) <b>Kmax = 15</b>, and T<sub>B</sub> may use Tp or the frame time Tfr as the unit. <b>Ethernet</b> uses a <b>truncated</b> version: the range stops growing after K = 10 (0 – 1023 slots), the station gives up after <b>16 attempts</b>, and the slot time = <b>51.2 µs</b> (512 bit times at 10 Mbps).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The lecture's limit of 5 is only an example; the standard answer is <b>Kmax = 15</b>. The range is <b>0 to 2ᴷ − 1</b> (not 1 to 2ᴷ). After the 1st collision, R ∈ {0, 1}, so a station may <b>retransmit immediately</b> (R = 0).</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">12.3</span>Vulnerable Time in Pure ALOHA</h3>
+<div class="def"><b>Vulnerable time:</b> the time period during which, if another station starts sending, there <b>is a possibility of collision</b> with our frame. For pure ALOHA it is <b>2 × Tt</b>.</div>
+<figure>
+<svg viewBox="0 0 680 220" role="img" aria-label="Pure ALOHA vulnerable time of two frame times">
+  <rect x="120" y="36" width="300" height="122" class="dash" style="fill:var(--alert);fill-opacity:.1;stroke:var(--alert)"/>
+  <rect x="150" y="44" width="150" height="28" class="or"/><text x="225" y="63" text-anchor="middle">B's frame</text>
+  <rect x="270" y="82" width="150" height="28" class="ac"/><text x="345" y="101" text-anchor="middle" class="b">A's frame</text>
+  <rect x="390" y="120" width="150" height="28" class="pu"/><text x="465" y="139" text-anchor="middle">C's frame</text>
+  <text x="285" y="62" class="mut" style="font-size:11px">B's tail hits A's head</text>
+  <text x="440" y="116" class="mut" style="font-size:11px">C's head hits A's tail</text>
+  <path d="M40 180 H640" class="ln"/>
+  <path d="M120 174 V186 M270 174 V186 M420 174 V186" class="ln"/>
+  <text x="120" y="200" text-anchor="middle" class="mut">t − Tt</text><text x="270" y="200" text-anchor="middle" class="b">t</text><text x="420" y="200" text-anchor="middle" class="mut">t + Tt</text>
+  <text x="270" y="25" text-anchor="middle" style="fill:var(--alert)" class="b">Vulnerable time = 2 × Tt (from t − Tt to t + Tt)</text>
+  <text x="640" y="200" text-anchor="end" class="mut">time →</text>
+</svg>
+<figcaption>Figure 12.3: Any frame starting within Tt before or after A's start collides with A</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Stations 1, 2 and 3 send frames. Station 1's tail collides with station 2's head; station 3's head collides with station 2's tail. To avoid collision, the earlier frame must move back and the later one forward. If A starts at <b>t1</b>, nobody else may start in the <b>Tt before</b> it or the <b>Tt after</b> it. Each frame takes the same Tt, so the collision-prone period is <b>Tt + Tt = 2Tt</b>. Even slightly early or late causes a collision. This happens because access is <b>completely random</b>: no rule says who goes when. That randomness gives only ≈ <b>18%</b> efficiency.</div>
+<div class="num"><span class="t">Throughput formula (added)</span>
+<div class="formula">G = average number of frames generated per frame time Tt (offered load)
+Pure ALOHA throughput     S = G · e^(−2G)
+Maximum                   S_max = 1/(2e) ≈ 0.184 = 18.4%   at G = 0.5</div>
+<b>Q.</b> Pure ALOHA, 200-bit frames on a shared 200 kbps channel. (a) Vulnerable time? (b) Throughput when the system produces 1000, 500 and 250 frames/s?<br>
+Tt = 200 / 200 000 = <b>1 ms</b>, so vulnerable time = 2 × 1 = <b>2 ms</b>.<br>
+1000 frames/s → G = 1000 × 1 ms = 1 → S = 1 × e⁻² = 0.135 → <b>135 frames/s</b> succeed.<br>
+500 frames/s → G = 0.5 → S = 0.5 × e⁻¹ = 0.184 → <b>92 frames/s</b> (the maximum %).<br>
+250 frames/s → G = 0.25 → S = 0.25 × e⁻⁰·⁵ = 0.152 → <b>38 frames/s</b>.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">12.4</span>Slotted ALOHA</h3>
+<div class="def"><b>Slotted ALOHA:</b> time is divided into <b>slots of length Tt</b> (one frame time). A station may send <b>only at the beginning of a slot</b>. A frame ready mid-slot waits for the next slot. Clocks must be <b>synchronised</b>.</div>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Slotted ALOHA: frames start only at slot boundaries; collisions are full overlaps within one slot">
+  <path d="M40 30 V160 M140 30 V160 M240 30 V160 M340 30 V160 M440 30 V160 M540 30 V160 M640 30 V160" class="ln dash"/>
+  <text x="90" y="24" text-anchor="middle" class="mut">slot 1</text><text x="190" y="24" text-anchor="middle" class="mut">slot 2</text><text x="290" y="24" text-anchor="middle" class="mut">slot 3</text><text x="390" y="24" text-anchor="middle" class="mut">slot 4</text><text x="490" y="24" text-anchor="middle" class="mut">slot 5</text><text x="590" y="24" text-anchor="middle" class="mut">slot 6</text>
+  <rect x="40" y="70" width="100" height="28" class="ac"/><text x="90" y="89" text-anchor="middle">A ✓</text>
+  <rect x="240" y="50" width="100" height="28" class="or"/><text x="290" y="69" text-anchor="middle">B</text>
+  <rect x="240" y="84" width="100" height="28" class="or"/><text x="290" y="103" text-anchor="middle">C</text>
+  <text x="290" y="132" text-anchor="middle" style="fill:var(--alert)" class="b">✗ full collision</text>
+  <rect x="340" y="70" width="100" height="28" class="gr"/><text x="390" y="89" text-anchor="middle">D ✓</text>
+  <rect x="540" y="70" width="100" height="28" class="pu"/><text x="590" y="89" text-anchor="middle">E ✓</text>
+  <circle cx="480" cy="120" r="4" style="fill:var(--alert)"/><path d="M484 120 H536" class="ln dash"/><text x="490" y="140" class="mut" style="font-size:11px">E ready mid-slot → waits</text>
+  <path d="M40 175 H640" class="ln"/><path d="M140 168 V182 M240 168 V182" class="ln"/>
+  <text x="190" y="195" text-anchor="middle" class="b">slot = Tt · vulnerable time = Tt</text>
+</svg>
+<figcaption>Figure 12.4: Slotted ALOHA</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Make one rule in pure ALOHA: <b>transmit only at the beginning of a time slot</b>; not slightly after it (the tail would collide), not slightly before it. Slotted ALOHA "listened" to this: the timeline is divided into slots, each slot <b>= Tt</b>. Frames now fit exactly into slots: one ends where the next begins, with no partial overlaps.<br>
+<b>Why only 37% then?</b> If station 4 also sends at the start of the <b>same slot</b>, it is following the rule, but the two frames now overlap <b>completely</b> ("body on body"). So collisions remain, but the <b>vulnerable time is halved to Tt</b>, and the efficiency is <b>doubled</b> to ≈ 37%.</div>
+<div class="num"><span class="t">Throughput formula (added)</span>
+<div class="formula">Slotted ALOHA throughput   S = G · e^(−G)
+Maximum                    S_max = 1/e ≈ 0.368 = 36.8%   at G = 1</div>
+<b>Same Q, slotted</b> (200-bit frames, 200 kbps, Tt = 1 ms). Vulnerable time = <b>1 ms</b>.<br>
+G = 1 → S = e⁻¹ = 0.368 → <b>368 frames/s</b>. G = 0.5 → S = 0.5 × e⁻⁰·⁵ = 0.303 → <b>151 frames/s</b>. G = 0.25 → S = 0.25 × e⁻⁰·²⁵ = 0.195 → <b>49 frames/s</b>.<br>
+<b>Q.</b> A 1 Mbps channel's maximum useful throughput? Pure: 0.184 × 1 Mbps ≈ <b>184 kbps</b>. Slotted: ≈ <b>368 kbps</b>.</div>
+<figure>
+<svg viewBox="0 0 680 250" role="img" aria-label="Throughput S versus offered load G for pure and slotted ALOHA">
+  <path d="M60 40 V210 H620" class="ln"/>
+  <path d="M60 170 H620 M60 130 H620 M60 90 H620 M60 50 H620" class="ln dash" style="opacity:.35"/>
+  <text x="52" y="174" text-anchor="end" class="mut">0.1</text><text x="52" y="134" text-anchor="end" class="mut">0.2</text><text x="52" y="94" text-anchor="end" class="mut">0.3</text><text x="52" y="54" text-anchor="end" class="mut">0.4</text>
+  <text x="60" y="228" text-anchor="middle" class="mut">0</text><text x="150" y="228" text-anchor="middle" class="mut">0.5</text><text x="240" y="228" text-anchor="middle" class="mut">1</text><text x="330" y="228" text-anchor="middle" class="mut">1.5</text><text x="420" y="228" text-anchor="middle" class="mut">2</text><text x="510" y="228" text-anchor="middle" class="mut">2.5</text><text x="600" y="228" text-anchor="middle" class="mut">3</text>
+  <text x="620" y="245" text-anchor="end" class="mut">G (offered load, frames per Tt)</text><text x="20" y="30" class="mut">S</text>
+  <path d="M60.0 210.0 L64.5 200.2 L69.0 191.0 L73.5 182.2 L78.0 173.8 L82.5 165.9 L87.0 158.4 L91.5 151.2 L96.0 144.5 L100.5 138.1 L105.0 132.1 L109.5 126.4 L114.0 121.1 L118.5 116.1 L123.0 111.3 L127.5 106.9 L132.0 102.7 L136.5 98.9 L141.0 95.2 L145.5 91.8 L150.0 88.7 L154.5 85.8 L159.0 83.1 L163.5 80.6 L168.0 78.3 L172.5 76.2 L177.0 74.3 L181.5 72.5 L186.0 71.0 L190.5 69.5 L195.0 68.3 L199.5 67.2 L204.0 66.2 L208.5 65.4 L213.0 64.7 L217.5 64.1 L222.0 63.6 L226.5 63.3 L231.0 63.0 L235.5 62.9 L240.0 62.8 L244.5 62.9 L249.0 63.0 L253.5 63.2 L258.0 63.5 L262.5 63.9 L267.0 64.3 L271.5 64.9 L276.0 65.4 L280.5 66.1 L285.0 66.7 L289.5 67.5 L294.0 68.3 L298.5 69.1 L303.0 70.0 L307.5 70.9 L312.0 71.9 L316.5 72.9 L321.0 73.9 L325.5 75.0 L330.0 76.1 L334.5 77.3 L339.0 78.4 L343.5 79.6 L348.0 80.8 L352.5 82.0 L357.0 83.2 L361.5 84.5 L366.0 85.8 L370.5 87.1 L375.0 88.4 L379.5 89.7 L384.0 91.0 L388.5 92.3 L393.0 93.6 L397.5 95.0 L402.0 96.3 L406.5 97.7 L411.0 99.0 L415.5 100.4 L420.0 101.7 L424.5 103.1 L429.0 104.4 L433.5 105.8 L438.0 107.1 L442.5 108.5 L447.0 109.8 L451.5 111.2 L456.0 112.5 L460.5 113.8 L465.0 115.1 L469.5 116.5 L474.0 117.8 L478.5 119.1 L483.0 120.4 L487.5 121.6 L492.0 122.9 L496.5 124.2 L501.0 125.4 L505.5 126.7 L510.0 127.9 L514.5 129.1 L519.0 130.4 L523.5 131.6 L528.0 132.8 L532.5 133.9 L537.0 135.1 L541.5 136.3 L546.0 137.4 L550.5 138.6 L555.0 139.7 L559.5 140.8 L564.0 141.9 L568.5 143.0 L573.0 144.1 L577.5 145.1 L582.0 146.2 L586.5 147.2 L591.0 148.2 L595.5 149.3 L600.0 150.3" style="fill:none;stroke:var(--accent);stroke-width:2.5"/>
+  <path d="M60.0 210.0 L64.5 200.5 L69.0 191.9 L73.5 184.2 L78.0 177.3 L82.5 171.1 L87.0 165.6 L91.5 160.7 L96.0 156.4 L100.5 152.6 L105.0 149.3 L109.5 146.5 L114.0 144.1 L118.5 142.1 L123.0 140.5 L127.5 139.1 L132.0 138.1 L136.5 137.3 L141.0 136.8 L145.5 136.5 L150.0 136.4 L154.5 136.5 L159.0 136.8 L163.5 137.2 L168.0 137.7 L172.5 138.4 L177.0 139.1 L181.5 140.0 L186.0 141.0 L190.5 142.0 L195.0 143.1 L199.5 144.2 L204.0 145.4 L208.5 146.6 L213.0 147.9 L217.5 149.2 L222.0 150.5 L226.5 151.8 L231.0 153.2 L235.5 154.5 L240.0 155.9 L244.5 157.2 L249.0 158.6 L253.5 159.9 L258.0 161.2 L262.5 162.6 L267.0 163.9 L271.5 165.2 L276.0 166.5 L280.5 167.7 L285.0 169.0 L289.5 170.2 L294.0 171.4 L298.5 172.6 L303.0 173.7 L307.5 174.8 L312.0 175.9 L316.5 177.0 L321.0 178.1 L325.5 179.1 L330.0 180.1 L334.5 181.1 L339.0 182.1 L343.5 183.0 L348.0 183.9 L352.5 184.8 L357.0 185.7 L361.5 186.5 L366.0 187.3 L370.5 188.1 L375.0 188.9 L379.5 189.6 L384.0 190.3 L388.5 191.0 L393.0 191.7 L397.5 192.4 L402.0 193.0 L406.5 193.6 L411.0 194.2 L415.5 194.8 L420.0 195.3 L424.5 195.9 L429.0 196.4 L433.5 196.9 L438.0 197.4 L442.5 197.9 L447.0 198.3 L451.5 198.8 L456.0 199.2 L460.5 199.6 L465.0 200.0 L469.5 200.4 L474.0 200.8 L478.5 201.1 L483.0 201.5 L487.5 201.8 L492.0 202.1 L496.5 202.4 L501.0 202.7 L505.5 203.0 L510.0 203.3 L514.5 203.5 L519.0 203.8 L523.5 204.0 L528.0 204.3 L532.5 204.5 L537.0 204.7 L541.5 204.9 L546.0 205.1 L550.5 205.3 L555.0 205.5 L559.5 205.7 L564.0 205.9 L568.5 206.0 L573.0 206.2 L577.5 206.3 L582.0 206.5 L586.5 206.6 L591.0 206.8 L595.5 206.9 L600.0 207.0" style="fill:none;stroke:var(--alert);stroke-width:2.5"/>
+  <circle cx="240" cy="62.8" r="4" style="fill:var(--accent)"/><text x="250" y="56" style="fill:var(--accent)" class="b">Slotted: 0.368 at G = 1</text>
+  <circle cx="150" cy="136.4" r="4" style="fill:var(--alert)"/><text x="160" y="152" style="fill:var(--alert)" class="b">Pure: 0.184 at G = 0.5</text>
+</svg>
+<figcaption>Figure 12.5: Throughput S vs load G</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Slotted's maximum is <b>exactly double</b> pure's (1/e vs 1/2e), because its vulnerable time is exactly half. The peaks occur at <b>different loads</b>: pure at <b>G = 0.5</b>, slotted at <b>G = 1</b>. Slotting removes <b>partial</b> collisions, not <b>full</b> ones.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">12.5</span>CSMA (Carrier Sense Multiple Access)</h3>
+<div class="def"><b>CSMA:</b> "<b>sense before transmit</b>" (listen before talk). Each station <b>senses the carrier</b> (the shared channel) and transmits only if it is <b>idle</b>. If it is busy, it does not transmit.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — the door peephole</span>
+When someone knocks, do you open the door straight away, or look through the <b>peephole (doorbin)</b> first? You look first. CSMA does the same: each station checks the link <b>at the point where it is connected</b>. A wave on the link means busy, so don't send (you would spoil the other person's data and your own). No wave means idle, so send.<br>
+<b>The biggest problem:</b> it checks only <b>at its own point</b>. A signal still travelling towards it is invisible, so collisions are <b>reduced, not eliminated</b>. Hence the detection (CD) and avoidance (CA) variants.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">12.6</span>Vulnerable Time in CSMA</h3>
+<div class="def">In CSMA, collisions happen because of <b>propagation delay</b>. <b>Vulnerable time = Tp</b>: the time for a signal to travel from one end of the medium to the other.</div>
+<figure>
+<svg viewBox="0 0 680 250" role="img" aria-label="Space-time diagram: C senses idle before A's signal reaches it and causes a collision">
+  <defs><marker id="m6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <path d="M60 40 H620" style="stroke:var(--ink);stroke-width:3"/>
+  <circle cx="80" cy="40" r="9" class="ac"/><text x="80" y="25" text-anchor="middle" class="b">A</text>
+  <circle cx="230" cy="40" r="9" class="bx"/><text x="230" y="25" text-anchor="middle" class="b">B</text>
+  <circle cx="430" cy="40" r="9" class="or"/><text x="430" y="25" text-anchor="middle" class="b">C</text>
+  <circle cx="600" cy="40" r="9" class="bx"/><text x="600" y="25" text-anchor="middle" class="b">D</text>
+  <path d="M80 60 V230 M230 60 V230 M430 60 V230 M600 60 V230" class="ln dash" style="opacity:.5"/>
+  <path d="M80 60 L600 200" style="stroke:var(--accent);stroke-width:2.5" marker-end="url(#m6)"/>
+  <text x="150" y="70" style="fill:var(--accent);font-size:11px">A starts (t1)</text>
+  <path d="M430 130 L385 142" style="stroke:var(--alert);stroke-width:2.5"/>
+  <path d="M430 130 L600 176" style="stroke:var(--alert);stroke-width:2.5" marker-end="url(#m6)"/>
+  <circle cx="430" cy="130" r="4" style="fill:var(--alert)"/><text x="440" y="122" style="fill:var(--alert);font-size:11px">C senses idle → sends</text>
+  <text x="385" y="146" text-anchor="middle" style="font-size:18px">✷</text><text x="300" y="165" text-anchor="middle" style="fill:var(--alert)" class="b">collision</text>
+  <path d="M650 60 V200" class="lna" marker-end="url(#m6)"/><text x="645" y="135" text-anchor="end" class="b">Tp</text>
+  <text x="340" y="225" text-anchor="middle" class="mut">A's signal has not reached C yet, so C's "peephole" shows the line idle</text>
+  <text x="30" y="150" class="mut" style="font-size:11px">time ↓</text>
+</svg>
+<figcaption>Figure 12.6: CSMA collision caused by propagation delay</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture — the dogs in the passage</span>
+Flats 1, 2, 3 and 4 open onto a <b>common passage</b> (the shared link) that ends at a <b>dog house</b>. Flat 1 keeps ~10 dogs; every day the <b>queue of dogs</b> walks from Flat 1 (<b>source</b>) to the dog house (<b>destination</b>). Others fear being bitten (big injections!), so before stepping out they check through the <b>peephole</b> (carrier sensing).
+<ul>
+<li>Flat 3 sees the dogs, so stays in. Fine.</li>
+<li>Flat 2 looks <b>before</b> the queue has reached its door, sees nothing, opens the door, and gets bitten: a <b>collision</b>.</li>
+<li>The whole period while the queue is travelling from source to destination is <b>vulnerable</b>. Once all the dogs reach the dog house (propagation over), there is no danger. Hence <b>vulnerable time = Tp</b>.</li>
+<li>The bitten person <b>screams</b>, and that scream travels along the passage ("don't come out, dogs!"). That is the <b>collision signal</b>, which propagates over the carrier and later helps stations <b>detect</b> that their own data was involved (CSMA/CD).</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert — vulnerable time</span>
+Pure ALOHA = <b>2 × Tt</b> · Slotted ALOHA = <b>Tt</b> · CSMA = <b>Tp</b>. ALOHA's depends on <b>frame (transmission) time</b>; CSMA's on <b>propagation time</b>. A smaller Tp (shorter cable) means fewer CSMA collisions.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">12.7</span>CSMA Persistence Methods</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+All stations want to transmit as soon as possible, so each senses the carrier and pounces when it is idle. If all pounce together, they collide. <b>Persistence methods</b> answer: <b>how</b> to sense (continuously or at random times), and <b>what to do</b> when the channel is found <b>idle</b> or <b>busy</b>. Three types: <b>1-persistent, non-persistent, p-persistent</b>.</div>
+<figure>
+<svg viewBox="0 0 680 220" role="img" aria-label="Flowcharts of 1-persistent and non-persistent CSMA">
+  <defs><marker id="m7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="170" y="18" text-anchor="middle" class="b">1-persistent</text>
+  <path d="M170 52 L240 80 L170 108 L100 80 Z" class="bx"/><text x="170" y="85" text-anchor="middle">Channel idle?</text>
+  <path d="M240 80 H285 V34 H170 V50" class="lna" marker-end="url(#m7)"/><text x="292" y="62" class="mut" style="font-size:11px">busy:</text><text x="292" y="76" class="mut" style="font-size:11px">keep sensing</text>
+  <path d="M170 108 V138" class="lna" marker-end="url(#m7)"/><text x="178" y="128" class="mut" style="font-size:11px">idle</text>
+  <rect x="80" y="140" width="180" height="32" rx="4" class="gr"/><text x="170" y="161" text-anchor="middle">Transmit at once (p = 1)</text>
+  <text x="170" y="200" text-anchor="middle" style="fill:var(--alert);font-size:12px">most collisions</text>
+  <path d="M370 10 V210" class="ln dash"/>
+  <text x="500" y="18" text-anchor="middle" class="b">Non-persistent</text>
+  <path d="M500 52 L570 80 L500 108 L430 80 Z" class="bx"/><text x="500" y="85" text-anchor="middle">Channel idle?</text>
+  <path d="M570 80 H588" class="lna" marker-end="url(#m7)"/>
+  <rect x="590" y="62" width="82" height="36" rx="4" class="or"/><text x="631" y="77" text-anchor="middle" style="font-size:11px">Wait random</text><text x="631" y="91" text-anchor="middle" style="font-size:11px">time</text>
+  <path d="M631 62 V34 H500 V50" class="lna" marker-end="url(#m7)"/><text x="572" y="72" class="mut" style="font-size:11px">busy</text>
+  <path d="M500 108 V138" class="lna" marker-end="url(#m7)"/><text x="508" y="128" class="mut" style="font-size:11px">idle</text>
+  <rect x="410" y="140" width="180" height="32" rx="4" class="gr"/><text x="500" y="161" text-anchor="middle">Transmit</text>
+  <text x="500" y="200" text-anchor="middle" style="fill:var(--alert);font-size:12px">fewer collisions, but idle channel wasted</text>
+</svg>
+<figcaption>Figure 12.7: 1-persistent vs non-persistent</figcaption>
+</figure>
+</section>
+
+<section id="s8">
+<h3><span class="n">12.8</span>1-Persistent Method</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"<b>Sense continuously</b>": keep your eye glued to the peephole, never move away. When the carrier becomes <b>empty</b>, transmit <b>immediately</b>. <b>Problem:</b> every station is "bhara pada" (loaded and waiting), so the moment the carrier goes idle, <b>all of them</b> jump in together, causing a <b>collision</b>. So collision chances are <b>highest</b> here.</div>
+<div class="box add"><span class="t">➕ Facts</span>
+"1" = it transmits with <b>probability 1</b> when idle. Advantage: no idle time is wasted (good when the load is light). Used by <b>classic Ethernet (CSMA/CD)</b>.</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">12.9</span>Non-Persistent Method</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"<b>Don't sense continuously</b>." Look through the peephole; if it is <b>busy</b>, go and sit comfortably on the sofa, come back after a <b>random time</b> and check again. If idle, transmit; if busy, don't (basic etiquette). Two problems remain:
+<ol>
+<li><b>Collision still possible:</b> station A and station C may both pick the <b>same random time</b> (say 5 minutes), both find the link idle after 5 minutes, both send, and collide.</li>
+<li><b>Channel wasted:</b> A picks 5 minutes, but the channel became idle just after it left. For those 5 minutes the link sits <b>totally empty</b> ("curfew laga hua hai") while A had data to send. The resource is not <b>optimally utilised</b>.</li>
+</ol></div>
+</section>
+
+<section id="s10">
+<h3><span class="n">12.10</span>P-Persistent Method</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+An "<b>intelligent approach</b>": p stands for <b>probability</b>. Each station connected to the carrier is given a fixed probability, for example A: <b>p = 0.9</b>, B: 0.6, C: 0.3. A holds the highest, then B, then C.</div>
+</section>
+
+<section id="s11">
+<h3><span class="n">12.11</span>P-Persistent CSMA</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — "mauke pe chauka, but the ball must be good"</span>
+Stations <b>sense continuously</b> (like 1-persistent), ready to hit a four when the chance comes. But when the carrier is found <b>idle</b>, they do <b>not all jump together</b>. Transmission happens <b>according to probability</b>: the station with the highest probability (A) goes first, then B, then C. Following this pattern greatly <b>reduces the collision rate</b>.</div>
+<figure>
+<svg viewBox="0 0 680 270" role="img" aria-label="Standard p-persistent CSMA flowchart">
+  <defs><marker id="m11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <path d="M100 42 L170 70 L100 98 L30 70 Z" class="bx"/><text x="100" y="75" text-anchor="middle">Channel idle?</text>
+  <path d="M30 70 H14 V22 H100 V40" class="lna" marker-end="url(#m11)"/><text x="20" y="16" class="mut" style="font-size:11px">busy: keep sensing</text>
+  <path d="M170 70 H218" class="lna" marker-end="url(#m11)"/><text x="176" y="62" class="mut" style="font-size:11px">idle</text>
+  <path d="M300 42 L380 70 L300 98 L220 70 Z" class="bx"/><text x="300" y="66" text-anchor="middle" style="font-size:12px">random r</text><text x="300" y="80" text-anchor="middle" style="font-size:12px">r ≤ p ?</text>
+  <path d="M380 70 H408" class="lna" marker-end="url(#m11)"/><text x="384" y="62" class="mut" style="font-size:11px">yes</text>
+  <rect x="410" y="54" width="110" height="32" rx="4" class="gr"/><text x="465" y="75" text-anchor="middle" class="b">Transmit</text>
+  <path d="M300 98 V128" class="lna" marker-end="url(#m11)"/><text x="308" y="118" class="mut" style="font-size:11px">no (prob q = 1 − p)</text>
+  <rect x="220" y="130" width="160" height="32" rx="4" class="or"/><text x="300" y="151" text-anchor="middle">Wait 1 time slot</text>
+  <path d="M300 162 V185" class="lna" marker-end="url(#m11)"/>
+  <path d="M300 187 L370 215 L300 243 L230 215 Z" class="bx"/><text x="300" y="220" text-anchor="middle">Channel idle?</text>
+  <path d="M370 215 H590 V22 H300 V40" class="lna" marker-end="url(#m11)"/><text x="470" y="208" class="mut" style="font-size:11px">idle: try again with prob p</text>
+  <path d="M230 215 H192" class="lna" marker-end="url(#m11)"/><text x="196" y="208" class="mut" style="font-size:11px">busy</text>
+  <rect x="20" y="199" width="170" height="32" rx="4" class="pu"/><text x="105" y="220" text-anchor="middle" style="font-size:12px">Act as if collision → back-off</text>
+  <text x="340" y="264" text-anchor="middle" class="mut">used on slotted channels · usually the SAME p for every station</text>
+</svg>
+<figcaption>Figure 12.8: p-persistent CSMA (textbook algorithm)</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap — the textbook definition differs</span>
+The lecture's "each station has its own fixed probability, highest goes first" is a <b>simplified picture</b>. The standard (Forouzan / Tanenbaum) algorithm, used on <b>slotted</b> channels, is: when the channel is idle, a station <b>transmits with probability p</b>, and with probability <b>q = 1 − p</b> it <b>waits for the next slot</b> and senses again. If the channel is busy then, it behaves as if a collision occurred and uses back-off. Stations normally share the <b>same p</b>; the randomness, not a fixed ranking, spreads them out. It combines the advantages of 1-persistent (no idle waste) and non-persistent (fewer collisions).</div>
+<div class="tw"><table>
+<tr><th>Method</th><th>Channel busy</th><th>Channel idle</th><th>Collisions</th><th>Channel utilisation</th></tr>
+<tr><td>1-persistent</td><td>Keep sensing continuously</td><td>Send immediately (p = 1)</td><td><b>Highest</b></td><td>Good at low load</td></tr>
+<tr><td>Non-persistent</td><td>Wait a random time, then sense</td><td>Send immediately</td><td>Lower</td><td><b>Poor</b> (idle gaps wasted)</td></tr>
+<tr><td>p-persistent</td><td>Keep sensing continuously</td><td>Send with prob p, else defer one slot</td><td>Lower</td><td><b>Best balance</b></td></tr>
+</table></div>
+</section>
+
+<section id="s12">
+<h3><span class="n">12.12</span>CSMA/CD (Collision Detection)</h3>
+<div class="def"><b>CSMA/CD:</b> CSMA plus <b>collision detection</b>. A station keeps <b>monitoring the line while it transmits</b>. If it detects a collision, it <b>stops at once</b>, sends a <b>jam signal</b>, and retries after a <b>binary exponential back-off</b>. It works only on <b>wired (guided)</b> media. Standard: <b>IEEE 802.3 (Ethernet)</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>Carrier sensing and multiple access stay as before; the new part is <b>collision detection</b>: can a station find out that <b>its own data</b> was involved in a collision? Yes, but <b>only on wired media</b> (very important point).</li>
+<li>Stations A, B, C and D share a channel. A and D transmit at about the same time, so a collision happens. Immediately "<b>mohalle mein halla</b>" (an uproar in the neighbourhood): the <b>collision signal</b> propagates through the whole channel.</li>
+<li>Everyone learns <i>that</i> a collision happened, but <b>whose</b> data was in it? Key idea: when the collision signal reaches A, if A <b>still has some bits left to transmit</b> (the frame isn't finished), then A knows "<b>101% my data was involved</b>". The same goes for D.</li>
+<li>This works only when the <b>transmission time is long enough</b>; see 12.13.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 460" role="img" aria-label="CSMA/CD flowchart">
+  <defs><marker id="m12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="190" y="8" width="300" height="30" rx="15" class="ac"/><text x="340" y="28" text-anchor="middle" class="b">Frame ready · K = 0</text>
+  <rect x="190" y="55" width="300" height="30" rx="4" class="bx"/><text x="340" y="75" text-anchor="middle">Sense channel (1-persistent) until idle</text>
+  <rect x="190" y="100" width="300" height="30" rx="4" class="gr"/><text x="340" y="120" text-anchor="middle" class="b">Transmit AND monitor the line</text>
+  <path d="M340 148 L440 180 L340 212 L240 180 Z" class="bx"/><text x="340" y="185" text-anchor="middle">Collision detected?</text>
+  <rect x="505" y="165" width="160" height="30" rx="15" class="gr"/><text x="585" y="185" text-anchor="middle" class="b">Success</text>
+  <rect x="190" y="230" width="300" height="30" rx="4" class="or"/><text x="340" y="250" text-anchor="middle">Stop sending · send JAM signal</text>
+  <rect x="190" y="275" width="300" height="30" rx="4" class="bx"/><text x="340" y="295" text-anchor="middle">K = K + 1</text>
+  <path d="M340 322 L410 350 L340 378 L270 350 Z" class="bx"/><text x="340" y="355" text-anchor="middle">K &gt; 15?</text>
+  <rect x="505" y="335" width="160" height="30" rx="15" class="or"/><text x="585" y="355" text-anchor="middle" class="b">Abort</text>
+  <rect x="190" y="400" width="300" height="44" rx="4" class="pu"/><text x="340" y="418" text-anchor="middle">Back-off: R ∈ [0, 2ᴷ − 1]</text><text x="340" y="436" text-anchor="middle">wait R × slot time (51.2 µs)</text>
+  <path d="M340 38 V53 M340 85 V98 M340 130 V146 M340 212 V228 M340 260 V273 M340 305 V320 M340 378 V398 M440 180 H503 M410 350 H503" class="lna" marker-end="url(#m12)"/>
+  <path d="M190 422 H150 V70 H188" class="lna" marker-end="url(#m12)"/>
+  <text x="450" y="172" class="mut">No (frame done)</text><text x="348" y="223" class="mut">Yes</text><text x="420" y="342" class="mut">Yes</text><text x="348" y="392" class="mut">No</text>
+</svg>
+<figcaption>Figure 12.9: CSMA/CD procedure</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ More facts</span>
+<ul>
+<li>Detection is by <b>energy level</b> on the line: zero (idle), normal (one sender), <b>abnormal / double</b> (collision).</li>
+<li><b>Jam signal</b>: a short 32-bit pattern (IEEE 802.3; some texts say 48 bits) that makes sure <b>every</b> station notices the collision.</li>
+<li>Unlike ALOHA, there are <b>no ACKs</b> for collision handling: the sender itself knows. Wasted time is limited to the moment of detection, not the whole frame.</li>
+<li><b>Efficiency</b> η = 1 / (1 + 6.44a), where a = Tp / Tt. A small a (long frames, short cable) gives high efficiency.</li>
+<li>Modern <b>switched, full-duplex</b> Ethernet has <b>no collisions</b>, so CSMA/CD is not used there; it matters for hubs and shared half-duplex links.</li>
+</ul></div>
+</section>
+
+<section id="s13">
+<h3><span class="n">12.13</span>CSMA/CD: Minimum Frame Length (Tt ≥ 2Tp)</h3>
+<figure>
+<svg viewBox="0 0 680 390" role="img" aria-label="Worst case: collision at the far end, news returns after 2Tp; A must still be transmitting">
+  <defs><marker id="m13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <circle cx="110" cy="30" r="10" class="ac"/><text x="110" y="15" text-anchor="middle" class="b">A</text>
+  <circle cx="570" cy="30" r="10" class="or"/><text x="570" y="15" text-anchor="middle" class="b">D</text>
+  <path d="M110 30 H570" style="stroke:var(--ink);stroke-width:3"/>
+  <path d="M110 50 V370 M570 50 V370" class="ln dash" style="opacity:.5"/>
+  <rect x="100" y="50" width="20" height="310" class="ac" style="fill-opacity:.35"/><text x="130" y="300" class="mut" style="font-size:11px">A still transmitting</text>
+  <path d="M120 50 L568 198" style="stroke:var(--accent);stroke-width:2.5" marker-end="url(#m13)"/>
+  <text x="300" y="100" style="fill:var(--accent)" class="b">A's first bit (takes Tp)</text>
+  <text x="570" y="212" text-anchor="middle" style="font-size:20px">✷</text>
+  <text x="560" y="235" text-anchor="end" style="fill:var(--alert);font-size:11px">D senses idle just before A's bit arrives, sends → collision at the far end</text>
+  <path d="M568 205 L122 350" style="stroke:var(--alert);stroke-width:2.5" marker-end="url(#m13)"/>
+  <text x="340" y="300" style="fill:var(--alert)" class="b">collision news returns (another Tp)</text>
+  <path d="M60 50 V350" class="lna" marker-start="url(#m13)" marker-end="url(#m13)"/><text x="52" y="205" text-anchor="end" class="b">2Tp</text>
+  <path d="M630 50 V200" class="lna" marker-start="url(#m13)" marker-end="url(#m13)"/><text x="638" y="130" class="b">Tp</text>
+  <text x="340" y="382" text-anchor="middle" class="b">Rule: Tt ≥ 2 × Tp, so A is still sending when the news arrives</text>
+</svg>
+<figcaption>Figure 12.10: The worst case behind Tt ≥ 2Tp</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>If the frame is <b>too short</b>, the sender has <b>finished</b> before the collision signal returns, so it can't tell whose data collided.</li>
+<li>Tt ∝ length, so we need a <b>long enough frame</b>. How long, minimum?</li>
+<li><b>Worst case:</b> A sends to D. A's data has <b>almost</b> reached D (one second away). D looks through its peephole, sees nothing yet, transmits, and the collision happens at D's end. A's data took <b>Tp</b> to get there; the collision signal takes <b>another Tp</b> to come back to A. Total = <b>2Tp</b>.</li>
+<li>So A must still be transmitting for at least 2Tp: <b>Tt ≥ 2Tp</b> (equal is the minimum; greater is even better).</li>
+<li>Putting Tt = L/B and Tp = d/v: <b>L ≥ 2 × Tp × B</b>. With a smaller length you can <b>never</b> detect it.</li>
+</ul></div>
+<div class="num"><span class="t">Essential formulas</span>
+<div class="formula">Condition          Tt ≥ 2 · Tp
+Minimum frame      L_min = 2 · Tp · B = 2 · (d / v) · B
+Max cable length   d_max = (L · v) / (2 · B)
+Efficiency         η = 1 / (1 + 6.44 a),   a = Tp / Tt</div></div>
+<div class="num"><span class="t">Numericals (added)</span>
+<b>Q1 (classic Ethernet).</b> 10 Mbps, maximum Tp = 25.6 µs. L_min = 2 × 25.6×10⁻⁶ × 10⁷ = <b>512 bits = 64 bytes</b>. This is exactly why the <b>minimum Ethernet frame is 64 bytes</b> and the slot time is 51.2 µs.<br>
+<b>Q2.</b> 1 km cable, v = 2×10⁸ m/s, 100 Mbps. Tp = 10³ / 2×10⁸ = 5 µs. L_min = 2 × 5×10⁻⁶ × 10⁸ = <b>1000 bits = 125 bytes</b>.<br>
+<b>Q3.</b> Frames of 1000 bits at 1 Gbps, v = 2×10⁸ m/s. Max length? Tt = 1 µs ≥ 2Tp → Tp ≤ 0.5 µs → d ≤ 0.5×10⁻⁶ × 2×10⁸ = <b>100 m</b>. Higher speed means a shorter allowed cable (or a larger minimum frame: Gigabit Ethernet uses <b>carrier extension</b> to 512 bytes).<br>
+<b>Q4.</b> a = 0.1 → η = 1 / (1 + 0.644) = <b>0.608 ≈ 60.8%</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The factor is <b>2</b>Tp (round trip), not Tp. If the bandwidth doubles while the cable stays the same, the <b>minimum frame size doubles</b>. Ethernet frames shorter than 64 bytes are "<b>runts</b>" and are padded up to 64.</div>
+</section>
+
+<section id="s14">
+<h3><span class="n">12.14</span>CSMA/CA (Collision Avoidance)</h3>
+<div class="def"><b>CSMA/CA:</b> used on <b>wireless</b> networks, where collisions <b>cannot be detected</b> reliably, so they are <b>avoided</b> using <b>waiting</b>: inter-frame space (IFS), a random contention window, positive acknowledgements, and optionally RTS/CTS. Standard: <b>IEEE 802.11 (Wi-Fi)</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+CD worked on <b>wired</b> media, where a station can detect the collision signal while still transmitting. In <b>wireless</b>, everything is unguided, "khuli hawa, full freedom", and the <b>signal strength keeps dropping</b>, so how do you detect? You don't; you <b>avoid</b>. Collisions can still happen, but chances are lower, because a <b>lot of waiting</b> is introduced. Waiting is the key factor.<br>
+<b>Example:</b> two elders at home have had a fight. If they face each other, there will be another clash (collision). So the family keeps them apart: "<b>you wait</b> until he leaves the house; then he waits while you go".</div>
+<div class="box add"><span class="t">➕ Why CD fails in wireless</span>
+<ol><li>A radio <b>can't listen while transmitting</b> (its own strong signal drowns any weak incoming one; half-duplex).</li>
+<li>Signals <b>fade</b> with distance, so a colliding signal may be too weak to notice.</li>
+<li><b>Hidden station problem</b>: two stations may be out of each other's range (Figure 12.12).</li></ol></div>
+</section>
+
+<section id="s15">
+<h3><span class="n">12.15</span>CSMA/CA: IFS, Contention Window and Acknowledgement</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — three steps</span>
+<ol>
+<li><b>IFS (Inter-Frame Space):</b> host A senses continuously; the channel is busy, busy, busy, then becomes <b>idle</b>. A wants to send immediately, but: "ruk, bhai!" Others are also waiting and would collide. First wait a fixed <b>IFS</b> (nanoseconds, microseconds, …). It may differ per station <b>by priority</b>: a high-priority station gets a <b>shorter IFS</b>.</li>
+<li><b>Contention window:</b> even after IFS, don't send yet. The window is a period divided into <b>slots</b>; pick a <b>random number</b> (from the same 2ᴷ back-off range, growing exponentially) and wait that many <b>extra slots</b>.</li>
+<li><b>Acknowledgement:</b> after sending, if the <b>ACK</b> arrives in time, the transmission was successful. If no ACK arrives within the time, assume a collision ("itna wait karne ke baad bhi kaam nahi hua").</li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 680 260" role="img" aria-label="CSMA/CA timing with DIFS, contention window, RTS, SIFS, CTS, data, ACK and NAV">
+  <text x="10" y="69" class="b">Source</text><text x="10" y="129" class="b">Destination</text><text x="10" y="184" class="b">Others</text>
+  <rect x="110" y="50" width="50" height="28" class="bx"/><text x="135" y="69" text-anchor="middle" style="font-size:11px">DIFS</text>
+  <rect x="160" y="50" width="70" height="28" class="pu"/><text x="195" y="69" text-anchor="middle" style="font-size:11px">CW (R slots)</text>
+  <rect x="230" y="50" width="55" height="28" class="or"/><text x="257" y="69" text-anchor="middle" class="b">RTS</text>
+  <rect x="285" y="110" width="20" height="28" class="bx"/>
+  <rect x="305" y="110" width="55" height="28" class="gr"/><text x="332" y="129" text-anchor="middle" class="b">CTS</text>
+  <rect x="360" y="50" width="20" height="28" class="bx"/>
+  <rect x="380" y="50" width="160" height="28" class="ac"/><text x="460" y="69" text-anchor="middle" class="b">DATA</text>
+  <rect x="540" y="110" width="20" height="28" class="bx"/>
+  <rect x="560" y="110" width="55" height="28" class="gr"/><text x="587" y="129" text-anchor="middle" class="b">ACK</text>
+  <text x="295" y="104" text-anchor="middle" style="font-size:10px" class="mut">SIFS</text><text x="370" y="44" text-anchor="middle" style="font-size:10px" class="mut">SIFS</text><text x="550" y="104" text-anchor="middle" style="font-size:10px" class="mut">SIFS</text>
+  <rect x="285" y="165" width="330" height="14" style="fill:var(--alert);fill-opacity:.3"/><text x="450" y="176" text-anchor="middle" style="font-size:11px">NAV (set by RTS)</text>
+  <rect x="360" y="185" width="255" height="14" style="fill:var(--alert);fill-opacity:.45"/><text x="487" y="196" text-anchor="middle" style="font-size:11px">NAV (set by CTS)</text>
+  <path d="M110 225 H640" class="ln"/><text x="640" y="245" text-anchor="end" class="mut">time →</text>
+  <text x="110" y="245" class="mut">channel becomes idle</text>
+</svg>
+<figcaption>Figure 12.11: 802.11 timing: DIFS → back-off → RTS → SIFS → CTS → SIFS → DATA → SIFS → ACK</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ What the lecture didn't name</span>
+<ul>
+<li><b>IFS types</b> (shortest = highest priority): <b>SIFS</b> (Short IFS: before CTS, data after CTS, and ACK) &lt; <b>PIFS</b> (Point coordination IFS) &lt; <b>DIFS</b> (Distributed IFS: before starting to contend) &lt; EIFS.</li>
+<li><b>Contention window</b>: the window size <b>doubles</b> after each failure (binary exponential back-off). The back-off timer <b>freezes</b> while the channel is busy and <b>resumes</b> when it is idle (it does not restart).</li>
+<li><b>NAV (Network Allocation Vector)</b>: RTS and CTS carry a <b>duration</b>. Every other station sets its NAV timer and stays silent until it expires. This is "<b>virtual carrier sensing</b>".</li>
+<li>Wi-Fi <b>acknowledges every unicast frame</b>, because a sender can't otherwise know about a collision.</li>
+</ul></div>
+</section>
+
+<section id="s16">
+<h3><span class="n">12.16</span>CSMA/CA Flowchart with RTS/CTS</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — "lives in a game"</span>
+<ol>
+<li><b>K = 0</b> initially, with a limit (example: 5 "lives"; at 0 none have been used yet, "ek dum fresh").</li>
+<li><b>Sense continuously</b>; not idle → keep checking. Idle → wait <b>IFS</b>.</li>
+<li>Pick <b>R from 0 to 2ᴷ − 1</b> and wait <b>R slots</b> (contention window). At K = 0, the range is just {0}.</li>
+<li>Send <b>RTS</b> to the central admin unit (the <b>access point</b>): "I've crossed every waiting rule and come from far; now send me a CTS". Start a <b>timer</b>.</li>
+<li>No <b>CTS (Clear To Send)</b> before the timer ends → treat as a collision (go to step 8).</li>
+<li>CTS received → still wait one more <b>IFS</b> ("last time wait", in case someone is still transmitting) → <b>send the frame</b>.</li>
+<li>Wait for the <b>ACK</b>. ACK in time → "<b>Success</b>, my tapasya paid off".</li>
+<li>No ACK (or no CTS) → <b>K = K + 1</b> (one life lost). K &gt; limit → <b>abort</b> ("game over: too much traffic; come back much later"). Otherwise wait the back-off time <b>T<sub>B</sub> = R × slot</b> (≈ round-trip time) and start sensing again.</li>
+</ol>
+The lecture notes that the "shared link" drawing only shows the <b>sequence</b> (sense → IFS → CW → ACK); real CSMA/CA runs over <b>wireless</b>, with hosts A, B, C around an access point.</div>
+<figure>
+<svg viewBox="0 0 680 620" role="img" aria-label="CSMA/CA flowchart with RTS and CTS">
+  <defs><marker id="m16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="200" y="8" width="280" height="30" rx="15" class="ac"/><text x="340" y="28" text-anchor="middle" class="b">Frame ready · K = 0</text>
+  <path d="M340 52 L420 78 L340 104 L260 78 Z" class="bx"/><text x="340" y="83" text-anchor="middle">Channel idle?</text>
+  <path d="M420 78 H460 V45 H340" class="lna" marker-end="url(#m16)"/><text x="466" y="66" class="mut" style="font-size:11px">No: keep sensing</text>
+  <rect x="200" y="120" width="280" height="30" rx="4" class="bx"/><text x="340" y="140" text-anchor="middle">Wait IFS (DIFS)</text>
+  <rect x="200" y="165" width="280" height="30" rx="4" class="pu"/><text x="340" y="185" text-anchor="middle">Pick R in 0 … 2ᴷ − 1; wait R slots</text>
+  <rect x="200" y="210" width="280" height="30" rx="4" class="or"/><text x="340" y="230" text-anchor="middle" class="b">Send RTS · start timer</text>
+  <path d="M340 255 L430 283 L340 311 L250 283 Z" class="bx"/><text x="340" y="288" text-anchor="middle">CTS before time-out?</text>
+  <rect x="200" y="330" width="280" height="30" rx="4" class="bx"/><text x="340" y="350" text-anchor="middle">Wait IFS (SIFS)</text>
+  <rect x="200" y="375" width="280" height="30" rx="4" class="gr"/><text x="340" y="395" text-anchor="middle" class="b">Send frame · start timer</text>
+  <path d="M340 420 L430 448 L340 476 L250 448 Z" class="bx"/><text x="340" y="453" text-anchor="middle">ACK before time-out?</text>
+  <rect x="200" y="495" width="280" height="30" rx="15" class="gr"/><text x="340" y="515" text-anchor="middle" class="b">Success</text>
+  <rect x="510" y="268" width="150" height="30" rx="4" class="or"/><text x="585" y="288" text-anchor="middle">K = K + 1</text>
+  <path d="M585 318 L645 343 L585 368 L525 343 Z" class="bx"/><text x="585" y="348" text-anchor="middle">K &gt; Kmax?</text>
+  <rect x="520" y="400" width="130" height="30" rx="15" class="or"/><text x="585" y="420" text-anchor="middle" class="b">Abort</text>
+  <rect x="20" y="268" width="150" height="44" rx="4" class="pu"/><text x="95" y="286" text-anchor="middle" style="font-size:12px">Wait back-off</text><text x="95" y="302" text-anchor="middle" style="font-size:12px">TB = R × slot</text>
+  <path d="M340 38 V50 M340 104 V118 M340 150 V163 M340 195 V208 M340 240 V253 M340 311 V328 M340 360 V373 M340 405 V418 M340 476 V493 M430 283 H508 M585 298 V316 M585 368 V398" class="lna" marker-end="url(#m16)"/>
+  <path d="M430 448 H670 V283 H662" class="lna" marker-end="url(#m16)"/>
+  <path d="M525 343 H500 V580 H95 V314" class="lna" marker-end="url(#m16)"/>
+  <path d="M95 268 V78 H258" class="lna" marker-end="url(#m16)"/>
+  <text x="348" y="114" class="mut">Yes</text><text x="440" y="275" class="mut">No</text><text x="348" y="324" class="mut">Yes</text><text x="440" y="440" class="mut">No</text><text x="348" y="489" class="mut">Yes</text><text x="593" y="392" class="mut">Yes</text><text x="420" y="574" class="mut">No (lives left)</text>
+</svg>
+<figcaption>Figure 12.12: CSMA/CA with RTS/CTS</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Hidden station problem: A and C cannot hear each other but both reach B">
+  <ellipse cx="190" cy="100" rx="180" ry="80" class="dash" style="fill:var(--accent);fill-opacity:.08;stroke:var(--accent)"/>
+  <ellipse cx="490" cy="100" rx="180" ry="80" class="dash" style="fill:var(--alert);fill-opacity:.08;stroke:var(--alert)"/>
+  <circle cx="190" cy="100" r="18" class="ac"/><text x="190" y="105" text-anchor="middle" class="b">A</text>
+  <circle cx="340" cy="100" r="18" class="gr"/><text x="340" y="105" text-anchor="middle" class="b">B</text>
+  <circle cx="490" cy="100" r="18" class="or"/><text x="490" y="105" text-anchor="middle" class="b">C</text>
+  <text x="80" y="40" style="fill:var(--accent);font-size:11px">A's range</text><text x="600" y="40" text-anchor="end" style="fill:var(--alert);font-size:11px">C's range</text>
+  <text x="340" y="150" text-anchor="middle" style="font-size:11px">A and C can't hear each other → both sense "idle" → both send to B → collision at B</text>
+  <text x="340" y="200" text-anchor="middle" class="b">Fix: RTS/CTS. B's CTS is heard by BOTH A and C, so C defers (NAV)</text>
+</svg>
+<figcaption>Figure 12.13: The hidden station problem, solved by RTS/CTS</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>RTS = Request To Send</b> (the lecture says "Ready to Send"; the standard expansion is <i>Request</i>). <b>CTS = Clear To Send</b>. The lecture also says a range for K = 3 of "0 to 8"; the correct range is <b>0 to 7</b> (2³ − 1 = 7). RTS/CTS solves the <b>hidden</b> station problem; it does not fully solve the <b>exposed</b> station problem (a station needlessly stays silent because it overhears a transmission that wouldn't actually interfere).</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"Ethernet uses?" → <b>CSMA/CD</b> (802.3). "Wi-Fi uses?" → <b>CSMA/CA</b> (802.11). "Collision detection is not possible in?" → <b>wireless</b>. "Hidden terminal problem is solved by?" → <b>RTS/CTS</b>. "Shortest IFS / highest priority?" → <b>SIFS</b>. "Minimum Ethernet frame?" → <b>64 bytes</b>. "Max efficiency of slotted ALOHA?" → <b>36.8%</b> (1/e).</div>
+</section>
+
+<section id="s17">
+<h3><span class="n">12.17</span>Master Comparison &amp; Formula Sheet <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Protocol</th><th>Senses channel?</th><th>Vulnerable time</th><th>Max throughput</th><th>Collision handling</th><th>Used in</th></tr>
+<tr><td>Pure ALOHA</td><td>No</td><td><b>2 Tt</b></td><td><b>18.4%</b> (1/2e) at G = 0.5</td><td>No ACK → back-off, resend</td><td>ALOHAnet</td></tr>
+<tr><td>Slotted ALOHA</td><td>No (needs time sync)</td><td><b>Tt</b></td><td><b>36.8%</b> (1/e) at G = 1</td><td>No ACK → back-off</td><td>GSM random-access channel, RFID</td></tr>
+<tr><td>CSMA</td><td>Yes, before sending</td><td><b>Tp</b></td><td>Depends on a and persistence</td><td>Detected only by a missing ACK</td><td>Base for CD and CA</td></tr>
+<tr><td>CSMA/CD</td><td>Yes, before and <b>during</b> sending</td><td>Tp</td><td>1 / (1 + 6.44a)</td><td><b>Detect</b>, jam, back-off</td><td><b>Wired Ethernet</b> (802.3)</td></tr>
+<tr><td>CSMA/CA</td><td>Yes (physical + virtual, NAV)</td><td>—</td><td>—</td><td><b>Avoid</b>: IFS, CW, ACK, RTS/CTS</td><td><b>Wireless LAN</b> (802.11)</td></tr>
+</table></div>
+<div class="num"><span class="t">Formula sheet</span>
+<div class="formula">Tt = L / B          Tp = d / v          a = Tp / Tt
+Back-off           R ∈ [0, 2ᴷ − 1],  TB = R × (Tp or slot time)
+Pure ALOHA         S = G·e^(−2G)    max 0.184 at G = 0.5    vulnerable 2Tt
+Slotted ALOHA      S = G·e^(−G)     max 0.368 at G = 1      vulnerable Tt
+CSMA               vulnerable Tp
+CSMA/CD            Tt ≥ 2Tp  →  L_min = 2·Tp·B          η = 1 / (1 + 6.44a)</div></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 12</h3>
+<ul>
+<li>Shared channel → collisions → the MAC needs access control. Random access (ALOHA, CSMA family) · controlled (reservation, polling, token) · channelization (FDMA, TDMA, CDMA).</li>
+<li><b>Pure ALOHA</b>: send anytime; wait <b>2Tp</b> for the ACK; no ACK → K + 1 → K &gt; Kmax? abort : wait <b>R × Tp</b>, R ∈ [0, 2ᴷ − 1]. Vulnerable <b>2Tt</b>; S = Ge⁻²ᴳ; max <b>18.4%</b> at G = 0.5.</li>
+<li><b>Binary exponential back-off</b>: the range doubles per collision (0–1, 0–3, 0–7, 0–15), so collision chances fall. Kmax = 15; Ethernet caps the range at K = 10 and gives up after 16 attempts.</li>
+<li><b>Slotted ALOHA</b>: send only at the slot start (slot = Tt). Vulnerable <b>Tt</b>; S = Ge⁻ᴳ; max <b>36.8%</b> at G = 1; full overlaps still possible.</li>
+<li><b>CSMA</b> (peephole): sense, then send. Vulnerable time <b>= Tp</b> (the dogs in the passage); collisions come from propagation delay; the "scream" is the collision signal.</li>
+<li><b>1-persistent</b>: sense continuously, send at once → most collisions (Ethernet). <b>Non-persistent</b>: busy → random wait → fewer collisions but an idle channel is wasted. <b>p-persistent</b>: idle → send with prob p, else defer one slot (lecture: highest-probability station first).</li>
+<li><b>CSMA/CD</b> (wired, 802.3): monitor while sending; collision → stop, jam, back-off. Still sending when the collision signal returns → "my data". Need <b>Tt ≥ 2Tp → L ≥ 2·Tp·B</b>. 10 Mbps, Tp 25.6 µs → <b>64 bytes</b>. η = 1/(1 + 6.44a).</li>
+<li><b>CSMA/CA</b> (wireless, 802.11): can't detect, so avoid by waiting. <b>IFS</b> (priority; SIFS &lt; PIFS &lt; DIFS) → <b>contention window</b> (random slots) → <b>RTS → CTS</b> → IFS → data → <b>ACK</b>. No CTS or ACK → K + 1 → retry or abort. NAV = virtual carrier sense. RTS/CTS solves the <b>hidden station</b> problem.</li>
+<li>Lecture slips to remember: <b>RTS = Request</b> To Send; K = 3 range is <b>0–7</b>, not 0–8.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 12 · Next: Chapter 13 — Flow Control</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="11-Data-Link-Layer.html">← Ch 11: Data Link Layer</a><a href="index.html">☰ All topics</a><a href="13-Flow-Control.html">Ch 13: Flow Control →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

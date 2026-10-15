@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Framing Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="16-MAC-Address.html">← Ch 16: MAC Address</a><a href="index.html">☰ All topics</a><a href="18-Token-Ring.html">Ch 18: Token Ring (IEEE 802.5) →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 17: Framing in Data Link Layer</h1>
+  <p class="sub">Volume 02 · Part 17 · Built from the one-shot CN lecture transcript (section 17), plus the exam points the lecture skipped. The start of a frame is easy to mark; this chapter is about how the receiver knows where a frame ends.</p>
+  <ul class="tags"><li>Header + Payload + Trailer</li><li>Fixed Length</li><li>Variable Length</li><li>Padding</li><li>Length Field</li><li>End Delimiter (ED)</li><li>Character / Byte Stuffing</li><li>ESC Character</li><li>Bit Stuffing</li><li>HDLC Flag 01111110</li><li>PPP 0x7E / 0x7D</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">17.0</span>What is Framing? (where does a frame end?)</a></li>
+<li><a href="#s1"><span class="n">17.1</span>Fixed vs Variable Frame Length</a></li>
+<li><a href="#s2"><span class="n">17.2</span>Length Field Method</a></li>
+<li><a href="#s3"><span class="n">17.3</span>End Delimiter Method</a></li>
+<li><a href="#s4"><span class="n">17.4</span>Character Stuffing</a></li>
+<li><a href="#s5"><span class="n">17.5</span>Bit Stuffing</a></li>
+<li><a href="#s6"><span class="n">17.6</span>Standard Versions: PPP Byte Stuffing &amp; HDLC Bit Stuffing<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">17.7</span>Framing Methods Compared &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 17</div>
+<h2 class="ch">Framing in Data Link Layer</h2>
+<p>The physical layer delivers a raw stream of bits. The data link layer has to cut that stream into <b>frames</b>, so the receiver must be able to spot each frame's <b>boundaries</b>. Ethernet's SFD marks the start (chapter 15); this chapter covers the ways to mark the <b>end</b>: a fixed size, a length field, or an end delimiter. If the delimiter can also appear inside the data, the sender has to <b>stuff</b> extra characters or bits into the data so it is never mistaken for the delimiter.</p>
+
+<section id="s0">
+<h3><span class="n">17.0</span>What is Framing? (where does a frame end?)</h3>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="Network layer packet becomes the payload; data link layer adds a header with SFD and addresses in front and a trailer with CRC behind">
+  <rect x="230" y="20" width="220" height="36" class="gr"/><text x="340" y="43" text-anchor="middle" class="b">Packet from network layer</text>
+  <path d="M340 56 V74" class="ln"/><text x="350" y="70" class="mut">becomes the payload</text>
+  <rect x="40" y="80" width="190" height="40" class="ac"/><text x="135" y="98" text-anchor="middle" class="b">Header</text><text x="135" y="113" text-anchor="middle" class="mut">SFD · dest · source · …</text>
+  <rect x="230" y="80" width="220" height="40" class="gr"/><text x="340" y="105" text-anchor="middle" class="b">Payload (data)</text>
+  <rect x="450" y="80" width="190" height="40" class="or"/><text x="545" y="98" text-anchor="middle" class="b">Trailer</text><text x="545" y="113" text-anchor="middle" class="mut">CRC (error detection)</text>
+  <text x="40" y="142" class="mut">start: known (SFD)</text><text x="640" y="142" text-anchor="end" style="fill:var(--alert)" class="b">end: how does the receiver know?</text>
+</svg>
+<figcaption>Figure 17.1: Framing wraps the packet in a header and a trailer</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+You already got the idea from the Ethernet frame. The network layer's packet comes down and is treated as the <b>payload/data</b>. The DLL adds a <b>header</b> (addresses: destination, source, and the SFD) and a <b>tail/trailer</b> (the CRC for error detection).<br>
+Recall the train: the SFD's "horn" <b>alerts everyone</b>, but only the station whose address is the destination (say C, sent by A) <b>opens the envelope</b> and reads it. Everyone hears that a train is coming, but <b>only the one with the ticket boards</b>.<br>
+So the <b>start</b> is clear (the SFD ends in <code>11</code>). But how will the reading station know where the frame <b>ends</b>? For that, look at the variants of frame length. Many questions come from this, in competitive and semester exams alike.</div>
+<div class="def"><b>Framing:</b> the DLL function of packing bits into <b>frames</b> and marking their boundaries, so that the receiver can tell where each frame <b>starts and ends</b> and separate one frame from the next (and from idle line noise).</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">17.1</span>Fixed vs Variable Frame Length</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Frame length is broadly of <b>two types</b>.<br>
+<b>Fixed length:</b> e.g. every frame must be exactly <b>100 bytes</b>. Benefit: the receiver knows "<b>walk 100 steps and stop</b>"; that is where the frame ends. Drawback: if you need to send only <b>20 bytes</b>, that is not allowed. Like it or not, you must <b>pad 80 bytes</b>: four times the useful data, pure <b>overhead</b> with no meaning. 20 + 80 = 100, and only then can you send it.<br>
+<b>Variable length:</b> 10 bytes, 100 bytes, 1000 bytes, whatever is needed: flexible, no padding waste. But now the old problem returns: the receiver <b>doesn't know how many steps to walk</b>. Where does the frame end? Two techniques answer this: the <b>length field</b> and the <b>end delimiter</b>.</div>
+<div class="tw"><table>
+<tr><th></th><th>Fixed-size framing</th><th>Variable-size framing</th></tr>
+<tr><td>End of frame</td><td>implicit: the size itself is the delimiter</td><td>needs a length field or an end delimiter</td></tr>
+<tr><td>Waste</td><td>padding when data is short</td><td>no padding</td></tr>
+<tr><td>Example</td><td><b>ATM cells</b> (53 bytes) <span class="badge">ADDED</span></td><td>Ethernet, PPP, HDLC</td></tr>
+</table></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">17.2</span>Length Field Method</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Put the frame's length in a <b>length field</b>, like Ethernet's 2-byte (16-bit) field that can hold values 0–65 535. As soon as the receiver reads the number in the length field, it knows "<b>this many steps, then stop</b>". The frame can vary (10 bytes, 100 bytes …), so this is variable-length framing.<br>
+<b>Drawback:</b> what if the <b>length field itself gets corrupted</b>? Rare, but possible. If it said <b>100</b> and arrives as <b>20</b>, the reader will declare the frame finished after 20 bytes.</div>
+<div class="box add"><span class="t">➕ Why this is serious</span>
+This method is also called <b>character count</b> (Tanenbaum). The real danger is <b>losing synchronisation</b>: once the count is wrong, the receiver also takes the wrong place as the start of the <b>next</b> frame, and every following frame is misread. The CRC will flag the damaged frame, but it cannot tell the receiver where the next frame really begins. That is why a pure count is rarely used alone; Ethernet also has the preamble/SFD and inter-frame gaps to resynchronise.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">17.3</span>End Delimiter Method</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The alternative: just as there is a <b>Start</b> Frame Delimiter, put an <b>End Delimiter (ED)</b> at the end of the frame. (You will see one in the <b>Token Ring</b> frame format, next chapter.)<br>
+The danger: the ED must be <b>different from anything in the payload</b>. If the same pattern shows up inside the data, the receiver gets confused and declares the frame <b>ended in the middle</b>, which is wrong. To prevent this there are two variants: <b>character stuffing</b> and <b>bit stuffing</b>.</div>
+<figure>
+<svg viewBox="0 0 680 120" role="img" aria-label="Frame header, payload containing a dollar sign, and ED dollar sign; receiver stops wrongly at the dollar inside the data">
+  <rect x="20" y="20" width="110" height="40" class="ac"/><text x="75" y="45" text-anchor="middle" class="b">Header</text>
+  <rect x="130" y="20" width="400" height="40" class="gr"/>
+  <text x="190" y="45" font-family="monospace">H  E  L  L  O</text>
+  <text x="330" y="45" font-family="monospace" class="b" style="fill:var(--alert)">$</text>
+  <text x="380" y="45" font-family="monospace">5  0  0</text>
+  <rect x="530" y="20" width="70" height="40" class="or"/><text x="565" y="45" text-anchor="middle" class="b">ED $</text>
+  <path d="M334 66 V84" style="stroke:var(--alert);stroke-width:2"/>
+  <text x="334" y="104" text-anchor="middle" style="fill:var(--alert)" class="b">receiver stops here: frame cut short ✘</text>
+</svg>
+<figcaption>Figure 17.2: Why the delimiter must never appear inside the data</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Terminology</span>
+In textbooks the delimiter is usually a <b>flag</b>, and the <b>same flag</b> marks both the start and the end of a frame (HDLC, PPP). Character stuffing is also called <b>byte stuffing</b>; together with bit stuffing these are the methods for <b>transparent data transfer</b>: any data pattern can be carried.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">17.4</span>Character Stuffing</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Say the ED is <b><code>$</code></b>: when you see <code>$</code>, the frame has ended. But the data itself may contain a <code>$</code>, and the reader would wrongly stop there while part of the frame is still unread.<br>
+<b>Fix 1:</b> introduce a special <b>"null" character</b> (an escape) and tell the receiver: "if a <code>$</code> is <b>followed</b> by this character, that <code>$</code> belongs to the <b>data</b>, not the ED." The receiver <b>discards</b> the escape and keeps the <code>$</code> as data.<br>
+<b>But the solution creates a new problem:</b> what if the data itself contains the sequence <code>$</code> + escape? Now what, beta?<br>
+<b>Fix 2:</b> give the <code>$</code> its own escape, and give the <b>escape character its own escape</b> too. Reading left to right, the receiver drops one escape each time and keeps the character after it as data. No confusion remains.</div>
+<div class="num"><span class="t">Worked example (the textbook form)</span>
+The standard way puts the escape character <b>ESC</b> <b>before</b> each special character in the data: before every flag/ED and before every ESC.
+<div class="formula">data        :  A  $  B  ESC  C
+stuffed     :  A  ESC $  B  ESC ESC  C        ← sender adds an ESC before $ and before ESC
+on the wire :  [$] A ESC $ B ESC ESC C [$]
+receiver    :  sees ESC → drop it, keep the next byte as data → A $ B ESC C ✔
+              a $ NOT preceded by ESC → real end of frame</div></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The lecture calls the escape a "null character" and places it <b>after</b> the <code>$</code>. Textbooks (Forouzan, Tanenbaum) call it <b>ESC</b> (or <b>DLE</b>, Data Link Escape) and place it <b>before</b> the special byte. The idea is identical. In the exam, use <b>ESC before the flag</b>. Also: character stuffing works only for <b>8-bit characters</b>; it is <b>byte-oriented</b>.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">17.5</span>Bit Stuffing</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Same problem at bit level. Let the ED be <b><code>10000</code></b> (a 1 followed by four 0s). If the same pattern shows up in the data, the receiver takes it as the end of the frame and doesn't even look at the rest.<br>
+Just as character stuffing stuffed characters, here we <b>stuff a bit</b>. The rule: scanning <b>left to right</b>, whenever the data has <b>three consecutive 0s</b>, the sender <b>always puts a 1</b> after them, no matter what the next data bit is. So four 0s in a row can never appear in the data, and the ED (<code>10000</code>) can always be told apart from the data. The receiver knows the rule and <b>removes</b> the 1 that follows any three 0s.</div>
+<div class="num"><span class="t">Lecture's rule, worked</span>
+<div class="formula">ED (end delimiter)  :  1 0 0 0 0
+data                :  1 1 0 0 0 0 1 0 0 0
+after stuffing      :  1 1 0 0 0 <b>1</b> 0 1 0 0 0 <b>1</b>     ← a 1 after every 000
+receiver            :  delete the bit after every 000 → 1 1 0 0 0 0 1 0 0 0 ✔</div></div>
+<div class="box add"><span class="t">➕ Why bit stuffing is better</span>
+It works with frames of <b>any number of bits</b> (not just whole 8-bit characters) and adds very little overhead. It is <b>bit-oriented</b>, done in hardware. The stuffed bit is added <b>even when the next data bit is already a 1</b>; otherwise the receiver could not know which bits to remove.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">17.6</span>Standard Versions: PPP Byte Stuffing &amp; HDLC Bit Stuffing <span class="badge">ADDED</span></h3>
+<div class="def"><b>HDLC flag:</b> <code>01111110</code> (0x7E): a 0, <b>six 1s</b>, a 0. It marks both the start and the end of a frame. <b>Rule:</b> after <b>five consecutive 1s</b> in the data, the sender stuffs a <b>0</b>. So six 1s never appear in the data, and the flag stays unique. The receiver deletes the 0 that follows five 1s.</div>
+<div class="num"><span class="t">HDLC bit stuffing</span>
+<div class="formula">data     :  0 1 1 1 1 1 1 1 1 1 1 1 1 1 0
+stuffed  :  0 1 1 1 1 1 <b>0</b> 1 1 1 1 1 <b>0</b> 1 1 1 0          (15 → 17 bits)
+
+data     :  0 1 1 1 1 1 1 0 0 1 1 1 1 1 1 0   (two flag patterns inside the data!)
+stuffed  :  0 1 1 1 1 1 <b>0</b> 1 0 0 1 1 1 1 1 <b>0</b> 1 0</div>
+<b>Receiver logic</b> after five 1s: next bit <b>0</b> → stuffed bit, delete it. Next bit <b>1</b> and then 0 → it is the <b>flag</b>. Next two bits <b>1 1</b> (seven 1s) → <b>abort/error</b>.</div>
+<div class="box add"><span class="t">➕ PPP byte stuffing</span>
+<b>PPP</b> (Point-to-Point Protocol, used on dial-up, DSL/PPPoE) is byte-oriented. Flag = <code>0x7E</code>, escape = <code>0x7D</code>. A <code>0x7E</code> or <code>0x7D</code> in the data is sent as <code>0x7D</code> followed by the byte <b>XOR 0x20</b>: 0x7E → <code>7D 5E</code>, 0x7D → <code>7D 5D</code>.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Most-asked facts: HDLC flag = <b>01111110</b>; bit stuffing inserts a <b>0 after five consecutive 1s</b>; PPP = <b>byte-oriented</b> (byte stuffing), HDLC = <b>bit-oriented</b> (bit stuffing); <b>ESC/DLE</b> is the escape for character stuffing. Questions often give a bit string and ask for the stuffed output: count the runs of 1s carefully, and restart counting after each stuffed 0.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">17.7</span>Framing Methods Compared &amp; Solved Questions <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Method</th><th>How the end is found</th><th>Weakness</th><th>Used in</th></tr>
+<tr><td>Fixed size</td><td>every frame is N bytes</td><td>padding waste</td><td>ATM (53-byte cells)</td></tr>
+<tr><td>Length field / character count</td><td>header says how long</td><td>corrupted count → lost sync</td><td>Ethernet (802.3 length), DDCMP</td></tr>
+<tr><td>Flag + byte stuffing</td><td>special flag byte; ESC before flag/ESC in data</td><td>only 8-bit units; overhead grows with special bytes</td><td>PPP, BISYNC</td></tr>
+<tr><td>Flag + bit stuffing</td><td>01111110; 0 after five 1s</td><td>little; needs bit-level hardware</td><td>HDLC, SDLC, USB</td></tr>
+<tr><td>Physical-layer coding violation</td><td>an invalid signal pattern marks the boundary</td><td>needs redundant line code</td><td>Token Ring (Manchester violations in SD/ED), 4B/5B</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> HDLC bit-stuff <code>11111111</code>. After five 1s insert 0: <code>11111<b>0</b>111</code>.<br><br>
+<b>Q2.</b> A receiver gets <code>0111110111110</code> (HDLC). Original data? Delete the 0 after each run of five 1s: <code>01111111111</code>.<br><br>
+<b>Q3.</b> Byte-stuff the data <code>A FLAG B ESC</code>. Result: <code>A ESC FLAG B ESC ESC</code>.<br><br>
+<b>Q4.</b> Fixed frames of 64 bytes carry a 10-byte message. Padding? <b>54 bytes</b>; efficiency 10/64 ≈ <b>15.6%</b>.<br><br>
+<b>Q5.</b> Which framing method can lose sync on a single corrupted field? <b>Character count / length field</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 17</h3>
+<ul>
+<li>Framing = header (SFD, addresses) + payload + trailer (CRC). Start is marked by the SFD; the question is the <b>end</b>.</li>
+<li><b>Fixed length</b>: "walk N steps"; wastes padding (20 useful + 80 pad = 100). <b>Variable length</b>: flexible, needs a length field or an end delimiter.</li>
+<li><b>Length field</b> (character count): simple, but a corrupted count ends the frame wrongly and breaks sync.</li>
+<li><b>End delimiter</b>: must never appear in the data → stuffing.</li>
+<li><b>Character/byte stuffing</b>: put an escape (lecture: "null"; textbook: <b>ESC/DLE</b>) with every <code>$</code>/flag in the data, and escape the escape itself too. PPP: flag 0x7E, escape 0x7D.</li>
+<li><b>Bit stuffing</b>: lecture ED <code>10000</code> → add a 1 after every <b>three 0s</b>. Standard HDLC: flag <b>01111110</b> → add a <b>0 after five 1s</b>; the receiver removes it.</li>
+<li>PPP = byte-oriented; HDLC = bit-oriented. Token Ring uses coding violations in its start and end delimiters.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 17 · Next: Chapter 18 — Token Ring (IEEE 802.5)</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="16-MAC-Address.html">← Ch 16: MAC Address</a><a href="index.html">☰ All topics</a><a href="18-Token-Ring.html">Ch 18: Token Ring (IEEE 802.5) →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

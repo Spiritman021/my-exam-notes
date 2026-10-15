@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS Memory Management Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="08-Deadlocks.html">← Ch 8: Deadlocks</a><a href="index.html">☰ All topics</a><a href="10-Virtual-Memory.html">Ch 10: Virtual Memory →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Operating System — Chapter 9: Memory Management</h1>
+  <p class="sub">Volume 01 · Part 9 · Built from the one-shot OS lecture transcript (section 9), plus the exam points the lecture skipped.</p>
+  <ul class="tags">
+    <li>Memory Hierarchy</li><li>CPU Utilisation 1 − pⁿ</li><li>Logical vs Physical Address</li><li>Relocation &amp; Limit Registers</li>
+    <li>Fixed / Variable Partitioning</li><li>Internal / External Fragmentation</li><li>Compaction</li><li>First / Next / Best / Worst Fit</li>
+    <li>Paging</li><li>Page Table &amp; PTE</li><li>Address-Bit Numericals</li><li>Multilevel &amp; Inverted Paging</li><li>TLB &amp; EMAT</li><li>Segmentation</li><li>Demand Paging</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s0"><span class="n">9.0</span>Why Memory Management?</a></li>
+    <li><a href="#s1"><span class="n">9.1</span>Memory Hierarchy</a></li>
+    <li><a href="#s2"><span class="n">9.2</span>Degree of Multiprogramming &amp; CPU Utilisation</a></li>
+    <li><a href="#s3"><span class="n">9.3</span>Contiguous vs Non-Contiguous Allocation</a></li>
+    <li><a href="#s4"><span class="n">9.4</span>Address Translation (Relocation Register)</a></li>
+    <li><a href="#s4a"><span class="n">9.4A</span>Address Binding, Loading &amp; Linking<span class="x">ADDED</span></a></li>
+    <li><a href="#s5"><span class="n">9.5</span>Fixed Partitioning</a></li>
+    <li><a href="#s6"><span class="n">9.6</span>Internal Fragmentation &amp; Size Limitation</a></li>
+    <li><a href="#s7"><span class="n">9.7</span>External Fragmentation</a></li>
+    <li><a href="#s8"><span class="n">9.8</span>Variable (Dynamic) Partitioning</a></li>
+    <li><a href="#s9"><span class="n">9.9</span>External Fragmentation in Variable Partitioning</a></li>
+    <li><a href="#s10"><span class="n">9.10</span>Compaction</a></li>
+    <li><a href="#s11"><span class="n">9.11</span>First Fit</a></li>
+    <li><a href="#s12"><span class="n">9.12</span>Next Fit</a></li>
+    <li><a href="#s13"><span class="n">9.13</span>Best Fit</a></li>
+    <li><a href="#s14"><span class="n">9.14</span>Worst Fit</a></li>
+    <li><a href="#s14a"><span class="n">9.14A</span>Placement Numerical (Galvin)<span class="x">ADDED</span></a></li>
+    <li><a href="#s15"><span class="n">9.15</span>Non-Contiguous Allocation</a></li>
+    <li><a href="#s16"><span class="n">9.16</span>Paging: Pages and Frames</a></li>
+    <li><a href="#s17"><span class="n">9.17</span>Logical &amp; Physical Address Format</a></li>
+    <li><a href="#s18"><span class="n">9.18</span>Address Translation using MMU &amp; Page Table</a></li>
+    <li><a href="#s19"><span class="n">9.19</span>Page Table</a></li>
+    <li><a href="#s20"><span class="n">9.20</span>Page Table Entry Size</a></li>
+    <li><a href="#s21"><span class="n">9.21</span>Drawbacks of Paging</a></li>
+    <li><a href="#s22"><span class="n">9.22</span>Logical &amp; Physical Address Space</a></li>
+    <li><a href="#s23"><span class="n">9.23</span>Numerical: Address Bits from Address Space</a></li>
+    <li><a href="#s24"><span class="n">9.24</span>Numerical: Pages &amp; Frames from Address Bits</a></li>
+    <li><a href="#s25"><span class="n">9.25</span>Page Table Entry Fields</a></li>
+    <li><a href="#s26"><span class="n">9.26</span>Multilevel Paging</a></li>
+    <li><a href="#s27"><span class="n">9.27</span>Inverted Paging</a></li>
+    <li><a href="#s28"><span class="n">9.28</span>Translation Lookaside Buffer (TLB)</a></li>
+    <li><a href="#s29"><span class="n">9.29</span>TLB Hit, Miss &amp; EMAT</a></li>
+    <li><a href="#s30"><span class="n">9.30</span>TLB: Real-Life Example</a></li>
+    <li><a href="#s31"><span class="n">9.31</span>Segmentation vs Paging</a></li>
+    <li><a href="#s32"><span class="n">9.32</span>Segmentation: The Thali Example</a></li>
+    <li><a href="#s33"><span class="n">9.33</span>Segment Table &amp; Address Translation</a></li>
+    <li><a href="#s34"><span class="n">9.34</span>Segmentation with Paging</a></li>
+    <li><a href="#s35"><span class="n">9.35</span>Demand Paging &amp; Page Fault</a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 9</div>
+<h2 class="ch">Memory Management</h2>
+<p>Chapters 5 to 8 were about <b>processes</b>. But a process can run only when it is in <b>main memory</b>, which is limited. This chapter covers how the OS <b>divides RAM among processes</b>, first contiguously (partitions) and then non-contiguously (paging and segmentation), and how every address a program uses is <b>translated</b> into a real RAM location.</p>
+
+<!-- 9.0 -->
+<section id="s0">
+<h3><span class="n">9.0</span>Why Memory Management?</h3>
+<div class="def"><b>Memory management:</b> the OS function that keeps track of every byte of main memory and decides <b>which process gets which part, and when</b>. It allocates and deallocates memory, protects processes from each other, and swaps processes between RAM and disk, all for the <b>efficient, optimal use of memory</b> and good multiprogramming.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The CPU is <b>not directly connected to secondary memory</b>. A process must be <b>swapped in</b> from disk to <b>main memory (RAM)</b> before the CPU can run it, and it can be <b>swapped out</b> again. RAM is <b>volatile</b>: its contents vanish ("chhoomantar") without power. Secondary memory is <b>non-volatile</b> and keeps data for a long time. Memory management is the "jugalbandi" (duet) between the two.</div>
+</section>
+
+<!-- 9.1 -->
+<section id="s1">
+<h3><span class="n">9.1</span>Memory Hierarchy</h3>
+<figure>
+<svg viewBox="0 0 640 270" role="img" aria-label="Memory hierarchy pyramid: registers, cache, main memory, secondary memory">
+  <defs><marker id="a91" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <polygon points="250,20 290,20 330,80 210,80" class="or"/><text x="270" y="62" text-anchor="middle" class="b">Registers</text>
+  <polygon points="210,85 330,85 370,140 170,140" class="pu"/><text x="270" y="118" text-anchor="middle" class="b">Cache (SRAM)</text>
+  <polygon points="170,145 370,145 410,200 130,200" class="ac"/><text x="270" y="178" text-anchor="middle" class="b">Main memory (RAM, DRAM)</text>
+  <polygon points="130,205 410,205 450,260 90,260" class="gr"/><text x="270" y="238" text-anchor="middle" class="b">Secondary (SSD / HDD)</text>
+  <path d="M480 250 V30" class="lna" marker-end="url(#a91)"/><text x="490" y="45" class="mut">faster access</text><text x="490" y="62" class="mut">costlier per bit</text><text x="490" y="79" class="mut">closer to CPU</text>
+  <path d="M60 30 V250" class="lna" marker-end="url(#a91)"/><text x="10" y="215" class="mut">bigger</text><text x="10" y="232" class="mut">capacity</text>
+  <text x="490" y="200" class="mut">volatile: top 3</text><text x="490" y="250" class="mut">non-volatile</text>
+</svg>
+<figcaption>Figure 9.1: Memory hierarchy</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Registers</b> are closest to the CPU, then <b>cache</b>, then <b>main memory</b>, and <b>secondary memory</b> is farthest. <b>Access time</b>: least for registers and most for secondary. <b>Capacity</b>: the reverse, least for registers and most for secondary. The nearer the memory, the faster it is to access.</div>
+<div class="box add"><span class="t">➕ Typical figures and principles</span>
+Registers under 1 ns · cache L1/L2/L3 about 1–10 ns · RAM about 50–100 ns · SSD about 0.1 ms · HDD about 5–10 ms. Cost per bit falls going down the pyramid. The hierarchy works because of <b>locality of reference</b>: <b>temporal</b> (recently used data is likely to be used again soon) and <b>spatial</b> (nearby addresses are likely to be used next).</div>
+</section>
+
+<!-- 9.2 -->
+<section id="s2">
+<h3><span class="n">9.2</span>Degree of Multiprogramming and CPU Utilization</h3>
+<div class="num"><span class="t">Essential formula</span>
+<div class="formula">CPU utilisation = 1 − pⁿ
+  p = fraction of time a process spends waiting for I/O
+  n = number of processes in main memory (degree of multiprogramming)</div></div>
+<div class="num"><span class="t">Numerical (lecture): p = 0.6 (60% I/O, 40% CPU)</span>
+<div class="tw"><table>
+<tr><th>Processes in RAM (n)</th><th>pⁿ</th><th>CPU utilisation = 1 − pⁿ</th></tr>
+<tr><td>1</td><td>0.6</td><td><b>40%</b></td></tr>
+<tr><td>2</td><td>0.36</td><td><b>64%</b></td></tr>
+<tr><td>3</td><td>0.216</td><td><b>78.4%</b></td></tr>
+<tr><td>10</td><td>0.006</td><td><b>≈ 99.4%</b></td></tr>
+</table></div>
+<b>Conclusion:</b> with one process, the CPU idles for the whole 60% I/O time because there is nothing else to run. With more processes in RAM, the chance that <b>all</b> of them are waiting for I/O at once falls, so <b>CPU utilisation rises with the degree of multiprogramming</b>. The aim of memory management is to fit as many processes into RAM as possible.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+This is a simplified probabilistic model that assumes the I/O waits are independent. Utilisation does not rise forever: beyond a point, too many processes cause <b>thrashing</b> (Chapter 10).</div>
+</section>
+
+<!-- 9.3 -->
+<section id="s3">
+<h3><span class="n">9.3</span>Contiguous vs Non-Contiguous Allocation</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — Classroom seating</span>
+<b>Contiguous</b>: the teacher strictly says "sit by <b>roll number</b>": roll 1, then 2, then 3, side by side. <b>Non-contiguous</b>: "sit anywhere". The back-benchers spread out: roll 40 here, 2 there, 5 and 6 somewhere else.</div>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="Process split into 3 parts placed contiguously versus scattered non-contiguously">
+  <text x="160" y="20" text-anchor="middle" class="b">Contiguous</text>
+  <rect x="100" y="30" width="120" height="190" class="bx"/>
+  <rect x="100" y="30" width="120" height="30" class="pu"/><text x="160" y="50" text-anchor="middle">OS</text>
+  <rect x="100" y="80" width="120" height="30" class="ac"/><text x="160" y="100" text-anchor="middle">P part 1</text>
+  <rect x="100" y="110" width="120" height="30" class="ac"/><text x="160" y="130" text-anchor="middle">P part 2</text>
+  <rect x="100" y="140" width="120" height="30" class="ac"/><text x="160" y="160" text-anchor="middle">P part 3</text>
+  <text x="480" y="20" text-anchor="middle" class="b">Non-contiguous</text>
+  <rect x="420" y="30" width="120" height="190" class="bx"/>
+  <rect x="420" y="30" width="120" height="30" class="pu"/><text x="480" y="50" text-anchor="middle">OS</text>
+  <rect x="420" y="70" width="120" height="25" class="ac"/><text x="480" y="87" text-anchor="middle">P part 2</text>
+  <rect x="420" y="125" width="120" height="25" class="ac"/><text x="480" y="142" text-anchor="middle">P part 1</text>
+  <rect x="420" y="185" width="120" height="25" class="ac"/><text x="480" y="202" text-anchor="middle">P part 3</text>
+  <text x="320" y="120" text-anchor="middle" class="mut">one block, side by side</text><text x="320" y="140" text-anchor="middle" class="mut">vs pieces anywhere</text>
+</svg>
+<figcaption>Figure 9.2: Contiguous vs non-contiguous placement of one process</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Contiguous</th><th>Non-contiguous</th></tr>
+<tr><td>The whole process occupies <b>one continuous block</b></td><td>Pieces of the process can be <b>anywhere</b> in RAM</td></tr>
+<tr><td>Fixed partitioning, variable partitioning</td><td><b>Paging</b>, <b>segmentation</b>, segmentation with paging, multilevel and inverted paging</td></tr>
+<tr><td>Simple and fast translation (base + offset)</td><td>Needs tables (page or segment table), so translation is slower</td></tr>
+<tr><td>Suffers from <b>external fragmentation</b></td><td>Paging <b>removes external fragmentation</b></td></tr>
+</table></div>
+</section>
+
+<!-- 9.4 -->
+<section id="s4">
+<h3><span class="n">9.4</span>Address Translation in Contiguous Allocation (Relocation Register)</h3>
+<div class="def"><b>Logical address</b>: the address <b>generated by the CPU</b> (as seen by the program). <b>Physical address</b>: the actual location in <b>main memory</b>. Address translation maps logical to physical. In contiguous allocation it uses the <b>relocation (base) register</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The relocation register gives base = <b>1000</b>. The CPU generates logical address <b>50</b>. Physical = 50 + 1000 = <b>1050</b>, the RAM location that is actually accessed.</div>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Logical address compared with limit register, then added to relocation register to get physical address, else trap">
+  <defs><marker id="a92" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="60" width="80" height="50" rx="6" class="ac"/><text x="50" y="90" text-anchor="middle" class="b">CPU</text>
+  <path d="M90 85 H158" class="lna" marker-end="url(#a92)"/><text x="124" y="76" text-anchor="middle" class="mut">LA = 50</text>
+  <rect x="160" y="55" width="130" height="60" rx="30" class="pu"/><text x="225" y="82" text-anchor="middle" class="b">LA &lt; limit?</text><text x="225" y="100" text-anchor="middle" class="mut">limit = 300</text>
+  <path d="M290 85 H368" class="lna" marker-end="url(#a92)"/><text x="330" y="76" text-anchor="middle" class="mut">yes</text>
+  <circle cx="395" cy="85" r="24" class="or"/><text x="395" y="91" text-anchor="middle" class="b">+</text>
+  <rect x="345" y="10" width="100" height="30" rx="4" class="bx"/><text x="395" y="30" text-anchor="middle">relocation = 1000</text>
+  <path d="M395 40 V59" class="lna" marker-end="url(#a92)"/>
+  <path d="M419 85 H508" class="lna" marker-end="url(#a92)"/><text x="465" y="76" text-anchor="middle" class="mut">PA = 1050</text>
+  <rect x="510" y="50" width="160" height="70" rx="6" class="gr"/><text x="590" y="90" text-anchor="middle" class="b">Main memory</text>
+  <path d="M225 115 V160" class="lna" marker-end="url(#a92)"/><text x="235" y="140" class="mut">no</text>
+  <rect x="150" y="162" width="150" height="34" rx="5" style="fill:var(--alert-bg);stroke:var(--bad)"/><text x="225" y="184" text-anchor="middle" style="fill:var(--bad)">TRAP: addressing error</text>
+</svg>
+<figcaption>Figure 9.3: Hardware support for relocation and protection (limit register added)</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ The limit register (protection)</span>
+The lecture shows only the relocation register. Hardware also has a <b>limit register</b> holding the <b>size</b> of the process. Every logical address is first checked: <b>LA &lt; limit</b>. Otherwise the hardware <b>traps</b> to the OS, which prevents a process reaching another's memory. Both registers are loaded by the dispatcher on each context switch, and loading them is privileged. The translation is done by the <b>MMU (Memory Management Unit)</b>.</div>
+</section>
+
+<!-- 9.4A -->
+<section id="s4a">
+<h3><span class="n">9.4A</span>Address Binding, Loading &amp; Linking <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Binding time</th><th>When addresses are fixed</th><th>Result</th></tr>
+<tr><td><b>Compile time</b></td><td>The memory location is known in advance, so <b>absolute code</b> is generated</td><td>LA = PA; must recompile if the location changes (MS-DOS .COM)</td></tr>
+<tr><td><b>Load time</b></td><td>The compiler generates <b>relocatable code</b>; the final binding happens when it is loaded</td><td>LA = PA after loading; cannot move while running</td></tr>
+<tr><td><b>Execution (run) time</b></td><td>Binding is delayed until run time; needs MMU hardware</td><td><b>LA ≠ PA</b>; the process can move during execution. Used by modern OSs.</td></tr>
+</table></div>
+<ul>
+<li>The set of all logical addresses is the <b>logical address space</b>; the set of matching physical addresses is the <b>physical address space</b>.</li>
+<li><b>Dynamic loading</b>: a routine is loaded only <b>when it is called</b>, which saves memory. <b>Dynamic linking</b>: library linking is postponed to run time through a small <b>stub</b> (Windows <b>DLLs</b>, Linux <b>.so</b> shared libraries). <b>Static linking</b> copies the libraries into the executable.</li>
+<li><b>Swapping</b>: a process is moved temporarily out to a <b>backing store</b> (disk) and back in (Chapter 5's medium-term scheduler).</li>
+</ul>
+</section>
+
+<!-- 9.5 -->
+<section id="s5">
+<h3><span class="n">9.5</span>Fixed Partitioning</h3>
+<div class="def"><b>Fixed (static) partitioning:</b> main memory is divided into a <b>fixed number of partitions</b> before processes arrive. Partitions can be <b>equal-sized</b> (e.g. every partition 2 MB) or <b>unequal-sized</b>. Each partition holds <b>exactly one process</b>.</div>
+<figure>
+<svg viewBox="0 0 640 240" role="img" aria-label="Fixed partitioning equal and unequal sizes with internal fragmentation">
+  <text x="140" y="20" text-anchor="middle" class="b">Equal-size</text>
+  <rect x="80" y="30" width="120" height="30" class="pu"/><text x="140" y="50" text-anchor="middle">OS</text>
+  <rect x="80" y="60" width="120" height="40" class="bx"/><text x="140" y="85" text-anchor="middle">2 MB</text>
+  <rect x="80" y="100" width="120" height="40" class="bx"/><text x="140" y="125" text-anchor="middle">2 MB</text>
+  <rect x="80" y="140" width="120" height="40" class="bx"/><text x="140" y="165" text-anchor="middle">2 MB</text>
+  <rect x="80" y="180" width="120" height="40" class="bx"/><text x="140" y="205" text-anchor="middle">2 MB</text>
+  <text x="460" y="20" text-anchor="middle" class="b">Unequal-size (one process each)</text>
+  <rect x="380" y="30" width="160" height="30" class="pu"/><text x="460" y="50" text-anchor="middle">OS</text>
+  <rect x="380" y="60" width="160" height="30" class="bx"/><text x="460" y="80" text-anchor="middle">4 MB</text>
+  <rect x="380" y="90" width="160" height="60" class="bx"/>
+  <rect x="380" y="90" width="160" height="48" class="ac"/><text x="460" y="118" text-anchor="middle">P2 = 8 MB</text>
+  <rect x="380" y="138" width="160" height="12" style="fill:var(--bad);opacity:.35"/>
+  <text x="550" y="148" class="mut">2 MB wasted</text><text x="550" y="120" class="mut">partition 10 MB</text>
+  <rect x="380" y="150" width="160" height="70" class="bx"/><text x="460" y="190" text-anchor="middle">30 MB (largest)</text>
+</svg>
+<figcaption>Figure 9.4: Fixed partitioning — the red strip is internal fragmentation</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+It is called "fixed" because the <b>number of partitions is fixed</b>; their sizes may be equal or unequal. <b>Spanning is not allowed</b>: a process must sit wholly inside <b>one</b> partition and can't be split across two.</div>
+<div class="box add"><span class="t">➕ How processes are assigned</span>
+<b>Equal-size</b>: any free partition will do. <b>Unequal-size</b>: put a process in the <b>smallest partition it fits</b>, using either one queue per partition or a single queue. Example: <b>IBM OS/360 MFT</b> (Multiprogramming with a Fixed number of Tasks).</div>
+</section>
+
+<!-- 9.6 -->
+<section id="s6">
+<h3><span class="n">9.6</span>Internal Fragmentation and Size Limitation</h3>
+<div class="def"><b>Internal fragmentation:</b> memory wasted <b>inside</b> an allocated partition, because the partition is <b>bigger than the process</b> placed in it. No other process can use that leftover space.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>Partition = <b>10 MB</b>, process = <b>8 MB</b>, so <b>2 MB is wasted "for free"</b>. P3 can't sit in it. This is <b>internal fragmentation</b>.</li>
+<li><b>Size limitation</b>: the largest partition is <b>30 MB</b> and a <b>50 MB</b> process arrives. It can't run, because spanning (30 + 20 across two partitions) is not allowed.</li>
+<li>So fewer processes fit in RAM, and the <b>degree of multiprogramming is limited</b>, along with CPU utilisation.</li>
+</ul></div>
+</section>
+
+<!-- 9.7 -->
+<section id="s7">
+<h3><span class="n">9.7</span>External Fragmentation</h3>
+<div class="def"><b>External fragmentation:</b> enough <b>total free memory</b> exists to satisfy a request, but it is <b>scattered in non-adjacent pieces</b>, so it can't be used because allocation must be contiguous.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P0 to P3 occupy partitions, leaving a <b>1 MB</b> free piece in one and <b>1 MB</b> in another. A process needing <b>2 MB</b> arrives. 1 + 1 = 2 MB is free, but it can't be allocated because the space is <b>not contiguous</b>. That is external fragmentation.</div>
+<div class="tw"><table>
+<tr><th>Internal fragmentation</th><th>External fragmentation</th></tr>
+<tr><td>Waste <b>inside</b> an allocated block</td><td>Waste <b>between</b> allocated blocks (free holes)</td></tr>
+<tr><td>The allocated block is larger than the request</td><td>Total free space is enough but not contiguous</td></tr>
+<tr><td>Fixed partitioning, <b>paging</b> (last page)</td><td>Variable partitioning, <b>segmentation</b></td></tr>
+<tr><td>Fix: smaller partitions or pages, best fit</td><td>Fix: <b>compaction</b>, paging, non-contiguous allocation</td></tr>
+</table></div>
+</section>
+
+<!-- 9.8 -->
+<section id="s8">
+<h3><span class="n">9.8</span>Variable (Dynamic) Partitioning</h3>
+<div class="def"><b>Variable (dynamic) partitioning:</b> there are no pre-made partitions. Each arriving process gets a partition <b>exactly its size</b>, carved out at run time.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"You need 5 MB? Sit here in 5 MB. You need 2 MB? Take 2 MB. You need 10 MB? Here's 10 MB." So P1 = 5 MB, P2 = 2 MB and P3 = 10 MB, each in a perfectly sized block.
+<ul><li><b>No internal fragmentation</b>, because the block equals the process size.</li>
+<li><b>No limit on process size</b>, so the degree of multiprogramming is not hurt the way it is with fixed partitions.</li>
+<li>But <b>external fragmentation still happens</b> (next section).</li></ul></div>
+<div class="box add"><span class="t">➕ Fixed vs variable</span>
+<div class="tw"><table>
+<tr><th>Fixed partitioning</th><th>Variable partitioning</th></tr>
+<tr><td>Number of partitions fixed in advance</td><td>Partitions created on demand</td></tr>
+<tr><td><b>Internal</b> fragmentation (and external, per the lecture)</td><td><b>No internal</b>; <b>external</b> fragmentation</td></tr>
+<tr><td>Process size limited by the largest partition</td><td>No such limit</td></tr>
+<tr><td>Degree of multiprogramming limited</td><td>More flexible</td></tr>
+<tr><td>Simple</td><td>Complex: hole tracking and placement algorithms. Example: IBM <b>MVT</b></td></tr>
+</table></div></div>
+</section>
+
+<!-- 9.9 -->
+<section id="s9">
+<h3><span class="n">9.9</span>External Fragmentation in Variable Partitioning</h3>
+<figure>
+<svg viewBox="0 0 640 220" role="img" aria-label="Variable partitioning: P1 5MB and P3 10MB released leave 15MB total free but split by P2, so 15MB P4 cannot fit">
+  <text x="140" y="20" text-anchor="middle" class="b">Before</text>
+  <rect x="80" y="30" width="120" height="25" class="pu"/><text x="140" y="47" text-anchor="middle">OS</text>
+  <rect x="80" y="55" width="120" height="40" class="ac"/><text x="140" y="80" text-anchor="middle">P1 = 5 MB</text>
+  <rect x="80" y="95" width="120" height="25" class="or"/><text x="140" y="112" text-anchor="middle">P2 = 2 MB</text>
+  <rect x="80" y="120" width="120" height="80" class="gr"/><text x="140" y="165" text-anchor="middle">P3 = 10 MB</text>
+  <text x="460" y="20" text-anchor="middle" class="b">After P1, P3 finish</text>
+  <rect x="400" y="30" width="120" height="25" class="pu"/><text x="460" y="47" text-anchor="middle">OS</text>
+  <rect x="400" y="55" width="120" height="40" class="bx"/><text x="460" y="80" text-anchor="middle">hole 5 MB</text>
+  <rect x="400" y="95" width="120" height="25" class="or"/><text x="460" y="112" text-anchor="middle">P2 = 2 MB</text>
+  <rect x="400" y="120" width="120" height="80" class="bx"/><text x="460" y="165" text-anchor="middle">hole 10 MB</text>
+  <text x="540" y="100" class="b" style="fill:var(--bad)">P4 needs 15 MB</text>
+  <text x="540" y="118" class="mut">free = 5 + 10 = 15</text><text x="540" y="134" class="mut">but not contiguous ✗</text>
+</svg>
+<figcaption>Figure 9.5: External fragmentation in variable partitioning (lecture example)</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P1 (5 MB) and P3 (10 MB) finish, so <b>15 MB is free</b>, but P2 (2 MB) sits between the two holes. P4 needs <b>15 MB</b> and can't be placed: <b>spanning is not allowed</b> in contiguous allocation.</div>
+<div class="box add"><span class="t">➕ The 50-percent rule (Galvin)</span>
+Statistical analysis of first fit shows that for every <b>N</b> allocated blocks, about <b>0.5 N</b> blocks are lost to fragmentation. So about <b>one-third of memory may be unusable</b>.</div>
+</section>
+
+<!-- 9.10 -->
+<section id="s10">
+<h3><span class="n">9.10</span>Compaction</h3>
+<div class="def"><b>Compaction</b> (the lecture also calls it "process shifting"): move all processes to <b>one end</b> of memory so that all the free holes merge into <b>one big contiguous hole</b> at the other end.</div>
+<figure>
+<svg viewBox="0 0 560 200" role="img" aria-label="Compaction moves P2 to one end, combining 5 and 10 MB holes into a 15 MB hole">
+  <defs><marker id="a93" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="60" y="20" width="120" height="25" class="pu"/><text x="120" y="37" text-anchor="middle">OS</text>
+  <rect x="60" y="45" width="120" height="40" class="bx"/><text x="120" y="70" text-anchor="middle">5 MB free</text>
+  <rect x="60" y="85" width="120" height="25" class="or"/><text x="120" y="102" text-anchor="middle">P2 2 MB</text>
+  <rect x="60" y="110" width="120" height="80" class="bx"/><text x="120" y="155" text-anchor="middle">10 MB free</text>
+  <path d="M200 105 H340" class="lna" marker-end="url(#a93)"/><text x="270" y="95" text-anchor="middle" class="b">compaction</text><text x="270" y="125" text-anchor="middle" class="mut">(expensive)</text>
+  <rect x="360" y="20" width="120" height="25" class="pu"/><text x="420" y="37" text-anchor="middle">OS</text>
+  <rect x="360" y="45" width="120" height="25" class="or"/><text x="420" y="62" text-anchor="middle">P2 2 MB</text>
+  <rect x="360" y="70" width="120" height="120" class="gr"/><text x="420" y="125" text-anchor="middle" class="b">15 MB free</text><text x="420" y="145" text-anchor="middle" class="mut">P4 fits now ✔</text>
+</svg>
+<figcaption>Figure 9.6: Compaction merges the holes</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Free regions are called <b>holes</b>. Shift the processes to one end and the holes to the other. The 5 MB and 10 MB holes become one <b>15 MB</b> block, so P4 now fits. But compaction is <b>very expensive</b>.</div>
+<div class="box add"><span class="t">➕ Why expensive, and when possible</span>
+Every byte of every moved process must be copied, during which the CPU does no useful work. Compaction is possible <b>only with dynamic (execution-time) relocation</b>, because the base register can be updated after the move. It is impossible with compile-time or load-time binding.</div>
+</section>
+
+<!-- 9.11 -->
+<section id="s11">
+<h3><span class="n">9.11</span>First Fit Allocation</h3>
+<p>When a process arrives in variable partitioning, <b>which hole</b> should it go into? There are four placement strategies. Lecture set-up: holes of <b>5 MB, 10 MB, 15 MB</b> (top to bottom) between P1 to P4.</p>
+<div class="def"><b>First fit:</b> scan from the <b>start of memory</b> and allocate the <b>first hole that is big enough</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P5 = <b>4 MB</b>. Scanning from the start, the first hole is 5 MB and 5 ≥ 4, so P5 goes there and a <b>1 MB</b> hole remains.</div>
+<figure>
+<svg viewBox="0 0 680 250" role="img" aria-label="Four placement strategies on holes 5,10,15 MB">
+  <text x="85" y="18" text-anchor="middle" class="b">Initial</text>
+  <g>
+    <rect x="30" y="25" width="110" height="20" class="or"/><text x="85" y="40" text-anchor="middle">P1</text>
+    <rect x="30" y="45" width="110" height="40" class="bx"/><text x="85" y="70" text-anchor="middle">5 MB hole</text>
+    <rect x="30" y="85" width="110" height="20" class="or"/><text x="85" y="100" text-anchor="middle">P2</text>
+    <rect x="30" y="105" width="110" height="50" class="bx"/><text x="85" y="135" text-anchor="middle">10 MB hole</text>
+    <rect x="30" y="155" width="110" height="20" class="or"/><text x="85" y="170" text-anchor="middle">P3</text>
+    <rect x="30" y="175" width="110" height="60" class="bx"/><text x="85" y="210" text-anchor="middle">15 MB hole</text>
+  </g>
+  <text x="250" y="18" text-anchor="middle" class="b">First fit: P5 = 4</text>
+  <rect x="195" y="45" width="110" height="32" class="ac"/><text x="250" y="66" text-anchor="middle">P5 (4)</text>
+  <rect x="195" y="77" width="110" height="8" style="fill:var(--bad);opacity:.35"/><text x="310" y="84" class="mut">1 left</text>
+  <rect x="195" y="105" width="110" height="50" class="bx"/><rect x="195" y="175" width="110" height="60" class="bx"/>
+  <text x="250" y="250" text-anchor="middle" class="mut">first hole from top</text>
+  <text x="415" y="18" text-anchor="middle" class="b">Next fit: P6 = 8</text>
+  <rect x="360" y="45" width="110" height="40" class="ac" style="opacity:.4"/><text x="415" y="66" text-anchor="middle" class="mut">P5 (last alloc)</text>
+  <rect x="360" y="105" width="110" height="40" class="gr"/><text x="415" y="130" text-anchor="middle">P6 (8)</text>
+  <rect x="360" y="145" width="110" height="10" style="fill:var(--bad);opacity:.35"/><text x="475" y="154" class="mut">2 left</text>
+  <rect x="360" y="175" width="110" height="60" class="bx"/>
+  <text x="415" y="250" text-anchor="middle" class="mut">search resumes after P5</text>
+  <text x="590" y="18" text-anchor="middle" class="b">Best vs Worst: 9 MB</text>
+  <rect x="535" y="105" width="110" height="45" class="pu"/><text x="590" y="132" text-anchor="middle">best → 10 (1 left)</text>
+  <rect x="535" y="175" width="110" height="36" class="or"/><text x="590" y="198" text-anchor="middle">worst → 15</text>
+  <rect x="535" y="211" width="110" height="24" style="fill:var(--bad);opacity:.25"/><text x="590" y="228" text-anchor="middle" class="mut">6 left</text>
+  <text x="590" y="250" text-anchor="middle" class="mut">among holes 10 &amp; 15</text>
+</svg>
+<figcaption>Figure 9.7: The four placement strategies on the lecture's holes</figcaption>
+</figure>
+</section>
+
+<!-- 9.12 -->
+<section id="s12">
+<h3><span class="n">9.12</span>Next Fit Allocation</h3>
+<div class="def"><b>Next fit:</b> like first fit, but the search starts from <b>where the last allocation was made</b>, not from the beginning. It wraps around if needed.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P6 = <b>8 MB</b>. The last allocation was P5, so search after P5. The 1 MB leftover is too small and P2 is occupied, so the next hole is <b>10 MB</b> and P6 goes there (2 MB left). "Next fit plays a bit smartly": it doesn't rescan from the top every time.</div>
+</section>
+
+<!-- 9.13 -->
+<section id="s13">
+<h3><span class="n">9.13</span>Best Fit Allocation</h3>
+<div class="def"><b>Best fit:</b> search the <b>entire list</b> of holes and allocate the <b>smallest hole that is big enough</b>, which leaves the least leftover.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P7 = <b>9 MB</b>, holes of 10 MB and 15 MB. In 10 MB, 1 MB is wasted; in 15 MB, 6 MB would be wasted. Best fit picks <b>10 MB</b>. An 8 MB hole can't be used (9 &gt; 8). Given 10 and 12, it picks 10 (1 MB left vs 3 MB). The <b>overhead</b> is that it must <b>search the whole memory</b> every time.</div>
+</section>
+
+<!-- 9.14 -->
+<section id="s14">
+<h3><span class="n">9.14</span>Worst Fit Allocation</h3>
+<div class="def"><b>Worst fit:</b> search the entire list and allocate the <b>largest hole</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P8 = <b>9 MB</b>, holes of 10 MB and 15 MB. Worst fit picks <b>15 MB</b>, the place where the most space is left over (6 MB).</div>
+<div class="box trap"><span class="t">⚠️ Exam traps</span>
+<ul>
+<li>The lecture calls the leftover "internal fragmentation". In <b>variable</b> partitioning, the leftover piece becomes a <b>new free hole</b>, so it is <b>external</b> fragmentation. Internal fragmentation belongs to fixed partitions and paging.</li>
+<li>Worst fit isn't trying to waste memory. The idea is that the leftover hole stays <b>large enough to be useful</b> for another process, while best fit tends to leave <b>tiny useless slivers</b>.</li>
+<li>Galvin: <b>first fit and best fit are both better than worst fit</b> in time and storage use. <b>First fit is generally the fastest.</b></li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Strategy</th><th>Picks</th><th>Search</th><th>Remark</th></tr>
+<tr><td>First fit</td><td>First adequate hole from the start</td><td>Partial</td><td><b>Fastest</b>; small holes pile up near the start</td></tr>
+<tr><td>Next fit</td><td>First adequate hole after the last allocation</td><td>Partial</td><td>Spreads allocations; slightly worse than first fit</td></tr>
+<tr><td>Best fit</td><td>Smallest adequate hole</td><td><b>Whole list</b> (unless sorted)</td><td>Least leftover, but creates tiny unusable holes</td></tr>
+<tr><td>Worst fit</td><td>Largest hole</td><td><b>Whole list</b></td><td>Leftover holes stay large; generally the poorest</td></tr>
+</table></div>
+</section>
+
+<!-- 9.14A -->
+<section id="s14a">
+<h3><span class="n">9.14A</span>Placement Numerical (Galvin) <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Numerical: holes 100, 500, 200, 300, 600 KB; processes 212, 417, 112, 426 KB (in order)</span>
+<div class="tw"><table>
+<tr><th>Process</th><th>First fit</th><th>Best fit</th><th>Worst fit</th></tr>
+<tr><td>212</td><td>500 → left 288</td><td>300 → left 88</td><td>600 → left 388</td></tr>
+<tr><td>417</td><td>600 → left 183</td><td>500 → left 83</td><td>500 → left 83</td></tr>
+<tr><td>112</td><td>288 → left 176</td><td>200 → left 88</td><td>388 → left 276</td></tr>
+<tr><td>426</td><td><b>must wait</b> (no hole ≥ 426)</td><td>600 → left 174</td><td><b>must wait</b></td></tr>
+</table></div>
+<b>Conclusion:</b> here <b>best fit</b> is the only strategy that places all four processes. In first fit, 112 takes the 288 KB leftover of the 500 KB hole, because it is the first adequate hole from the top.</div>
+</section>
+
+<!-- 9.15 -->
+<section id="s15">
+<h3><span class="n">9.15</span>Non-Contiguous Memory Allocation</h3>
+<div class="def"><b>Non-contiguous allocation:</b> a process may be split into pieces placed in <b>different, non-adjacent</b> places in memory. <b>Spanning is allowed</b>, which <b>removes external fragmentation</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+There are free holes of 3 MB and 3 MB, and P1 needs 6 MB. Contiguous allocation can't place it (external fragmentation). Non-contiguous allocation <b>breaks P1 into 3 + 3</b> and puts one piece in each hole. The overhead: the OS must <b>analyse the number and sizes of the holes</b> first and split the process accordingly. With holes of 2 MB and 4 MB, the split would be 2 + 4.</div>
+<div class="box add"><span class="t">➕ The practical fix</span>
+Splitting processes to match holes of random sizes is messy. <b>Paging</b> solves this by cutting <b>both</b> the process and the memory into pieces of the <b>same fixed size</b>, so any piece fits any slot.</div>
+</section>
+
+<!-- 9.16 -->
+<section id="s16">
+<h3><span class="n">9.16</span>Paging: Pages and Frames</h3>
+<div class="def"><b>Paging:</b> the <b>process (logical memory)</b> is divided into fixed-size blocks called <b>pages</b>. <b>Main memory (physical memory)</b> is divided into blocks of the <b>same size</b> called <b>frames</b>. Any page can go into any free frame.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — The book analogy</span>
+Tear the process into pieces; each piece is a <b>page</b>, and the bundle of pages is a book called "<b>Process</b>". Tear main memory too; each piece is a <b>frame</b>, and the bundle is a book called "<b>Main Memory</b>". <b>Page size = frame size</b>, always: a whole page must sit in one frame. If the page is 2 MB, the frame must also be 2 MB.</div>
+<div class="num"><span class="t">Lecture example: process P1 = 16 B, page = 4 B, main memory = 32 B</span>
+Number of pages = 16 / 4 = <b>4</b> (pages 0 to 3). Number of frames = 32 / 4 = <b>8</b> (frames 0 to 7).<br>
+Page 0 holds bytes 0–3, page 1 holds 4–7, page 2 holds 8–11, page 3 holds 12–15.<br>
+Placement: <b>page 0 → frame 1, page 1 → frame 3, page 2 → frame 5, page 3 → frame 7</b>.</div>
+<figure>
+<svg viewBox="0 0 680 320" role="img" aria-label="Process of 4 pages mapped via page table to frames 1,3,5,7 of an 8-frame memory">
+  <defs><marker id="a94" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="80" y="20" text-anchor="middle" class="b">Process P1 (16 B)</text>
+  <rect x="30" y="30" width="100" height="40" class="ac"/><text x="80" y="48" text-anchor="middle">page 0</text><text x="80" y="63" text-anchor="middle" class="mut">bytes 0–3</text>
+  <rect x="30" y="70" width="100" height="40" class="gr"/><text x="80" y="88" text-anchor="middle">page 1</text><text x="80" y="103" text-anchor="middle" class="mut">bytes 4–7</text>
+  <rect x="30" y="110" width="100" height="40" class="or"/><text x="80" y="128" text-anchor="middle">page 2</text><text x="80" y="143" text-anchor="middle" class="mut">bytes 8–11</text>
+  <rect x="30" y="150" width="100" height="40" class="pu"/><text x="80" y="168" text-anchor="middle">page 3</text><text x="80" y="183" text-anchor="middle" class="mut">bytes 12–15</text>
+  <text x="300" y="20" text-anchor="middle" class="b">Page table of P1</text>
+  <rect x="240" y="30" width="60" height="30" class="bx"/><rect x="300" y="30" width="60" height="30" class="bx"/><text x="270" y="50" text-anchor="middle" class="b">page</text><text x="330" y="50" text-anchor="middle" class="b">frame</text>
+  <rect x="240" y="60" width="60" height="30" class="bx"/><rect x="300" y="60" width="60" height="30" class="bx"/><text x="270" y="80" text-anchor="middle">0</text><text x="330" y="80" text-anchor="middle">1</text>
+  <rect x="240" y="90" width="60" height="30" class="bx"/><rect x="300" y="90" width="60" height="30" class="bx"/><text x="270" y="110" text-anchor="middle">1</text><text x="330" y="110" text-anchor="middle">3</text>
+  <rect x="240" y="120" width="60" height="30" class="bx"/><rect x="300" y="120" width="60" height="30" class="bx"/><text x="270" y="140" text-anchor="middle">2</text><text x="330" y="140" text-anchor="middle">5</text>
+  <rect x="240" y="150" width="60" height="30" class="bx"/><rect x="300" y="150" width="60" height="30" class="bx"/><text x="270" y="170" text-anchor="middle">3</text><text x="330" y="170" text-anchor="middle">7</text>
+  <text x="560" y="20" text-anchor="middle" class="b">Main memory (32 B, 8 frames)</text>
+  <g>
+  <rect x="500" y="30" width="120" height="34" class="bx"/><text x="560" y="52" text-anchor="middle" class="mut">frame 0</text>
+  <rect x="500" y="64" width="120" height="34" class="ac"/><text x="560" y="86" text-anchor="middle">f1: page 0</text>
+  <rect x="500" y="98" width="120" height="34" class="bx"/><text x="560" y="120" text-anchor="middle" class="mut">frame 2</text>
+  <rect x="500" y="132" width="120" height="34" class="gr"/><text x="560" y="154" text-anchor="middle">f3: page 1</text>
+  <rect x="500" y="166" width="120" height="34" class="bx"/><text x="560" y="188" text-anchor="middle" class="mut">frame 4</text>
+  <rect x="500" y="200" width="120" height="34" class="or"/><text x="560" y="222" text-anchor="middle">f5: page 2</text>
+  <rect x="500" y="234" width="120" height="34" class="bx"/><text x="560" y="256" text-anchor="middle" class="mut">frame 6</text>
+  <rect x="500" y="268" width="120" height="34" class="pu"/><text x="560" y="290" text-anchor="middle">f7: page 3</text>
+  </g>
+  <path d="M360 75 L498 80 M360 105 L498 148 M360 135 L498 216 M360 165 L498 284" class="ln dash"/>
+  <text x="80" y="230" text-anchor="middle" class="mut">page size = frame size = 4 B</text>
+  <text x="80" y="250" text-anchor="middle" class="mut">pages = 16/4 = 4</text>
+  <text x="80" y="270" text-anchor="middle" class="mut">frames = 32/4 = 8</text>
+</svg>
+<figcaption>Figure 9.8: Paging — lecture example (page 0→f1, 1→f3, 2→f5, 3→f7)</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 Where is byte 5?</span>
+The CPU wants <b>byte 5</b> of P1. Byte 5 is in <b>page 1</b> (bytes 4–7) at position 1 within the page. Page 1 is in <b>frame 3</b>, which starts at byte 12, so byte 5 is physical byte 12 + 1 = <b>13</b>. The <b>MMU</b> does this translation using the <b>page table</b>.</div>
+</section>
+
+<!-- 9.17 -->
+<section id="s17">
+<h3><span class="n">9.17</span>Logical and Physical Address Format (Page Number and Offset)</h3>
+<div class="def"><b>Logical address</b> = [ <b>page number (p)</b> | <b>page offset (d)</b> ]. <b>Physical address</b> = [ <b>frame number (f)</b> | <b>frame offset (d)</b> ]. The <b>offset is the same</b> in both: byte 2 of a page is byte 2 of whichever frame holds that page.</div>
+<div class="num"><span class="t">Lecture example: bit widths</span>
+<ul>
+<li><b>Page number</b>: 4 pages need <b>2 bits</b> (00, 01, 10, 11). One bit can only say 0 or 1.</li>
+<li><b>Offset</b>: 4 bytes per page need <b>2 bits</b> (00 = 1st byte … 11 = 4th byte).</li>
+<li><b>Frame number</b>: 8 frames need <b>3 bits</b> (000 … 111).</li>
+</ul>
+So the logical address is <b>2 + 2 = 4 bits</b> (process = 16 B = 2⁴) and the physical address is <b>3 + 2 = 5 bits</b> (memory = 32 B = 2⁵).</div>
+<div class="box add"><span class="t">➕ The general rule</span>
+<div class="formula">n bits can represent 2ⁿ things  →  to represent N things you need log₂N bits
+offset bits d = log₂(page size)
+page-number bits = log₂(number of pages) = LA bits − d
+frame-number bits = log₂(number of frames) = PA bits − d</div>
+(The lecture says "2 byte" and "3 byte" for these fields at one point; it means <b>bits</b>.)</div>
+</section>
+
+<!-- 9.18 -->
+<section id="s18">
+<h3><span class="n">9.18</span>Address Translation using MMU and Page Table</h3>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Paging hardware: logical address p=01 d=01 to page table gives frame 011, physical address 011 01 = 13">
+  <defs><marker id="a95" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="40" width="70" height="50" rx="6" class="ac"/><text x="45" y="70" text-anchor="middle" class="b">CPU</text>
+  <rect x="110" y="45" width="60" height="40" class="gr"/><text x="140" y="62" text-anchor="middle" class="b">p = 01</text><text x="140" y="78" text-anchor="middle" class="mut">page 1</text>
+  <rect x="170" y="45" width="60" height="40" class="pu"/><text x="200" y="62" text-anchor="middle" class="b">d = 01</text><text x="200" y="78" text-anchor="middle" class="mut">offset 1</text>
+  <text x="170" y="35" text-anchor="middle" class="mut">logical address (4 bits)</text>
+  <path d="M80 65 H108" class="lna" marker-end="url(#a95)"/>
+  <path d="M140 85 V130 H268" class="lna" marker-end="url(#a95)"/>
+  <rect x="270" y="100" width="130" height="110" class="bx"/><text x="335" y="95" text-anchor="middle" class="mut">page table (in RAM)</text>
+  <text x="300" y="122" text-anchor="middle">0</text><text x="365" y="122" text-anchor="middle">001</text>
+  <rect x="275" y="128" width="120" height="22" class="ac"/><text x="300" y="144" text-anchor="middle" class="b">1</text><text x="365" y="144" text-anchor="middle" class="b">011</text>
+  <text x="300" y="168" text-anchor="middle">2</text><text x="365" y="168" text-anchor="middle">101</text>
+  <text x="300" y="192" text-anchor="middle">3</text><text x="365" y="192" text-anchor="middle">111</text>
+  <path d="M400 140 H440 V80 H468" class="lna" marker-end="url(#a95)"/>
+  <rect x="470" y="60" width="70" height="40" class="gr"/><text x="505" y="77" text-anchor="middle" class="b">f = 011</text><text x="505" y="93" text-anchor="middle" class="mut">frame 3</text>
+  <rect x="540" y="60" width="60" height="40" class="pu"/><text x="570" y="85" text-anchor="middle" class="b">d = 01</text>
+  <path d="M200 45 V25 H570 V58" class="ln dash" marker-end="url(#a95)"/><text x="400" y="20" text-anchor="middle" class="mut">offset copied unchanged</text>
+  <text x="535" y="125" text-anchor="middle" class="mut">physical address (5 bits)</text>
+  <text x="535" y="145" text-anchor="middle" class="b">01101₂ = 13</text>
+  <text x="535" y="165" text-anchor="middle" class="mut">= 3 × 4 + 1</text>
+</svg>
+<figcaption>Figure 9.9: Translating byte 5 of P1 — lecture walkthrough</figcaption>
+</figure>
+<div class="num"><span class="t">Walkthrough (lecture)</span>
+<ol>
+<li>The CPU wants byte 5, so LA = page <b>01</b>, offset <b>01</b> (0101₂ = 5).</li>
+<li>The MMU looks up page 1 in P1's page table and finds <b>frame 3 = 011</b>.</li>
+<li>PA = frame 011 followed by offset 01 = <b>01101₂ = 13</b>.</li>
+<li>Go to frame 3 and fetch byte position 1. The CPU gets its byte.</li>
+</ol>
+<div class="formula">Physical address = frame number × page size + offset = 3 × 4 + 1 = 13</div></div>
+</section>
+
+<!-- 9.19 -->
+<section id="s19">
+<h3><span class="n">9.19</span>Page Table</h3>
+<div class="def"><b>Page table:</b> a per-process data structure that maps each <b>page number → frame number</b>. It is used by the MMU for every memory access.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Every process has its own separate page table.</b></li>
+<li>The page table is itself <b>stored in main memory</b>. That is an overhead, partly reduced by inverted paging.</li>
+<li><b>Number of entries in a page table = number of pages</b> of the process.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Where the CPU finds it</span>
+The <b>PTBR (Page-Table Base Register)</b> points to the current process's page table, and the <b>PTLR (Page-Table Length Register)</b> gives its size. On a context switch, only the PTBR is changed. The PTBR is saved in the PCB.</div>
+</section>
+
+<!-- 9.20 -->
+<section id="s20">
+<h3><span class="n">9.20</span>Page Table Entry Size</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The page table of P1 has <b>4 entries</b> (one per page). What is the size of <b>one entry</b>? It must hold a <b>frame number</b>. With <b>8 frames</b>, that takes <b>3 bits</b>. So each entry is 3 bits: page 0 → 001, page 1 → 011, page 2 → 101, page 3 → 111. More frames means a wider entry.</div>
+<div class="num"><span class="t">Essential formulas</span>
+<div class="formula">PTE size (minimum) = frame-number bits = log₂(number of frames)   [+ control bits, see 9.25]
+Page-table size     = number of pages × PTE size</div></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The entry width grows with <b>log₂(frames)</b>, not in proportion: doubling the frames adds just <b>1 bit</b>. Real PTEs also carry valid, protection, dirty and reference bits and are rounded up to whole bytes, typically <b>4 bytes</b> on 32-bit systems.</div>
+</section>
+
+<!-- 9.21 -->
+<section id="s21">
+<h3><span class="n">9.21</span>Drawbacks of Paging</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ol>
+<li><b>Two memory accesses per reference</b>: one to read the <b>page table</b> (it lives in RAM) and one to read the actual <b>data</b>. Memory access becomes about twice as slow. The fix is the <b>TLB</b> (9.28).</li>
+<li><b>Page table storage</b>: every page table occupies main memory.</li>
+<li>Address translation is <b>complex</b>.</li>
+</ol></div>
+<div class="box add"><span class="t">➕ More pros and cons</span>
+<ul>
+<li><b>Advantage:</b> <b>no external fragmentation</b>, because any free frame can be used. Allocation is simple, and pages are easy to swap and <b>share</b> (e.g. many users running one editor share its read-only code pages).</li>
+<li><b>Internal fragmentation:</b> the <b>last page</b> of a process is usually partly empty. On average this wastes <b>half a page per process</b>. Example: process = 72,766 B, page = 2,048 B → 35 full pages + 1,086 B, so 36 frames are used and 2,048 − 1,086 = <b>962 B</b> is wasted.</li>
+<li><b>Page-size trade-off:</b> <b>small pages</b> mean less internal fragmentation but a <b>bigger page table</b>. <b>Large pages</b> mean a smaller page table and faster I/O, but more internal fragmentation. Typical sizes are 4 KB, plus "huge pages" of 2 MB or 1 GB. The page size is always a <b>power of 2</b>.</li>
+</ul></div>
+</section>
+
+<!-- 9.22 -->
+<section id="s22">
+<h3><span class="n">9.22</span>Logical Address Space and Physical Address Space</h3>
+<div class="def"><b>Logical Address Space (LAS)</b>: the size of the process's address range (2^(LA bits)). <b>Physical Address Space (PAS)</b>: the size of main memory (2^(PA bits)).</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+If an address has <b>n bits</b>, the address space is <b>2ⁿ</b>. In the running example, LA = 4 bits gives LAS = 2⁴ = <b>16 B</b>, and PA = 5 bits gives PAS = 2⁵ = <b>32 B</b>.</div>
+<div class="num"><span class="t">Shortcuts to memorise</span>
+<div class="formula">2¹⁰ = 1 K (kilo)    2²⁰ = 1 M (mega)    2³⁰ = 1 G (giga)    2⁴⁰ = 1 T (tera)
+e.g. 16 KB = 2⁴ × 2¹⁰ = 2¹⁴      64 MB = 2⁶ × 2²⁰ = 2²⁶      4 GB = 2² × 2³⁰ = 2³²</div></div>
+</section>
+
+<!-- 9.23 -->
+<section id="s23">
+<h3><span class="n">9.23</span>Numerical Example: Address Bits from Address Space</h3>
+<div class="num"><span class="t">Numerical (lecture): LAS = 16 GB, PAS = 32 GB, page size = 16 KB</span>
+<b>Step 1:</b> LA bits: 16 GB = 2⁴ × 2³⁰ = 2³⁴, so <b>34 bits</b>.<br>
+<b>Step 2:</b> PA bits: 32 GB = 2⁵ × 2³⁰ = 2³⁵, so <b>35 bits</b>.<br>
+<b>Step 3:</b> Offset: 16 KB = 2⁴ × 2¹⁰ = 2¹⁴, so <b>14 bits</b>. This is the same in LA and PA, because page size = frame size.<br>
+<b>Step 4:</b> Page-number bits = 34 − 14 = <b>20 bits</b>.</div>
+<figure>
+<svg viewBox="0 0 640 140" role="img" aria-label="Logical address 34 bits split into 20-bit page number and 14-bit offset; physical address 35 bits split 21 and 14">
+  <text x="20" y="30" class="b">LA (34)</text>
+  <rect x="100" y="12" width="300" height="30" class="gr"/><text x="250" y="32" text-anchor="middle">page no. p = 20 bits</text>
+  <rect x="400" y="12" width="210" height="30" class="pu"/><text x="505" y="32" text-anchor="middle">offset d = 14 bits</text>
+  <text x="20" y="90" class="b">PA (35)</text>
+  <rect x="100" y="72" width="315" height="30" class="ac"/><text x="257" y="92" text-anchor="middle">frame no. f = 21 bits</text>
+  <rect x="415" y="72" width="210" height="30" class="pu"/><text x="520" y="92" text-anchor="middle">offset d = 14 bits</text>
+  <text x="320" y="130" text-anchor="middle" class="mut">pages = 2²⁰ = 1 M · frames = 2²¹ = 2 M · page/frame = 2¹⁴ = 16 KB</text>
+</svg>
+<figcaption>Figure 9.10: Bit split for the 16 GB / 32 GB / 16 KB numerical</figcaption>
+</figure>
+</section>
+
+<!-- 9.24 -->
+<section id="s24">
+<h3><span class="n">9.24</span>Numerical: Number of Pages and Frames from Address Bits</h3>
+<div class="num"><span class="t">Continuing (lecture)</span>
+<b>Pages</b> = 2^(page bits) = 2²⁰ = <b>1 M pages</b> (also LAS / page size = 2³⁴ / 2¹⁴ = 2²⁰).<br>
+<b>Frame bits</b> = 35 − 14 = <b>21</b>, so <b>frames</b> = 2²¹ = <b>2 M frames</b> (also PAS / frame size = 2³⁵ / 2¹⁴). The lecture briefly says "20 bits" for frames; the correct value is <b>21</b>.<br>
+<b>Conclusion:</b> go both ways, from space to bits and from bits to space, pages and frames.</div>
+<div class="num"><span class="t">Extension (added): page-table size for this numerical</span>
+PTE needs ≥ 21 bits for the frame number, rounded up to <b>4 bytes</b> with control bits.<br>
+Page-table size = 2²⁰ entries × 4 B = <b>4 MB per process</b>. That is too big to store contiguously, which is why <b>multilevel paging</b> (9.26) exists.</div>
+<div class="num"><span class="t">Practice numerical (added)</span>
+32-bit logical address, page size 4 KB, PTE 4 B. Offset = 12 bits; pages = 2³² / 2¹² = 2²⁰. Page-table size = 2²⁰ × 4 B = <b>4 MB</b>. With 1 GB of RAM: frames = 2³⁰ / 2¹² = 2¹⁸, so the frame number needs 18 bits.</div>
+</section>
+
+<!-- 9.25 -->
+<section id="s25">
+<h3><span class="n">9.25</span>Page Table Entry Fields (Present/Absent, Protection, Reference, Caching, Dirty Bit)</h3>
+<figure>
+<svg viewBox="0 0 680 120" role="img" aria-label="Page table entry layout: frame number and control bits">
+  <rect x="20" y="30" width="250" height="44" class="ac"/><text x="145" y="57" text-anchor="middle" class="b">Frame number (mandatory)</text>
+  <rect x="270" y="30" width="80" height="44" class="gr"/><text x="310" y="50" text-anchor="middle" class="b">Valid</text><text x="310" y="66" text-anchor="middle" class="mut">P/A</text>
+  <rect x="350" y="30" width="90" height="44" class="pu"/><text x="395" y="50" text-anchor="middle" class="b">Protection</text><text x="395" y="66" text-anchor="middle" class="mut">R / W / X</text>
+  <rect x="440" y="30" width="80" height="44" class="or"/><text x="480" y="50" text-anchor="middle" class="b">Reference</text><text x="480" y="66" text-anchor="middle" class="mut">accessed?</text>
+  <rect x="520" y="30" width="70" height="44" class="bx"/><text x="555" y="50" text-anchor="middle" class="b">Cache</text><text x="555" y="66" text-anchor="middle" class="mut">dis/en</text>
+  <rect x="590" y="30" width="70" height="44" class="or"/><text x="625" y="50" text-anchor="middle" class="b">Dirty</text><text x="625" y="66" text-anchor="middle" class="mut">modified?</text>
+  <text x="340" y="105" text-anchor="middle" class="mut">Only the frame number is mandatory; the rest are control (optional) bits</text>
+</svg>
+<figcaption>Figure 9.11: Fields of a page table entry</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Field</th><th>Lecture explanation</th><th>Textbook note</th></tr>
+<tr><td><b>Frame number</b></td><td>Which frame holds this page. <b>Mandatory.</b></td><td></td></tr>
+<tr><td><b>Present / Absent</b> (Valid / Invalid)</td><td>1 = the page is in main memory; 0 = it is not</td><td>A reference to an invalid page causes a <b>page fault</b> (9.35), or an illegal-address trap if the page is outside the process's space</td></tr>
+<tr><td><b>Protection</b></td><td>Permissions: <b>read-only, read/write, execute-only</b></td><td>Writing to a read-only page causes a trap</td></tr>
+<tr><td><b>Reference</b></td><td>Whether the page has been referenced before or is coming in fresh</td><td>Standard: set by hardware <b>whenever the page is accessed</b>. Used to approximate <b>LRU</b> (second-chance / clock, Chapter 10).</td></tr>
+<tr><td><b>Caching enable/disable</b></td><td>Pages needed very often → enable caching (faster). Old or historic data → disable. Like keeping your most-used apps on the phone's <b>home screen</b>.</td><td>Standard reason to <b>disable</b> caching: pages mapped to <b>device registers / memory-mapped I/O</b>, where the value must always be fresh</td></tr>
+<tr><td><b>Dirty</b> (Modified / Update)</td><td>1 if the page was <b>modified</b>. If such a page is chosen as a victim for replacement, it must first be <b>written back</b> to disk.</td><td>A clean page (dirty = 0) can simply be overwritten, which saves one disk write</td></tr>
+</table></div>
+</section>
+
+<!-- 9.26 -->
+<section id="s26">
+<h3><span class="n">9.26</span>Multilevel Paging</h3>
+<div class="def"><b>Multilevel (hierarchical) paging:</b> when a page table is <b>too large to fit in one frame</b>, the page table is itself <b>paged</b>, and an <b>outer page table</b> keeps track of where its pieces are. Repeat as many levels as needed.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P's page table PT0 = <b>12 KB</b>, but page/frame = <b>4 KB</b>, so it doesn't fit in one frame. Split PT0 into 12/4 = <b>3 pages</b>, stored in <b>frames 8, 9 and 10</b>. An <b>outer table PT1</b> records PT0's page 0 → frame 8, page 1 → frame 9, page 2 → frame 10. If PT1 is also too big, page it again: "multi-level". Drawbacks: more memory overhead and <b>more memory accesses</b> (3, 4 … instead of 2).</div>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Two-level paging: outer page table points to pieces of inner page table which point to frames">
+  <defs><marker id="a96" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="80" y="20" text-anchor="middle" class="b">Logical address</text>
+  <rect x="10" y="30" width="50" height="30" class="or"/><text x="35" y="50" text-anchor="middle">p1</text>
+  <rect x="60" y="30" width="50" height="30" class="gr"/><text x="85" y="50" text-anchor="middle">p2</text>
+  <rect x="110" y="30" width="50" height="30" class="pu"/><text x="135" y="50" text-anchor="middle">d</text>
+  <text x="270" y="95" text-anchor="middle" class="b">Outer table (PT1)</text>
+  <rect x="220" y="105" width="100" height="90" class="or"/>
+  <text x="270" y="125" text-anchor="middle" class="mut">0 → f8</text><text x="270" y="150" text-anchor="middle" class="mut">1 → f9</text><text x="270" y="175" text-anchor="middle" class="mut">2 → f10</text>
+  <text x="450" y="20" text-anchor="middle" class="b">Inner tables (PT0 pages)</text>
+  <rect x="400" y="30" width="100" height="40" class="gr"/><text x="450" y="55" text-anchor="middle">PT0 page 0 (f8)</text>
+  <rect x="400" y="90" width="100" height="40" class="gr"/><text x="450" y="115" text-anchor="middle">PT0 page 1 (f9)</text>
+  <rect x="400" y="150" width="100" height="40" class="gr"/><text x="450" y="175" text-anchor="middle">PT0 page 2 (f10)</text>
+  <rect x="560" y="70" width="100" height="80" class="ac"/><text x="610" y="105" text-anchor="middle" class="b">data</text><text x="610" y="125" text-anchor="middle" class="b">frame</text>
+  <path d="M35 60 V145 H218" class="lna" marker-end="url(#a96)"/>
+  <path d="M320 150 L398 112" class="lna" marker-end="url(#a96)"/>
+  <path d="M85 60 V75 H380 V105 H398" class="ln dash"/>
+  <path d="M500 110 H558" class="lna" marker-end="url(#a96)"/>
+  <text x="340" y="220" text-anchor="middle" class="mut">p1 indexes the outer table → p2 indexes that inner page → frame + d</text>
+</svg>
+<figcaption>Figure 9.12: Two-level paging (frames 8, 9, 10 from the lecture)</figcaption>
+</figure>
+<div class="num"><span class="t">Numerical (added, Galvin): 32-bit LA, 4 KB pages, 4 B PTE</span>
+Offset = 12 bits, so the page number = 20 bits.<br>
+One page holds 4 KB / 4 B = 1024 = 2¹⁰ entries, so the <b>inner index p2 = 10 bits</b> and the <b>outer index p1 = 20 − 10 = 10 bits</b>.<br>
+<b>LA = [p1 = 10 | p2 = 10 | d = 12]</b>. The outer table has 2¹⁰ entries × 4 B = 4 KB, which <b>fits in one frame</b> ✔.<br>
+<b>Memory accesses without a TLB:</b> 2-level = 3 (2 tables + data); k-level = k + 1.</div>
+<div class="box add"><span class="t">➕ Rule for the number of levels</span>
+Keep splitting the page-number bits into chunks of log₂(PTEs per page) until the top table fits in one page.<br>
+Example: 64-bit addresses with 4 KB pages would need about 6 or 7 levels, so 64-bit systems use <b>hashed</b> or <b>inverted</b> page tables, or limit the address to 48 bits with 4 levels (x86-64).</div>
+</section>
+
+<!-- 9.27 -->
+<section id="s27">
+<h3><span class="n">9.27</span>Inverted Paging (Global Page Table)</h3>
+<div class="def"><b>Inverted page table:</b> <b>one global table for the whole system</b> with <b>one entry per physical frame</b>. Each entry holds the <b>&lt;process ID, page number&gt;</b> stored in that frame. There are no per-process page tables.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>With <b>1000 processes</b> there are 1000 page tables in RAM, even if only one page of each process is loaded: a huge overhead.</li>
+<li><b>Inverted</b>: indexed by <b>frame</b> instead of page. Number of entries = <b>number of frames</b> (1000 frames → 1000 entries).</li>
+<li>The logical address must now carry the <b>PID</b>, because "page 1" could belong to P1 or P3: LA = <b>&lt;pid, p, d&gt;</b>.</li>
+<li>Example: find pid 1, page 1, offset 1. Search the table for (P1, page 1), which is found at <b>frame 1</b>, so PA = &lt;frame 1, offset 1&gt;.</li>
+<li>Disadvantage: <b>search overhead</b>. In the worst case all 1000 entries are scanned.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Normal page table</th><th>Inverted page table</th></tr>
+<tr><td>One per <b>process</b></td><td><b>One for the whole system</b></td></tr>
+<tr><td>Entries = number of <b>pages</b></td><td>Entries = number of <b>frames</b></td></tr>
+<tr><td>Indexed by page number: direct lookup, fast</td><td>Must be <b>searched</b> by (pid, page): slow</td></tr>
+<tr><td>Total memory grows with the number of processes</td><td>Fixed size, proportional to RAM: <b>saves memory</b></td></tr>
+<tr><td>Easy page sharing</td><td>Sharing pages is <b>difficult</b> (one entry per frame)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Speed-up</span>
+Use a <b>hash table</b> on (pid, page) to find the entry quickly, plus the TLB. Used by IBM PowerPC and UltraSPARC. A <b>hashed page table</b> (hash of the virtual page number → chain of entries) is a related technique for 64-bit address spaces.</div>
+</section>
+
+<!-- 9.28 -->
+<section id="s28">
+<h3><span class="n">9.28</span>Translation Lookaside Buffer (TLB)</h3>
+<div class="def"><b>TLB:</b> a small, very fast <b>associative memory (hardware cache)</b> near the CPU that stores <b>recently used page → frame translations</b>. On a hit, the page table in RAM is <b>not accessed at all</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+It fixes paging's 2-access problem (and multilevel paging's 3–4 accesses). Each TLB entry stores <b>(process ID + page number)</b> and the <b>frame number</b>. Example: (P1, page 2) → <b>F3</b>, found without touching the page table. But the TLB is <b>expensive</b>, so only a few crucial, frequently used entries are kept.</div>
+<figure>
+<svg viewBox="0 0 680 250" role="img" aria-label="Paging hardware with TLB: hit path to frame, miss path through page table">
+  <defs><marker id="a97" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker>
+  <marker id="a98" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--alert)"/></marker></defs>
+  <rect x="10" y="30" width="60" height="44" rx="6" class="ac"/><text x="40" y="57" text-anchor="middle" class="b">CPU</text>
+  <rect x="85" y="35" width="40" height="34" class="gr"/><text x="105" y="57" text-anchor="middle">p</text>
+  <rect x="125" y="35" width="40" height="34" class="pu"/><text x="145" y="57" text-anchor="middle">d</text>
+  <text x="270" y="20" text-anchor="middle" class="b">TLB (page | frame)</text>
+  <rect x="220" y="28" width="100" height="90" class="bx"/>
+  <text x="245" y="48" text-anchor="middle" class="mut">P1,2</text><text x="295" y="48" text-anchor="middle" class="mut">F3</text>
+  <text x="245" y="70" text-anchor="middle" class="mut">P1,5</text><text x="295" y="70" text-anchor="middle" class="mut">F9</text>
+  <text x="245" y="92" text-anchor="middle" class="mut">P2,0</text><text x="295" y="92" text-anchor="middle" class="mut">F4</text>
+  <path d="M105 35 V15 H200 V45 H218" class="lna" marker-end="url(#a97)"/>
+  <path d="M320 50 H440" class="lna" marker-end="url(#a97)"/><text x="380" y="42" text-anchor="middle" style="fill:var(--ok)">TLB HIT</text>
+  <rect x="442" y="30" width="60" height="40" class="ac"/><text x="472" y="55" text-anchor="middle" class="b">f</text>
+  <rect x="502" y="30" width="40" height="40" class="pu"/><text x="522" y="55" text-anchor="middle">d</text>
+  <path d="M542 50 H578" class="lna" marker-end="url(#a97)"/>
+  <rect x="580" y="20" width="90" height="210" class="gr"/><text x="625" y="130" text-anchor="middle" class="b">RAM</text>
+  <path d="M270 118 V150" style="stroke:var(--alert);stroke-width:2;fill:none" marker-end="url(#a98)"/><text x="280" y="140" style="fill:var(--alert);font-size:12px">TLB MISS</text>
+  <rect x="210" y="152" width="120" height="70" class="or"/><text x="270" y="180" text-anchor="middle" class="b">Page table</text><text x="270" y="198" text-anchor="middle" class="mut">(in RAM: +1 access)</text>
+  <path d="M330 185 H420 V72" style="stroke:var(--alert);stroke-width:2;fill:none" marker-end="url(#a98)"/><text x="425" y="140" class="mut">frame f</text><text x="425" y="156" class="mut">+ update TLB</text>
+</svg>
+<figcaption>Figure 9.13: Paging hardware with a TLB</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap (key vs value)</span>
+The lecture calls the frame-number field the "key". In Galvin, each TLB entry has a <b>key (tag) = page number</b>, which is searched in parallel, and a <b>value = frame number</b>. The stored PID is called the <b>ASID (Address-Space Identifier)</b>, which lets the TLB hold entries of several processes. Without ASIDs, the TLB must be <b>flushed on every context switch</b>. Typical TLB size is <b>32 to 1024 entries</b>.</div>
+</section>
+
+<!-- 9.29 -->
+<section id="s29">
+<h3><span class="n">9.29</span>TLB Hit, TLB Miss and Effective Memory Access Time</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>TLB hit</b> (e.g. P1 page 2 found → F3): time = <b>t + m</b> (TLB search + one memory access for the data).<br>
+<b>TLB miss</b> (e.g. P3 page 2 not in the TLB): search the TLB, then read the page table, then the data: <b>t + 2m</b>.<br>
+With p = hit ratio and 1 − p = miss ratio:</div>
+<div class="num"><span class="t">Essential formula: EMAT</span>
+<div class="formula">EMAT = p (t + m) + (1 − p)(t + 2m)   =  t + (2 − p)·m      [lecture form]
+Galvin form (TLB time ignored):  EAT = p·m + (1 − p)·2m
+k-level paging, miss cost:       t + (k + 1)·m</div></div>
+<div class="num"><span class="t">Numerical 1 (added)</span>
+TLB access t = 20 ns, memory m = 100 ns, hit ratio p = 0.8.<br>
+Hit = 20 + 100 = 120 ns. Miss = 20 + 200 = 220 ns.<br>
+EMAT = 0.8 × 120 + 0.2 × 220 = 96 + 44 = <b>140 ns</b> (check: 20 + 1.2 × 100 = 140 ✔).<br>
+<b>Conclusion:</b> without a TLB every access costs 2m = 200 ns, so the TLB saves 30%.</div>
+<div class="num"><span class="t">Numerical 2 (Galvin, TLB time ignored)</span>
+m = 100 ns, hit 80%: 0.8 × 100 + 0.2 × 200 = <b>120 ns</b>. Hit 99%: 0.99 × 100 + 0.01 × 200 = <b>101 ns</b>.</div>
+<div class="num"><span class="t">Numerical 3: find the hit ratio (reverse)</span>
+t = 10 ns, m = 100 ns, required EMAT ≤ 130 ns.<br>
+10 + (2 − p) × 100 ≤ 130 → 2 − p ≤ 1.2 → <b>p ≥ 0.8</b> (an 80% hit ratio is needed).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Read whether the question says the TLB and the page table are searched <b>sequentially</b> (lecture form, t added on a miss) or <b>in parallel</b> (miss = 2m only), or whether TLB time is <b>negligible</b>. After a miss, the new translation is <b>inserted</b> into the TLB, replacing one by LRU or randomly.</div>
+</section>
+
+<!-- 9.30 -->
+<section id="s30">
+<h3><span class="n">9.30</span>TLB Explained with a Real-Life Example</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — The Maggi dabba</span>
+Your favourite food, <b>Maggi</b>, is always stocked in a <b>dabba (box) at home</b>. When you're hungry, grab it: <b>TLB hit</b>. One day you want <b>pasta</b>, but the dabba has only Maggi: <b>TLB miss</b>. You go to the <b>kirana shop</b> (main memory), buy pasta and come back.
+<div class="tw"><table>
+<tr><th>Analogy</th><th>OS</th></tr>
+<tr><td>Dabba at home (small, near, holds favourites)</td><td><b>TLB</b></td></tr>
+<tr><td>Kirana / ration shop (far, has everything)</td><td><b>Main memory / page table</b></td></tr>
+<tr><td>Maggi found in the dabba</td><td>TLB hit</td></tr>
+<tr><td>Pasta not in the dabba → go to the shop</td><td>TLB miss</td></tr>
+</table></div></div>
+<p><b>Note:</b> the TLB caches <b>translations</b> (page → frame), not the data itself. Data caching is the job of the CPU cache.</p>
+</section>
+
+<!-- 9.31 -->
+<section id="s31">
+<h3><span class="n">9.31</span>Segmentation vs Paging</h3>
+<div class="def"><b>Segmentation:</b> a memory-management scheme that supports the <b>user's (programmer's) view</b> of memory. A process is a collection of <b>variable-sized logical segments</b> such as <b>main, functions, stack, heap, symbol table and arrays</b>. A logical address is <b>&lt;segment number, offset&gt;</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Paging cuts a process into <b>equal</b> pages and is close to the <b>OS's view</b>, but far from the user's. Programmers think in <b>modules</b> (main, functions, stack, heap). Those modules are the <b>segments</b>, of <b>variable size</b>. Segmentation matches the <b>user view</b>.</div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Paging</th><th>Segmentation</th></tr>
+<tr><td>Unit size</td><td>Fixed (page)</td><td><b>Variable</b> (segment)</td></tr>
+<tr><td>View</td><td>System / OS view; invisible to the programmer</td><td><b>User / programmer view</b>; logical units</td></tr>
+<tr><td>Address</td><td>&lt;page no., offset&gt;: one-dimensional</td><td>&lt;segment no., offset&gt;: two-dimensional</td></tr>
+<tr><td>Table entry</td><td>Frame number (+ bits)</td><td><b>Base + limit</b></td></tr>
+<tr><td>Fragmentation <span class="badge">ADDED</span></td><td><b>Internal</b> (last page)</td><td><b>External</b> (variable holes)</td></tr>
+<tr><td>Sharing and protection <span class="badge">ADDED</span></td><td>Per page; harder to match logical units</td><td>Natural per segment (e.g. read-only code segment)</td></tr>
+<tr><td>Who divides</td><td>Hardware / OS</td><td>Compiler / programmer</td></tr>
+</table></div>
+</section>
+
+<!-- 9.32 -->
+<section id="s32">
+<h3><span class="n">9.32</span>Segmentation Explained with the Thali Example</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — Two thalis</span>
+<ul>
+<li><b>Paging thali</b>: everything in <b>equal, fixed portions</b>: as much dal as sabzi, as much rice as dal, as much roti as rice. Every item (page) is the same size.</li>
+<li><b>Segmentation thali</b>: every person's hunger and taste differ. One on a diet says "no rice, or just a little; lots of sabzi, a bit of dal". The plate is made in <b>variable portions according to the user's wish</b>, so segmentation supports the user's view.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 640 200" role="img" aria-label="Paging thali with equal katoris versus segmentation thali with different sized katoris">
+  <circle cx="160" cy="100" r="85" class="bx"/>
+  <circle cx="120" cy="70" r="26" class="or"/><text x="120" y="75" text-anchor="middle">dal</text>
+  <circle cx="200" cy="70" r="26" class="gr"/><text x="200" y="75" text-anchor="middle">sabzi</text>
+  <circle cx="120" cy="135" r="26" class="ac"/><text x="120" y="140" text-anchor="middle">rice</text>
+  <circle cx="200" cy="135" r="26" class="pu"/><text x="200" y="140" text-anchor="middle">roti</text>
+  <text x="160" y="198" text-anchor="middle" class="b">Paging: equal portions</text>
+  <circle cx="480" cy="100" r="85" class="bx"/>
+  <circle cx="440" cy="80" r="44" class="gr"/><text x="440" y="85" text-anchor="middle">lots of sabzi</text>
+  <circle cx="525" cy="70" r="20" class="or"/><text x="525" y="75" text-anchor="middle">dal</text>
+  <circle cx="520" cy="135" r="12" class="ac"/><text x="520" y="160" text-anchor="middle" class="mut">little rice</text>
+  <circle cx="450" cy="150" r="22" class="pu"/><text x="450" y="155" text-anchor="middle">roti</text>
+  <text x="480" y="198" text-anchor="middle" class="b">Segmentation: as the user wants</text>
+</svg>
+<figcaption>Figure 9.14: The thali analogy — fixed vs variable portions</figcaption>
+</figure>
+</section>
+
+<!-- 9.33 -->
+<section id="s33">
+<h3><span class="n">9.33</span>Segment Table and Address Translation in Segmentation</h3>
+<div class="def"><b>Segment table:</b> one entry per segment, holding <b>base</b> (the starting physical address) and <b>limit</b> (the segment's length). The <b>STBR (Segment-Table Base Register)</b> points to the table and the <b>STLR (Segment-Table Length Register)</b> gives the number of segments.</div>
+<figure>
+<svg viewBox="0 0 680 220" role="img" aria-label="Segmentation hardware: s indexes segment table, d compared to limit, if less add base, else trap">
+  <defs><marker id="a99" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="40" width="60" height="44" rx="6" class="ac"/><text x="40" y="67" text-anchor="middle" class="b">CPU</text>
+  <rect x="85" y="45" width="40" height="34" class="gr"/><text x="105" y="67" text-anchor="middle">s</text>
+  <rect x="125" y="45" width="40" height="34" class="pu"/><text x="145" y="67" text-anchor="middle">d</text>
+  <text x="270" y="20" text-anchor="middle" class="b">Segment table</text>
+  <rect x="210" y="28" width="120" height="100" class="bx"/>
+  <text x="240" y="48" text-anchor="middle" class="b">limit</text><text x="300" y="48" text-anchor="middle" class="b">base</text>
+  <text x="240" y="72" text-anchor="middle" class="mut">1000</text><text x="300" y="72" text-anchor="middle" class="mut">1400</text>
+  <text x="240" y="96" text-anchor="middle" class="mut">400</text><text x="300" y="96" text-anchor="middle" class="mut">6300</text>
+  <text x="240" y="120" text-anchor="middle" class="mut">…</text>
+  <path d="M105 45 V25 H190 V70 H208" class="lna" marker-end="url(#a99)"/>
+  <rect x="380" y="45" width="110" height="50" rx="25" class="pu"/><text x="435" y="75" text-anchor="middle" class="b">d &lt; limit ?</text>
+  <path d="M145 79 V150 H360 V80 H378" class="lna" marker-end="url(#a99)"/>
+  <path d="M330 70 H378" class="ln"/>
+  <path d="M490 70 H528" class="lna" marker-end="url(#a99)"/><text x="508" y="62" text-anchor="middle" class="mut">yes</text>
+  <circle cx="552" cy="70" r="22" class="or"/><text x="552" y="76" text-anchor="middle" class="b">+</text><text x="552" y="108" text-anchor="middle" class="mut">base + d</text>
+  <path d="M574 70 H600" class="lna" marker-end="url(#a99)"/><rect x="602" y="30" width="70" height="80" class="gr"/><text x="637" y="75" text-anchor="middle" class="b">RAM</text>
+  <path d="M435 95 V170" class="lna" marker-end="url(#a99)"/><text x="445" y="135" class="mut">no</text>
+  <rect x="370" y="172" width="130" height="34" rx="5" style="fill:var(--alert-bg);stroke:var(--bad)"/><text x="435" y="194" text-anchor="middle" style="fill:var(--bad)">TRAP (addressing error)</text>
+</svg>
+<figcaption>Figure 9.15: Segmentation hardware</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+LA = &lt;s, d&gt;. Use the <b>STBR + s</b> to reach the segment's entry, then <b>check the offset against the limit</b>. If it exceeds the limit, an <b>error</b> occurs. If it is within, physical address = <b>base + offset</b>. Example: base of segment 1 = <b>1000</b>, offset = <b>50</b>, so PA = <b>1050</b>.</div>
+<div class="num"><span class="t">Numerical (added, Galvin-style)</span>
+<div class="tw"><table>
+<tr><th>Segment</th><th>Base</th><th>Limit</th></tr>
+<tr><td>0</td><td>1400</td><td>1000</td></tr>
+<tr><td>1</td><td>6300</td><td>400</td></tr>
+<tr><td>2</td><td>4300</td><td>400</td></tr>
+<tr><td>3</td><td>3200</td><td>1100</td></tr>
+</table></div>
+<b>(2, 53)</b>: 53 &lt; 400 ✔, so PA = 4300 + 53 = <b>4353</b>.<br>
+<b>(3, 852)</b>: 852 &lt; 1100 ✔, so PA = 3200 + 852 = <b>4052</b>.<br>
+<b>(0, 1222)</b>: 1222 ≥ 1000 ✗, so <b>TRAP</b>. The valid offsets for segment 0 are 0 to 999.<br>
+<b>Rule:</b> valid if 0 ≤ d &lt; limit. The last valid address is base + limit − 1.</div>
+</section>
+
+<!-- 9.34 -->
+<section id="s34">
+<h3><span class="n">9.34</span>Segmentation with Paging</h3>
+<div class="def"><b>Segmented paging:</b> a process is divided into <b>segments</b>, and <b>each segment is divided into pages</b>. Each segment has its own page table. LA = <b>&lt;segment no., page no., offset&gt;</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Process → segments 0, 1, 2. Segment 0 → pages 0, 1, 2, and so on. Translation: <b>STBR + s</b> gives the segment-table entry, which points to <b>that segment's page table</b>. Then <b>page number</b> gives the <b>frame</b>, and frame + the same offset gives the physical address. It needs a segment table, page tables and frames.</div>
+<figure>
+<svg viewBox="0 0 680 160" role="img" aria-label="Segmented paging translation: segment table to page table to frame">
+  <defs><marker id="a910" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="20" width="50" height="34" class="or"/><text x="35" y="42" text-anchor="middle">s</text>
+  <rect x="60" y="20" width="50" height="34" class="gr"/><text x="85" y="42" text-anchor="middle">p</text>
+  <rect x="110" y="20" width="50" height="34" class="pu"/><text x="135" y="42" text-anchor="middle">d</text>
+  <rect x="200" y="70" width="120" height="60" class="or"/><text x="260" y="95" text-anchor="middle" class="b">Segment table</text><text x="260" y="115" text-anchor="middle" class="mut">→ page-table base</text>
+  <rect x="370" y="70" width="120" height="60" class="gr"/><text x="430" y="95" text-anchor="middle" class="b">Page table of s</text><text x="430" y="115" text-anchor="middle" class="mut">p → frame f</text>
+  <rect x="540" y="60" width="60" height="40" class="ac"/><text x="570" y="85" text-anchor="middle" class="b">f</text>
+  <rect x="600" y="60" width="50" height="40" class="pu"/><text x="625" y="85" text-anchor="middle">d</text>
+  <path d="M35 54 V100 H198" class="lna" marker-end="url(#a910)"/>
+  <path d="M320 100 H368" class="lna" marker-end="url(#a910)"/>
+  <path d="M85 54 V62 H350 V85 H368" class="ln dash"/>
+  <path d="M490 90 H538" class="lna" marker-end="url(#a910)"/>
+  <path d="M135 20 V10 H625 V58" class="ln dash" marker-end="url(#a910)"/>
+  <text x="340" y="155" text-anchor="middle" class="mut">STBR + s → segment entry → page table → frame ‖ offset</text>
+</svg>
+<figcaption>Figure 9.16: Segmentation with paging</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Why combine?</span>
+It keeps the <b>user view and protection</b> of segmentation and <b>removes external fragmentation</b> through paging. Used by <b>MULTICS</b> and <b>Intel x86 (IA-32)</b>. Modern 64-bit OSs (Linux, Windows) set the segments to cover the full space ("flat model") and rely on paging.</div>
+</section>
+
+<!-- 9.35 -->
+<section id="s35">
+<h3><span class="n">9.35</span>Demand Paging and Page Fault</h3>
+<div class="def"><b>Demand paging:</b> a page is loaded into memory <b>only when it is demanded</b> (first referenced), not in advance. The pager is a "lazy swapper". <b>Page fault:</b> a reference to a page that is <b>not in main memory</b> (its valid / present bit = 0).</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ol>
+<li>The CPU requests a page. It is not in main memory, so a <b>page fault</b> occurs.</li>
+<li>Control switches from the user to the <b>OS</b>.</li>
+<li>The OS loads the page from <b>secondary memory into main memory</b>.</li>
+<li>Control returns to user mode.</li>
+<li>The CPU <b>re-issues the request</b>. Now the page is present, so there is no fault.</li>
+</ol>
+This leads into <b>page replacement</b> (Chapter 10).</div>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Steps in handling a page fault">
+  <defs><marker id="a911" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="80" width="110" height="44" rx="6" class="ac"/><text x="65" y="100" text-anchor="middle" class="b">① load M</text><text x="65" y="116" text-anchor="middle" class="mut">reference</text>
+  <rect x="160" y="80" width="110" height="60" class="bx"/><text x="215" y="100" text-anchor="middle" class="b">page table</text><text x="215" y="120" text-anchor="middle" style="fill:var(--bad)">bit = i (invalid)</text>
+  <rect x="320" y="10" width="140" height="44" rx="6" class="or"/><text x="390" y="30" text-anchor="middle" class="b">② trap → OS</text><text x="390" y="46" text-anchor="middle" class="mut">page fault</text>
+  <rect x="520" y="80" width="150" height="60" class="gr"/><text x="595" y="105" text-anchor="middle" class="b">③ page on disk</text><text x="595" y="125" text-anchor="middle" class="mut">backing store</text>
+  <rect x="320" y="170" width="140" height="44" class="ac"/><text x="390" y="190" text-anchor="middle" class="b">④ free frame</text><text x="390" y="206" text-anchor="middle" class="mut">bring page in</text>
+  <path d="M120 102 H158" class="lna" marker-end="url(#a911)"/>
+  <path d="M270 95 L318 40" class="lna" marker-end="url(#a911)"/>
+  <path d="M460 35 L560 78" class="lna" marker-end="url(#a911)"/>
+  <path d="M570 140 L462 185" class="lna" marker-end="url(#a911)"/>
+  <path d="M320 195 H230 V142" class="lna" marker-end="url(#a911)"/><text x="190" y="175" class="mut">⑤ reset table, bit = v</text>
+  <path d="M160 130 C 120 170, 80 160, 65 126" class="lna dash" marker-end="url(#a911)"/><text x="40" y="170" class="mut">⑥ restart instruction</text>
+</svg>
+<figcaption>Figure 9.17: Steps in handling a page fault (Galvin)</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Textbook steps and the cost</span>
+<ol>
+<li>Check the process's internal table (in the PCB). If the reference is <b>illegal</b>, terminate the process. If it is legal but not in memory, page it in.</li>
+<li>Find a <b>free frame</b>. If there is none, <b>page replacement</b> chooses a victim (Chapter 10).</li>
+<li>Schedule a <b>disk read</b>. The process is <b>blocked</b> meanwhile, and the CPU may run another process.</li>
+<li>When the read completes, update the page table (<b>valid bit = 1</b>).</li>
+<li><b>Restart the instruction</b> that caused the fault.</li>
+</ol>
+<b>Pure demand paging</b> starts a process with <b>no pages</b> in memory. Benefits: less I/O, less memory per process, more processes in memory, and programs larger than RAM can run (<b>virtual memory</b>).</div>
+<div class="num"><span class="t">Numerical (added): effective access time with page faults</span>
+<div class="formula">EAT = (1 − p) × ma  +  p × page-fault service time</div>
+ma = 200 ns, fault service = 8 ms = 8,000,000 ns, p = 1/1000.<br>
+EAT = 0.999 × 200 + 0.001 × 8,000,000 = 199.8 + 8000 = <b>8199.8 ns ≈ 8.2 µs</b>, which is <b>about 40× slower</b>.<br>
+For under 10% degradation (EAT &lt; 220 ns): 200 + 7,999,800 p &lt; 220 → <b>p &lt; 0.0000025</b>, i.e. fewer than 1 fault per 400,000 accesses.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A page fault causes a <b>trap</b> (a mode switch to the kernel), not a context switch in itself. <b>Replacement</b> is needed only when <b>no free frame</b> exists, not on every fault. A page fault is not an error: it is a normal event in demand paging.</div>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 9</h3>
+<ul>
+<li>The CPU can't touch the disk directly: a process must be in <b>RAM</b> (volatile). Hierarchy: registers → cache → RAM → disk, with speed falling and capacity rising.</li>
+<li><b>CPU utilisation = 1 − pⁿ</b>. Lecture with p = 0.6: n = 1 → 40%, n = 2 → 64%, n = 3 → 78.4%, n = 10 → 99.4%.</li>
+<li><b>Contiguous</b> (roll-number seating) vs <b>non-contiguous</b> (sit anywhere). Relocation: PA = base + LA (1000 + 50 = 1050). The limit register checks LA &lt; limit, else trap.</li>
+<li><b>Fixed partitioning</b>: fixed number of partitions, no spanning → <b>internal fragmentation</b> (10 MB partition − 8 MB process = 2 MB) and a size limit (50 MB can't fit in a 30 MB maximum).</li>
+<li><b>Variable partitioning</b>: exact-size partitions → no internal fragmentation, but <b>external fragmentation</b> (5 + 10 MB free, 15 MB process can't fit). <b>Compaction</b> fixes it but is expensive.</li>
+<li><b>Placement</b> (holes 5, 10, 15): first fit 4 MB → 5; next fit 8 MB → 10 (after the last allocation); best fit 9 MB → 10; worst fit 9 MB → 15. First fit is fastest; worst fit is generally poorest.</li>
+<li><b>Paging</b>: page = frame size. Lecture: 16 B process, 4 B pages, 32 B RAM → 4 pages, 8 frames; PT = {0→1, 1→3, 2→5, 3→7}. Byte 5 = (p 01, d 01) → frame 011 → PA 01101 = <b>13</b>.</li>
+<li>LA = p | d; PA = f | d (the offset is unchanged). n bits ⇒ 2ⁿ. One page table per process, stored in RAM, entries = number of pages. PTBR points to it.</li>
+<li><b>Numerical</b>: LAS 16 GB → 34 bits; PAS 32 GB → 35 bits; page 16 KB → 14-bit offset; 20-bit page number → <b>1 M pages</b>; 21-bit frame number → <b>2 M frames</b>.</li>
+<li><b>PTE fields</b>: frame number (mandatory), valid/present, protection (R/W/X), reference, cache-disable, <b>dirty</b> (modified → write back before replacing).</li>
+<li><b>Multilevel paging</b>: page the page table (12 KB PT, 4 KB pages → 3 pages in frames 8, 9, 10 plus an outer table). 32-bit with 4 KB pages → 10 | 10 | 12.</li>
+<li><b>Inverted PT</b>: one global table, entries = frames, (pid, page) per entry; saves memory but needs searching (use hashing).</li>
+<li><b>TLB</b>: fast associative cache of page → frame. <b>EMAT = p(t+m) + (1−p)(t+2m)</b>. Maggi dabba = TLB, kirana shop = RAM.</li>
+<li><b>Segmentation</b>: variable segments in the user view (thali made to taste). Table holds base + limit; PA = base + d if d &lt; limit, else trap (1000 + 50 = 1050). External fragmentation.</li>
+<li><b>Segmented paging</b>: segment → page table → frame (x86, MULTICS). <b>Demand paging</b>: load a page on first use; a missing page causes a page fault, the OS loads it, and the instruction restarts.</li>
+</ul>
+</div>
+<div class="end">End of Volume 01 — Part 9 · Next: Chapter 10 — Virtual Memory</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="08-Deadlocks.html">← Ch 8: Deadlocks</a><a href="index.html">☰ All topics</a><a href="10-Virtual-Memory.html">Ch 10: Virtual Memory →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('os-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

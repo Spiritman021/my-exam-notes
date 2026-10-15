@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS Introduction Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><span></span><a href="index.html">☰ All topics</a><a href="02-OS-Structure.html">Ch 2: OS Structure →</a></nav>
+
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Operating System — Chapter 1: Introduction to Operating Systems</h1>
+  <p class="sub">Volume 01 · Part 1 · Built from the one-shot OS lecture transcript (section 1), plus the exam points the lecture skipped.</p>
+  <ul class="tags">
+    <li>Hardware &amp; Software</li><li>System vs Application Software</li><li>OS as Interface</li>
+    <li>Objectives &amp; Functions</li><li>Kernel &amp; Shell</li><li>Booting</li><li>Batch / Multiprogramming / Multitasking</li>
+    <li>Multiprocessing</li><li>Clustered / Distributed / Network</li><li>Real-Time &amp; Embedded</li><li>Process vs Program</li><li>Process Memory Layout</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">1.1</span>Computer System: Hardware and Software</a></li>
+    <li><a href="#s2"><span class="n">1.2</span>Application Software vs System Software</a></li>
+    <li><a href="#s3"><span class="n">1.3</span>OS as an Interface between User and Hardware</a></li>
+    <li><a href="#s3a"><span class="n">1.3A</span>Kernel, Shell and Booting<span class="x">ADDED</span></a></li>
+    <li><a href="#s4"><span class="n">1.4</span>Examples and Objectives of an OS</a></li>
+    <li><a href="#s5"><span class="n">1.5</span>Functions of an Operating System</a></li>
+    <li><a href="#s6"><span class="n">1.6</span>Types of Operating Systems</a></li>
+    <li><a href="#s7"><span class="n">1.7</span>Clustered Operating System</a></li>
+    <li><a href="#s8"><span class="n">1.8</span>Distributed Operating System</a></li>
+    <li><a href="#s8a"><span class="n">1.8A</span>Network OS vs Distributed OS<span class="x">ADDED</span></a></li>
+    <li><a href="#s9"><span class="n">1.9</span>Embedded Operating System</a></li>
+    <li><a href="#s10"><span class="n">1.10</span>Batch Operating System</a></li>
+    <li><a href="#s10a"><span class="n">1.10A</span>Spooling and Buffering<span class="x">ADDED</span></a></li>
+    <li><a href="#s11"><span class="n">1.11</span>Multiprogramming and Multitasking</a></li>
+    <li><a href="#s12"><span class="n">1.12</span>Selfie Analogy: Multiprogramming vs Multitasking</a></li>
+    <li><a href="#s13"><span class="n">1.13</span>Multiprocessing Operating System</a></li>
+    <li><a href="#s14"><span class="n">1.14</span>Real-Time Operating System (Hard and Soft)</a></li>
+    <li><a href="#s14a"><span class="n">1.14A</span>Master Comparison of OS Types<span class="x">ADDED</span></a></li>
+    <li><a href="#s15"><span class="n">1.15</span>Process vs Program</a></li>
+    <li><a href="#s16"><span class="n">1.16</span>Process Layout in Memory</a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 1</div>
+<h2 class="ch">Introduction to Operating Systems</h2>
+<p>This chapter covers what an operating system is, where it sits in a computer, what it is expected to do and the main types of OS. It ends with the idea that the rest of the subject builds on: a <b>program</b> on disk becomes a <b>process</b> when it is loaded into memory.</p>
+
+<!-- 1.1 -->
+<section id="s1">
+<h3><span class="n">1.1</span>Computer System: Hardware and Software</h3>
+<p>A computer system has two complementary parts:</p>
+<ul>
+  <li><b>Hardware</b>: the physical mechanical, electrical and electronic components, such as the CPU, RAM, hard disk/SSD, keyboard, monitor, printer and motherboard. You can touch them.</li>
+  <li><b>Software</b>: a <b>set of programs</b> (instructions plus data) that tells the hardware what to do. You cannot touch it.</li>
+</ul>
+<p>Hardware without software is useless, and software without hardware has nothing to run on.</p>
+
+<div class="box lec"><span class="t">🎓 From the lecture — The car &amp; driver analogy</span>
+Hardware is like a world-class car with premium tyres, bulletproof glass and a smooth steering wheel. If nobody drives it, it is just a piece of metal. Software is the <b>driver</b>.
+<ul>
+  <li>A <b>"noob" driver</b> (poor software) presses the accelerator instead of the brake and cannot reverse. The hardware's potential is wasted.</li>
+  <li>A <b>"pro" driver</b> ("Fast &amp; Furious") handles the car smoothly and takes it to its <b>peak, optimal performance</b>.</li>
+</ul>
+Good software, especially a good OS, gets the most out of the hardware.
+</div>
+
+<div class="box add"><span class="t">➕ Added for exam — Components &amp; related terms</span>
+<ul>
+  <li><b>Four components of a computer system</b> (Galvin): <b>Hardware → Operating System → Application programs → Users</b>.</li>
+  <li><b>Basic hardware units</b>: Input unit, Output unit, <b>CPU</b> (ALU + Control Unit + Registers), <b>Memory</b> (primary: RAM/ROM/cache; secondary: HDD/SSD).</li>
+  <li><b>Firmware</b>: software permanently stored in ROM/flash on the hardware, such as <b>BIOS/UEFI</b>. It sits between hardware and software.</li>
+  <li><b>Liveware / Peopleware</b>: the human users of the system.</li>
+</ul>
+</div>
+</section>
+
+<!-- 1.2 -->
+<section id="s2">
+<h3><span class="n">1.2</span>Application Software vs System Software</h3>
+<div class="def"><b>System software</b> handles the <b>operations of the system itself</b>: managing hardware and providing a platform for other software. <b>The best example is the Operating System.</b></div>
+<div class="def"><b>Application software</b> does an <b>application-specific task</b> for the user, such as a spreadsheet, a DBMS package, a browser or MS Word.</div>
+
+<figure>
+<svg viewBox="0 0 720 250" role="img" aria-label="Classification of software into system software and application software">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+  <rect x="300" y="10" width="120" height="36" rx="5" class="ac"/><text x="360" y="33" text-anchor="middle" class="b">SOFTWARE</text>
+  <path d="M360 46 V64 H170 V82 M360 64 H550 V82" class="ln"/>
+  <rect x="80" y="82" width="180" height="36" rx="5" class="gr"/><text x="170" y="105" text-anchor="middle" class="b">System Software</text>
+  <rect x="460" y="82" width="180" height="36" rx="5" class="or"/><text x="550" y="105" text-anchor="middle" class="b">Application Software</text>
+  <path d="M170 118 V136 H45 V150 M170 136 H130 V150 M170 136 H215 V150 M170 136 H300 V150" class="ln"/>
+  <rect x="5" y="150" width="80" height="44" rx="4" class="bx"/><text x="45" y="168" text-anchor="middle">Operating</text><text x="45" y="184" text-anchor="middle">System</text>
+  <rect x="92" y="150" width="76" height="44" rx="4" class="bx"/><text x="130" y="168" text-anchor="middle">Utility</text><text x="130" y="184" text-anchor="middle">programs</text>
+  <rect x="175" y="150" width="80" height="44" rx="4" class="bx"/><text x="215" y="168" text-anchor="middle">Device</text><text x="215" y="184" text-anchor="middle">drivers</text>
+  <rect x="262" y="150" width="80" height="44" rx="4" class="bx"/><text x="302" y="168" text-anchor="middle">Language</text><text x="302" y="184" text-anchor="middle">translators</text>
+  <text x="45" y="212" text-anchor="middle" class="mut">Windows, Linux</text>
+  <text x="130" y="212" text-anchor="middle" class="mut">antivirus, disk</text><text x="130" y="226" text-anchor="middle" class="mut">cleanup, zip</text>
+  <text x="215" y="212" text-anchor="middle" class="mut">printer, GPU</text>
+  <text x="302" y="212" text-anchor="middle" class="mut">compiler, assembler,</text><text x="302" y="226" text-anchor="middle" class="mut">interpreter, linker, loader</text>
+  <path d="M550 118 V136 H470 V150 M550 136 H630 V150" class="ln"/>
+  <rect x="420" y="150" width="100" height="44" rx="4" class="bx"/><text x="470" y="168" text-anchor="middle">General</text><text x="470" y="184" text-anchor="middle">purpose</text>
+  <rect x="580" y="150" width="100" height="44" rx="4" class="bx"/><text x="630" y="168" text-anchor="middle">Customised /</text><text x="630" y="184" text-anchor="middle">tailor-made</text>
+  <text x="470" y="212" text-anchor="middle" class="mut">MS Office, browser,</text><text x="470" y="226" text-anchor="middle" class="mut">spreadsheet, DBMS pkg</text>
+  <text x="630" y="212" text-anchor="middle" class="mut">bank CBS, payroll,</text><text x="630" y="226" text-anchor="middle" class="mut">railway reservation</text>
+</svg>
+<figcaption>Figure 1.1: Classification of software</figcaption>
+</figure>
+
+<div class="tw"><table>
+<tr><th>Basis</th><th>System Software</th><th>Application Software</th></tr>
+<tr><td>Purpose</td><td>Runs and manages the computer; acts as a platform</td><td>Performs a specific task for the user</td></tr>
+<tr><td>Interaction</td><td>Mostly works with hardware, in the background</td><td>Works directly with the user</td></tr>
+<tr><td>Dependency</td><td>Can run without application software</td><td><b>Cannot run without</b> system software (OS)</td></tr>
+<tr><td>When it runs</td><td>Starts at boot and runs until shutdown</td><td>Runs only when the user opens it</td></tr>
+<tr><td>Language</td><td>Low-level / C / assembly</td><td>High-level languages</td></tr>
+<tr><td>Examples</td><td>OS, compiler, assembler, device drivers, BIOS</td><td>MS Word, Excel, Chrome, Tally, games</td></tr>
+</table></div>
+
+<div class="box trap"><span class="t">⚠️ Exam trap (Translators &amp; utilities)</span>
+Compilers, interpreters, assemblers, linkers and loaders are <b>system software</b>, not application software. <b>Antivirus</b> and <b>disk defragmenter</b> are <b>utility software</b>, which is a sub-type of system software. <b>Middleware</b> (for example, database connectors and message queues) sits between the OS and applications.</div>
+</section>
+
+<!-- 1.3 -->
+<section id="s3">
+<h3><span class="n">1.3</span>OS as an Interface between User and Hardware</h3>
+<div class="def"><b>Operating System:</b> system software that acts as an <b>interface (intermediary)</b> between the <b>user</b> and the <b>computer hardware</b>. It manages all hardware resources and gives programs an environment to run in.</div>
+
+<div class="box lec"><span class="t">🎓 From the lecture — Why not talk to hardware directly?</span>
+If the user interacted with the hardware directly, the work would be <b>tedious, time-consuming and effort-heavy</b>, and the result would still be poor. Instead, the user goes <b>through someone</b>: the OS. It sits <b>exactly between the user and the system hardware</b>, which is why it is called the <b>interface</b> or <b>intermediary</b>.
+</div>
+
+<figure>
+<svg viewBox="0 0 560 270" role="img" aria-label="Layered view: user, application programs, operating system, hardware">
+  <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="120" y="10" width="320" height="44" rx="6" class="bx"/><text x="280" y="37" text-anchor="middle" class="b">USER(S)</text>
+  <rect x="120" y="70" width="320" height="44" rx="6" class="or"/><text x="280" y="90" text-anchor="middle" class="b">Application Programs</text><text x="280" y="106" text-anchor="middle" class="mut">browser, MS Word, compiler, DBMS</text>
+  <rect x="120" y="130" width="320" height="56" rx="6" class="ac"/><text x="280" y="153" text-anchor="middle" class="b">OPERATING SYSTEM</text><text x="280" y="172" text-anchor="middle" class="mut">shell → kernel · resource manager · control program</text>
+  <rect x="120" y="202" width="320" height="56" rx="6" class="gr"/><text x="280" y="225" text-anchor="middle" class="b">HARDWARE</text><text x="280" y="244" text-anchor="middle" class="mut">CPU · Memory · I/O devices · Storage</text>
+  <path d="M470 30 V230" class="lna" marker-start="url(#ar2)" marker-end="url(#ar2)"/>
+  <text x="482" y="125" class="mut">request</text><text x="482" y="140" class="mut">↓ / result ↑</text>
+  <text x="20" y="160" class="mut">"Interface /</text><text x="20" y="175" class="mut">intermediary"</text>
+</svg>
+<figcaption>Figure 1.2: Abstract view of a computer system — OS sits between users/applications and hardware</figcaption>
+</figure>
+
+<div class="box add"><span class="t">➕ Added for exam — Two views of an OS</span>
+<ul>
+  <li><b>User view</b>: the OS should be easy to use. A PC is designed for convenience, a mainframe for resource utilisation, and a mobile for touch and battery life.</li>
+  <li><b>System view</b>:
+    <ul><li><b>Resource allocator / manager</b>: decides who gets the CPU, memory, files and I/O, and when, resolving conflicting requests fairly and efficiently.</li>
+    <li><b>Control program</b>: controls the running of user programs to prevent errors and improper use of the computer.</li></ul></li>
+  <li>The OS is also called a <b>virtual machine / extended machine</b>, because it hides messy hardware details behind a simpler abstraction (files instead of disk sectors).</li>
+</ul>
+</div>
+</section>
+
+<!-- 1.3A -->
+<section id="s3a">
+<h3><span class="n">1.3A</span>Kernel, Shell and Booting <span class="badge">ADDED</span></h3>
+<p>The lecture covers kernel/user mode later, under System Calls. The basic terms below are asked often enough in the exam that they belong in the introduction.</p>
+<div class="tw"><table>
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td><b>Kernel</b></td><td>The <b>core</b> of the OS. It is loaded first and <b>stays in main memory</b> the whole time. It handles process, memory and device management and system calls, and runs in <b>kernel (privileged) mode</b>.</td></tr>
+<tr><td><b>Shell</b></td><td>The <b>outer layer / command interpreter</b> that takes user commands and passes them to the kernel. It can be <b>CLI</b> (bash, cmd, PowerShell) or <b>GUI</b> (Windows Explorer, GNOME).</td></tr>
+<tr><td><b>System call</b></td><td>The <b>programmatic interface</b> through which a program asks the kernel for a service (e.g. <code>fork()</code>, <code>read()</code>, <code>open()</code>). Covered in detail in Chapter 3.</td></tr>
+<tr><td><b>Booting</b></td><td>Starting the computer and loading the OS kernel into RAM.</td></tr>
+</table></div>
+
+<figure>
+<svg viewBox="0 0 720 110" role="img" aria-label="Boot sequence from power on to OS ready">
+  <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+  <g>
+    <rect x="5" y="25" width="100" height="50" rx="5" class="bx"/><text x="55" y="48" text-anchor="middle" class="b">Power ON</text><text x="55" y="64" text-anchor="middle" class="mut">CPU reset</text>
+    <rect x="125" y="25" width="120" height="50" rx="5" class="gr"/><text x="185" y="45" text-anchor="middle" class="b">BIOS / UEFI</text><text x="185" y="61" text-anchor="middle" class="mut">in ROM (firmware)</text>
+    <rect x="265" y="25" width="100" height="50" rx="5" class="gr"/><text x="315" y="48" text-anchor="middle" class="b">POST</text><text x="315" y="64" text-anchor="middle" class="mut">hardware check</text>
+    <rect x="385" y="25" width="150" height="50" rx="5" class="ac"/><text x="460" y="45" text-anchor="middle" class="b">Bootstrap loader</text><text x="460" y="61" text-anchor="middle" class="mut">MBR/GPT → GRUB, bootmgr</text>
+    <rect x="555" y="25" width="160" height="50" rx="5" class="ac"/><text x="635" y="45" text-anchor="middle" class="b">Kernel loaded in RAM</text><text x="635" y="61" text-anchor="middle" class="mut">→ init / shell / login</text>
+    <path d="M105 50 H123 M245 50 H263 M365 50 H383 M535 50 H553" class="ln" marker-end="url(#ar3)"/>
+  </g>
+  <text x="360" y="100" text-anchor="middle" class="mut">Cold boot = from power-off · Warm boot = restart without cutting power (Ctrl+Alt+Del)</text>
+</svg>
+<figcaption>Figure 1.3: The booting sequence</figcaption>
+</figure>
+
+<div class="box alert"><span class="t">🎯 IBPS exam alert (Booting)</span>
+<ul>
+<li>The program that loads the OS is the <b>bootstrap loader</b>. It is stored in <b>ROM / firmware</b>.</li>
+<li><b>POST</b> = Power-On Self-Test. <b>BIOS</b> = Basic Input/Output System. <b>UEFI</b> is its modern replacement and supports GPT disks larger than 2 TB and Secure Boot.</li>
+<li>The <b>MBR</b> (Master Boot Record) is the first sector (512 bytes) of the disk.</li>
+<li>The kernel is the <b>first part of the OS loaded</b> and <b>stays resident</b> in memory.</li>
+</ul></div>
+</section>
+
+<!-- 1.4 -->
+<section id="s4">
+<h3><span class="n">1.4</span>Examples and Objectives of an OS</h3>
+<h4>Examples of operating systems</h4>
+<div class="tw"><table>
+<tr><th>Category</th><th>Examples</th></tr>
+<tr><td>Desktop / PC</td><td>MS Windows (10, 11), macOS, Linux distros (Ubuntu, Fedora), ChromeOS, MS-DOS (old, CLI)</td></tr>
+<tr><td>Server</td><td>UNIX, Linux (RHEL), Windows Server, Solaris, IBM AIX, z/OS (mainframe)</td></tr>
+<tr><td>Mobile</td><td>Android (Linux kernel), iOS, HarmonyOS, KaiOS; old: Symbian, BlackBerry OS</td></tr>
+<tr><td>Real-time</td><td>VxWorks, QNX, FreeRTOS, RTLinux, LynxOS</td></tr>
+<tr><td>Network OS</td><td>Novell NetWare, Windows Server, UNIX, Linux</td></tr>
+</table></div>
+
+<h4>Objectives (goals) of an OS</h4>
+<div class="box lec"><span class="t">🎓 From the lecture — Primary &amp; secondary objective</span>
+<ul>
+<li><b>Primary objective: Convenience.</b> The user should feel the task was <b>easy</b> and took no real effort. The OS should be <b>easy to use / user-friendly</b>.</li>
+<li><b>Secondary objective: Efficiency.</b> Jobs and processes should run efficiently, with all resources <b>well utilised</b> and in a <b>reliable</b> manner.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam — The standard textbook list</span>
+Galvin/Stallings give <b>three</b> objectives:
+<ol>
+<li><b>Convenience</b>: makes the computer easier to use.</li>
+<li><b>Efficiency</b>: uses system resources efficiently (maximum CPU utilisation and throughput).</li>
+<li><b>Ability to evolve</b>: allows new functions and hardware to be added without disturbing existing service.</li>
+</ol>
+Other goals also listed: <b>reliability, security/protection, resource sharing, fairness, minimum response time</b>.</div>
+</section>
+
+<!-- 1.5 -->
+<section id="s5">
+<h3><span class="n">1.5</span>Functions of an Operating System</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The OS performs several kinds of <b>management</b>: <b>process management, memory management, file system management, I/O device management, disk management</b> and <b>security</b>. For security it must keep the <b>CIA</b> parameters intact. Otherwise anyone could open any file and read it, which breaks confidentiality. Each management area is covered in its own later module.</div>
+
+<div class="tw"><table>
+<tr><th>Function</th><th>What the OS does</th></tr>
+<tr><td><b>Process management</b></td><td>Create/delete processes, schedule them on the CPU, suspend/resume, synchronisation, inter-process communication (IPC), deadlock handling</td></tr>
+<tr><td><b>Memory management</b></td><td>Track which part of RAM is used by whom; allocate/deallocate memory; paging, segmentation, virtual memory</td></tr>
+<tr><td><b>File (system) management</b></td><td>Create/delete files and directories, map files to disk, access control, backup</td></tr>
+<tr><td><b>I/O device management</b></td><td>Device drivers, buffering, caching, spooling; hides device details from the user</td></tr>
+<tr><td><b>Secondary-storage (disk) management</b></td><td>Free-space management, storage allocation, disk scheduling</td></tr>
+<tr><td><b>Security &amp; protection</b></td><td><b>C</b>onfidentiality, <b>I</b>ntegrity, <b>A</b>vailability; authentication (passwords), access control</td></tr>
+<tr><td>Networking / communication <span class="badge">ADDED</span></td><td>Lets processes on different machines exchange data (sockets, protocols)</td></tr>
+<tr><td>Error detection <span class="badge">ADDED</span></td><td>Detects and handles hardware, I/O and program errors (e.g. divide by zero, memory fault)</td></tr>
+<tr><td>Job accounting <span class="badge">ADDED</span></td><td>Records time and resources used by each user/job (useful for billing and tuning)</td></tr>
+<tr><td>Command interpretation / UI <span class="badge">ADDED</span></td><td>Accepts and interprets user commands (CLI/GUI)</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Protection vs Security)</span>
+<b>Protection</b> = <i>internal</i> control of which process or user can access which resource. <b>Security</b> = defending the system against <i>external and internal attacks</i> (viruses, worms, denial of service, identity theft). Questions often swap the two.</div>
+</section>
+
+<!-- 1.6 -->
+<section id="s6">
+<h3><span class="n">1.6</span>Types of Operating Systems</h3>
+<p>The lecture separates the <b>core types</b> that are asked in detail from the <b>minor types</b> that are rarely asked:</p>
+<ul>
+<li><b>Core types (study in detail):</b> Batch, Multiprogramming, Multitasking (Time-sharing), Multiprocessing, Real-Time.</li>
+<li><b>Minor types (know with an example):</b> Clustered, Distributed, Embedded.</li>
+<li><b>Also asked in exams</b> <span class="badge">ADDED</span>: Network OS, Mobile OS, Time-sharing OS (= multitasking), Multi-user vs Single-user OS.</li>
+</ul>
+
+<figure>
+<svg viewBox="0 0 720 150" role="img" aria-label="Evolution of operating systems">
+  <defs><marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <path d="M20 75 H700" class="lna" marker-end="url(#ar4)"/>
+  <g>
+    <rect x="15" y="30" width="110" height="34" rx="4" class="bx"/><text x="70" y="52" text-anchor="middle" class="b">Serial / No OS</text>
+    <rect x="140" y="30" width="100" height="34" rx="4" class="bx"/><text x="190" y="52" text-anchor="middle" class="b">Batch</text>
+    <rect x="255" y="30" width="130" height="34" rx="4" class="ac"/><text x="320" y="52" text-anchor="middle" class="b">Multiprogramming</text>
+    <rect x="400" y="30" width="130" height="34" rx="4" class="ac"/><text x="465" y="52" text-anchor="middle" class="b">Time-sharing</text>
+    <rect x="545" y="30" width="155" height="34" rx="4" class="gr"/><text x="622" y="52" text-anchor="middle" class="b">Multiproc / Distrib.</text>
+  </g>
+  <text x="70" y="100" text-anchor="middle" class="mut">1940s–50s</text><text x="70" y="115" text-anchor="middle" class="mut">manual setup</text>
+  <text x="190" y="100" text-anchor="middle" class="mut">1950s–60s</text><text x="190" y="115" text-anchor="middle" class="mut">jobs grouped</text>
+  <text x="320" y="100" text-anchor="middle" class="mut">1960s</text><text x="320" y="115" text-anchor="middle" class="mut">CPU never idle</text>
+  <text x="465" y="100" text-anchor="middle" class="mut">1970s</text><text x="465" y="115" text-anchor="middle" class="mut">interactive, time slice</text>
+  <text x="622" y="100" text-anchor="middle" class="mut">1980s →</text><text x="622" y="115" text-anchor="middle" class="mut">many CPUs / networks</text>
+</svg>
+<figcaption>Figure 1.4: Evolution of OS types — each one fixes the previous one's weakness</figcaption>
+</figure>
+</section>
+
+<!-- 1.7 -->
+<section id="s7">
+<h3><span class="n">1.7</span>Clustered Operating System</h3>
+<div class="def"><b>Clustered system:</b> two or more <b>independent computers (nodes)</b> joined by a <b>local network (LAN)</b> that <b>share storage</b> and work together as <b>one powerful system</b>. The OS that manages this cluster environment is the <b>clustered OS</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — "1 + 1 = 11"</span>
+Connecting many systems <b>unites their power</b>, so "1 + 1 = 11". The cluster no longer behaves like a normal computer. It behaves like a <b>supercomputer</b> and can carry out very heavy, complex computations.</div>
+<figure>
+<svg viewBox="0 0 560 200" role="img" aria-label="Clustered system: nodes on a LAN sharing storage">
+  <rect x="20" y="20" width="100" height="44" rx="5" class="ac"/><text x="70" y="47" text-anchor="middle" class="b">Node 1</text>
+  <rect x="160" y="20" width="100" height="44" rx="5" class="ac"/><text x="210" y="47" text-anchor="middle" class="b">Node 2</text>
+  <rect x="300" y="20" width="100" height="44" rx="5" class="ac"/><text x="350" y="47" text-anchor="middle" class="b">Node 3</text>
+  <rect x="440" y="20" width="100" height="44" rx="5" class="ac"/><text x="490" y="47" text-anchor="middle" class="b">Node 4</text>
+  <path d="M70 64 V95 M210 64 V95 M350 64 V95 M490 64 V95 M40 95 H520" class="lna"/>
+  <text x="280" y="88" text-anchor="middle" class="mut">high-speed LAN / interconnect + heartbeat</text>
+  <path d="M280 95 V130" class="ln"/>
+  <rect x="190" y="130" width="180" height="44" rx="5" class="gr"/><text x="280" y="150" text-anchor="middle" class="b">Shared Storage</text><text x="280" y="166" text-anchor="middle" class="mut">SAN</text>
+</svg>
+<figcaption>Figure 1.5: Clustered system — loosely coupled nodes, shared storage</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam — Types &amp; purpose</span>
+<ul>
+<li>The main purpose is <b>High Availability (HA)</b>: if one node fails, another takes over its work (<b>failover</b>). Nodes monitor each other with a <b>heartbeat</b> signal.</li>
+<li><b>Asymmetric clustering</b>: one node runs the applications while the other stays in <b>hot-standby</b> mode, only monitoring.</li>
+<li><b>Symmetric clustering</b>: <b>all nodes</b> run applications and monitor each other, so resources are used better.</li>
+<li><b>Parallel clustering / HPC</b>: many nodes run parts of the same job (e.g. Beowulf clusters, supercomputers).</li>
+<li>Nodes are <b>loosely coupled</b>: each has its own CPU and memory.</li>
+</ul></div>
+</section>
+
+<!-- 1.8 -->
+<section id="s8">
+<h3><span class="n">1.8</span>Distributed Operating System</h3>
+<div class="def"><b>Distributed OS:</b> manages a collection of <b>independent, geographically dispersed computers</b>, each with its own CPU and memory, connected by a <b>network</b>. To the user they appear as a <b>single coherent system</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>One system may be in <b>America</b>, another in <b>India</b>, another in <b>Africa</b>, all connected through a network.</li>
+<li><b>Load balancing</b> is very efficient: if one system gets too much work, part of it is handed to another node.</li>
+<li><b>No single point of failure</b>: control is <b>not centred at one point</b>, so if one node fails, another takes over its work.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 560 230" role="img" aria-label="Distributed system: nodes in different countries connected over a network">
+  <ellipse cx="280" cy="115" rx="90" ry="40" class="bx"/><text x="280" y="112" text-anchor="middle" class="b">Network</text><text x="280" y="128" text-anchor="middle" class="mut">(WAN / Internet)</text>
+  <rect x="20" y="20" width="130" height="50" rx="5" class="ac"/><text x="85" y="41" text-anchor="middle" class="b">Node — USA</text><text x="85" y="58" text-anchor="middle" class="mut">own CPU + RAM</text>
+  <rect x="410" y="20" width="130" height="50" rx="5" class="ac"/><text x="475" y="41" text-anchor="middle" class="b">Node — India</text><text x="475" y="58" text-anchor="middle" class="mut">own CPU + RAM</text>
+  <rect x="20" y="160" width="130" height="50" rx="5" class="or"/><text x="85" y="181" text-anchor="middle" class="b">Node — Africa</text><text x="85" y="198" text-anchor="middle" class="mut">overloaded →</text>
+  <rect x="410" y="160" width="130" height="50" rx="5" class="ac"/><text x="475" y="181" text-anchor="middle" class="b">Node — Europe</text><text x="475" y="198" text-anchor="middle" class="mut">takes extra load</text>
+  <path d="M150 50 L200 95 M410 50 L360 95 M150 180 L200 135 M410 180 L360 135" class="ln"/>
+  <path d="M150 205 C 280 240, 300 240, 410 205" class="lna dash"/>
+  <text x="280" y="225" text-anchor="middle" class="mut">load balancing</text>
+</svg>
+<figcaption>Figure 1.6: Distributed system — dispersed nodes, no central point of failure</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam — Advantages, transparency, examples</span>
+<ul>
+<li><b>Four advantages (Galvin)</b>: <b>Resource sharing</b>, <b>Computation speed-up</b>, <b>Reliability</b> and <b>Communication</b>.</li>
+<li><b>Loosely coupled</b>: no shared memory and no common clock. Nodes communicate by <b>message passing</b>.</li>
+<li><b>Transparency</b>: the user should not notice the distribution (access, location, migration, replication, failure transparency).</li>
+<li><b>Disadvantages</b>: complex software, network dependency, security risk, hard to keep data consistent.</li>
+<li>Examples: <b>Amoeba</b>, <b>LOCUS</b>, Mach, Plan 9. Distributed applications include Google search and blockchain.</li>
+</ul></div>
+</section>
+
+<!-- 1.8A -->
+<section id="s8a">
+<h3><span class="n">1.8A</span>Network OS vs Distributed OS <span class="badge">ADDED</span></h3>
+<p>This pair is not in the lecture but is a favourite comparison question.</p>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Network OS (NOS)</th><th>Distributed OS (DOS)</th></tr>
+<tr><td>User awareness</td><td>Users <b>know</b> there are multiple machines; they log in remotely / map drives</td><td>Users see <b>one single system</b> (transparency)</td></tr>
+<tr><td>Each machine</td><td>Runs its <b>own independent OS</b></td><td>One OS spans all machines</td></tr>
+<tr><td>Coupling</td><td>Loosely coupled</td><td>Loosely coupled (software appears tightly integrated)</td></tr>
+<tr><td>Main goal</td><td>Sharing files and printers over a network</td><td>Resource sharing + computation speed-up + reliability</td></tr>
+<tr><td>Fault tolerance</td><td>Low (the server is a single point of failure)</td><td>High</td></tr>
+<tr><td>Examples</td><td>Novell NetWare, Windows Server, UNIX, Linux</td><td>Amoeba, LOCUS, Mach</td></tr>
+</table></div>
+</section>
+
+<!-- 1.9 -->
+<section id="s9">
+<h3><span class="n">1.9</span>Embedded Operating System</h3>
+<div class="def"><b>Embedded OS:</b> an OS built into a device to perform a <b>specific, fixed, narrow-range</b> set of functions. It does only the job it was designed for and nothing more.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — AC vs washing machine</span>
+An <b>AC</b> cools and a <b>washing machine</b> washes clothes. Tell the AC to wash clothes, or the washing machine to blow cold air, and neither can do it. You only get a headache. That <b>restriction to a fixed, narrow task</b> is what defines an embedded OS. Other examples: <b>microwave oven</b>, home appliances.</div>
+<div class="box add"><span class="t">➕ Added for exam — Characteristics</span>
+<ul>
+<li>Stored in <b>ROM / flash</b>; <b>small footprint</b>; works with <b>limited memory, CPU and power</b>.</li>
+<li>Little or no user interface; often <b>real-time</b> (many embedded OSs are RTOSs).</li>
+<li>Examples of devices: digital camera, ATM, car engine control unit, smart TV, smartwatch, IoT sensors, traffic lights.</li>
+<li>Examples of OS: <b>Embedded Linux</b>, <b>FreeRTOS</b>, <b>VxWorks</b>, <b>Windows IoT</b> (earlier Windows CE), <b>Zephyr</b>.</li>
+</ul></div>
+</section>
+
+<!-- 1.10 -->
+<section id="s10">
+<h3><span class="n">1.10</span>Batch Operating System</h3>
+<div class="def"><b>Batch OS:</b> a very old technique. Users do <b>not</b> interact with the computer directly. They hand their <b>jobs</b> to an <b>operator</b>, who groups jobs with <b>similar requirements</b> into <b>batches</b>. The batches are given to the CPU <b>one by one</b>, and each job runs to completion before the next one starts.</div>
+
+<figure>
+<svg viewBox="0 0 720 210" role="img" aria-label="Batch OS: users give jobs to operator, who groups them into batches for the CPU">
+  <defs><marker id="ar5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+  <rect x="10" y="15" width="90" height="34" rx="4" class="bx"/><text x="55" y="37" text-anchor="middle">User 1 → J1</text>
+  <rect x="10" y="60" width="90" height="34" rx="4" class="bx"/><text x="55" y="82" text-anchor="middle">User 2 → J2</text>
+  <rect x="10" y="105" width="90" height="34" rx="4" class="bx"/><text x="55" y="127" text-anchor="middle">User 3 → J3</text>
+  <rect x="10" y="150" width="90" height="34" rx="4" class="bx"/><text x="55" y="172" text-anchor="middle">User 4 → J4</text>
+  <path d="M100 32 L180 90 M100 77 L180 95 M100 122 L180 100 M100 167 L180 105" class="ln" marker-end="url(#ar5)"/>
+  <rect x="182" y="70" width="110" height="56" rx="5" class="or"/><text x="237" y="94" text-anchor="middle" class="b">Operator</text><text x="237" y="112" text-anchor="middle" class="mut">groups similar jobs</text>
+  <path d="M292 98 H330" class="ln" marker-end="url(#ar5)"/>
+  <rect x="332" y="40" width="120" height="44" rx="5" class="ac"/><text x="392" y="59" text-anchor="middle" class="b">Batch 1</text><text x="392" y="75" text-anchor="middle" class="mut">J1, J2 (e.g. Python)</text>
+  <rect x="332" y="110" width="120" height="44" rx="5" class="ac"/><text x="392" y="129" text-anchor="middle" class="b">Batch 2</text><text x="392" y="145" text-anchor="middle" class="mut">J3, J4 (e.g. COBOL)</text>
+  <path d="M452 62 L540 95 M452 132 L540 100" class="ln" marker-end="url(#ar5)"/>
+  <rect x="542" y="70" width="160" height="56" rx="5" class="gr"/><text x="622" y="93" text-anchor="middle" class="b">CPU / Computer</text><text x="622" y="111" text-anchor="middle" class="mut">one batch at a time</text>
+</svg>
+<figcaption>Figure 1.7: Batch operating system</figcaption>
+</figure>
+
+<h4>Why the CPU sits idle: CPU burst and I/O burst</h4>
+<p>A job's execution time has two parts: <b>CPU time</b> (computation) and <b>I/O time</b> (reading/writing through I/O devices). In batch OS, when the running job goes off to do I/O, the CPU <b>cannot pick another job</b>, because only one job is allowed at a time. The CPU stays <b>idle</b>.</p>
+
+<figure>
+<svg viewBox="0 0 720 120" role="img" aria-label="Timeline of job 1 in batch OS showing CPU idle during I/O">
+  <rect x="40" y="30" width="105" height="36" class="gr"/><text x="92" y="53" text-anchor="middle" class="b">CPU 1h</text>
+  <rect x="145" y="30" width="210" height="36" class="or"/><text x="250" y="53" text-anchor="middle">I/O 2h — CPU IDLE</text>
+  <rect x="355" y="30" width="105" height="36" class="gr"/><text x="407" y="53" text-anchor="middle" class="b">CPU 1h</text>
+  <rect x="460" y="30" width="210" height="36" class="or"/><text x="565" y="53" text-anchor="middle">I/O 2h — CPU IDLE</text>
+  <path d="M40 80 H670" class="ln"/>
+  <text x="40" y="98" class="mut">0</text><text x="140" y="98" class="mut">1</text><text x="350" y="98" class="mut">3</text><text x="455" y="98" class="mut">4</text><text x="660" y="98" class="mut">6 h</text>
+  <text x="40" y="20" class="mut">Job J1 only — J2 waits even though the CPU is free</text>
+</svg>
+<figcaption>Figure 1.8: CPU idle time in batch OS (lecture example)</figcaption>
+</figure>
+
+<div class="num"><span class="t">Numerical: CPU utilisation in batch OS (lecture example)</span>
+<b>Given:</b> J1 uses the CPU for 1 h, does I/O for 2 h, uses the CPU for 1 h, then does I/O for 2 h.<br>
+<b>Step 1:</b> Total time = 1 + 2 + 1 + 2 = <b>6 h</b><br>
+<b>Step 2:</b> CPU busy time = 1 + 1 = <b>2 h</b>; CPU idle = <b>4 h</b><br>
+<b>Step 3:</b> CPU utilisation = busy / total = 2 / 6 = <b>33.3%</b><br>
+<b>Conclusion:</b> The CPU is idle two-thirds of the time. In the lecturer's words, CPU utilisation "ki band baji padi hai" (is ruined). This is the problem multiprogramming solves.</div>
+
+<div class="tw"><table>
+<tr><th>Advantages</th><th>Disadvantages</th></tr>
+<tr><td>
+<ul><li>Good for large, repetitive jobs (payroll, bank statements, billing)</li><li>Less operator setup time, because similar jobs are grouped</li><li>Can run unattended, e.g. overnight</li></ul></td>
+<td><ul><li><b>CPU idle during I/O</b> → low CPU utilisation</li><li><b>No user interaction</b> while the job runs</li><li><b>No guarantee</b> when the job finishes; turnaround time is very long</li><li>A job stuck in an infinite loop can hold up the others</li><li>Hard to debug</li></ul></td></tr>
+</table></div>
+
+<div class="box add"><span class="t">➕ Added for exam — Batch-era terms</span>
+<ul>
+<li><b>Job</b> = program + data + control instructions, originally on <b>punch cards</b>.</li>
+<li><b>JCL (Job Control Language)</b>: instructions telling the system how to run the job.</li>
+<li><b>Resident monitor</b>: the first rudimentary OS. A small program that stays in memory and automatically moves from one job to the next.</li>
+<li>Examples: IBM OS/360-era systems, payroll and bank statement generation.</li>
+</ul></div>
+</section>
+
+<!-- 1.10A -->
+<section id="s10a">
+<h3><span class="n">1.10A</span>Spooling and Buffering <span class="badge">ADDED</span></h3>
+<div class="def"><b>SPOOL = Simultaneous Peripheral Operations On-Line.</b> Data for a slow device (e.g. a printer) is first written to a <b>fast disk</b> (spool area/queue). The device then reads it from there at its own pace, so the <b>CPU does not wait for the slow device</b>.</div>
+<ul>
+<li>Classic example: <b>print spooling</b>. Many documents queue on disk while the printer prints them one by one, and the user keeps working.</li>
+<li>Spooling lets the <b>I/O of one job overlap with the computation of another</b>. It was an early step towards multiprogramming.</li>
+</ul>
+<div class="tw"><table>
+<tr><th>Spooling</th><th>Buffering</th></tr>
+<tr><td>Uses the <b>disk</b> as a large buffer</td><td>Uses a small area of <b>main memory (RAM)</b></td></tr>
+<tr><td>Overlaps I/O of one job with computation of <b>other jobs</b></td><td>Overlaps I/O and computation of the <b>same job</b></td></tr>
+<tr><td>Can queue many jobs</td><td>Limited size</td></tr>
+</table></div>
+</section>
+
+<!-- 1.11 -->
+<section id="s11">
+<h3><span class="n">1.11</span>Multiprogramming and Multitasking (Non-Preemptive vs Preemptive)</h3>
+<div class="def"><b>Multiprogramming:</b> <b>more than one program</b> is kept in main memory (the <b>ready queue</b>) at the same time. When the running process leaves the CPU, for example to do I/O, the CPU switches to another ready process instead of sitting idle. <b>Goal: maximise CPU utilisation.</b></div>
+
+<p>The lecture presents this with two "natures" of switching:</p>
+<ul>
+<li><b>Non-preemptive</b> (the lecture calls this <b>multiprogramming</b>): the process is <b>never forcibly stopped</b>. P1 runs, then goes to I/O <i>on its own</i>. While it is away, the CPU takes P2 from the ready queue.</li>
+<li><b>Preemptive</b> (the lecture calls this <b>multitasking</b>): <b>preemption = forcibly stopping</b> a process. P1 runs for a while and is <b>stopped forcibly</b>, whether it is half done or nearly done. Then P2 gets the CPU, is stopped after the same amount of time, then P3, and so on.</li>
+</ul>
+
+<figure>
+<svg viewBox="0 0 720 230" role="img" aria-label="Gantt-style comparison of non-preemptive multiprogramming and preemptive multitasking">
+  <text x="10" y="22" class="b">(a) Non-preemptive — Multiprogramming</text>
+  <rect x="20" y="34" width="150" height="34" class="ac"/><text x="95" y="56" text-anchor="middle" class="b">P1</text>
+  <rect x="170" y="34" width="190" height="34" class="gr"/><text x="265" y="56" text-anchor="middle" class="b">P2</text>
+  <rect x="360" y="34" width="120" height="34" class="or"/><text x="420" y="56" text-anchor="middle" class="b">P3</text>
+  <rect x="480" y="34" width="110" height="34" class="ac"/><text x="535" y="56" text-anchor="middle" class="b">P1</text>
+  <text x="170" y="86" text-anchor="middle" class="mut">P1 goes to I/O voluntarily</text>
+  <text x="440" y="86" text-anchor="middle" class="mut">CPU switches only when a process waits/finishes</text>
+  <text x="10" y="128" class="b">(b) Preemptive — Multitasking / Time-sharing (fixed time slice q)</text>
+  <g>
+  <rect x="20" y="140" width="80" height="34" class="ac"/><text x="60" y="162" text-anchor="middle" class="b">P1</text>
+  <rect x="100" y="140" width="80" height="34" class="gr"/><text x="140" y="162" text-anchor="middle" class="b">P2</text>
+  <rect x="180" y="140" width="80" height="34" class="or"/><text x="220" y="162" text-anchor="middle" class="b">P3</text>
+  <rect x="260" y="140" width="80" height="34" class="ac"/><text x="300" y="162" text-anchor="middle" class="b">P1</text>
+  <rect x="340" y="140" width="80" height="34" class="gr"/><text x="380" y="162" text-anchor="middle" class="b">P2</text>
+  <rect x="420" y="140" width="80" height="34" class="or"/><text x="460" y="162" text-anchor="middle" class="b">P3</text>
+  <rect x="500" y="140" width="80" height="34" class="ac"/><text x="540" y="162" text-anchor="middle" class="b">P1</text>
+  </g>
+  <path d="M100 180 V196 M180 180 V196 M260 180 V196" class="ln"/>
+  <text x="60" y="212" text-anchor="middle" class="mut">q</text><text x="140" y="212" text-anchor="middle" class="mut">q</text><text x="220" y="212" text-anchor="middle" class="mut">q</text>
+  <text x="420" y="212" text-anchor="middle" class="mut">each process is forcibly stopped after q → next one</text>
+</svg>
+<figcaption>Figure 1.9: Non-preemptive vs preemptive switching</figcaption>
+</figure>
+
+<div class="box add"><span class="t">➕ Added for exam — Textbook definitions (use these in descriptive answers)</span>
+<ul>
+<li><b>Multiprogramming</b> (Galvin): keeps several jobs in memory and switches the CPU when the current job has to wait. <b>Objective: maximum CPU utilisation.</b> It needs <b>memory management</b> (several programs in RAM) and <b>CPU scheduling</b> (choosing which one runs).</li>
+<li><b>Multitasking = Time-sharing</b>: a <b>logical extension of multiprogramming</b>. The CPU switches between jobs <b>so frequently</b> (time slice / quantum of a few ms) that each user can <b>interact</b> with their program while it runs. <b>Objective: minimum response time</b> (interactivity). Example: <b>Round Robin</b> scheduling, UNIX, Windows. Early example: CTSS, MULTICS.</li>
+<li><b>Degree of multiprogramming</b> = the number of processes in main memory at the same time.</li>
+<li><b>Context switch</b>: saving the state of the current process and loading the state of the next one (details in Process Management).</li>
+</ul></div>
+
+<div class="num"><span class="t">Numerical: CPU utilisation with multiprogramming</span>
+<div class="formula">CPU Utilisation = 1 − p<sup>n</sup>&nbsp;&nbsp;&nbsp;(p = fraction of time a process waits for I/O, n = degree of multiprogramming)</div>
+<b>Given:</b> each process spends 80% of its time waiting for I/O (p = 0.8).<br>
+<b>n = 1:</b> 1 − 0.8 = <b>20%</b><br>
+<b>n = 3:</b> 1 − 0.8³ = 1 − 0.512 = <b>48.8%</b><br>
+<b>n = 5:</b> 1 − 0.8⁵ = 1 − 0.328 = <b>67.2%</b><br>
+<b>Conclusion:</b> Keeping more programs in memory lowers the chance that all of them wait for I/O at once, so CPU utilisation rises. Beyond a point, too many processes cause <b>thrashing</b> (covered in Virtual Memory).</div>
+
+<div class="box trap"><span class="t">⚠️ Exam trap (Lecture shortcut vs textbook)</span>
+The lecture maps multiprogramming = non-preemptive and multitasking = preemptive. That is a useful <b>intuition</b>. In MCQs, though, remember the <b>goals</b>: multiprogramming → <b>CPU utilisation</b>; time-sharing/multitasking → <b>response time</b>. <b>Every multitasking system is a multiprogramming system</b>, but not the other way round. Neither needs more than one CPU; only <b>multiprocessing</b> does.</div>
+</section>
+
+<!-- 1.12 -->
+<section id="s12">
+<h3><span class="n">1.12</span>Example: Selfie Analogy for Multiprogramming vs Multitasking</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — The superstar &amp; selfies</span>
+A superstar stands outside a cinema hall promoting the film "Selfie" and promises <b>10 selfies to every fan</b> who bought a ticket. The fans wait in line, which is the <b>ready queue</b>.
+<ul>
+<li><b>Multiprogramming (non-preemptive):</b> the star takes <b>all 10 selfies with each person</b>. If a fan's phone gets stuck (password, black camera, dust on the lens), which is an <b>I/O problem</b>, that fan <i>steps aside on their own</i> to fix it while the next fan comes forward. Once fixed, they return. <b>No one is forcibly sent away</b>; the star "respects the fans".</li>
+<li><b>Multitasking (preemptive):</b> the star says "only <b>5 selfies per turn</b>". After 5 they move to the next person, <b>whether or not you wanted 10</b>. That is forcible stopping, or <b>preemption</b>. If you want more, <b>rejoin the line</b> (get rescheduled) for your remaining 5.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Analogy element</th><th>OS concept</th></tr>
+<tr><td>Superstar</td><td>CPU</td></tr>
+<tr><td>Fans in line</td><td>Processes in the ready queue</td></tr>
+<tr><td>Number of selfies a fan wants</td><td>CPU burst time</td></tr>
+<tr><td>Phone/camera problem → step aside</td><td>Process leaves for I/O (voluntary)</td></tr>
+<tr><td>"Only 5 selfies per turn"</td><td>Time quantum / time slice</td></tr>
+<tr><td>Rejoin the line for remaining selfies</td><td>Preempted process goes back to the ready queue</td></tr>
+</table></div>
+</section>
+
+<!-- 1.13 -->
+<section id="s13">
+<h3><span class="n">1.13</span>Multiprocessing Operating System</h3>
+<div class="def"><b>Multiprocessing OS:</b> runs on a system with <b>more than one CPU (processor)</b>. The CPUs <b>share the same memory and I/O devices</b>, so we add extra <b>processors</b>, not extra memory or I/O. Different processes run on different CPUs <b>at the same instant</b>: true <b>parallelism</b>.</div>
+<figure>
+<svg viewBox="0 0 560 210" role="img" aria-label="Symmetric multiprocessing: CPUs share memory and I/O over a common bus">
+  <rect x="40" y="20" width="130" height="56" rx="5" class="ac"/><text x="105" y="44" text-anchor="middle" class="b">CPU 1</text><text x="105" y="62" text-anchor="middle" class="mut">running P1</text>
+  <rect x="215" y="20" width="130" height="56" rx="5" class="ac"/><text x="280" y="44" text-anchor="middle" class="b">CPU 2</text><text x="280" y="62" text-anchor="middle" class="mut">running P2</text>
+  <rect x="390" y="20" width="130" height="56" rx="5" class="ac"/><text x="455" y="44" text-anchor="middle" class="b">CPU 3</text><text x="455" y="62" text-anchor="middle" class="mut">running P3</text>
+  <path d="M105 76 V110 M280 76 V110 M455 76 V110 M30 110 H530" class="lna"/>
+  <text x="280" y="104" text-anchor="middle" class="mut">shared system bus</text>
+  <path d="M170 110 V140 M390 110 V140" class="ln"/>
+  <rect x="90" y="140" width="160" height="50" rx="5" class="gr"/><text x="170" y="170" text-anchor="middle" class="b">Shared Main Memory</text>
+  <rect x="310" y="140" width="160" height="50" rx="5" class="gr"/><text x="390" y="170" text-anchor="middle" class="b">Shared I/O</text>
+</svg>
+<figcaption>Figure 1.10: Multiprocessor (tightly coupled) system</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture — Benefits</span>
+<ul><li><b>Parallelism increases</b> → processing is faster and results come sooner.</li>
+<li><b>Improved efficiency</b>.</li>
+<li><b>Reliable and fault tolerant</b>: if one CPU is overloaded or goes down, its work can be redirected to another CPU.</li></ul></div>
+<div class="box add"><span class="t">➕ Added for exam — SMP vs AMP and key terms</span>
+<div class="tw"><table>
+<tr><th>Symmetric Multiprocessing (SMP)</th><th>Asymmetric Multiprocessing (AMP)</th></tr>
+<tr><td>All CPUs are <b>peers</b>; each runs OS tasks and user processes</td><td><b>Master–slave</b>: one master CPU runs the OS and assigns work to the slave CPUs</td></tr>
+<tr><td>Better load balancing; more complex OS</td><td>Simpler; the master is a bottleneck and a single point of failure</td></tr>
+<tr><td>Windows, Linux, macOS (all modern OSs)</td><td>Older systems, some embedded systems</td></tr>
+</table></div>
+<ul>
+<li>Also called <b>parallel systems</b> or <b>tightly coupled systems</b>: shared memory, shared clock, shared bus.</li>
+<li><b>Three advantages (Galvin)</b>: <b>Increased throughput</b>, <b>Economy of scale</b> (sharing peripherals, power and storage is cheaper than multiple separate systems) and <b>Increased reliability</b>, also called <b>graceful degradation</b> or fault tolerance.</li>
+<li><b>Speed-up with N processors is less than N</b>, because of overhead and contention for shared resources.</li>
+<li><b>Multicore</b> = multiple CPU cores on <b>one chip</b>. It is faster and uses less power than multiple single-core chips.</li>
+<li><b>UMA</b> (Uniform Memory Access) vs <b>NUMA</b> (Non-Uniform Memory Access): in NUMA, each CPU's local memory is faster for it than remote memory.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Multi-what?)</span>
+<b>Multiprocessing</b> = many <b>CPUs</b>. <b>Multiprogramming</b> = many <b>programs in memory</b> on one CPU. <b>Multitasking</b> = many tasks <b>time-shared</b> on one CPU. <b>Multithreading</b> = many <b>threads within one process</b>. <b>Multiprocessing</b> gives true parallelism; the others give <b>concurrency</b> (interleaving) on a single CPU.</div>
+</section>
+
+<!-- 1.14 -->
+<section id="s14">
+<h3><span class="n">1.14</span>Real-Time Operating System (Hard and Soft)</h3>
+<div class="def"><b>RTOS:</b> an OS where <b>time is the most crucial factor</b>. Tasks have <b>time limits (deadlines)</b>, and a result is correct only if it is <b>logically correct AND delivered on time</b>. Delay is not acceptable.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — Time-critical examples</span>
+<ul>
+<li><b>Missile launch</b>: there is a timer down to the millisecond. If a step does not happen at its second, the missile can blow up.</li>
+<li><b>Car airbag</b>: during an accident the airbag must open <b>in time</b> to protect the face and head. If it opens <i>after</i> the head has already hit, "what bigger joke could there be?" Missing the deadline makes it useless.</li>
+</ul>
+<b>Hard vs soft</b>, like personalities: a <b>hard</b> person never bends their principles, whatever happens (<b>very strict</b>). A <b>soft</b> person is <b>flexible</b> ("chal jayega"), comparatively less strict, though not completely relaxed.</div>
+
+<figure>
+<svg viewBox="0 0 700 250" role="img" aria-label="Usefulness of result versus time for hard and soft real-time systems">
+  <defs><marker id="ar6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+  <text x="170" y="18" text-anchor="middle" class="b">Hard RTOS</text>
+  <path d="M40 200 H320 M40 200 V30" class="ln" marker-end="url(#ar6)"/>
+  <path d="M40 60 H180 V200 H310" class="hard"/>
+  <path d="M180 40 V205" class="ln dash"/><text x="180" y="222" text-anchor="middle" class="mut">deadline</text>
+  <text x="110" y="52" text-anchor="middle" class="mut">high usefulness</text>
+  <text x="245" y="190" text-anchor="middle" class="mut">drops to ZERO</text>
+  <text x="18" y="120" class="mut" transform="rotate(-90 18 120)">usefulness</text>
+  <text x="300" y="218" class="mut">time</text>
+  <text x="530" y="18" text-anchor="middle" class="b">Soft RTOS</text>
+  <path d="M390 200 H670 M390 200 V30" class="ln" marker-end="url(#ar6)"/>
+  <path d="M390 60 H530 C 580 80, 610 150, 660 185" class="soft"/>
+  <path d="M530 40 V205" class="ln dash"/><text x="530" y="222" text-anchor="middle" class="mut">deadline</text>
+  <text x="460" y="52" text-anchor="middle" class="mut">high usefulness</text>
+  <text x="620" y="110" text-anchor="middle" class="mut">degrades gradually</text>
+  <text x="368" y="120" class="mut" transform="rotate(-90 368 120)">usefulness</text>
+  <text x="650" y="218" class="mut">time</text>
+</svg>
+<figcaption>Figure 1.11: Usefulness of a result vs time — hard deadline vs soft deadline (lecture diagram)</figcaption>
+</figure>
+<p>In a <b>hard RTOS</b>, usefulness is high until the deadline and then <b>drops straight to zero</b>. In a <b>soft RTOS</b>, missing the deadline does affect usefulness and efficiency, but the decline is <b>gradual</b>, not drastic.</p>
+
+<div class="tw"><table>
+<tr><th>Basis</th><th>Hard RTOS</th><th>Soft RTOS</th></tr>
+<tr><td>Deadline</td><td>Must <b>never</b> be missed; strict</td><td>Occasional miss is tolerable; less strict</td></tr>
+<tr><td>Missed deadline</td><td><b>System failure / catastrophe</b>; result is useless</td><td>Performance degrades gradually</td></tr>
+<tr><td>Storage <span class="badge">ADDED</span></td><td>Data in ROM / limited memory; little or no virtual memory or secondary storage</td><td>Can use advanced OS features (virtual memory, etc.)</td></tr>
+<tr><td>Examples</td><td>Missile systems, airbags, <b>pacemaker</b>, ABS brakes, nuclear reactor control, flight control, industrial robots</td><td><b>Multimedia/video streaming</b>, online gaming, VR, video conferencing, ATM/railway reservation</td></tr>
+</table></div>
+
+<div class="box add"><span class="t">➕ Added for exam — RTOS essentials</span>
+<ul>
+<li><b>Firm RTOS</b>: a third category. An occasional miss is tolerated, but a late result has <b>zero value</b> and is discarded. Examples: a lost video frame, a stock-trading quote.</li>
+<li>Key properties: <b>deterministic</b> (predictable) behaviour, <b>minimal interrupt latency</b>, <b>priority-based preemptive scheduling</b>, small kernel, high reliability.</li>
+<li>RTOS scheduling algorithms: <b>Rate Monotonic (RMS)</b>, which gives a shorter period a higher priority, and <b>Earliest Deadline First (EDF)</b>.</li>
+<li><b>Priority inversion</b>: a low-priority task holds a resource that a high-priority task needs. It is fixed by <b>priority inheritance</b>; the Mars Pathfinder case is the famous example.</li>
+<li>Examples of RTOS: <b>VxWorks</b> (used on Mars rovers), <b>QNX</b> (cars), <b>FreeRTOS</b>, <b>RTLinux</b>, LynxOS.</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert (RTOS)</span>
+"Which OS is used in a <b>pacemaker / missile / ABS</b>?" → <b>Hard real-time OS</b>. "<b>Video streaming / online game</b>?" → <b>Soft real-time OS</b>. RTOS is judged on <b>predictability and meeting deadlines</b>, not on raw speed or throughput.</div>
+</section>
+
+<!-- 1.14A -->
+<section id="s14a">
+<h3><span class="n">1.14A</span>Master Comparison of OS Types <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Type</th><th>CPUs</th><th>Key idea</th><th>Main goal</th><th>User interaction</th><th>Example</th></tr>
+<tr><td>Batch</td><td>1</td><td>Similar jobs grouped; one job at a time</td><td>Reduce setup time</td><td>None</td><td>Payroll, IBM OS/360-era</td></tr>
+<tr><td>Multiprogramming</td><td>1</td><td>Many programs in RAM; switch on I/O wait</td><td>Max CPU utilisation</td><td>Little</td><td>Early IBM mainframes</td></tr>
+<tr><td>Multitasking / Time-sharing</td><td>1+</td><td>Fixed time slice; preemptive</td><td>Min response time</td><td>Interactive</td><td>UNIX, Windows, Linux</td></tr>
+<tr><td>Multiprocessing</td><td>2+ (shared memory)</td><td>True parallel execution</td><td>Throughput, reliability</td><td>Interactive</td><td>Multicore Windows/Linux</td></tr>
+<tr><td>Clustered</td><td>Many nodes (LAN, shared storage)</td><td>Nodes act as one</td><td>High availability, HPC</td><td>—</td><td>Server clusters, Beowulf</td></tr>
+<tr><td>Distributed</td><td>Many nodes (WAN, own memory)</td><td>Looks like one system</td><td>Resource sharing, speed-up</td><td>Transparent</td><td>Amoeba, LOCUS</td></tr>
+<tr><td>Network</td><td>Many independent machines</td><td>Share files and printers</td><td>Resource sharing</td><td>Aware of remote machines</td><td>Novell NetWare, Windows Server</td></tr>
+<tr><td>Real-time</td><td>Any</td><td>Deadline-driven</td><td>Predictability</td><td>Minimal</td><td>VxWorks, QNX</td></tr>
+<tr><td>Embedded</td><td>Usually 1 (microcontroller)</td><td>Fixed single function</td><td>Small, low power</td><td>Minimal</td><td>Embedded Linux, FreeRTOS</td></tr>
+<tr><td>Mobile</td><td>Multicore SoC</td><td>Touch, battery, sensors, apps</td><td>Usability + power saving</td><td>High</td><td>Android, iOS</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Single-user vs multi-user</span>
+<b>Single-user single-task</b>: MS-DOS. <b>Single-user multitask</b>: Windows desktop, macOS. <b>Multi-user</b>: UNIX, Linux, Windows Server, mainframes, where many users share one system at the same time.</div>
+</section>
+
+<!-- 1.15 -->
+<section id="s15">
+<h3><span class="n">1.15</span>Process vs Program</h3>
+<div class="def"><b>Program:</b> the executable code while it sits in <b>secondary memory</b> (hard disk). <b>Process:</b> <b>a program in execution</b>. When a program is loaded into <b>main memory (RAM)</b> so the CPU can execute it, it takes a new form and a new name: a process.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A program on the disk <b>cannot be executed</b> there. For the CPU to execute it, it <b>must be in main memory</b>. So the program is picked up from secondary memory and placed in main memory, and <b>the program becomes a process</b>. The program is a <b>static / passive entity</b>; the process is a <b>dynamic / active entity</b>, because it is about to execute.</div>
+<figure>
+<svg viewBox="0 0 640 170" role="img" aria-label="Program on disk loaded into RAM becomes a process executed by CPU">
+  <defs><marker id="ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="40" width="170" height="90" rx="6" class="bx"/><text x="95" y="62" text-anchor="middle" class="b">Secondary Memory</text><text x="95" y="78" text-anchor="middle" class="mut">(Hard disk / SSD)</text>
+  <rect x="35" y="88" width="120" height="30" rx="4" class="or"/><text x="95" y="108" text-anchor="middle">a.exe = PROGRAM</text>
+  <path d="M180 100 H245" class="lna" marker-end="url(#ar7)"/><text x="212" y="90" text-anchor="middle" class="mut">load</text>
+  <rect x="250" y="40" width="170" height="90" rx="6" class="bx"/><text x="335" y="62" text-anchor="middle" class="b">Main Memory</text><text x="335" y="78" text-anchor="middle" class="mut">(RAM)</text>
+  <rect x="275" y="88" width="120" height="30" rx="4" class="ac"/><text x="335" y="108" text-anchor="middle">PROCESS + PCB</text>
+  <path d="M420 100 H485" class="lna" marker-end="url(#ar7)"/><text x="452" y="90" text-anchor="middle" class="mut">execute</text>
+  <rect x="490" y="55" width="130" height="60" rx="6" class="gr"/><text x="555" y="90" text-anchor="middle" class="b">CPU</text>
+  <text x="95" y="155" text-anchor="middle" class="mut">static · passive</text>
+  <text x="335" y="155" text-anchor="middle" class="mut">dynamic · active</text>
+</svg>
+<figcaption>Figure 1.12: A program becomes a process when loaded into main memory</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Program</th><th>Process</th></tr>
+<tr><td>Definition</td><td>Set of instructions (executable file)</td><td>Program <b>in execution</b></td></tr>
+<tr><td>Nature</td><td><b>Static / passive</b> entity</td><td><b>Dynamic / active</b> entity</td></tr>
+<tr><td>Location</td><td>Secondary memory (disk)</td><td>Main memory (RAM)</td></tr>
+<tr><td>Lifetime <span class="badge">ADDED</span></td><td>Long: exists until deleted</td><td>Limited: created → runs → terminates</td></tr>
+<tr><td>Resources <span class="badge">ADDED</span></td><td>Needs only disk space</td><td>Needs CPU, memory, I/O, files, registers</td></tr>
+<tr><td>Control block <span class="badge">ADDED</span></td><td>None</td><td>Has a <b>PCB</b> (Process Control Block) with ID, state, program counter, registers</td></tr>
+<tr><td>Relationship <span class="badge">ADDED</span></td><td>One program can create <b>many processes</b> (e.g. 3 Chrome windows = 3 processes)</td><td>Each process is a separate instance</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A process is <b>more than the program code</b>, which is only its <i>text section</i>. A process also includes the <b>program counter, registers, stack, heap and data section</b>. "Process = active, Program = passive" is the most-asked one-liner.</div>
+</section>
+
+<!-- 1.16 -->
+<section id="s16">
+<h3><span class="n">1.16</span>Process Layout in Memory (Stack, Heap, Data, Code)</h3>
+<p>The skeleton of a process in memory, from <b>high address (top)</b> to <b>low address (bottom)</b>:</p>
+<figure>
+<svg viewBox="0 0 620 330" role="img" aria-label="Process memory layout: stack at top, heap, data, text at bottom">
+  <defs><marker id="ar8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="210" y="16" text-anchor="middle" class="mut">max (high address)</text>
+  <rect x="120" y="24" width="180" height="58" class="pu"/><text x="210" y="50" text-anchor="middle" class="b">STACK</text><text x="210" y="68" text-anchor="middle" class="mut">grows downward ↓</text>
+  <rect x="120" y="82" width="180" height="88" class="bx"/>
+  <path d="M120 126 H300" class="ln dash"/>
+  <text x="210" y="122" text-anchor="middle" class="mut">free space</text><text x="210" y="142" text-anchor="middle" class="mut">(fluctuating boundary)</text>
+  <path d="M210 88 V110" class="lna" marker-end="url(#ar8)"/>
+  <path d="M210 166 V146" class="lna" marker-end="url(#ar8)"/>
+  <rect x="120" y="170" width="180" height="50" class="or"/><text x="210" y="192" text-anchor="middle" class="b">HEAP</text><text x="210" y="209" text-anchor="middle" class="mut">grows upward ↑</text>
+  <rect x="120" y="220" width="180" height="44" class="gr"/><text x="210" y="247" text-anchor="middle" class="b">DATA</text>
+  <rect x="120" y="264" width="180" height="44" class="ac"/><text x="210" y="291" text-anchor="middle" class="b">TEXT (CODE)</text>
+  <text x="210" y="325" text-anchor="middle" class="mut">0 (low address)</text>
+  <text x="320" y="46" class="mut">local variables, function parameters,</text><text x="320" y="62" class="mut">return addresses, activation records</text>
+  <text x="320" y="190" class="mut">dynamic allocation —</text><text x="320" y="206" class="mut">malloc(), calloc(), new</text>
+  <text x="320" y="238" class="mut">global &amp; static variables</text><text x="320" y="254" class="mut">(initialised data + BSS)</text>
+  <text x="320" y="284" class="mut">executable instructions</text><text x="320" y="300" class="mut">(read-only, shareable)</text>
+</svg>
+<figcaption>Figure 1.13: Layout of a process in memory</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Section</th><th>Stores</th><th>Notes</th></tr>
+<tr><td><b>Stack</b></td><td>Temporary data: <b>local variables</b>, <b>function parameters</b>, <b>return addresses</b></td><td>Used for <b>recursion</b>: each call pushes an <b>activation record</b>. Grows <b>downward</b>. Too-deep recursion → <b>stack overflow</b>.</td></tr>
+<tr><td><b>Heap</b></td><td><b>Dynamically allocated</b> memory at run time</td><td><code>malloc()</code>/<code>free()</code> in C, <code>new</code>/<code>delete</code> in C++/Java. Grows <b>upward</b>. Forgetting to free → <b>memory leak</b>.</td></tr>
+<tr><td><b>Data</b></td><td><b>Global and static</b> variables</td><td>Split into <b>initialised data</b> and <b>BSS</b> (uninitialised globals, set to 0) <span class="badge">ADDED</span></td></tr>
+<tr><td><b>Text / Code</b></td><td>The actual <b>set of instructions</b> being executed</td><td>Fixed size, <b>read-only</b>, can be <b>shared</b> between processes running the same program <span class="badge">ADDED</span></td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture — The dotted line</span>
+The dotted line between stack and heap is a <b>fluctuating line</b> that moves up or down as needed. If the stack needs more space, the line moves down. If the heap needs more, it moves up. Stack and heap <b>grow towards each other</b> and share the free space between them. More on the <b>PCB</b> comes in the Process Management module.</div>
+
+<div class="num"><span class="t">Numerical / code: where does each variable live?</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">int g = 10;          // DATA (initialised global)
+int u;               // BSS  (uninitialised global → 0)
+int main() {
+    static int s = 5; // DATA (static)
+    int x = 3;        // STACK (local)
+    int *p = malloc(4*sizeof(int)); // p → STACK, the 16 bytes it points to → HEAP
+    return 0;         // main()'s machine code → TEXT
+}</pre>
+<b>Conclusion:</b> local variables and pointers go on the stack, what <code>malloc</code> returns goes on the heap, globals and statics go in data/BSS, and instructions go in text.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"Recursion uses which data structure / memory section?" → <b>Stack</b>. "Dynamic memory allocation happens in?" → <b>Heap</b>. "Global variables are stored in?" → <b>Data section</b>. "Stack grows towards?" → <b>lower addresses (downward)</b>.</div>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 1</h3>
+<ul>
+<li><b>Computer = hardware (physical) + software (set of programs)</b>. Hardware is the car, software is the driver (noob vs pro).</li>
+<li><b>System software</b> runs the system (OS, compiler, assembler, loader, drivers, utilities). <b>Application software</b> does user tasks (Word, Excel, DBMS package) and <b>needs</b> the OS.</li>
+<li><b>OS = interface / intermediary between user and hardware</b>; also a <b>resource manager</b> and a <b>control program</b>.</li>
+<li><b>Kernel</b> = core, always in RAM. <b>Shell</b> = command interpreter. <b>Bootstrap loader</b> in ROM loads the OS (BIOS/UEFI → POST → bootloader → kernel).</li>
+<li><b>Objectives</b>: Convenience (primary), Efficiency (secondary), Ability to evolve.</li>
+<li><b>Functions</b>: process, memory, file, I/O device, disk management; security (<b>CIA</b>), networking, error detection, accounting.</li>
+<li><b>Batch</b>: operator groups similar jobs; one job at a time; <b>CPU idle during I/O</b>; no interaction. Lecture example: 2 h busy of 6 h = 33% utilisation.</li>
+<li><b>Spooling</b> (Simultaneous Peripheral Operations On-Line) uses the disk as a buffer for slow devices, e.g. print queue.</li>
+<li><b>Multiprogramming</b>: many programs in RAM; switch when a process waits → <b>max CPU utilisation</b> (lecture: non-preemptive). Utilisation = 1 − pⁿ.</li>
+<li><b>Multitasking / Time-sharing</b>: forced switching after a <b>time slice</b> (preemptive) → <b>min response time</b>. Selfie analogy: 10 selfies each vs 5 per turn.</li>
+<li><b>Multiprocessing</b>: 2+ CPUs sharing memory and I/O; true parallelism; SMP (peers) vs AMP (master–slave); tightly coupled; graceful degradation.</li>
+<li><b>Clustered</b>: nodes on a LAN with shared storage ("1+1 = 11" supercomputer); high availability; symmetric vs asymmetric (hot standby).</li>
+<li><b>Distributed</b>: geographically dispersed, loosely coupled, own memory; load balancing; <b>no single point of failure</b>; looks like one system. <b>NOS</b>: users know machines are separate.</li>
+<li><b>Embedded</b>: fixed, narrow function (AC, washing machine, microwave); ROM; low resources.</li>
+<li><b>RTOS</b>: deadlines. <b>Hard</b>: miss = failure, usefulness drops to 0 (missile, airbag, pacemaker). <b>Soft</b>: gradual degradation (streaming, gaming). <b>Firm</b>: late result discarded.</li>
+<li><b>Program</b> = static/passive, on disk. <b>Process</b> = program in execution, dynamic/active, in RAM, has a PCB.</li>
+<li><b>Process layout</b> (top→bottom): <b>Stack</b> (locals, recursion, grows ↓) · free space (fluctuating line) · <b>Heap</b> (malloc/new, grows ↑) · <b>Data</b> (global/static + BSS) · <b>Text</b> (code).</li>
+</ul>
+</div>
+<div class="end">End of Volume 01 — Part 1 · Next: Chapter 2 — Operating System Structure</div>
+<nav class="topnav" aria-label="Chapter navigation"><span></span><a href="index.html">☰ All topics</a><a href="02-OS-Structure.html">Ch 2: OS Structure →</a></nav>
+
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('os-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

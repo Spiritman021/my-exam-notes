@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CA July 2026 · Class 1</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+
+.item{border-top:1px solid var(--line);padding:12px 0 4px}
+.item:first-of-type{border-top:0;padding-top:0}
+.item h4{margin:0 0 4px;font-size:16.5px}
+.item ul{margin:4px 0}
+.gk{font-size:13.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:6px 10px;margin:6px 0 4px}
+.gk b{color:var(--ink)}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+.tag.bank{color:var(--lec);border:1px solid var(--lec)}
+.tag.hot{color:var(--alert);border:1px solid var(--alert)}
+.recallbar{position:sticky;top:0;z-index:4;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--alert);border-radius:6px;padding:10px 14px;margin:16px 0;font-size:14px}
+.recallbar button{font:inherit;font-size:13px;background:var(--accent);color:#fff;border:0;border-radius:4px;padding:5px 12px;cursor:pointer}
+.recallbar button.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+.recallbar .hint{color:var(--muted);flex:1;min-width:200px}
+html.recall .item b.k{background:var(--surface-2);color:transparent;border-radius:3px;outline:1px dashed var(--muted);cursor:pointer;user-select:none}
+html.recall .item b.k.shown{color:inherit;background:var(--accent-soft);outline:0}
+.quiz details{border:1px solid var(--line);border-radius:5px;margin:6px 0;background:var(--surface)}
+.quiz summary{cursor:pointer;padding:8px 12px;font-weight:550}
+.quiz details p{margin:0;padding:0 12px 10px 32px;color:var(--accent);font-weight:600}
+.howto ol{margin:6px 0 0}
+.item::after{content:"";display:block;clear:both}
+.item figure.pic{float:right;width:150px;margin:2px 0 8px 16px;text-align:center}
+.item figure.pic img{width:150px;height:110px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px;display:block}
+.item figure.pic figcaption{font-size:11px;letter-spacing:0;text-transform:none;font-weight:500;margin-top:3px;line-height:1.3}
+.item figure.pic figcaption a{color:var(--muted);text-decoration:none}
+@media (max-width:600px){.item figure.pic{width:110px;margin-left:10px}.item figure.pic img{width:110px;height:84px}}
+@media print{.item figure.pic{break-inside:avoid}}
+.gt{position:relative;border-bottom:1.5px dotted var(--accent);cursor:help;outline:0}
+.gt .pop{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:270px;max-width:80vw;padding:10px 12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13px;font-weight:400;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal}
+.gt .pop::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.gt:hover .pop,.gt:focus .pop,.gt:focus-within .pop{display:block}
+.gt .pop img{float:right;width:64px;height:48px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:4px;padding:2px;margin:0 0 4px 8px}
+.gt .pop .pt{display:block;color:var(--accent);font-size:13.5px;margin-bottom:2px}
+.gt .pop .ps{display:block;color:var(--muted);font-size:12.5px;margin-bottom:4px}
+.gt .pop .pl{display:block;clear:both;margin:0;padding:0}
+.gt .pop .pi{display:block;position:relative;padding-left:14px;margin:2px 0}
+.gt .pop .pi::before{content:"";position:absolute;left:3px;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+html.recall .gt .pop{color:var(--ink)}
+html.recall b.k:not(.shown) .gt{border-bottom:0}
+html.recall b.k:not(.shown) .gt .pop{display:none!important}
+@media print{.gt .pop{display:none!important}}
+</style>
+<script src="../assets/embed.js"></script>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Class navigation"><span class="off">← Previous class</span><a href="index.html">☰ All classes</a><a href="2026-07-July-Class-2.html">Class 2 →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT · Current Affairs · July 2026</div>
+  <h1>Current Affairs — July 2026 · Class 1</h1>
+  <p class="sub">Class 1 of the July 2026 monthly series (Ashish Gautam, Adda247) · 24 topics, grouped by exam category.</p>
+  <div class="legend"><span class="l1">🏦 Banking focus</span><span class="l2">➕ Static GK link</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 Likely question</span></div>
+</header>
+<div class="box lec howto"><span class="t">🎓 How to study this page</span>
+<ol>
+<li><b>Read once</b> with Recall mode off. Hover over (or tap) any <span style="border-bottom:1.5px dotted var(--accent)">dotted name</span> to see its static GK.</li>
+<li><b>Turn Recall mode on</b>: the key facts are hidden. Say each one before you click to reveal it.</li>
+<li><b>Take the self-test</b> at the end. Revise again tomorrow, in a week and in a month, using only the Rapid Revision box after that.</li>
+</ol></div>
+<div class="recallbar"><button id="recall" type="button">Recall mode: off</button><button id="revealall" class="ghost" type="button">Reveal all</button><span class="hint">Hides the key facts. Click any blank to reveal it.</span></div>
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#c1"><span class="n">1</span>Banks</a></li><li><a href="#c2"><span class="n">2</span>Regulators — RBI, IRDAI, IFSCA</a></li><li><a href="#c3"><span class="n">3</span>Payments, Fintech &amp; Insurance-Tech</a></li><li><a href="#c4"><span class="n">4</span>Economy &amp; Business</a></li><li><a href="#c5"><span class="n">5</span>Government Schemes</a></li><li><a href="#c6"><span class="n">6</span>States</a></li><li><a href="#quiz"><span class="n">7</span>Self-test (22 questions)</a></li><li><a href="#rapid"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+<section id="c1"><h3><span class="n">1</span>Banks</h3><div class="item"><figure class="pic"><img src="img/kotak-mahindra-bank-a29852.png" alt="Kotak Mahindra Bank" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Kotak_Mahindra_Bank_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Kotak Mahindra Bank</a></figcaption></figure><h4><span class="tag bank">🏦 Banking</span><span class="gt" tabindex="0">Kotak Mahindra Bank<span class="pop" role="tooltip"><img src="img/kotak-mahindra-bank-a29852.png" alt=""><b class="pt">Kotak Mahindra Bank</b><span class="pl"><span class="pi">Founded <b class="k">1985</b></span><span class="pi">HQ <b class="k">Mumbai</b></span></span></span></span> to acquire Deutsche Bank India's retail &amp; wealth business</h4><ul><li>Kotak Mahindra Bank (KMBL) is buying Deutsche Bank India's retail banking, private banking and wealth management business for <b class="k">₹281.7 crore</b>.</li><li>Deal expected to complete by <b class="k">September 2027</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/hdfc-bank-b37980.png" alt="HDFC Bank" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:HDFC_Bank_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">HDFC Bank</a></figcaption></figure><h4><span class="tag bank">🏦 Banking</span>HDFC Bank builds its own AI platform and fraud-monitoring system</h4><ul><li>In-house AI platform named <b class="k">Neev</b>, plus a real-time fraud detection system.</li></ul></div><div class="item"><figure class="pic"><img src="img/state-bank-of-india-34715b.png" alt="State Bank of India" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:SBI-logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">State Bank of India</a></figcaption></figure><h4><span class="tag bank">🏦 Banking</span>SBI raises $300 million through Floating Rate Notes</h4><ul><li>Amount: <b class="k">US$300 million</b> Senior Unsecured Floating Rate Notes (FRNs); maturity <b class="k">3 years</b>.</li><li>Coupon: <b class="k"><span class="gt" tabindex="0">SOFR<span class="pop" role="tooltip"><b class="pt">SOFR</b><span class="ps">Secured Overnight Financing Rate</span><span class="pl"><span class="pi">Benchmark interest rate of the <b>United States</b> (replaced LIBOR)</span></span></span></span> + 100 bps</b> per annum, payable quarterly in arrears.</li><li>Issued through SBI's <b class="k">London</b> branch.</li><li>FRN = bond whose interest rate resets periodically with a benchmark rate.</li></ul></div><div class="item"><figure class="pic"><img src="img/nirmala-sitharaman-846700.jpg" alt="Nirmala Sitharaman" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Am_11._April_2025_empfing_Au%C3%9Fenministerin_Beate_Meinl-Reisinger_die_indische_Finanzministerin_Nirmala_Sitharaman_in_Wien_(54445397025)_(cropped).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY 2.0">Nirmala Sitharaman</a></figcaption></figure><h4><span class="tag bank">🏦 Banking</span>Four PSBs pay ₹9,439 crore dividend to Government (FY 2025–26)</h4><ul><li>Total: <b class="k">₹9,439 crore</b>; cheques presented to Finance Minister <b class="k"><span class="gt" tabindex="0">Nirmala Sitharaman<span class="pop" role="tooltip"><img src="img/nirmala-sitharaman-846700.jpg" alt=""><b class="pt">Nirmala Sitharaman</b><span class="pl"><span class="pi">Union Finance Minister</span></span></span></span></b>.</li><li>Bank of Baroda <b class="k">₹2,811 cr</b> (highest) · PNB <b class="k">₹2,416 cr</b> · Canara <b class="k">₹2,397 cr</b> · Indian Bank <b class="k">₹1,815.05 cr</b> (lowest).</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Order to remember: <b>B-P-C-I</b> (BoB &gt; PNB &gt; Canara &gt; Indian Bank). PNB and Canara differ by only ₹19 cr — a classic option trap.</div></div><div class="item"><figure class="pic"><img src="img/mizuho-financial-group-67f068.png" alt="Mizuho Financial Group" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Mizuho_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Mizuho Financial Group</a></figcaption></figure><h4><span class="tag bank">🏦 Banking</span><span class="gt" tabindex="0">Bank of Baroda<span class="pop" role="tooltip"><img src="img/mizuho-financial-group-67f068.png" alt=""><b class="pt">Bank of Baroda</b><span class="pl"><span class="pi">Founded <b class="k">20 July 1908</b></span><span class="pi">HQ <b class="k">Vadodara, Gujarat</b></span><span class="pi">MD &amp; CEO <b class="k">Dr. Debadatta Chand</b></span><span class="pi">Tagline <b class="k">India&#39;s International Bank</b></span></span></span></span> partners <span class="gt" tabindex="0">Mizuho<span class="pop" role="tooltip"><img src="img/mizuho-financial-group-67f068.png" alt=""><b class="pt">Mizuho</b><span class="ps">Mizuho Financial Group</span><span class="pl"><span class="pi">Japanese banking group</span><span class="pi">HQ <b>Tokyo</b></span></span></span></span> Bank for M&amp;A financing and cross-border banking</h4><ul><li>Mizuho Bank = banking arm of <b class="k">Japan</b>'s Mizuho Financial Group.</li><li>Focus: <b class="k">Mergers &amp; Acquisitions (M&amp;A) financing</b> and related services.</li></ul></div></section>
+<section id="c2"><h3><span class="n">2</span>Regulators — RBI, IRDAI, IFSCA</h3><div class="item"><figure class="pic"><img src="img/reserve-bank-of-india-fcec6f.png" alt="Reserve Bank of India" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Reserve_Bank_of_India_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Reserve Bank of India</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> penalises Bank of Baroda and GIC Housing Finance</h4><ul><li>Bank of Baroda: <b class="k">₹63.60 lakh</b> — Fair Practices Code for Lenders + KYC Directions.</li><li>GIC Housing Finance: <b class="k">₹3.10 lakh</b> — KYC Directions.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>BoB appears twice this month (Mizuho tie-up + RBI penalty) and tops the dividend list — expect a "which bank" question.</div></div><div class="item"><figure class="pic"><img src="img/insurance-regulatory-and-development-authority-040114.png" alt="Insurance Regulatory and Development Authority" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:IRDA_New_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Insurance Regulatory and Development Authority</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">IRDAI<span class="pop" role="tooltip"><img src="img/insurance-regulatory-and-development-authority-040114.png" alt=""><b class="pt">IRDAI</b><span class="ps">Insurance Regulatory and Development Authority of India</span><span class="pl"><span class="pi">Est. <b>1999</b> (IRDA Act)</span><span class="pi">HQ <b>Hyderabad</b></span></span></span></span> licenses Prudential HCL Health Insurance</h4><ul><li>Approved as a <b class="k">Standalone Health Insurance</b> company.</li><li>JV of <b class="k">Prudential Group (UK)</b> and <b class="k">HCL Group (India)</b>.</li><li>Standalone health insurers in India now: <b class="k">8</b>.</li><li>It is IRDAI's <b class="k">3rd</b> registration of 2026 — the other two: <b class="k">Allianz Jio Reinsurance</b> and <b class="k">Kiwi General Insurance</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/gift-city-4e4e29.png" alt="GIFT City" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:GIFTCityLogo.png" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">GIFT City</a></figcaption></figure><h4>HiWiPay gets <span class="gt" tabindex="0">IFSCA<span class="pop" role="tooltip"><img src="img/international-financial-services-centres-authority-89cba6.png" alt=""><b class="pt">IFSCA</b><span class="ps">International Financial Services Centres Authority</span><span class="pl"><span class="pi">Est. <b>2020</b></span><span class="pi">HQ <b>GIFT City, Gandhinagar</b></span><span class="pi">Unified regulator for IFSCs</span></span></span></span> nod for a payments unit at <span class="gt" tabindex="0">GIFT City<span class="pop" role="tooltip"><img src="img/gift-city-4e4e29.png" alt=""><b class="pt">GIFT City</b><span class="ps">Gujarat International Finance Tec-City</span><span class="pl"><span class="pi">Near <b>Gandhinagar, Gujarat</b></span><span class="pi">India's first IFSC</span><span class="pi">Regulated by <b>IFSCA</b></span></span></span></span></h4><ul><li>In-principle approval from <b class="k">IFSCA</b> to set up a wholly owned <b class="k">Payment Services Provider (PSP)</b> subsidiary at GIFT IFSC.</li></ul></div><div class="item"><figure class="pic"><img src="img/international-financial-services-centres-authority-89cba6.png" alt="International Financial Services Centres Authority" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:IFSCA.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">International Financial Services Centres Authority</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">IFSCA<span class="pop" role="tooltip"><img src="img/international-financial-services-centres-authority-89cba6.png" alt=""><b class="pt">IFSCA</b><span class="ps">International Financial Services Centres Authority</span><span class="pl"><span class="pi">Est. <b>2020</b></span><span class="pi">HQ <b>GIFT City, Gandhinagar</b></span><span class="pi">Unified regulator for IFSCs</span></span></span></span> proposes 'One KYC' framework for GIFT IFSC</h4><ul><li>Do KYC once; reuse verified records across all regulated entities.</li><li>From <b class="k">1 September 2026</b>: all new customers onboarded via the <b class="k">KYC Registration Agencies (KRA)</b> system.</li><li>By <b class="k">30 October 2026</b>: KYC records of all existing active customers uploaded to KRA.</li></ul></div></section>
+<section id="c3"><h3><span class="n">3</span>Payments, Fintech &amp; Insurance-Tech</h3><div class="item"><figure class="pic"><img src="img/file-upi-logo-svg-7ab817.png" alt="UPI logo" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:UPI_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">UPI logo</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">UPI<span class="pop" role="tooltip"><img src="img/file-upi-logo-svg-7ab817.png" alt=""><b class="pt">UPI</b><span class="ps">Unified Payments Interface</span><span class="pl"><span class="pi">Launched <b>2016</b> by <b>NPCI</b></span></span></span></span> eases from record high in June 2026 (<span class="gt" tabindex="0">NPCI<span class="pop" role="tooltip"><img src="img/national-payments-corporation-of-india-07d24f.png" alt=""><b class="pt">NPCI</b><span class="ps">National Payments Corporation of India</span><span class="pl"><span class="pi">Est. <b>2008</b></span><span class="pi">HQ <b>Mumbai</b></span><span class="pi">Umbrella body for retail payments, set up by RBI &amp; IBA</span><span class="pi">Runs UPI, RuPay, IMPS</span></span></span></span> data)</h4><ul><li>Volume: <b class="k">22.72 billion</b> (▼2% from 23.20 bn in May).</li><li>Value: <b class="k">₹28.92 lakh crore</b> (▼3% from ₹29.90 lakh crore).</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Both volume and value <b>fell</b> in June — options often flip "rose/fell".</div></div><div class="item"><h4>Paisabazaar + SBM Bank India launch Paisa+ Secured Credit Card</h4><ul><li>Backed by a <b class="k">Fixed Deposit</b>; meant for people with little or no credit history.</li><li>Minimum FD: <b class="k">₹2,000</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/file-google-pay-logo-svg-1537d0.png" alt="Google Pay Logo" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Google_Pay_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Google Pay Logo</a></figcaption></figure><h4><span class="gt" tabindex="0">PayGlocal<span class="pop" role="tooltip"><img src="img/file-google-pay-logo-svg-1537d0.png" alt=""><b class="pt">PayGlocal</b><span class="pl"><span class="pi">Founded <b class="k">2021</b></span><span class="pi">HQ <b class="k">Bengaluru</b></span></span></span></span> launches Google Pay card payments for global payments</h4><ul><li>PayGlocal = RBI-authorised <b class="k">cross-border payment aggregator</b>.</li><li>Among the first in India to enable Google Pay for international online transactions (joins <b class="k">Apple Pay</b>).</li></ul></div><div class="item"><figure class="pic"><img src="img/iit-bombay-98b336.png" alt="IIT Bombay" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:IIT_Bombay_Wordmark_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">IIT Bombay</a></figcaption></figure><h4><span class="gt" tabindex="0">SBI Life<span class="pop" role="tooltip"><b class="pt">SBI Life</b><span class="ps">SBI Life Insurance</span><span class="pl"><span class="pi">Founded <b>March 2001</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> + IIT Bombay: AI-based cybersecurity for insurance</h4><ul><li>MoU to set up the <b class="k">Bharat AI and Cyber Innovation Hub for Insurance</b>.</li></ul></div></section>
+<section id="c4"><h3><span class="n">4</span>Economy &amp; Business</h3><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>Gross <span class="gt" tabindex="0">GST<span class="pop" role="tooltip"><b class="pt">GST</b><span class="ps">Goods and Services Tax</span><span class="pl"><span class="pi">In force from <b>1 July 2017</b></span><span class="pi">101st Constitutional Amendment</span></span></span></span> collections rise 14% to ₹1.95 lakh crore in June 2026</h4><ul><li>Collection: <b class="k">₹1.95 lakh crore</b>, <b class="k">14%</b> year-on-year growth.</li><li>GST completes its <b class="k">9th</b> anniversary.</li></ul></div><div class="item"><figure class="pic"><img src="img/bharat-petroleum-ab6413.png" alt="Bharat Petroleum" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Bharat_Petroleum_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Bharat Petroleum</a></figcaption></figure><h4><span class="gt" tabindex="0">BPCL<span class="pop" role="tooltip"><img src="img/bharat-petroleum-ab6413.png" alt=""><b class="pt">BPCL</b><span class="pl"><span class="pi">Founded <b class="k">24 January 1976</b></span><span class="pi">HQ <b class="k">Mumbai</b></span><span class="pi">under Ministry of Petroleum &amp; Natural Gas. Tiki Tar &amp; Shell India — incorporated October 2019, HQ Mumbai.</span></span></span></span> to buy 40% of Tiki Tar–Shell India JV (bitumen business)</h4><ul><li>Stake: <b class="k">40%</b> for <b class="k">₹85 crore</b>; approved by <b class="k">DIPAM</b> (Ministry of Finance).</li></ul></div><div class="item"><figure class="pic"><img src="img/file-maruti-suzuki-logo-svg-068f84.png" alt="Maruti Suzuki logo" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Maruti Suzuki logo</a></figcaption></figure><h4>Maruti Suzuki opens a manufacturing facility at Kharkhoda, Haryana</h4><ul><li>Location: <b class="k">IMT Kharkhoda, Haryana</b>; dedicated by PM Narendra Modi and Japanese PM <b class="k">Sanae Takaichi</b>.</li><li>Capacity: <b class="k">5 lakh</b> vehicles/year initially → <b class="k">10 lakh</b>; planned investment <b class="k">₹35,000 crore</b>.</li></ul></div></section>
+<section id="c5"><h3><span class="n">5</span>Government Schemes</h3><div class="item"><figure class="pic"><img src="img/udan-80f1b4.png" alt="UDAN" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:UDAN_Project.png" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">UDAN</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>PM launches Viksit <span class="gt" tabindex="0">UDAN<span class="pop" role="tooltip"><img src="img/udan-80f1b4.png" alt=""><b class="pt">UDAN</b><span class="ps">Ude Desh Ka Aam Nagrik</span><span class="pl"><span class="pi">Regional air connectivity scheme</span><span class="pi">Launched <b>2016</b></span><span class="pi">Ministry of Civil Aviation</span></span></span></span> — next phase of UDAN</h4><ul><li>Total outlay: over <b class="k">₹28,840 crore</b>. Ministry of <b class="k">Civil Aviation</b>; implemented by <b class="k"><span class="gt" tabindex="0">Airports Authority of India<span class="pop" role="tooltip"><b class="pt">Airports Authority of India</b><span class="ps">AAI</span><span class="pl"><span class="pi">Est. <b>1995</b></span><span class="pi">HQ <b>New Delhi</b></span><span class="pi">Under Ministry of Civil Aviation</span></span></span></span></b>. UDAN started in <b class="k">2016</b>.</li><li>New airports: <b class="k">100</b> over 8 years — ₹12,159 cr.</li><li>Helipads: <b class="k">200</b> at ₹15 cr each (hilly, remote, island areas) — ₹3,661 cr.</li><li>O&amp;M support for ~<b class="k">441</b> aerodromes for 3 years — ₹2,577 cr.</li><li>Viability Gap Funding for airlines: <b class="k">₹10,043 cr</b> over <b class="k">10 years</b>.</li><li>Aircraft: 2 HAL Dhruv helicopters (Pawan Hans) + 2 HAL Dornier aircraft (Alliance Air).</li><li>Also inaugurated the new terminal at <b class="k">Jodhpur</b> Airport.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Numbers to pair: <b>100 airports · 200 helipads · 441 aerodromes</b>. Biggest component is airports (₹12,159 cr), then VGF (₹10,043 cr).</div></div><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>VB-G RAM G Act in force — ₹300 daily floor wage</h4><ul><li>Viksit Bharat–Guarantee for Rozgar and Ajeevika Mission (Gramin) Act, 2025 in force from <b class="k">1 July 2026</b>.</li><li>Replaces <b class="k">MGNREGA, 2005</b>; guarantees <b class="k">125 days</b> of wage employment per rural household per year.</li><li>National floor wage: <b class="k">₹300/day</b>; average notified wage ₹298.8 → <b class="k">₹327.4</b>.</li><li>Highest % hike: <b class="k">Arunachal Pradesh and Nagaland</b> (~24.5%).</li><li>Above ₹400/day: Haryana ₹409, Goa ₹406, Kerala ₹401, Sikkim high-altitude GPs <b class="k">₹450</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>MGNREGA guaranteed 100 days; the new Act says <b>125 days</b>.</div></div><div class="item"><figure class="pic"><img src="img/digital-india-0c9462.png" alt="Digital India" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Digital_India_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Digital India</a></figcaption></figure><h4>Digital India completes 11 years</h4><ul><li>Launched <b class="k">1 July 2015</b> by PM Narendra Modi; implemented by <b class="k"><span class="gt" tabindex="0">MeitY<span class="pop" role="tooltip"><b class="pt">MeitY</b><span class="ps">Ministry of Electronics and Information Technology</span><span class="pl"><span class="pi">Runs Digital India</span></span></span></span></b>.</li><li>Three visions: digital infrastructure for every citizen, governance &amp; services on demand, digital empowerment/literacy.</li></ul></div></section>
+<section id="c6"><h3><span class="n">6</span>States</h3><p class="cs">Odisha has four items this month — learn them together.</p><div class="item"><figure class="pic"><img src="img/odisha-606631.jpg" alt="Odisha" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Konarka_Temple.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Odisha</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">Odisha<span class="pop" role="tooltip"><img src="img/odisha-606631.jpg" alt=""><b class="pt">Odisha</b><span class="pl"><span class="pi">Formed <b class="k">1 April 1936</b> (Utkal Dibasa)</span><span class="pi">Capital Bhubaneswar</span><span class="pi">CM <b class="k">Mohan Charan Majhi</b></span><span class="pi">Governor Kambhampati Hari Babu</span><span class="pi">NPs Bhitarkanika, Similipal</span><span class="pi">Tiger Reserve Satkoshia</span></span></span></span> — four initiatives</h4><ul><li><b class="k">Gyanodaya – Shiksharu Samruddhi</b>: full waiver of admission fees; free education from KG to PG.</li><li><b class="k">Deep Sea Fishing Mission</b>: ₹2,295.45 cr, 2026–2036, Blue Economy, by Fisheries &amp; ARD Dept.</li><li><b class="k">Go East</b> = Government of Odisha – Eastern Investment Accelerator and Special Task Force; launched at CII Eastern Region Council, Bhubaneswar.</li></ul></div><div class="item"><figure class="pic"><img src="img/hippophae-rhamnoides-50da93.jpg" alt="Sea buckthorn" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Hippophae_rhamnoides-01_(xndr).JPG" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 3.0">Sea buckthorn</a></figcaption></figure><h4>Himachal Pradesh — 8 products get GI tag</h4><ul><li>HP total GI products now <b class="k">17</b>.</li><li>New: Seabuckthorn (Spiti), Salooni Safed Makka, Chamba Metal Art, Sirmauri Loiya, Kinnauri Topi, Sepuvadi, Kinnauri Apple, Kinnauri Jewellery.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Three of the eight are <b>Kinnauri</b> (Topi, Apple, Jewellery).</div></div><div class="item"><figure class="pic"><img src="img/musi-river-india-d6909a.jpg" alt="Musi River (India)" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:View_of_Musi_river_from_Nayapul.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Musi River (India)</a></figcaption></figure><h4><span class="gt" tabindex="0">Telangana<span class="pop" role="tooltip"><img src="img/musi-river-india-d6909a.jpg" alt=""><b class="pt">Telangana</b><span class="pl"><span class="pi">Capital Hyderabad</span><span class="pi">CM <b class="k">A. Revanth Reddy</b></span><span class="pi">Governor Shiv Pratap Shukla</span><span class="pi">Tiger Reserves Amrabad, Kawal</span></span></span></span> — Musi River Rejuvenation, phase 1</h4><ul><li>Outlay <b class="k">₹7,345 crore</b>; <b class="k">55-km</b> stretch; riverfront inspired by London's <b class="k">Thames</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/hathnikund-barrage-92be06.jpg" alt="Hathni Kund Barrage" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Hanthnikund_Barrage.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Hathni Kund Barrage</a></figcaption></figure><h4>Haryana–Rajasthan sign Yamuna Water Project agreement</h4><ul><li>About <b class="k">580 MCM</b> of water to Rajasthan, released from <b class="k">Hathnikund Barrage</b>; signed in presence of Amit Shah.</li></ul></div><div class="item"><figure class="pic"><img src="img/gujarat-police-4db8f4.png" alt="Gujarat Police" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Gujarat_Police_Logo.png" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Gujarat Police</a></figcaption></figure><h4><span class="gt" tabindex="0">Gujarat<span class="pop" role="tooltip"><img src="img/gujarat-police-4db8f4.png" alt=""><b class="pt">Gujarat</b><span class="pl"><span class="pi">Formed <b class="k">1 May 1960</b></span><span class="pi">Capital Gandhinagar</span><span class="pi">CM Bhupendrabhai Patel</span><span class="pi">Governor Acharya Devvrat</span><span class="pi">NPs Gir, Marine (Gulf of Kutch), Velavadar, Vansda</span></span></span></span> Police + Bharat Taxi MoU for public safety</h4><ul><li>With <b class="k">Sahakar Taxi Cooperative Ltd (Bharat Taxi)</b>; SOS button in the app linked to the police control room.</li><li>Signed at the Bharat Taxi launch in <b class="k">Gandhinagar</b>, in presence of Amit Shah.</li></ul></div></section>
+<section id="quiz" class="quiz"><h3><span class="n">7</span>Self-test</h3><p class="cs">Answer out loud first, then click to check. Re-test the ones you missed tomorrow.</p><details><summary>Kotak Mahindra Bank is acquiring which bank's India retail and wealth business?</summary><p>Deutsche Bank (₹281.7 crore)</p></details><details><summary>Name HDFC Bank's in-house AI platform.</summary><p>Neev</p></details><details><summary>SBI's US$300 mn FRNs carry what coupon?</summary><p>SOFR + 100 bps, through the London branch</p></details><details><summary>Which PSB paid the highest dividend for FY 2025–26?</summary><p>Bank of Baroda — ₹2,811 crore</p></details><details><summary>Bank of Baroda partnered which Japanese bank?</summary><p>Mizuho Bank</p></details><details><summary>How much did RBI fine Bank of Baroda?</summary><p>₹63.60 lakh</p></details><details><summary>How many standalone health insurers does India have after Prudential HCL?</summary><p>8</p></details><details><summary>From when must new GIFT IFSC customers be onboarded via KRA?</summary><p>1 September 2026</p></details><details><summary>UPI value in June 2026?</summary><p>₹28.92 lakh crore (22.72 bn transactions)</p></details><details><summary>Minimum FD for the Paisa+ Secured Credit Card?</summary><p>₹2,000 (SBM Bank India + Paisabazaar)</p></details><details><summary>Gross GST collection in June 2026?</summary><p>₹1.95 lakh crore, up 14%</p></details><details><summary>BPCL is buying what stake in Tiki Tar–Shell India?</summary><p>40% for ₹85 crore</p></details><details><summary>Where is Maruti Suzuki's new facility?</summary><p>IMT Kharkhoda, Haryana</p></details><details><summary>Total outlay of Viksit UDAN?</summary><p>Over ₹28,840 crore</p></details><details><summary>How many new helipads under Viksit UDAN?</summary><p>200 (₹15 crore each)</p></details><details><summary>VB-G RAM G guarantees how many days of work?</summary><p>125 days; floor wage ₹300/day</p></details><details><summary>Which law did VB-G RAM G replace?</summary><p>MGNREGA, 2005</p></details><details><summary>When was Digital India launched?</summary><p>1 July 2015</p></details><details><summary>Expand Odisha's "Go East".</summary><p>Government of Odisha – Eastern Investment Accelerator and Special Task Force</p></details><details><summary>Himachal's total GI products after the 8 new tags?</summary><p>17</p></details><details><summary>Musi River project is inspired by which river?</summary><p>The Thames, London</p></details><details><summary>Yamuna water to Rajasthan is released from which barrage?</summary><p>Hathnikund Barrage (580 MCM)</p></details></section><div class="rapid" id="rapid"><h3>⚡ Rapid Revision</h3><ul><li>Kotak → Deutsche Bank India retail/wealth, ₹281.7 cr, by Sep 2027.</li><li>HDFC Bank AI platform = Neev.</li><li>SBI: $300 mn FRN, 3 yrs, SOFR+100 bps, London branch.</li><li>PSB dividend ₹9,439 cr: BoB 2,811 &gt; PNB 2,416 &gt; Canara 2,397 &gt; Indian 1,815.</li><li>BoB × Mizuho (Japan) for M&amp;A financing. RBI fined BoB ₹63.60 lakh.</li><li>Prudential HCL = 8th standalone health insurer; IRDAI's 3rd licence of 2026.</li><li>IFSCA One KYC: new customers via KRA from 1 Sep 2026; existing by 30 Oct 2026.</li><li>UPI June: 22.72 bn / ₹28.92 lakh cr (both down). GST June: ₹1.95 lakh cr, +14%.</li><li>Viksit UDAN ₹28,840 cr: 100 airports, 200 helipads, VGF ₹10,043 cr/10 yrs.</li><li>VB-G RAM G (replaces MGNREGA) from 1 Jul 2026: 125 days, ₹300 floor wage.</li><li>Digital India: 1 Jul 2015, MeitY → 11 years.</li><li>Odisha: Gyanodaya (KG–PG free), Deep Sea Fishing ₹2,295 cr, Go East.</li><li>HP: 8 new GI tags → 17 total. Telangana Musi: ₹7,345 cr, 55 km, Thames.</li></ul></div>
+<p class="end" id="fin">End of July 2026 · Class 1</p>
+<nav class="topnav" aria-label="Class navigation"><span class="off">← Previous class</span><a href="index.html">☰ All classes</a><a href="2026-07-July-Class-2.html">Class 2 →</a></nav>
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('ca-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('ca-notes-theme',nxt);}catch(e){}
+  });
+  var rb=document.getElementById('recall');
+  if(!rb) return;
+  // Recall mode: blank out key facts; click one to reveal it.
+  function setRecall(on){
+    root.classList.toggle('recall',on);
+    rb.textContent='Recall mode: '+(on?'on':'off');
+    document.querySelectorAll('b.k.shown').forEach(function(b){b.classList.remove('shown');});
+  }
+  rb.addEventListener('click',function(){ setRecall(!root.classList.contains('recall')); });
+  document.getElementById('revealall').addEventListener('click',function(){
+    document.querySelectorAll('b.k').forEach(function(b){b.classList.add('shown');});
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('b.k'); if(b && root.classList.contains('recall')) b.classList.toggle('shown');
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CA July 2026 · Class 4</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+
+.item{border-top:1px solid var(--line);padding:12px 0 4px}
+.item:first-of-type{border-top:0;padding-top:0}
+.item h4{margin:0 0 4px;font-size:16.5px}
+.item ul{margin:4px 0}
+.gk{font-size:13.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:6px 10px;margin:6px 0 4px}
+.gk b{color:var(--ink)}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+.tag.bank{color:var(--lec);border:1px solid var(--lec)}
+.tag.hot{color:var(--alert);border:1px solid var(--alert)}
+.recallbar{position:sticky;top:0;z-index:4;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--alert);border-radius:6px;padding:10px 14px;margin:16px 0;font-size:14px}
+.recallbar button{font:inherit;font-size:13px;background:var(--accent);color:#fff;border:0;border-radius:4px;padding:5px 12px;cursor:pointer}
+.recallbar button.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+.recallbar .hint{color:var(--muted);flex:1;min-width:200px}
+html.recall .item b.k{background:var(--surface-2);color:transparent;border-radius:3px;outline:1px dashed var(--muted);cursor:pointer;user-select:none}
+html.recall .item b.k.shown{color:inherit;background:var(--accent-soft);outline:0}
+.quiz details{border:1px solid var(--line);border-radius:5px;margin:6px 0;background:var(--surface)}
+.quiz summary{cursor:pointer;padding:8px 12px;font-weight:550}
+.quiz details p{margin:0;padding:0 12px 10px 32px;color:var(--accent);font-weight:600}
+.howto ol{margin:6px 0 0}
+.item::after{content:"";display:block;clear:both}
+.item figure.pic{float:right;width:150px;margin:2px 0 8px 16px;text-align:center}
+.item figure.pic img{width:150px;height:110px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px;display:block}
+.item figure.pic figcaption{font-size:11px;letter-spacing:0;text-transform:none;font-weight:500;margin-top:3px;line-height:1.3}
+.item figure.pic figcaption a{color:var(--muted);text-decoration:none}
+@media (max-width:600px){.item figure.pic{width:110px;margin-left:10px}.item figure.pic img{width:110px;height:84px}}
+@media print{.item figure.pic{break-inside:avoid}}
+.gt{position:relative;border-bottom:1.5px dotted var(--accent);cursor:help;outline:0}
+.gt .pop{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:270px;max-width:80vw;padding:10px 12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13px;font-weight:400;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal}
+.gt .pop::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.gt:hover .pop,.gt:focus .pop,.gt:focus-within .pop{display:block}
+.gt .pop img{float:right;width:64px;height:48px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:4px;padding:2px;margin:0 0 4px 8px}
+.gt .pop .pt{display:block;color:var(--accent);font-size:13.5px;margin-bottom:2px}
+.gt .pop .ps{display:block;color:var(--muted);font-size:12.5px;margin-bottom:4px}
+.gt .pop .pl{display:block;clear:both;margin:0;padding:0}
+.gt .pop .pi{display:block;position:relative;padding-left:14px;margin:2px 0}
+.gt .pop .pi::before{content:"";position:absolute;left:3px;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+html.recall .gt .pop{color:var(--ink)}
+html.recall b.k:not(.shown) .gt{border-bottom:0}
+html.recall b.k:not(.shown) .gt .pop{display:none!important}
+@media print{.gt .pop{display:none!important}}
+</style>
+<script src="../assets/embed.js"></script>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Class navigation"><a href="2026-07-July-Class-3.html">← Class 3</a><a href="index.html">☰ All classes</a><a href="2026-07-July-Class-5.html">Class 5 →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT · Current Affairs · July 2026</div>
+  <h1>Current Affairs — July 2026 · Class 4</h1>
+  <p class="sub">Class 4 of the July 2026 monthly series (Ashish Gautam, Adda247) · 26 topics, grouped by exam category.</p>
+  <div class="legend"><span class="l1">🏦 Banking focus</span><span class="l2">➕ Static GK link</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 Likely question</span></div>
+</header>
+<div class="box lec howto"><span class="t">🎓 How to study this page</span>
+<ol>
+<li><b>Read once</b> with Recall mode off. Hover over (or tap) any <span style="border-bottom:1.5px dotted var(--accent)">dotted name</span> to see its static GK.</li>
+<li><b>Turn Recall mode on</b>: the key facts are hidden. Say each one before you click to reveal it.</li>
+<li><b>Take the self-test</b> at the end. Revise again tomorrow, in a week and in a month, using only the Rapid Revision box after that.</li>
+</ol></div>
+<div class="recallbar"><button id="recall" type="button">Recall mode: off</button><button id="revealall" class="ghost" type="button">Reveal all</button><span class="hint">Hides the key facts. Click any blank to reveal it.</span></div>
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#c1"><span class="n">1</span>Banking &amp; Insurance</a></li><li><a href="#c2"><span class="n">2</span>Growth Forecasts &amp; Reports</a></li><li><a href="#c3"><span class="n">3</span>Government Schemes</a></li><li><a href="#c4"><span class="n">4</span>States &amp; Infrastructure</a></li><li><a href="#c5"><span class="n">5</span>Appointments</a></li><li><a href="#quiz"><span class="n">6</span>Self-test (18 questions)</a></li><li><a href="#rapid"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+<section id="c1"><h3><span class="n">1</span>Banking &amp; Insurance</h3><div class="item"><figure class="pic"><img src="img/reserve-bank-of-india-fcec6f.png" alt="Reserve Bank of India" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Reserve_Bank_of_India_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Reserve Bank of India</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> revises Integrated Ombudsman Scheme (RB-IOS), 2026</h4><ul><li><b class="k">No limit</b> on the amount of dispute a complainant can bring to the RBI Ombudsman.</li><li>Compensation for consequential financial loss: up to <b class="k">₹30 lakh</b>.</li><li>Plus up to <b class="k">₹3 lakh</b> for loss of time, expenses, and harassment/mental anguish.</li><li>Covers banks, NBFCs, non-bank PPI issuers and Credit Information Companies; in force from <b class="k">1 July 2026</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Two caps, don't swap them: <b>₹30 lakh</b> for financial loss, <b>₹3 lakh</b> for time/harassment. The dispute amount itself has <b>no</b> cap.</div></div><div class="item"><h4><span class="tag bank">🏦 Banking</span>SBI to buy <span class="gt" tabindex="0">NHB<span class="pop" role="tooltip"><b class="pt">NHB</b><span class="ps">National Housing Bank</span><span class="pl"><span class="pi">Est. <b>1988</b></span><span class="pi">HQ <b>New Delhi</b></span><span class="pi">Regulates and refinances housing finance companies</span></span></span></span>'s 10% stake in RDCL</h4><ul><li>RDCL = <b class="k">RMBS Development Company Ltd</b> — market intermediary for Residential Mortgage-Backed Securities; incorporated <b class="k">2024</b>, paid-up capital <b class="k">₹500 crore</b>.</li><li>NHB's stake falls from <b class="k">39%</b> to <b class="k">29%</b>.</li><li>Other holders: LIC 10%; HDFC Bank, ICICI Bank, Bajaj Finance 7% each; six housing finance companies 5% each.</li></ul><div class="gk">➕ <b>Static GK:</b> State Bank of India — Founded <b class="k">1 July 1955</b> · HQ <b class="k">Mumbai</b> · Chairman Challa Sreenivasulu Setty · Tagline <b class="k">The Banker to Every Indian</b></div></div><div class="item"><figure class="pic"><img src="img/punjab-sind-bank-5993bb.png" alt="Punjab & Sind Bank" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:PSB_logo_23_Nov.svg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Punjab & Sind Bank</a></figcaption></figure><h4><span class="tag bank">🏦 Banking</span><span class="gt" tabindex="0">Punjab &amp; Sind Bank<span class="pop" role="tooltip"><img src="img/punjab-sind-bank-5993bb.png" alt=""><b class="pt">Punjab &amp; Sind Bank</b><span class="pl"><span class="pi">Founded <b class="k">24 June 1908</b></span><span class="pi">HQ <b class="k">New Delhi</b></span></span></span></span> gets <span class="gt" tabindex="0">IFSCA<span class="pop" role="tooltip"><img src="img/international-financial-services-centres-authority-89cba6.png" alt=""><b class="pt">IFSCA</b><span class="ps">International Financial Services Centres Authority</span><span class="pl"><span class="pi">Est. <b>2020</b></span><span class="pi">HQ <b>GIFT City, Gandhinagar</b></span><span class="pi">Unified regulator for IFSCs</span></span></span></span> licence for an IBU at <span class="gt" tabindex="0">GIFT City<span class="pop" role="tooltip"><img src="img/gift-city-4e4e29.png" alt=""><b class="pt">GIFT City</b><span class="ps">Gujarat International Finance Tec-City</span><span class="pl"><span class="pi">Near <b>Gandhinagar, Gujarat</b></span><span class="pi">India's first IFSC</span><span class="pi">Regulated by <b>IFSCA</b></span></span></span></span></h4><ul><li>Licence from <b class="k">IFSCA</b> to set up an <b class="k">IFSC Banking Unit (IBU)</b> at GIFT City, Gandhinagar.</li></ul></div><div class="item"><figure class="pic"><img src="img/aviva-f56497.png" alt="Aviva" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Aviva_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Aviva</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Aviva to become the first foreign insurer with 100% ownership in India</h4><ul><li>British insurer <b class="k">Aviva</b> buys the remaining <b class="k">26%</b> of Aviva Life Insurance India from <b class="k">Dabur Invest Corp</b>.</li><li>Follows the Government's decision to allow <b class="k">100% FDI</b> in insurance (earlier limit <b class="k">74%</b>).</li></ul></div></section>
+<section id="c2"><h3><span class="n">2</span>Growth Forecasts &amp; Reports</h3><p class="cs">Two forecasts, one survey, one UN report — learn the numbers side by side.</p><div class="item"><figure class="pic"><img src="img/asian-development-bank-2caca8.png" alt="Asian Development Bank" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:ADB_logo_%26_wordmark.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Asian Development Bank</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">ADB<span class="pop" role="tooltip"><img src="img/asian-development-bank-2caca8.png" alt=""><b class="pt">ADB</b><span class="ps">Asian Development Bank</span><span class="pl"><span class="pi">Est. <b>19 December 1966</b></span><span class="pi">HQ <b>Manila, Philippines</b></span><span class="pi"><b>69</b> members (69th: Israel)</span><span class="pi">Publishes the Asian Development Outlook</span></span></span></span> cuts India's FY 2026-27 growth forecast to 6.6%</h4><ul><li>FY27: <b class="k">6.6%</b> (from 6.9%) · FY28 held at <b class="k">7.3%</b> — in the <b class="k">Asian Development Outlook</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/international-monetary-fund-7f6a3f.png" alt="International Monetary Fund" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:IMF-Seal_ENG_RGB.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">International Monetary Fund</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">IMF<span class="pop" role="tooltip"><img src="img/international-monetary-fund-7f6a3f.png" alt=""><b class="pt">IMF</b><span class="ps">International Monetary Fund</span><span class="pl"><span class="pi">Est. <b>22 July 1944</b></span><span class="pi">HQ <b>Washington, D.C.</b></span><span class="pi"><b>191</b> members (191st: Liechtenstein)</span><span class="pi">Publishes the World Economic Outlook</span></span></span></span> cuts India's FY 2026-27 growth forecast to 6.4%</h4><ul><li>Down <b class="k">0.1 percentage point</b> (10 bps) to <b class="k">6.4%</b> in the <b class="k">World Economic Outlook</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span><b>ADB 6.6%</b> (Asian Development Outlook) vs <b>IMF 6.4%</b> (World Economic Outlook) — both for FY 2026-27.</div></div><div class="item"><figure class="pic"><img src="img/united-nations-conference-on-trade-and-development-01bf54.png" alt="UN Trade and Development" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:UNCTAD_Master_Logo_Blue.png" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">UN Trade and Development</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">UNCTAD<span class="pop" role="tooltip"><img src="img/united-nations-conference-on-trade-and-development-01bf54.png" alt=""><b class="pt">UNCTAD</b><span class="ps">UN Conference on Trade and Development</span><span class="pl"><span class="pi">Est. <b>1964</b></span><span class="pi">HQ <b>Geneva</b></span><span class="pi">Publishes the World Investment Report</span></span></span></span>: India's FDI inflows up 44% to $39 billion in 2025</h4><ul><li>From the <b class="k">World Investment Report 2026</b> by <b class="k">UNCTAD</b>.</li><li>India rises two places to <b class="k">11th</b> largest FDI recipient.</li><li>Global FDI up <b class="k">6%</b> to <b class="k">$1.6 trillion</b>.</li></ul></div><div class="item"><h4>MoSPI: Prayagraj and Patna have the highest unemployment among million-plus cities</h4><ul><li>Report "<b class="k">Labour Market Dynamics in Million-plus Cities</b>", from <b class="k"><span class="gt" tabindex="0">PLFS<span class="pop" role="tooltip"><b class="pt">PLFS</b><span class="ps">Periodic Labour Force Survey</span><span class="pl"><span class="pi">Conducted by <b>NSO</b>, MoSPI</span><span class="pi">Measures employment and unemployment</span></span></span></span></b> data (Jan–Dec 2025).</li><li><b class="k">46</b> cities; average unemployment <b class="k">6.8%</b>.</li><li>Highest (&gt;20%): <b class="k">Prayagraj, Patna</b> · Lowest (&lt;2.5%): <b class="k">Ahmedabad, Kolkata</b>.</li></ul></div><div class="item"><h4>Small savings rates unchanged for Q2 FY 2026-27</h4><ul><li>PPF, SCSS, KVP, NSC etc. unchanged for 1 July – 30 September 2026 — <b class="k">9th</b> consecutive quarter.</li><li>Notified quarterly by the <b class="k">Department of Economic Affairs</b>, Ministry of Finance.</li></ul></div><div class="item"><figure class="pic"><img src="img/cochin-shipyard-e46663.png" alt="Cochin Shipyard" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Cochin_Shipyard_SVG_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Cochin Shipyard</a></figcaption></figure><h4>Government sells 5.04% of Cochin Shipyard</h4><ul><li>Through an <b class="k">Offer for Sale</b>; government stake falls from <b class="k">67.92%</b> to <b class="k">62.87%</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/power-grid-corporation-of-india-ab01ab.png" alt="Power Grid Corporation of India" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Power_Grid_Corporation_of_India_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Power Grid Corporation of India</a></figcaption></figure><h4>Power Grid gets ₹4,700 crore green loan from <span class="gt" tabindex="0">JBIC<span class="pop" role="tooltip"><b class="pt">JBIC</b><span class="ps">Japan Bank for International Cooperation</span><span class="pl"><span class="pi">Japanese government policy bank</span><span class="pi">HQ <b>Tokyo</b></span></span></span></span></h4><ul><li><b class="k">80 billion yen</b> (~₹4,700 crore) from <b class="k">Japan Bank for International Cooperation</b>.</li><li>For the <b class="k">Khavda–Nagpur HVDC</b> line: Khavda Renewable Energy Park (Gujarat) → Nagpur (Maharashtra).</li></ul></div></section>
+<section id="c3"><h3><span class="n">3</span>Government Schemes</h3><div class="item"><figure class="pic"><img src="img/ministry-of-skill-development-and-entrepreneurship-79c12b.png" alt="Ministry of Skill Development and Entrepreneurship" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Ministry_of_Skill_Development_and_Entrepreneurship.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Ministry of Skill Development and Entrepreneurship</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>PM-SETU expanded to all 200 ITI clusters</h4><ul><li>4th National Steering Committee (chair: MSDE Secretary <b class="k">Debashree Mukherjee</b>) moves PM-SETU from pilot to all <b class="k">200</b> ITI clusters.</li><li>Strategic Investment Plans worth <b class="k">₹1,237.58 crore</b> for five clusters in Odisha, Gujarat and Telangana.</li><li>First State with an industry partnership: <b class="k">Andhra Pradesh</b>. First approved company: <b class="k">AM/NS India</b> (with NAMTECH, Visakhapatnam ITI cluster).</li></ul><div class="gk">➕ <b>Static GK:</b> PM-SETU (Pradhan Mantri Skilling and Employability Transformation through Upgraded ITIs) — Launched <b class="k">4 October 2025</b> · Ministry of <b class="k">Skill Development &amp; Entrepreneurship</b> · Centrally sponsored · Outlay <b class="k">₹60,000 crore</b> over 5 years (Centre 30,000 · States 20,000 · Industry 10,000) · <b class="k">1,000</b> ITIs = 200 hubs + 800 spokes · 5 NSTIs + 5 NCoEs (Bhubaneswar, Chennai, Hyderabad, Kanpur, Ludhiana) · Each cluster an SPV: industry <b class="k">51%</b>, governments 49%</div><div class="box trap"><span class="t">⚠️ Exam trap</span>Hub-and-spoke ratio is <b>1 : 4</b> (200 hubs, 800 spokes). Funding split is <b>30 : 20 : 10</b> thousand crore (Centre : States : Industry).</div></div><div class="item"><figure class="pic"><img src="img/uttarakhand-62cfab.jpg" alt="Uttarakhand" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Nanda_Devi_-_Hidden_Summit,_Uttarakhand_India_2013.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 2.0">Uttarakhand</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Uttarakhand becomes India's 6th fully literate State</h4><ul><li>Met adult literacy benchmarks under NEP 2020 and <b class="k">ULLAS</b> (New India Literacy Programme).</li><li>Fully literate States: <b class="k">Mizoram</b> (1st, 98.2%), Goa, Tripura, Himachal Pradesh, Sikkim, <b class="k">Uttarakhand</b>.</li><li>ULLAS: <b class="k">2022–27</b>; non-literate adults <b class="k">15+</b>; target <b class="k">5 crore</b> learners (~1 crore a year); vision "<b class="k">Jan Jan Saakshar Bharat</b>".</li></ul></div><div class="item"><figure class="pic"><img src="img/shivraj-singh-chouhan-954b83.jpg" alt="Shivraj Singh Chouhan" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Shivraj_Singh_Chouhan_2025.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · GODL-India">Shivraj Singh Chouhan</a></figcaption></figure><h4>PRAGATI — regenerative agriculture initiative</h4><ul><li>PRAGATI = <b class="k">Promoting Regenerative Agriculture Through Agri-Entrepreneurship Initiative</b>; launched by <b class="k">Shivraj Singh Chouhan</b>.</li><li><b class="k">20,000</b> agri-entrepreneurs, <b class="k">20 lakh</b> smallholder farmers, in 8 States.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span><b>20,000</b> entrepreneurs support <b>20 lakh</b> farmers — same "20", different units.</div></div><div class="item"><figure class="pic"><img src="img/jual-oram-70f74c.jpg" alt="Jual Oram" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Jual_Oram_Tribal_Affairs_Minister.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · GODL-India">Jual Oram</a></figcaption></figure><h4>TribeX — first digital learning platform for tribal arts and culture</h4><ul><li>Launched by Tribal Affairs Minister <b class="k">Jual Oram</b>.</li><li>Five UGC-recognised one-year hybrid PG Diplomas with <b class="k">Sampurnanand Sanskrit University, Varanasi</b>.</li></ul></div></section>
+<section id="c4"><h3><span class="n">4</span>States &amp; Infrastructure</h3><div class="item"><figure class="pic"><img src="img/tamil-nadu-3a2d62.jpg" alt="Tamil Nadu" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Mamallapuram_view.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 2.0">Tamil Nadu</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">Tamil Nadu<span class="pop" role="tooltip"><img src="img/tamil-nadu-3a2d62.jpg" alt=""><b class="pt">Tamil Nadu</b><span class="pl"><span class="pi">Formed <b class="k">1 November 1956</b></span><span class="pi">Capital <b class="k">Chennai</b></span><span class="pi">CM C. Joseph Vijay</span><span class="pi">Governor Rajendra Vishwanath Arlekar</span><span class="pi">Tiger Reserves Kalakad Mundanthurai, Anamalai, Mudumalai, Sathyamangalam, Srivilliputhur Megamalai</span></span></span></span> — fastest-growing merchandise exporting State (FY 2025-26)</h4><ul><li>Exports <b class="k">US$59.3 billion</b>, up <b class="k">13.7%</b>.</li><li>Largest exporting district: <b class="k">Jamnagar</b> (Gujarat); 2nd: <b class="k">Kanchipuram</b> (TN).</li></ul></div><div class="item"><h4><span class="gt" tabindex="0">ADB<span class="pop" role="tooltip"><img src="img/asian-development-bank-2caca8.png" alt=""><b class="pt">ADB</b><span class="ps">Asian Development Bank</span><span class="pl"><span class="pi">Est. <b>19 December 1966</b></span><span class="pi">HQ <b>Manila, Philippines</b></span><span class="pi"><b>69</b> members (69th: Israel)</span><span class="pi">Publishes the Asian Development Outlook</span></span></span></span> approves $230 million for Chennai's water and sanitation</h4><ul><li><b class="k">US$230 million</b> (~₹1,920 crore); aligned with <b class="k">AMRUT 2.0</b> and the Urban Challenge Fund.</li></ul></div><div class="item"><h4><span class="gt" tabindex="0">Kamarajar Port<span class="pop" role="tooltip"><b class="pt">Kamarajar Port</b><span class="pl"><span class="pi">Also called <b class="k">Ennore Port</b></span><span class="pi">Coromandel Coast, Chennai</span><span class="pi">India's first port that is a <b class="k">public company</b></span></span></span></span> — India's 2nd major port with an 18-metre draft</h4><ul><li>After <b class="k">Visakhapatnam</b>; can now handle fully laden <b class="k">Capesize</b> vessels.</li><li>Capital Dredging Phase VI, ~<b class="k">₹440 crore</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/rekha-gupta-e69e35.jpg" alt="Rekha Gupta" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Chief_Minister_of_Delhi,_Smt._Rekha_Gupta.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · GODL-India">Rekha Gupta</a></figcaption></figure><h4>Delhi launches ₹8,300 crore "Clean Air, Healthy Delhi"</h4><ul><li>Announced by CM <b class="k">Rekha Gupta</b>; financial and technical support from the <b class="k"><span class="gt" tabindex="0">World Bank<span class="pop" role="tooltip"><img src="img/world-bank-b7b139.png" alt=""><b class="pt">World Bank</b><span class="pl"><span class="pi">Est. <b>1944</b> (Bretton Woods)</span><span class="pi">HQ <b>Washington, D.C.</b></span><span class="pi"><b>189</b> members (189th: Nauru)</span><span class="pi">Lending arm: IBRD</span></span></span></span></b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/kinnow-3a5af7.jpg" alt="Kinnow" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Harvest_Kinnow.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY 3.0">Kinnow</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>GI tags — Sirsa Kinnow (Haryana) and Jalbhara Sweet (<span class="gt" tabindex="0">West Bengal<span class="pop" role="tooltip"><img src="img/kinnow-3a5af7.jpg" alt=""><b class="pt">West Bengal</b><span class="pl"><span class="pi">Formed <b class="k">15 August 1947</b></span><span class="pi">Capital <b class="k">Kolkata</b></span><span class="pi">CM Suvendu Adhikari</span><span class="pi">Governor R N Ravi</span><span class="pi">Tiger Reserves Sundarbans, Buxa</span></span></span></span>)</h4><ul><li><b class="k">Sirsa Kinnow</b>: Haryana's <b class="k">first GI-tagged fruit</b> and first exclusive GI product; granted by the GI Registry under <b class="k"><span class="gt" tabindex="0">DPIIT<span class="pop" role="tooltip"><b class="pt">DPIIT</b><span class="ps">Department for Promotion of Industry and Internal Trade</span><span class="pl"><span class="pi">Ministry of Commerce and Industry</span><span class="pi">GI Registry works under it</span></span></span></span></b>.</li><li><b class="k">Jalbhara</b> (Jalbhora Sandesh) from <b class="k">Chandannagar, Hooghly</b> — 220+ years old.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>July GI tags so far: <b>8 Himachal products</b> (Class 1) · <b>Sirsa Kinnow</b> · <b>Jalbhara Sweet</b>.</div></div></section>
+<section id="c5"><h3><span class="n">5</span>Appointments</h3><div class="item"><figure class="pic"><img src="img/south-indian-bank-c5b31d.png" alt="South Indian Bank" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:South_Indian_Bank_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">South Indian Bank</a></figcaption></figure><h4><span class="tag bank">🏦 Banking</span>Mahesh Pai — MD &amp; CEO, <span class="gt" tabindex="0">South Indian Bank<span class="pop" role="tooltip"><img src="img/south-indian-bank-c5b31d.png" alt=""><b class="pt">South Indian Bank</b><span class="pl"><span class="pi">Founded <b class="k">1929</b></span><span class="pi">HQ <b class="k">Thrissur, Kerala</b></span></span></span></span>, from 1 October 2026</h4><ul><li>RBI-approved, <b class="k">3-year</b> term; succeeds <b class="k">P. R. Seshadri</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/axis-bank-2183c9.png" alt="Axis Bank" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:AXISBank_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Axis Bank</a></figcaption></figure><h4><span class="tag bank">🏦 Banking</span>N.S. Vishwanathan re-appointed non-executive chairman of <span class="gt" tabindex="0">Axis Bank<span class="pop" role="tooltip"><img src="img/axis-bank-2183c9.png" alt=""><b class="pt">Axis Bank</b><span class="pl"><span class="pi">Formerly <b class="k">UTI Bank</b></span><span class="pi">Founded <b class="k">3 December 1993</b></span><span class="pi">HQ <b class="k">Mumbai</b></span></span></span></span></h4><ul><li><b class="k">27 October 2026 – 26 October 2029</b>; former <b class="k"><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> Deputy Governor</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/silvana-tenreyro-3faa94.jpg" alt="Silvana Tenreyro" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Silvana_Tenreyro.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · OGL 3">Silvana Tenreyro</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Silvana Tenreyro — <span class="gt" tabindex="0">IMF<span class="pop" role="tooltip"><img src="img/international-monetary-fund-7f6a3f.png" alt=""><b class="pt">IMF</b><span class="ps">International Monetary Fund</span><span class="pl"><span class="pi">Est. <b>22 July 1944</b></span><span class="pi">HQ <b>Washington, D.C.</b></span><span class="pi"><b>191</b> members (191st: Liechtenstein)</span><span class="pi">Publishes the World Economic Outlook</span></span></span></span> Chief Economist</h4><ul><li>Appointed by the <b class="k">IMF</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/hindustan-shipyard-c1d98c.png" alt="Hindustan Shipyard" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Hindustan_Shipyard.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Hindustan Shipyard</a></figcaption></figure><h4>Rear Admiral C. Raghuram — CMD, <span class="gt" tabindex="0">Hindustan Shipyard<span class="pop" role="tooltip"><img src="img/hindustan-shipyard-c1d98c.png" alt=""><b class="pt">Hindustan Shipyard</b><span class="pl"><span class="pi">Est. <b class="k">1941</b></span><span class="pi">HQ <b class="k">Visakhapatnam</b></span><span class="pi">Ministry of Defence</span><span class="pi"><b class="k">Miniratna Category-I</b></span></span></span></span> Ltd</h4><ul><li>Succeeds <b class="k">Captain Ganti Venkateswarlu</b> (additional charge since January 2026).</li></ul></div><div class="item"><figure class="pic"><img src="img/file-flag-of-north-korea-svg-f87858.png" alt="Flag of North Korea" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Flag_of_North_Korea.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Flag of North Korea</a></figcaption></figure><h4>Sanjeev Jain — India's next Ambassador to <span class="gt" tabindex="0">North Korea<span class="pop" role="tooltip"><img src="img/file-flag-of-north-korea-svg-f87858.png" alt=""><b class="pt">North Korea</b><span class="pl"><span class="pi">Capital <b class="k">Pyongyang</b></span><span class="pi">Currency <b class="k">Won</b></span></span></span></span></h4><ul><li>Currently Ambassador to <b class="k">Cabo Verde</b>; succeeds <b class="k">Aliawati Longkumer</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/sourav-ganguly-e300d8.jpg" alt="Sourav Ganguly" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Sourav_Ganguly_(late_2010s).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY 3.0">Sourav Ganguly</a></figcaption></figure><h4>Sourav Ganguly — Brand Ambassador of InsuranceDekho</h4><ul><li>Campaign: "<b class="k">Khul Kar Khelo</b>" for insurance advisors.</li></ul></div></section>
+<section id="quiz" class="quiz"><h3><span class="n">6</span>Self-test</h3><p class="cs">Answer out loud first, then click to check. Re-test the ones you missed tomorrow.</p><details><summary>Under RB-IOS 2026, maximum compensation for consequential loss?</summary><p>₹30 lakh (plus up to ₹3 lakh for time, expenses, harassment)</p></details><details><summary>What is RDCL, and whose stake is SBI buying?</summary><p>RMBS Development Company Ltd — NHB's 10% (NHB 39% → 29%)</p></details><details><summary>Which bank got an IFSCA licence for an IBU at GIFT City?</summary><p>Punjab &amp; Sind Bank</p></details><details><summary>First foreign insurer to own 100% of its Indian venture?</summary><p>Aviva (buying 26% from Dabur Invest Corp)</p></details><details><summary>ADB vs IMF growth forecasts for India, FY 2026-27?</summary><p>ADB 6.6%, IMF 6.4%</p></details><details><summary>India's FDI inflows in 2025 and its global rank (UNCTAD)?</summary><p>$39 billion (+44%), 11th</p></details><details><summary>Highest and lowest unemployment among million-plus cities?</summary><p>Highest: Prayagraj, Patna · Lowest: Ahmedabad, Kolkata</p></details><details><summary>For how many consecutive quarters are small savings rates unchanged?</summary><p>9</p></details><details><summary>Power Grid's JBIC green loan funds which project?</summary><p>Khavda–Nagpur HVDC</p></details><details><summary>PM-SETU: total outlay and number of ITIs?</summary><p>₹60,000 crore; 1,000 ITIs (200 hubs + 800 spokes)</p></details><details><summary>First company approved under PM-SETU?</summary><p>ArcelorMittal Nippon Steel India (AM/NS India)</p></details><details><summary>6th fully literate State, and the first?</summary><p>Uttarakhand; Mizoram was first (98.2%)</p></details><details><summary>Expand PRAGATI.</summary><p>Promoting Regenerative Agriculture Through Agri-Entrepreneurship Initiative</p></details><details><summary>Fastest-growing merchandise exporting State in FY26?</summary><p>Tamil Nadu — $59.3 bn, +13.7%</p></details><details><summary>Which ports have an 18-metre draft?</summary><p>Visakhapatnam (1st) and Kamarajar/Ennore (2nd)</p></details><details><summary>Haryana's first GI-tagged fruit?</summary><p>Sirsa Kinnow</p></details><details><summary>New MD &amp; CEO of South Indian Bank?</summary><p>Mahesh Pai (from 1 Oct 2026)</p></details><details><summary>New IMF Chief Economist?</summary><p>Silvana Tenreyro</p></details></section><div class="rapid" id="rapid"><h3>⚡ Rapid Revision</h3><ul><li>RB-IOS 2026 (from 1 Jul): no dispute cap; ₹30 lakh loss + ₹3 lakh harassment.</li><li>SBI buys NHB's 10% of RDCL (RMBS). P&amp;SB: IBU at GIFT City. Aviva → 100% (FDI cap now 100%).</li><li>Growth FY27: ADB 6.6% · IMF 6.4%. FDI 2025: $39 bn, +44%, India 11th (UNCTAD WIR).</li><li>MoSPI PLFS cities: avg 6.8%; Prayagraj/Patna worst, Ahmedabad/Kolkata best.</li><li>Small savings unchanged 9th quarter. Cochin Shipyard OFS 5.04% → govt 62.87%.</li><li>Power Grid: ¥80 bn JBIC green loan, Khavda–Nagpur HVDC.</li><li>PM-SETU: ₹60,000 cr, 200 hubs + 800 spokes, now all 200 clusters; AP first, AM/NS first company.</li><li>Uttarakhand = 6th fully literate (ULLAS). PRAGATI: 20,000 agri-entrepreneurs, 20 lakh farmers. TribeX: Jual Oram.</li><li>TN fastest-growing exporter ($59.3 bn). Kamarajar (Ennore) 18 m draft, 2nd after Vizag.</li><li>GI: Sirsa Kinnow (Haryana's 1st fruit), Jalbhara Sweet (Chandannagar). Delhi "Clean Air, Healthy Delhi" ₹8,300 cr.</li><li>Appointments: Mahesh Pai (SIB) · N.S. Vishwanathan (Axis chair) · Silvana Tenreyro (IMF) · C. Raghuram (HSL) · Sanjeev Jain (N. Korea) · Ganguly (InsuranceDekho).</li></ul></div>
+<p class="end" id="fin">End of July 2026 · Class 4</p>
+<nav class="topnav" aria-label="Class navigation"><a href="2026-07-July-Class-3.html">← Class 3</a><a href="index.html">☰ All classes</a><a href="2026-07-July-Class-5.html">Class 5 →</a></nav>
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('ca-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('ca-notes-theme',nxt);}catch(e){}
+  });
+  var rb=document.getElementById('recall');
+  if(!rb) return;
+  // Recall mode: blank out key facts; click one to reveal it.
+  function setRecall(on){
+    root.classList.toggle('recall',on);
+    rb.textContent='Recall mode: '+(on?'on':'off');
+    document.querySelectorAll('b.k.shown').forEach(function(b){b.classList.remove('shown');});
+  }
+  rb.addEventListener('click',function(){ setRecall(!root.classList.contains('recall')); });
+  document.getElementById('revealall').addEventListener('click',function(){
+    document.querySelectorAll('b.k').forEach(function(b){b.classList.add('shown');});
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('b.k'); if(b && root.classList.contains('recall')) b.classList.toggle('shown');
+  });
+})();
+</script>
+</body>
+</html>

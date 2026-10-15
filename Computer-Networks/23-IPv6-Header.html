@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN IPv6 Header Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="22-IPv4-Header.html">← Ch 22: IPv4 Header</a><a href="index.html">☰ All topics</a><a href="24-ARP-and-RARP.html">Ch 24: ARP and RARP →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 23: IPv6 Header Format</h1>
+  <p class="sub">Volume 02 · Part 23 · Built from the one-shot CN lecture transcript (section 23), plus the exam points the lecture skipped. The fixed 40-byte base header, its eight fields, and extension headers chained through Next Header, with the IPv4 comparison and IPv6 address notation that exams ask about.</p>
+  <ul class="tags"><li>Base Header 40 B</li><li>Version 6 (0110)</li><li>Traffic Class</li><li>Flow Label 20 bits</li><li>Payload Length 16</li><li>Next Header 8</li><li>Hop Limit 8</li><li>128-bit Addresses</li><li>Extension Headers</li><li>:: Compression</li><li>No Checksum</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">23.0</span>Why IPv6, and How to Approach It</a></li>
+<li><a href="#s1"><span class="n">23.1</span>Base (Fixed) Header Size</a></li>
+<li><a href="#s2"><span class="n">23.2</span>Version and Traffic Class (Priority)</a></li>
+<li><a href="#s3"><span class="n">23.3</span>Flow Label</a></li>
+<li><a href="#s4"><span class="n">23.4</span>Hop Limit and Payload Length</a></li>
+<li><a href="#s5"><span class="n">23.5</span>Next Header and Extension Headers</a></li>
+<li><a href="#s6"><span class="n">23.6</span>IPv4 vs IPv6 Header<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">23.7</span>IPv6 Addresses: Notation, Types &amp; Transition<span class="x">ADDED</span></a></li>
+<li><a href="#s8"><span class="n">23.8</span>Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 23</div>
+<h2 class="ch">IPv6 Header Format</h2>
+<p>IPv6 was designed to fix IPv4's two biggest problems: running out of addresses (32 bits → <b>128 bits</b>) and making routers do too much work per packet. So its header is <b>fixed at 40 bytes</b> and much simpler: there is no header-length field, no checksum, and no fragmentation fields in the base header. Anything optional is moved into separate <b>extension headers</b> that are chained one after another using the <b>Next Header</b> field.</p>
+
+<section id="s0">
+<h3><span class="n">23.0</span>Why IPv6, and How to Approach It</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"We just finished one war (the IPv4 header, field by field) and now you've started another!" Don't worry: no great effort is needed. Some <b>names are different but the work is the same</b> as in IPv4, and there are a few <b>new</b> things. Most questions are asked on IPv4; IPv6 is asked only up to a point, and that is what is covered here.</div>
+<div class="box add"><span class="t">➕ Why IPv6 was needed</span>
+IPv4's 2³² ≈ 4.3 billion addresses ran out (IANA's free pool was exhausted in 2011). IPv6 gives <b>2¹²⁸ ≈ 3.4 × 10³⁸</b> addresses. It also brings a simpler fixed header (faster routing), built-in support for <b>IPsec</b>, <b>auto-configuration</b> (SLAAC), no need for NAT, better <b>multicast</b>, and <b>flow labels</b> for real-time traffic. Standard: RFC 2460, now <b>RFC 8200</b>.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">23.1</span>Base (Fixed) Header Size</h3>
+<figure>
+<svg viewBox="0 0 680 270" role="img" aria-label="IPv6 base header: version 4 bits, traffic class 8, flow label 20; payload length 16, next header 8, hop limit 8; source address 128 bits; destination address 128 bits; total 40 bytes, followed by optional extension headers and payload">
+  <g font-size="12"><text x="40" y="18" class="mut">0</text><text x="180" y="18" class="mut">8</text><text x="335" y="18" class="mut">16</text><text x="490" y="18" class="mut">24</text><text x="630" y="18" class="mut">31</text></g>
+  <rect x="40" y="26" width="75" height="38" class="ac"/><text x="77" y="42" text-anchor="middle" class="b" font-size="12">Version</text><text x="77" y="57" text-anchor="middle" class="mut">4</text>
+  <rect x="115" y="26" width="150" height="38" class="ac"/><text x="190" y="42" text-anchor="middle" class="b" font-size="12">Traffic Class</text><text x="190" y="57" text-anchor="middle" class="mut">8</text>
+  <rect x="265" y="26" width="375" height="38" class="ac"/><text x="452" y="42" text-anchor="middle" class="b" font-size="12">Flow Label</text><text x="452" y="57" text-anchor="middle" class="mut">20</text>
+  <rect x="40" y="64" width="300" height="38" class="gr"/><text x="190" y="80" text-anchor="middle" class="b" font-size="12">Payload Length</text><text x="190" y="95" text-anchor="middle" class="mut">16</text>
+  <rect x="340" y="64" width="150" height="38" class="gr"/><text x="415" y="80" text-anchor="middle" class="b" font-size="12">Next Header</text><text x="415" y="95" text-anchor="middle" class="mut">8</text>
+  <rect x="490" y="64" width="150" height="38" class="gr"/><text x="565" y="80" text-anchor="middle" class="b" font-size="12">Hop Limit</text><text x="565" y="95" text-anchor="middle" class="mut">8</text>
+  <rect x="40" y="102" width="600" height="46" class="bx"/><text x="340" y="130" text-anchor="middle" class="b" font-size="12">Source address (128 bits = 4 rows)</text>
+  <rect x="40" y="148" width="600" height="46" class="bx"/><text x="340" y="176" text-anchor="middle" class="b" font-size="12">Destination address (128 bits = 4 rows)</text>
+  <rect x="40" y="206" width="290" height="30" class="pu dash"/><text x="185" y="226" text-anchor="middle" class="b" font-size="12">Extension headers (optional)</text>
+  <rect x="340" y="206" width="300" height="30" class="or"/><text x="490" y="226" text-anchor="middle" class="b" font-size="12">Payload (TCP / UDP / ICMPv6 …)</text>
+  <text x="340" y="262" text-anchor="middle" class="mut">32 + 32 + 128 + 128 = 320 bits = 40 bytes, always · Payload Length counts everything after these 40 bytes</text>
+</svg>
+<figcaption>Figure 23.1: IPv6 base header (always 40 bytes)</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A common misunderstanding: "Sir, IPv6 addresses are 128 bits, so how can you write 32 bits as the width?" The 32 bits refers only to the <b>first two horizontal rows</b>: row 1 = 4 + 8 + 20 = <b>32</b> bits, row 2 = 16 + 8 + 8 = <b>32</b> bits. Then the source and destination addresses are <b>128 + 128 = 256</b> bits.<br>
+Total = 32 + 32 + 256 = <b>320 bits = 40 bytes</b>. This part is called the <b>base header</b> or <b>fixed header</b>: it is always there. After it come the <b>extension headers</b> (new; not seen in IPv4) and then the data / payload.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The base header is <b>320 bits = 40 bytes</b> (the transcript slips once and says "320 bytes"). It is <b>fixed</b>: unlike IPv4 (20–60 bytes), there is <b>no header-length field</b> because the size never changes. Exams love: IPv4 header 20–60 B, IPv6 header <b>40 B fixed</b>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">23.2</span>Version and Traffic Class (Priority)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Version</b> (4 bits) = <code>0110</code> → IPv6.<br>
+<b>Priority / Traffic Class</b>: the same job as IPv4's <b>TOS</b> field: give the packet a priority. It is shown as 8 bits, of which only <b>4</b> are used for priority (the rest reserved), giving <b>0 to 15</b>. The bigger the number, the higher the priority and the faster it should be handled during congestion (the ambulance again).<br>
+• <b>0 – 7</b>: for <b>congestion-controlled</b> traffic<br>
+• <b>8 – 15</b>: for <b>non-congestion-controlled</b> traffic, which gets the higher priority values</div>
+<div class="tw"><table>
+<tr><th>Priority (0–7)</th><th>Congestion-controlled traffic</th></tr>
+<tr><td>0</td><td>no specific traffic</td></tr>
+<tr><td>1</td><td>background data (e.g. news)</td></tr>
+<tr><td>2</td><td>unattended data transfer (e.g. e-mail)</td></tr>
+<tr><td>3, 5</td><td>reserved</td></tr>
+<tr><td>4</td><td>attended bulk transfer (e.g. FTP)</td></tr>
+<tr><td>6</td><td>interactive traffic (e.g. Telnet)</td></tr>
+<tr><td>7</td><td>control traffic (routing, network management)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ What "uncontrolled" means</span>
+Congestion-controlled traffic (TCP) slows down when the network is busy, so it can tolerate delay. Non-congestion-controlled traffic is <b>real-time audio/video</b> (often UDP): it won't slow down and late packets are useless. Within 8–15, the higher numbers mark data that should be discarded <b>last</b> (e.g. high-quality video), the lower ones data that may be discarded first.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The 4-bit 0–15 priority scheme comes from the <b>original IPv6 draft (RFC 1883)</b> and older textbooks (Forouzan). The current standard (RFC 2460 / 8200) uses the full <b>8-bit Traffic Class</b> as <b>DSCP (6 bits) + ECN (2 bits)</b>, exactly like IPv4's modern TOS byte. With the 4-bit priority the flow label was 24 bits; with the 8-bit traffic class it is <b>20 bits</b>. Most exams follow the current layout: <b>4 + 8 + 20 = 32</b>.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">23.3</span>Flow Label</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Between source and destination there can be many routes and many flows. IP is <b>datagram</b> style: any packet can take any path, so packets can arrive <b>out of order</b> and reliability drops (recall the datagram vs virtual-circuit discussion). For <b>real-time data</b>, where loss must be low and delivery fast, give all packets of one flow the <b>same flow label</b>: "treat these specially". It works <b>like a virtual circuit</b>: the handling is set up in advance (like a reservation) and routers treat every packet of the flow the same way.</div>
+<div class="box add"><span class="t">➕ Precise definition</span>
+Flow label = <b>20 bits</b>. A flow is identified by <b>(source address, destination address, flow label)</b>. Routers can keep per-flow state and forward the whole flow along the same path with the same QoS, without looking deeper into the packet. Flow label 0 = not part of any special flow.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">23.4</span>Hop Limit and Payload Length</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Hop Limit</b> (8 bits): a limit on how many hops the packet may take: exactly what <b>TTL</b> did in IPv4. "Naam alag, kaam wahi" (different name, same job).<br>
+<b>Payload Length</b> (16 bits): the size of the payload.</div>
+<div class="box add"><span class="t">➕ Payload Length precisely</span>
+It counts everything <b>after</b> the 40-byte base header: <b>extension headers + upper-layer data</b>, maximum 65 535 bytes. (IPv4's Total Length included the header; IPv6's does not, because the base header is always 40.) Larger packets, <b>jumbograms</b> up to 4 GB, use a hop-by-hop option and set Payload Length to 0.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">23.5</span>Next Header and Extension Headers</h3>
+<figure>
+<svg viewBox="0 0 680 140" role="img" aria-label="Chain of headers: base header with Next Header 0 points to hop-by-hop header, whose Next Header 44 points to fragment header, whose Next Header 6 points to TCP segment">
+  <defs><marker id="nh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="30" width="150" height="60" class="ac"/><text x="95" y="54" text-anchor="middle" class="b">Base header</text><text x="95" y="74" text-anchor="middle" class="mut">Next Header = 0</text>
+  <path d="M170 60 H200" class="lna" marker-end="url(#nh)"/>
+  <rect x="202" y="30" width="150" height="60" class="pu"/><text x="277" y="54" text-anchor="middle" class="b">Hop-by-hop</text><text x="277" y="74" text-anchor="middle" class="mut">Next Header = 44</text>
+  <path d="M352 60 H382" class="lna" marker-end="url(#nh)"/>
+  <rect x="384" y="30" width="150" height="60" class="pu"/><text x="459" y="54" text-anchor="middle" class="b">Fragment</text><text x="459" y="74" text-anchor="middle" class="mut">Next Header = 6</text>
+  <path d="M534 60 H564" class="lna" marker-end="url(#nh)"/>
+  <rect x="566" y="30" width="96" height="60" class="or"/><text x="614" y="54" text-anchor="middle" class="b">TCP</text><text x="614" y="74" text-anchor="middle" class="mut">payload</text>
+  <text x="340" y="122" text-anchor="middle" class="mut">each header's Next Header field names the header that follows it</text>
+</svg>
+<figcaption>Figure 23.2: Extension headers form a chain</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Next Header</b> holds a <b>number</b> saying which header comes after the base header. Extension headers give <b>additional functionality</b>; they are <b>not</b> part of the fixed/base header, and which ones you add (and how many) is up to you. If Next Header = <b>0</b>, a <b>hop-by-hop options</b> extension header follows, and after it the payload.</div>
+<div class="tw"><table>
+<tr><th>Next Header value</th><th>Extension header</th><th>Purpose (lecture)</th></tr>
+<tr><td>0</td><td>Hop-by-hop options</td><td>special information every router on the path must read and process</td></tr>
+<tr><td>43</td><td>Routing</td><td>the source chooses which routers the packet passes through (like IPv4 source routing)</td></tr>
+<tr><td>44</td><td>Fragment</td><td>fragmentation information, if the packet was fragmented</td></tr>
+<tr><td>51</td><td>Authentication (AH)</td><td>authentication information</td></tr>
+<tr><td>50</td><td>Encapsulating Security Payload (ESP)</td><td>security / encryption of the payload</td></tr>
+<tr><td>60</td><td>Destination options</td><td>information meant only for the destination; routers on the way don't process it</td></tr>
+<tr><td>59</td><td>No next header</td><td>nothing follows</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ More about extension headers</span>
+Next Header also names the <b>upper-layer protocol</b> at the end of the chain, using the same numbers as IPv4's Protocol field: <b>6 = TCP, 17 = UDP, 58 = ICMPv6</b>. Recommended order: hop-by-hop → destination options → routing → fragment → AH → ESP → destination options → upper layer. Only the hop-by-hop header is examined by every router; the rest are processed by the destination (or by routers named in a routing header).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Destination options" means <b>information for the destination to process</b> (it is not encryption). Confidentiality comes from <b>ESP</b>. And in IPv6 only the <b>source</b> fragments (using the fragment header); routers never fragment. The minimum link MTU in IPv6 is <b>1280 bytes</b>.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">23.6</span>IPv4 vs IPv6 Header <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Point</th><th>IPv4</th><th>IPv6</th></tr>
+<tr><td>Address size</td><td>32 bits</td><td>128 bits</td></tr>
+<tr><td>Header size</td><td>20–60 bytes (variable)</td><td>40 bytes (fixed)</td></tr>
+<tr><td>Number of fields</td><td>12 + options</td><td>8</td></tr>
+<tr><td>Header length field</td><td>HLEN</td><td>removed (size is fixed)</td></tr>
+<tr><td>Priority</td><td>TOS (8)</td><td>Traffic Class (8)</td></tr>
+<tr><td>Length</td><td>Total Length (header + data)</td><td>Payload Length (data + extension headers)</td></tr>
+<tr><td>Hop counter</td><td>TTL</td><td>Hop Limit</td></tr>
+<tr><td>Upper protocol</td><td>Protocol</td><td>Next Header</td></tr>
+<tr><td>Fragmentation</td><td>ID, flags, offset in header; routers and source</td><td>fragment extension header; source only</td></tr>
+<tr><td>Header checksum</td><td>yes</td><td>removed (left to layers 2 and 4)</td></tr>
+<tr><td>Options</td><td>inside the header (0–40 B)</td><td>extension headers</td></tr>
+<tr><td>Flow label</td><td>none</td><td>20 bits</td></tr>
+<tr><td>Security</td><td>IPsec optional</td><td>IPsec support built in (AH, ESP)</td></tr>
+<tr><td>Broadcast</td><td>yes</td><td>no (replaced by multicast)</td></tr>
+<tr><td>Address configuration</td><td>manual / DHCP</td><td>SLAAC auto-config / DHCPv6</td></tr>
+<tr><td>Address resolution</td><td>ARP</td><td>Neighbour Discovery (ICMPv6)</td></tr>
+</table></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">23.7</span>IPv6 Addresses: Notation, Types &amp; Transition <span class="badge">ADDED</span></h3>
+<div class="def"><b>Notation:</b> 128 bits written as <b>8 groups of 4 hex digits</b> (16 bits each), separated by <b>colons</b>: <code>2001:0db8:0000:0000:0008:0800:200c:417a</code>.<br>
+<b>Rule 1, drop leading zeros</b> in a group: 0db8 → db8, 0008 → 8, 0000 → 0.<br>
+<b>Rule 2, replace ONE run of all-zero groups with <code>::</code></b> (only once per address, the longest run; if tied, the leftmost).</div>
+<div class="formula">full       : 2001:0db8:0000:0000:0008:0800:200c:417a
+rule 1     : 2001:db8:0:0:8:800:200c:417a
+rule 2     : 2001:db8::8:800:200c:417a
+loopback   : 0:0:0:0:0:0:0:1  → ::1
+unspecified: 0:0:0:0:0:0:0:0  → ::</div>
+<div class="tw"><table>
+<tr><th>Type / prefix</th><th>Meaning</th></tr>
+<tr><td><b>Unicast</b>, <b>multicast</b>, <b>anycast</b></td><td>the three types; <b>no broadcast</b> in IPv6. Anycast = delivered to the <b>nearest</b> member of a group</td></tr>
+<tr><td>2000::/3</td><td>global unicast (public, like IPv4 public addresses)</td></tr>
+<tr><td>fe80::/10</td><td>link-local (every interface auto-configures one; never routed)</td></tr>
+<tr><td>fc00::/7</td><td>unique local (like IPv4 private addresses)</td></tr>
+<tr><td>ff00::/8</td><td>multicast (ff02::1 = all nodes, ff02::2 = all routers)</td></tr>
+<tr><td>::1 / ::</td><td>loopback / unspecified</td></tr>
+<tr><td>::ffff:a.b.c.d</td><td>IPv4-mapped IPv6 address</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ IPv4 → IPv6 transition</span>
+<b>Dual stack</b>: a host runs both IPv4 and IPv6. <b>Tunnelling</b>: IPv6 packets travel inside IPv4 packets across IPv4-only networks (protocol 41; 6to4, Teredo). <b>Header translation</b>: NAT64/DNS64 converts between the two when one side speaks only IPv6.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">23.8</span>Solved Questions <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> Size of the IPv6 base header? <b>40 bytes</b> (320 bits), fixed.<br><br>
+<b>Q2.</b> Compress <code>2001:0DB8:0000:0000:0008:0800:200C:417A</code>. → <b>2001:db8::8:800:200c:417a</b>.<br><br>
+<b>Q3.</b> Compress <code>FE80:0000:0000:0000:0202:B3FF:FE1E:8329</code>. → <b>fe80::202:b3ff:fe1e:8329</b> (a link-local address).<br><br>
+<b>Q4.</b> Compress <code>2001:db8:0:0:1:0:0:1</code>. Two zero runs of equal length → compress the <b>leftmost</b>: <b>2001:db8::1:0:0:1</b>. Writing <code>2001:db8::1::1</code> is <b>invalid</b> (:: used twice).<br><br>
+<b>Q5.</b> A packet has a 40-byte base header, an 8-byte hop-by-hop header and 1000 bytes of TCP data. Payload Length? 8 + 1000 = <b>1008</b>.<br><br>
+<b>Q6.</b> Which IPv4 fields were removed in IPv6? <b>HLEN, Identification, Flags, Fragment Offset, Header Checksum, Options</b> (and TOS/TTL/Protocol were renamed).<br><br>
+<b>Q7.</b> How many bits in the flow label and in the hop limit? <b>20</b> and <b>8</b>.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+One-liners: IPv6 address = <b>128 bits</b>, written as <b>8 × 16-bit hex groups</b>; base header <b>40 bytes</b>; <b>no checksum</b>, <b>no broadcast</b>; TTL → <b>Hop Limit</b>; Protocol → <b>Next Header</b>; loopback <b>::1</b>; new address type <b>anycast</b>; IPv6 uses <b>ICMPv6 Neighbour Discovery</b> instead of ARP.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 23</h3>
+<ul>
+<li>"Naam alag, kaam wahi": most IPv6 fields are renamed IPv4 fields, plus a few new ideas.</li>
+<li>Base/fixed header = row 1 (4 + 8 + 20) + row 2 (16 + 8 + 8) + 128 + 128 = <b>320 bits = 40 bytes</b>, always.</li>
+<li><b>Version</b> 0110. <b>Traffic Class</b> = priority like TOS (lecture: 0–7 congestion-controlled, 8–15 real-time; current standard: DSCP + ECN).</li>
+<li><b>Flow Label</b> (20 bits): same label for every packet of a real-time flow → virtual-circuit-like special treatment.</li>
+<li><b>Hop Limit</b> (8) = TTL. <b>Payload Length</b> (16) = everything after the base header.</li>
+<li><b>Next Header</b> (8): which extension header or upper protocol follows: 0 hop-by-hop, 43 routing, 44 fragment, 51 AH, 50 ESP, 60 destination options, 59 none, 6 TCP, 17 UDP, 58 ICMPv6.</li>
+<li>Removed vs IPv4: HLEN, fragmentation fields, checksum, options. Only the source fragments; min MTU 1280.</li>
+<li>Addresses: 8 hex groups; drop leading zeros; one <b>::</b>; ::1 loopback; unicast/multicast/anycast, no broadcast.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 23 · Next: Chapter 24 — ARP and RARP</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="22-IPv4-Header.html">← Ch 22: IPv4 Header</a><a href="index.html">☰ All topics</a><a href="24-ARP-and-RARP.html">Ch 24: ARP and RARP →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

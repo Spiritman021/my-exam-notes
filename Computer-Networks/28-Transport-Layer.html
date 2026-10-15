@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Transport Layer Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="27-Routing.html">← Ch 27: Routing</a><a href="index.html">☰ All topics</a><a href="29-TCP.html">Ch 29: TCP →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 28: Transport Layer</h1>
+  <p class="sub">Volume 02 · Part 28 · Built from the one-shot CN lecture transcript (section 28), plus the exam points the lecture skipped. Layer 4: delivering data to the right <i>process</i> on a host, using port numbers, with TCP and UDP as its two main protocols.</p>
+  <ul class="tags"><li>Layer 4</li><li>End-to-End / Port-to-Port</li><li>Process-to-Process</li><li>Port Number 16 bits</li><li>0–1023 Well-known</li><li>1024–49151 Registered</li><li>49152–65535 Dynamic</li><li>IANA</li><li>Socket = IP + Port</li><li>TCP vs UDP</li><li>Multiplexing</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">28.0</span>Three Kinds of Delivery</a></li>
+<li><a href="#s1"><span class="n">28.1</span>Process-to-Process Delivery and Port Numbers</a></li>
+<li><a href="#s2"><span class="n">28.2</span>TCP vs UDP: Basic Overview</a></li>
+<li><a href="#s3"><span class="n">28.3</span>Port Number Ranges (Well-known, Registered, Dynamic)</a></li>
+<li><a href="#s4"><span class="n">28.4</span>Socket Address</a></li>
+<li><a href="#s5"><span class="n">28.5</span>Transport-Layer Duties &amp; Multiplexing<span class="x">ADDED</span></a></li>
+<li><a href="#s6"><span class="n">28.6</span>Well-known Ports Table &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 28</div>
+<h2 class="ch">Transport Layer</h2>
+<p>IP gets a packet to the right <b>computer</b>. But a computer runs many programs at once (a browser, a mail client, a game), and the data has to reach the right <b>one</b>. That is the transport layer's job. It labels every piece of data with a 16-bit <b>port number</b> that identifies the program, and it offers two styles of delivery: <b>TCP</b> (reliable, ordered, connection-oriented) and <b>UDP</b> (fast, connectionless, no guarantees). Chapters 29–31 cover each in detail.</p>
+
+<section id="s0">
+<h3><span class="n">28.0</span>Three Kinds of Delivery</h3>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Data link layer does node-to-node delivery across one hop; network layer does host-to-host delivery between source and destination machines; transport layer does end-to-end port-to-port delivery between processes">
+  <defs><marker id="dl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="70" width="150" height="120" rx="8" class="gr"/><text x="95" y="90" text-anchor="middle" class="b">Host 1</text>
+  <rect x="34" y="102" width="36" height="28" rx="4" class="ac"/><text x="52" y="121" text-anchor="middle" font-size="11">P1</text>
+  <rect x="78" y="102" width="36" height="28" rx="4" class="ac"/><text x="96" y="121" text-anchor="middle" font-size="11">P2</text>
+  <rect x="122" y="102" width="36" height="28" rx="4" class="or"/><text x="140" y="121" text-anchor="middle" font-size="11" class="b">P3</text>
+  <text x="140" y="146" text-anchor="middle" class="mut" font-size="10">port 3</text>
+  <rect x="510" y="70" width="150" height="120" rx="8" class="gr"/><text x="545" y="90" text-anchor="middle" class="b">Host 2</text>
+  <rect x="524" y="102" width="36" height="28" rx="4" class="ac"/><text x="542" y="121" text-anchor="middle" font-size="11">P5</text>
+  <rect x="568" y="102" width="36" height="28" rx="4" class="ac"/><text x="586" y="121" text-anchor="middle" font-size="11">P6</text>
+  <rect x="612" y="102" width="36" height="28" rx="4" class="or"/><text x="630" y="121" text-anchor="middle" font-size="11" class="b">P7</text>
+  <text x="630" y="146" text-anchor="middle" class="mut" font-size="10">port 7</text>
+  <circle cx="280" cy="170" r="18" class="pu"/><text x="280" y="175" text-anchor="middle" class="b" font-size="11">R1</text>
+  <circle cx="400" cy="170" r="18" class="pu"/><text x="400" y="175" text-anchor="middle" class="b" font-size="11">R2</text>
+  <path d="M170 170 H262 M298 170 H382 M418 170 H510" class="ln"/>
+  <text x="340" y="205" text-anchor="middle" class="mut">Layer 2: node-to-node / hop-to-hop (each link)</text>
+  <path d="M172 118 H506" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#dl)"/>
+  <text x="340" y="108" text-anchor="middle" style="fill:var(--accent)" class="b">Layer 3: host-to-host (source-to-destination)</text>
+  <path d="M140 100 C 260 0, 420 0, 625 100" style="stroke:var(--alert);stroke-width:2;fill:none" class="dash" marker-end="url(#dl)"/>
+  <text x="340" y="14" text-anchor="middle" style="fill:var(--alert)" class="b">Layer 4: end-to-end = port-to-port = process-to-process</text>
+</svg>
+<figcaption>Figure 28.1: Who delivers what, layer by layer</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The fourth floor, just above the network layer: the <b>transport layer</b>, which talks in even more detail. The network layer did <b>host-to-host</b> (source-to-destination) delivery. The transport layer goes one step further: <b>end-to-end delivery</b>.<br>
+Students often think end-to-end and source-to-destination are the same; they are not. <b>End-to-end delivery = port-to-port delivery</b> (port numbers come in here); <b>source-to-destination = host-to-host</b>; and the DLL did <b>hop-to-hop / node-to-node</b>. Know all three variations.</div>
+<div class="tw"><table>
+<tr><th>Layer</th><th>Delivery</th><th>Address used</th><th>Data unit</th></tr>
+<tr><td>Data link (2)</td><td>node-to-node / hop-to-hop</td><td>MAC address</td><td>frame</td></tr>
+<tr><td>Network (3)</td><td>host-to-host / source-to-destination</td><td>IP address</td><td>packet / datagram</td></tr>
+<tr><td>Transport (4)</td><td>process-to-process / port-to-port / end-to-end</td><td>port number</td><td><b>segment</b> (TCP) / <b>user datagram</b> (UDP)</td></tr>
+</table></div>
+</section>
+
+<section id="s1">
+<h3><span class="n">28.1</span>Process-to-Process Delivery and Port Numbers</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A host on network 1 and a host on network 2 each run <b>many processes / applications</b>. Which application on this host should talk to which application on that one? Each process is identified uniquely by a <b>port number</b>. Say the processes on host 1 have ports 1, 2, 3, 4 and on host 2 ports 5, 6, 7, 8: we want data from <b>process 3</b> on host 1 to reach <b>process 7</b> on host 2. This is <b>port-to-port</b> or <b>process-to-process delivery</b>, and the transport layer is responsible for it.<br>
+Also note: the transport layer's <b>checksum / error control</b> works <b>end to end</b>, not hop to hop.</div>
+<div class="box add"><span class="t">➕ Why end-to-end error control too?</span>
+The DLL's CRC checks each link, but a packet can still be damaged <b>inside a router</b> (in memory, between links). Only a check made by the two end hosts catches that, the "end-to-end argument". TCP and UDP checksums cover the header, the data, and a <b>pseudo-header</b> containing the source and destination IP addresses.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">28.2</span>TCP vs UDP: Basic Overview</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+We'll compare TCP and UDP in detail later; for now the basics.<br>
+• <b>TCP</b>: more <b>reliable</b>, receives packets <b>in order</b>, <b>connection-oriented</b>.<br>
+• <b>UDP</b>: <b>connectionless</b>, <b>unreliable</b>, packets may arrive <b>out of order</b> at the destination.<br>
+<b>Flow control</b> and <b>congestion control</b> are also discussed at this layer (layer 4).</div>
+<div class="tw"><table>
+<tr><th></th><th>TCP</th><th>UDP</th></tr>
+<tr><td>Connection</td><td>connection-oriented (3-way handshake)</td><td>connectionless</td></tr>
+<tr><td>Reliability</td><td>reliable: ACKs and retransmission</td><td>unreliable: best effort</td></tr>
+<tr><td>Order</td><td>in order</td><td>may be out of order</td></tr>
+<tr><td>Flow / congestion control</td><td>yes</td><td>no</td></tr>
+<tr><td>Header</td><td>20–60 bytes</td><td>8 bytes</td></tr>
+<tr><td>Speed / overhead</td><td>slower, more overhead</td><td>faster, minimal overhead</td></tr>
+<tr><td>Typical use</td><td>web, e-mail, file transfer</td><td>DNS, streaming, VoIP, online games</td></tr>
+</table></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">28.3</span>Port Number Ranges (Well-known, Registered, Dynamic)</h3>
+<figure>
+<svg viewBox="0 0 680 120" role="img" aria-label="Port number range 0 to 65535 split into well-known 0 to 1023, registered 1024 to 49151, dynamic or private 49152 to 65535">
+  <rect x="20" y="30" width="50" height="44" class="or"/><text x="45" y="50" text-anchor="middle" class="b" font-size="11">Well-</text><text x="45" y="64" text-anchor="middle" class="b" font-size="11">known</text>
+  <rect x="70" y="30" width="440" height="44" class="ac"/><text x="290" y="57" text-anchor="middle" class="b">Registered (registered with IANA, not controlled)</text>
+  <rect x="510" y="30" width="150" height="44" class="gr"/><text x="585" y="50" text-anchor="middle" class="b">Dynamic / Private</text><text x="585" y="66" text-anchor="middle" class="mut" font-size="11">ephemeral</text>
+  <text x="20" y="92" class="mut" font-size="11">0</text><text x="70" y="92" text-anchor="middle" class="mut" font-size="11">1023|1024</text>
+  <text x="510" y="92" text-anchor="middle" class="mut" font-size="11">49151|49152</text><text x="660" y="92" text-anchor="end" class="mut" font-size="11">65535</text>
+  <text x="340" y="20" text-anchor="middle" class="mut">16-bit port number: 0 – 65 535 (IANA)</text>
+  <text x="340" y="114" text-anchor="middle" class="mut">(drawn not to scale)</text>
+</svg>
+<figcaption>Figure 28.2: The three IANA port ranges</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A port number is a <b>16-bit</b> number, so it ranges from <b>0 to about 65 535</b>. The division into categories is made by <b>IANA (Internet Assigned Numbers Authority)</b>:<br>
+• <b>0 – 1023: well-known ports</b>, e.g. <b>DNS 53</b>, <b>POP3 110</b>, <b>FTP</b> 20 (data) and 21 (control), <b>SMTP 25</b>, <b>HTTPS (with SSL) 443</b>.<br>
+• <b>1024 – 49 151: registered ports</b>, the biggest range: <b>registered with</b> IANA but <b>not controlled</b> by it.<br>
+• <b>49 152 – 65 535: dynamic (private) ports</b>: neither registered nor controlled by IANA; used for <b>temporary</b> communications that need a port only for a moment ("kaam chalao").</div>
+<div class="box trap"><span class="t">⚠️ Exam traps</span>
+The exact boundaries are <b>1023 / 1024</b> and <b>49 151 / 49 152</b>, top <b>65 535</b>. FTP uses <b>two</b> ports: <b>21 = control</b> (commands), <b>20 = data</b>. Well-known ports are used by <b>servers</b>; a <b>client</b> picks a temporary <b>ephemeral</b> port for its side of each connection.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">28.4</span>Socket Address</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A <b>socket address</b> is just the combination <b>IP address + port number</b>, e.g. <code>200.23.56.8 : 20</code> (an FTP-data socket). Just as we have MAC addresses, IP addresses and port numbers, know what a socket address is.</div>
+<div class="formula">socket address   = IP address : port            e.g. 200.23.56.8:20
+connection (TCP) = (client IP, client port, server IP, server port)   ← socket pair, 4-tuple
+                 + protocol                                          ← 5-tuple</div>
+<div class="box add"><span class="t">➕ Why the pair matters</span>
+A web server listens on one socket (e.g. 93.184.216.34:443), yet serves thousands of clients at once. Each connection is told apart by the <b>whole socket pair</b>: the clients differ in IP and/or ephemeral port. In programming, a "socket" is the OS object (the API endpoint) bound to such an address.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">28.5</span>Transport-Layer Duties &amp; Multiplexing <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Duty</th><th>Meaning</th></tr>
+<tr><td><b>Process-to-process delivery</b></td><td>using port numbers</td></tr>
+<tr><td><b>Multiplexing</b> (sender)</td><td>many application processes share one IP layer: data from each is put into segments labelled with its port</td></tr>
+<tr><td><b>Demultiplexing</b> (receiver)</td><td>the destination port in each arriving segment decides which process gets it</td></tr>
+<tr><td><b>Segmentation &amp; reassembly</b></td><td>splitting an application message into segments with sequence numbers, and putting them back in order</td></tr>
+<tr><td><b>Connection control</b></td><td>set-up and tear-down (TCP: 3-way handshake, FIN)</td></tr>
+<tr><td><b>Flow control</b></td><td>end-to-end: don't overflow the receiving process (TCP window)</td></tr>
+<tr><td><b>Error control</b></td><td>end-to-end checksum; TCP also retransmits lost or damaged segments</td></tr>
+<tr><td><b>Congestion control</b></td><td>don't overload the network (TCP slow start etc., ch 31)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Other transport protocols</span>
+<b>SCTP</b> (Stream Control Transmission Protocol): message-oriented, reliable, multi-streaming and multi-homing; used in telecom signalling. <b>QUIC</b>: a modern reliable protocol built on UDP, used by HTTP/3. Exams mostly stick to TCP and UDP.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">28.6</span>Well-known Ports Table &amp; Solved Questions <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Port</th><th>Protocol</th><th>Transport</th><th>Port</th><th>Protocol</th><th>Transport</th></tr>
+<tr><td>20 / 21</td><td>FTP data / control</td><td>TCP</td><td>110</td><td>POP3</td><td>TCP</td></tr>
+<tr><td>22</td><td>SSH (and SFTP)</td><td>TCP</td><td>123</td><td>NTP</td><td>UDP</td></tr>
+<tr><td>23</td><td>Telnet</td><td>TCP</td><td>143</td><td>IMAP</td><td>TCP</td></tr>
+<tr><td>25</td><td>SMTP</td><td>TCP</td><td>161 / 162</td><td>SNMP / SNMP trap</td><td>UDP</td></tr>
+<tr><td>53</td><td>DNS</td><td>UDP (TCP for zone transfer)</td><td>179</td><td>BGP</td><td>TCP</td></tr>
+<tr><td>67 / 68</td><td>DHCP server / client</td><td>UDP</td><td>443</td><td>HTTPS</td><td>TCP</td></tr>
+<tr><td>69</td><td>TFTP</td><td>UDP</td><td>520</td><td>RIP</td><td>UDP</td></tr>
+<tr><td>80</td><td>HTTP</td><td>TCP</td><td>3389</td><td>RDP (registered)</td><td>TCP</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> Size of a port number and its range? <b>16 bits</b>, <b>0 – 65 535</b>.<br><br>
+<b>Q2.</b> Which range is called well-known? <b>0 – 1023</b>. Dynamic/ephemeral? <b>49 152 – 65 535</b>.<br><br>
+<b>Q3.</b> Who assigns well-known ports? <b>IANA</b>.<br><br>
+<b>Q4.</b> What is a socket address? <b>IP address + port number</b>.<br><br>
+<b>Q5.</b> Which delivery does the transport layer provide? <b>Process-to-process (port-to-port, end-to-end)</b>. The network layer? Host-to-host. The DLL? Node-to-node.<br><br>
+<b>Q6.</b> Which port does HTTPS use? <b>443</b>. SMTP? <b>25</b>. DNS? <b>53</b>. POP3? <b>110</b>.<br><br>
+<b>Q7.</b> Data unit of the transport layer? <b>Segment</b> (TCP), <b>user datagram</b> (UDP).</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Port numbers are among the most-asked one-liners in IT officer exams: memorise <b>20/21, 22, 23, 25, 53, 67/68, 80, 110, 143, 161, 443</b>, and which ones run over <b>UDP</b> (DNS, DHCP, TFTP, SNMP, NTP, RIP).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 28</h3>
+<ul>
+<li>Transport = 4th floor. <b>End-to-end = port-to-port = process-to-process</b>; network = host-to-host; DLL = node-to-node.</li>
+<li>Port number picks the process (lecture: process 3 on host 1 → process 7 on host 2). Transport checksum works end to end.</li>
+<li>TCP: reliable, in order, connection-oriented. UDP: connectionless, unreliable, may be out of order. Flow and congestion control live here (TCP).</li>
+<li>Port = <b>16 bits</b>, 0–65 535 (IANA): <b>0–1023 well-known</b> · <b>1024–49 151 registered</b> · <b>49 152–65 535 dynamic/private</b>.</li>
+<li>DNS 53, POP3 110, FTP 20 data / 21 control, SMTP 25, HTTPS 443, HTTP 80.</li>
+<li><b>Socket address = IP + port</b>; a connection = socket pair (4-tuple).</li>
+<li>Duties: multiplexing/demultiplexing, segmentation, connection, flow, error and congestion control.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 28 · Next: Chapter 29 — TCP (Transmission Control Protocol)</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="27-Routing.html">← Ch 27: Routing</a><a href="index.html">☰ All topics</a><a href="29-TCP.html">Ch 29: TCP →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

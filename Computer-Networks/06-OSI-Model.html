@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN OSI Model Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="05-Types-of-Networks.html">← Ch 5: Types of Networks</a><a href="index.html">☰ All topics</a><a href="07-Transmission-Media.html">Ch 7: Transmission Media →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 6: OSI Model</h1>
+  <p class="sub">Volume 02 · Part 6 · Built from the one-shot CN lecture transcript (section 6), plus the exam points the lecture skipped. This is the backbone of the whole subject.</p>
+  <ul class="tags"><li>7 Layers &amp; Mnemonics</li><li>Encapsulation</li><li>Headers &amp; Trailer</li><li>Decapsulation</li><li>Peer-to-Peer</li><li>PDUs</li><li>Hop / Host / Process Delivery</li><li>Layer Functions</li><li>Devices &amp; Protocols per Layer</li><li>OSI vs TCP/IP</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">6.0</span>Why a Layered Model?</a></li>
+<li><a href="#s1"><span class="n">6.1</span>The Seven Layers of the OSI Model</a></li>
+<li><a href="#s2"><span class="n">6.2</span>Encapsulation at the Sender (Headers &amp; Trailer)</a></li>
+<li><a href="#s3"><span class="n">6.3</span>Decapsulation &amp; Peer-Layer Communication</a></li>
+<li><a href="#s4"><span class="n">6.4</span>Physical Layer Functions</a></li>
+<li><a href="#s5"><span class="n">6.5</span>Data Link Layer Functions</a></li>
+<li><a href="#s6"><span class="n">6.6</span>Network Layer Functions</a></li>
+<li><a href="#s7"><span class="n">6.7</span>Transport Layer Functions</a></li>
+<li><a href="#s8"><span class="n">6.8</span>Session Layer Functions</a></li>
+<li><a href="#s9"><span class="n">6.9</span>Presentation Layer: Translation, Encryption, Compression</a></li>
+<li><a href="#s10"><span class="n">6.10</span>Application Layer Functions</a></li>
+<li><a href="#s11"><span class="n">6.11</span>Master Table: PDUs, Devices, Protocols, Addresses<span class="x">ADDED</span></a></li>
+<li><a href="#s12"><span class="n">6.12</span>TCP/IP Model &amp; OSI vs TCP/IP<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 6</div>
+<h2 class="ch">OSI Model</h2>
+<p>Chapters 1 to 5 introduced the parts of a network: devices, links, topologies and network types. The <b>OSI model</b> organises everything a network must do into <b>7 layers</b>, each with its own job. The rest of this volume goes through these layers one by one, so this chapter is the map for everything that follows.</p>
+
+<section id="s0">
+<h3><span class="n">6.0</span>Why a Layered Model?</h3>
+<div class="def"><b>OSI (Open Systems Interconnection) model:</b> a <b>7-layer reference model</b> developed by <b>ISO</b> (published in 1984). It describes how data moves from an application on one computer to an application on another, by splitting the communication functions into layers.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Every activity in a network (sharing, transferring and transmitting data) involves many <b>different functions, responsibilities and roles at different levels</b>. Only when all of them are performed does data transmission work efficiently. These functions are <b>divided among layers</b>. "It's simply a game of 7 layers. No shortcuts."</div>
+<div class="box add"><span class="t">➕ Benefits of layering</span>
+<b>Modularity</b> (change one layer without touching the others) · <b>interoperability</b> between vendors ("open" systems) · <b>easier troubleshooting</b> and teaching · <b>standard interfaces</b> between layers. OSI is a <b>reference / conceptual model</b>; the Internet actually runs on the <b>TCP/IP</b> model (6.12).</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">6.1</span>The Seven Layers of the OSI Model</h3>
+<figure>
+<svg viewBox="0 0 680 330" role="img" aria-label="OSI 7 layers stack with numbers, groups and key words">
+  <g>
+  <rect x="150" y="10" width="220" height="40" class="pu"/><text x="260" y="35" text-anchor="middle" class="b">7  Application</text>
+  <rect x="150" y="54" width="220" height="40" class="pu"/><text x="260" y="79" text-anchor="middle" class="b">6  Presentation</text>
+  <rect x="150" y="98" width="220" height="40" class="pu"/><text x="260" y="123" text-anchor="middle" class="b">5  Session</text>
+  <rect x="150" y="142" width="220" height="40" class="ac"/><text x="260" y="167" text-anchor="middle" class="b">4  Transport ★</text>
+  <rect x="150" y="186" width="220" height="40" class="gr"/><text x="260" y="211" text-anchor="middle" class="b">3  Network ★</text>
+  <rect x="150" y="230" width="220" height="40" class="gr"/><text x="260" y="255" text-anchor="middle" class="b">2  Data Link ★</text>
+  <rect x="150" y="274" width="220" height="40" class="or"/><text x="260" y="299" text-anchor="middle" class="b">1  Physical</text>
+  </g>
+  <text x="385" y="35" class="mut">user services: HTTP, FTP, SMTP, DNS</text>
+  <text x="385" y="79" class="mut">translate · encrypt · compress</text>
+  <text x="385" y="123" class="mut">dialog control · sync / checkpoints</text>
+  <text x="385" y="167" class="mut">process-to-process · port · segment</text>
+  <text x="385" y="211" class="mut">source-to-destination · IP · routing · packet</text>
+  <text x="385" y="255" class="mut">hop-to-hop · MAC · framing · flow/error/access</text>
+  <text x="385" y="299" class="mut">bits → signals · media · topology · modes</text>
+  <path d="M130 10 V138 M130 142 V314" style="stroke:var(--muted);stroke-width:2"/>
+  <text x="122" y="80" text-anchor="end" class="mut">upper /</text><text x="122" y="96" text-anchor="end" class="mut">host layers</text>
+  <text x="122" y="225" text-anchor="end" class="mut">lower /</text><text x="122" y="241" text-anchor="end" class="mut">media layers</text>
+  <text x="20" y="325" class="mut">★ = lecture's focus layers</text>
+</svg>
+<figcaption>Figure 6.1: The seven OSI layers (bottom = 1)</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Bottom to top: <b>Physical → Data Link → Network → Transport → Session → Presentation → Application</b> (at the top). The lecture <b>star-marks</b> where you need <b>deep knowledge</b>: the <b>Data Link</b> layer, the <b>Network</b> layer, to some extent the <b>Transport</b> layer, and to some extent the <b>Application</b> layer. These carry the most questions in semester and competitive exams. Physical-layer detail is studied more by electronics students, though topology and transmission modes (already covered) belong to it. For <b>Session and Presentation</b>, what this lecture covers is "more than enough".</div>
+<div class="box add"><span class="t">➕ Mnemonics</span>
+Layer 1 → 7: "<b>P</b>lease <b>D</b>o <b>N</b>ot <b>T</b>hrow <b>S</b>ausage <b>P</b>izza <b>A</b>way". Layer 7 → 1: "<b>A</b>ll <b>P</b>eople <b>S</b>eem <b>T</b>o <b>N</b>eed <b>D</b>ata <b>P</b>rocessing".</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">6.2</span>Encapsulation at the Sender (Headers and Trailer)</h3>
+<div class="def"><b>Encapsulation:</b> as data moves <b>down</b> the layers at the sender, each layer takes what it received from the layer above as its <b>payload</b>, adds its own <b>header</b> (control information, the metadata of its job), and passes the result down. The Data Link layer also adds a <b>trailer</b>.</div>
+<figure>
+<svg viewBox="0 0 680 330" role="img" aria-label="Encapsulation: headers H7..H2 added layer by layer, trailer T2 at data link, bits at physical">
+  <text x="20" y="30" class="b">L7</text><rect x="420" y="15" width="160" height="26" class="ac"/><text x="500" y="33" text-anchor="middle">DATA</text><rect x="380" y="15" width="40" height="26" class="pu"/><text x="400" y="33" text-anchor="middle">H7</text>
+  <text x="20" y="70" class="b">L6</text><rect x="340" y="55" width="40" height="26" class="pu"/><text x="360" y="73" text-anchor="middle">H6</text><rect x="380" y="55" width="200" height="26" class="bx"/><text x="480" y="73" text-anchor="middle" class="mut">payload (H7 + data)</text>
+  <text x="20" y="110" class="b">L5</text><rect x="300" y="95" width="40" height="26" class="pu"/><text x="320" y="113" text-anchor="middle">H5</text><rect x="340" y="95" width="240" height="26" class="bx"/><text x="460" y="113" text-anchor="middle" class="mut">payload</text>
+  <text x="20" y="150" class="b">L4</text><rect x="260" y="135" width="40" height="26" class="ac"/><text x="280" y="153" text-anchor="middle">H4</text><rect x="300" y="135" width="280" height="26" class="bx"/><text x="440" y="153" text-anchor="middle" class="mut">payload → SEGMENT</text>
+  <text x="20" y="190" class="b">L3</text><rect x="220" y="175" width="40" height="26" class="gr"/><text x="240" y="193" text-anchor="middle">H3</text><rect x="260" y="175" width="320" height="26" class="bx"/><text x="420" y="193" text-anchor="middle" class="mut">payload → PACKET</text>
+  <text x="20" y="230" class="b">L2</text><rect x="180" y="215" width="40" height="26" class="gr"/><text x="200" y="233" text-anchor="middle">H2</text><rect x="220" y="215" width="360" height="26" class="bx"/><text x="400" y="233" text-anchor="middle" class="mut">payload → FRAME</text><rect x="580" y="215" width="40" height="26" class="or"/><text x="600" y="233" text-anchor="middle">T2</text>
+  <text x="20" y="275" class="b">L1</text><rect x="180" y="258" width="440" height="30" class="bx"/><text x="400" y="278" text-anchor="middle" style="font-family:var(--code)">0101110100101011010 … bits → signals</text>
+  <text x="630" y="233" class="mut" style="font-size:11px">trailer</text>
+  <text x="340" y="320" text-anchor="middle" class="mut">each layer treats everything from above as "payload", like letters in envelopes</text>
+</svg>
+<figcaption>Figure 6.2: Encapsulation — top-to-bottom at the sender</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>At the <b>sending end</b> data moves <b>top to bottom</b>, starting at the application layer. At the <b>receiving end</b> it moves <b>bottom up</b>.</li>
+<li>Each layer's job-related <b>metadata goes into its header</b>, which is attached to the data, forming a "packet". The layer passes it down.</li>
+<li>The next layer treats <b>the whole thing it received</b> as <b>data / payload</b>, adds its own header, and passes it down again.</li>
+<li><b>Special case: the DLL</b> adds a header <b>and</b> a <b>trailer (tail)</b>.</li>
+<li>At the <b>physical layer</b>, everything is just <b>0s and 1s, data bits</b>, put onto the transmission medium.</li>
+<li>Analogy: we put the letter into an <b>envelope, then another envelope, then another…</b> and send it.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ What is in the trailer?</span>
+The DLL trailer carries the <b>FCS (Frame Check Sequence)</b>, usually a <b>CRC</b>, for error detection (Chapter 14). Only the DLL adds a trailer. In practice, layers 5–7 are often handled together by the application and add no separate headers.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">6.3</span>Decapsulation at the Receiver and Peer-Layer Communication</h3>
+<div class="def"><b>Decapsulation:</b> at the receiver the data moves <b>up</b>. Each layer <b>removes the header added by its peer layer</b> at the sender, uses that information, and passes the payload upward.<br><b>Peer-to-peer communication:</b> each layer logically communicates with the <b>same layer</b> on the other machine through its header (a virtual communication), while the actual data flows down, across and up.</div>
+<figure>
+<svg viewBox="0 0 680 330" role="img" aria-label="Sender and receiver stacks with physical path down, across, up; dashed peer arrows between same layers; router uses only layers 1-3">
+  <defs><marker id="o1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <g>
+  <text x="90" y="16" text-anchor="middle" class="b">Sender</text>
+  <rect x="40" y="22" width="100" height="32" class="pu"/><text x="90" y="43" text-anchor="middle">7 Application</text>
+  <rect x="40" y="56" width="100" height="32" class="pu"/><text x="90" y="77" text-anchor="middle">6 Presentation</text>
+  <rect x="40" y="90" width="100" height="32" class="pu"/><text x="90" y="111" text-anchor="middle">5 Session</text>
+  <rect x="40" y="124" width="100" height="32" class="ac"/><text x="90" y="145" text-anchor="middle">4 Transport</text>
+  <rect x="40" y="158" width="100" height="32" class="gr"/><text x="90" y="179" text-anchor="middle">3 Network</text>
+  <rect x="40" y="192" width="100" height="32" class="gr"/><text x="90" y="213" text-anchor="middle">2 Data Link</text>
+  <rect x="40" y="226" width="100" height="32" class="or"/><text x="90" y="247" text-anchor="middle">1 Physical</text>
+  </g>
+  <g>
+  <text x="590" y="16" text-anchor="middle" class="b">Receiver</text>
+  <rect x="540" y="22" width="100" height="32" class="pu"/><text x="590" y="43" text-anchor="middle">7 Application</text>
+  <rect x="540" y="56" width="100" height="32" class="pu"/><text x="590" y="77" text-anchor="middle">6 Presentation</text>
+  <rect x="540" y="90" width="100" height="32" class="pu"/><text x="590" y="111" text-anchor="middle">5 Session</text>
+  <rect x="540" y="124" width="100" height="32" class="ac"/><text x="590" y="145" text-anchor="middle">4 Transport</text>
+  <rect x="540" y="158" width="100" height="32" class="gr"/><text x="590" y="179" text-anchor="middle">3 Network</text>
+  <rect x="540" y="192" width="100" height="32" class="gr"/><text x="590" y="213" text-anchor="middle">2 Data Link</text>
+  <rect x="540" y="226" width="100" height="32" class="or"/><text x="590" y="247" text-anchor="middle">1 Physical</text>
+  </g>
+  <g>
+  <text x="340" y="150" text-anchor="middle" class="b">Router</text>
+  <rect x="290" y="158" width="100" height="32" class="gr"/><text x="340" y="179" text-anchor="middle">3 Network</text>
+  <rect x="290" y="192" width="100" height="32" class="gr"/><text x="340" y="213" text-anchor="middle">2 Data Link</text>
+  <rect x="290" y="226" width="100" height="32" class="or"/><text x="340" y="247" text-anchor="middle">1 Physical</text>
+  </g>
+  <path d="M140 38 H538 M140 140 H538" class="ln dash" marker-start="url(#o1)" marker-end="url(#o1)"/>
+  <text x="340" y="33" text-anchor="middle" class="mut">peer-to-peer (virtual): L7 ↔ L7 … L4 ↔ L4 (end-to-end)</text>
+  <path d="M140 174 H288 M392 174 H538 M140 208 H288 M392 208 H538" class="ln dash" marker-start="url(#o1)" marker-end="url(#o1)"/>
+  <text x="215" y="203" text-anchor="middle" class="mut" style="font-size:10.5px">hop</text><text x="465" y="203" text-anchor="middle" class="mut" style="font-size:10.5px">hop</text>
+  <path d="M90 258 V285 H340 V260 M340 260 V285 H590 V260" class="lna" marker-end="url(#o1)"/>
+  <text x="340" y="305" text-anchor="middle" class="b">actual flow: down the sender → across the medium → up the receiver</text>
+  <text x="340" y="322" text-anchor="middle" class="mut">intermediate routers handle only layers 1–3</text>
+</svg>
+<figcaption>Figure 6.3: Peer-layer communication and the actual data path</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture — "Only the one who sealed it can open it"</span>
+At the receiver (bottom up), <b>one envelope comes off at each layer</b> until the host finally gets the data. Very important: it never happens that the network layer's envelope is opened by the DLL, transport, session or presentation layer. The header added by the <b>network layer at the sender</b> is opened <b>only by the network layer at the receiver</b>, because only it <b>understands that information</b> and can act on it (compute, handle errors). It removes its header, takes out the payload and sends it up: "you open yours, transport layer". This matching is the <b>synchronisation between peer layers</b>.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">6.4</span>Physical Layer Functions</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>Data here is just a <b>sequence of 0s and 1s</b>.</li>
+<li><b>Encoding</b>: bits can't travel on a medium as they are. At the sender they are <b>converted into compatible signals</b>; at the receiver, <b>signals are converted back to bits</b>. Manchester and differential Manchester encoding are covered in Chapter 8.</li>
+<li><b>Data transfer rate</b> of the transmission medium is handled here.</li>
+<li><b>Connection type / line configuration</b> (point-to-point, multipoint), <b>topology</b> and <b>transmission modes</b> (simplex, half- and full-duplex) are all physical-layer responsibilities, already covered in Chapters 2–4.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Also at the physical layer</span>
+Physical characteristics of interfaces and media (connectors, pins, voltages, cables, Chapter 7) · <b>bit synchronisation</b> (sender and receiver clocks match) · <b>bit rate</b> (bits per second) · multiplexing. <b>Devices</b>: <b>hub, repeater</b>, cables, connectors, modems (partly). The PDU is the <b>bit</b>.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">6.5</span>Data Link Layer Functions</h3>
+<div class="box lec"><span class="t">🎓 From the lecture (DLL = layer 2 from the bottom)</span>
+<ul>
+<li><b>Framing</b>: divide the data into <b>frames</b>. Analogy: a <b>big biscuit and a little child</b> with a tiny mouth. You don't hand over the whole biscuit; you break it into small pieces the child can eat one at a time. (Related terms MTU and MSS come later.)</li>
+<li><b>Physical addressing</b>: <b>MAC addresses</b>.</li>
+<li><b>Access control</b>: on a shared link (bus), if two hosts access the link and send together, a <b>collision</b> occurs. So there must be control over <b>who can access the link, when and how</b> (CSMA etc.).</li>
+<li><b>Flow control</b>: the golden statement "<b>Don't send me more than what I can receive.</b>" If the receiver's buffer is full and the sender keeps sending, frames are <b>discarded</b>, data is lost and must be retransmitted.</li>
+<li><b>Error control</b>: even with no collision and no overflow, bits may get <b>corrupted</b> in transit, a <b>single bit or a burst</b>. The meaning changes, so errors must be <b>detected and handled</b> using <b>checksum and CRC</b>.</li>
+<li><b>Delivery is hop-to-hop</b> (node to node): host → router → router → host, one "kudi" (jump) at a time.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Sublayers and devices</span>
+IEEE splits the DLL into <b>LLC</b> (Logical Link Control: flow and error control, IEEE 802.2) and <b>MAC</b> (Media Access Control: addressing and channel access). Devices: <b>switch, bridge</b>, NIC. Protocols: Ethernet, PPP, HDLC, Wi-Fi MAC, ARP (often placed between L2 and L3).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The lecture calls the biscuit pieces "fragments". At the DLL they are <b>frames</b>. <b>Fragmentation</b> (with <b>MTU</b>) is a network-layer (IP) job, and <b>segments</b> (with <b>MSS</b>) belong to the transport layer.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">6.6</span>Network Layer Functions</h3>
+<div class="box lec"><span class="t">🎓 From the lecture (layer 3)</span>
+<ul>
+<li>The DLL is concerned only with <b>hop-to-hop</b> delivery. The network layer handles <b>source-to-destination</b> delivery of the <b>data packet</b>.</li>
+<li><b>Logical addressing</b>: <b>IP addresses</b>, as opposed to the DLL's MAC addresses.</li>
+<li><b>Routing</b>: many routers lie between the source and the destination. Choose the <b>best, optimal path</b>. Routers consult their <b>routing tables</b> to decide where each packet should go, to reach the destination in the least time.</li>
+<li><b>Packetization</b> (dividing into packets) is also done here.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Also</span>
+<b>Fragmentation and reassembly</b> (when a packet is larger than the next link's MTU) · congestion control (partly) · internetworking between different networks. Devices: <b>router</b>, layer-3 switch. Protocols: <b>IP (v4/v6), ICMP, IGMP, ARP/RARP</b> (Chapters 19–27), and routing protocols such as RIP, OSPF and BGP.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">6.7</span>Transport Layer Functions</h3>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Three delivery scopes: hop-to-hop for data link, host-to-host for network, process-to-process for transport">
+  <defs><marker id="o2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="40" width="150" height="130" rx="8" class="bx"/><text x="95" y="30" text-anchor="middle" class="b">Host A</text>
+  <rect x="35" y="55" width="55" height="30" rx="4" class="pu"/><text x="62" y="75" text-anchor="middle" style="font-size:11px">Chrome</text>
+  <rect x="100" y="55" width="55" height="30" rx="4" class="pu"/><text x="127" y="75" text-anchor="middle" style="font-size:11px">Mail</text>
+  <rect x="510" y="40" width="150" height="130" rx="8" class="bx"/><text x="585" y="30" text-anchor="middle" class="b">Host B</text>
+  <rect x="525" y="55" width="55" height="30" rx="4" class="pu"/><text x="552" y="75" text-anchor="middle" style="font-size:11px">Web :443</text>
+  <rect x="590" y="55" width="55" height="30" rx="4" class="pu"/><text x="617" y="75" text-anchor="middle" style="font-size:11px">SMTP :25</text>
+  <circle cx="260" cy="150" r="16" class="or"/><circle cx="420" cy="150" r="16" class="or"/><text x="340" y="190" text-anchor="middle" class="mut">routers</text>
+  <path d="M62 85 C 200 100, 450 100, 550 85" class="lna" marker-start="url(#o2)" marker-end="url(#o2)"/><text x="340" y="96" text-anchor="middle" class="b" style="fill:var(--accent)">process-to-process (Transport, ports)</text>
+  <path d="M170 125 H508" class="ln dash" marker-start="url(#o2)" marker-end="url(#o2)"/><text x="340" y="120" text-anchor="middle" class="mut">host-to-host / source-to-destination (Network, IP)</text>
+  <path d="M170 150 H242 M278 150 H402 M438 150 H508" style="stroke:var(--alert);stroke-width:2"/><text x="210" y="168" text-anchor="middle" class="mut" style="font-size:11px">hop</text><text x="340" y="168" text-anchor="middle" class="mut" style="font-size:11px">hop (DLL, MAC)</text><text x="473" y="168" text-anchor="middle" class="mut" style="font-size:11px">hop</text>
+</svg>
+<figcaption>Figure 6.4: Three scopes of delivery</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture (layer 4)</span>
+<ul>
+<li>It deals with <b>port addressing / port numbers</b>.</li>
+<li><b>Process-to-process delivery</b>: the network layer delivers from the source <b>machine</b> to the destination <b>machine</b>. But each machine runs <b>many processes</b>. Which process of the sender is sending to which process of the receiver? Each process carries a <b>port number</b>, which makes this possible.</li>
+<li>The data unit is the <b>segment</b>.</li>
+<li><b>Congestion control</b> (too much traffic in the network), plus <b>flow control and error control</b>, here at the process-to-process level (end to end).</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Also</span>
+<b>Segmentation and reassembly</b> (with sequence numbers) · <b>connection control</b>: connection-oriented <b>TCP</b> (reliable, 3-way handshake) vs connectionless <b>UDP</b> (fast, unreliable) · multiplexing and demultiplexing. Devices: none specific; gateways and firewalls operate here. Protocols: <b>TCP, UDP</b>, SCTP.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">6.8</span>Session Layer Functions</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Session and presentation are asked only occasionally. The session layer <b>manages the whole session</b> established between sender and receiver, <b>controls the dialogs</b> between them, and handles <b>synchronisation and checkpoint creation</b>.</div>
+<div class="box add"><span class="t">➕ The three functions explained</span>
+<ul>
+<li><b>Dialog control</b>: lets two systems enter a dialog, in half- or full-duplex.</li>
+<li><b>Synchronisation (checkpoints)</b>: inserts <b>synchronisation points</b> into the data stream. Example: sending a <b>2000-page file</b> with a checkpoint every 100 pages. If a crash happens at page 523, only pages 501–523 are resent, not the whole file.</li>
+<li><b>Session establishment, maintenance and termination</b>, and <b>token management</b> (who may perform a critical operation).</li>
+<li>Examples: RPC, NetBIOS, PPTP, SQL session handling.</li>
+</ul></div>
+</section>
+
+<section id="s9">
+<h3><span class="n">6.9</span>Presentation Layer: Translation, Encryption and Compression</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Translation</b>: machine M1 understands language L1 and M2 understands L2 (different <b>code formats</b>). Someone must translate in between: the presentation layer "presents" M1's information in L2.</li>
+<li><b>Encryption / decryption</b>: if an <b>unauthorised third person</b> grabs the message in transit, they must not understand it. At the sender, <b>plain text</b> (understandable) is converted to <b>cipher text</b> (non-understandable). At the authorised receiver, the reverse process (<b>decryption</b>) restores the plain text. Both ends know the <b>keys</b>.</li>
+<li><b>Compression</b>: make big data smaller, like a <b>ZIP file</b>. There are <b>lossless and lossy</b> kinds.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 140" role="img" aria-label="Encryption: plaintext to ciphertext with key, intruder sees gibberish, decryption back to plaintext">
+  <defs><marker id="o3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="45" width="110" height="40" rx="6" class="ac"/><text x="65" y="70" text-anchor="middle" class="b">"PAY 500"</text>
+  <path d="M120 65 H158" class="lna" marker-end="url(#o3)"/>
+  <rect x="160" y="45" width="90" height="40" rx="6" class="or"/><text x="205" y="63" text-anchor="middle" class="b">Encrypt</text><text x="205" y="78" text-anchor="middle" class="mut">🔑 key</text>
+  <path d="M250 65 H298" class="lna" marker-end="url(#o3)"/>
+  <rect x="300" y="45" width="120" height="40" rx="6" class="bx"/><text x="360" y="70" text-anchor="middle" style="font-family:var(--code)">X#9q!@Lz</text>
+  <path d="M420 65 H458" class="lna" marker-end="url(#o3)"/>
+  <rect x="460" y="45" width="90" height="40" rx="6" class="or"/><text x="505" y="63" text-anchor="middle" class="b">Decrypt</text><text x="505" y="78" text-anchor="middle" class="mut">🔑 key</text>
+  <path d="M550 65 H578" class="lna" marker-end="url(#o3)"/>
+  <rect x="580" y="45" width="90" height="40" rx="6" class="ac"/><text x="625" y="70" text-anchor="middle" class="b">"PAY 500"</text>
+  <text x="65" y="105" text-anchor="middle" class="mut">plain text</text><text x="360" y="105" text-anchor="middle" class="mut">cipher text</text><text x="625" y="105" text-anchor="middle" class="mut">plain text</text>
+  <text x="360" y="30" text-anchor="middle" style="fill:var(--bad)">intruder sees only gibberish</text>
+</svg>
+<figcaption>Figure 6.5: Encryption and decryption at the presentation layer</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Details</span>
+<ul>
+<li><b>Translation</b>: character codes (<b>ASCII ↔ EBCDIC</b>, Unicode), data formats; sometimes called the "<b>syntax layer</b>".</li>
+<li><b>Encryption</b>: symmetric (the same key, e.g. AES, DES) vs asymmetric (public/private keys, RSA). <b>SSL/TLS</b> is often placed here (or between L4 and L7).</li>
+<li><b>Compression</b>: <b>lossless</b> (no data lost; ZIP, PNG, GIF, used for text and programs) vs <b>lossy</b> (some detail dropped for a much smaller size; <b>JPEG, MP3, MPEG</b>, used for media).</li>
+<li>Formats associated with this layer: JPEG, GIF, PNG, MPEG, MIDI, ASCII.</li>
+</ul></div>
+</section>
+
+<section id="s10">
+<h3><span class="n">6.10</span>Application Layer Functions</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The <b>top layer</b>: 7th from the bottom, 1st from the top. At the <b>sender</b> it is the <b>first layer</b> the data passes through ("data nikalta hai, header lagta hai, neeche jaata hai"). At the <b>receiver</b> it is the <b>last, 7th</b> layer the data reaches. Popular protocols here: <b>HTTP, HTTPS</b> (secure), <b>FTP</b> (file transfer), <b>POP</b> (Post Office Protocol), and <b>SMTP</b> for mail, which is a <b>push protocol</b>. Details come in Chapter 34.</div>
+<div class="box add"><span class="t">➕ Services provided</span>
+The <b>interface between the user/application and the network</b>: file transfer and access (FTP), mail services (SMTP, POP3, IMAP), directory services (DNS, LDAP), remote login (Telnet, SSH), the web (HTTP/HTTPS), network management (SNMP), and the <b>Network Virtual Terminal</b>. Device: <b>gateway</b> (it can work at all layers). Note: the browser itself is not the application layer; the <b>protocols</b> it uses are.</div>
+</section>
+
+<section id="s11">
+<h3><span class="n">6.11</span>Master Table: PDUs, Devices, Protocols, Addresses <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>#</th><th>Layer</th><th>PDU (data unit)</th><th>Key functions</th><th>Address</th><th>Devices</th><th>Example protocols</th></tr>
+<tr><td>7</td><td>Application</td><td>Data / message</td><td>User services, network access</td><td>—</td><td>Gateway</td><td>HTTP, HTTPS, FTP, SMTP, POP3, IMAP, DNS, DHCP, Telnet, SSH, SNMP</td></tr>
+<tr><td>6</td><td>Presentation</td><td>Data</td><td>Translation, encryption, compression</td><td>—</td><td>Gateway</td><td>SSL/TLS, JPEG, MPEG, ASCII, EBCDIC</td></tr>
+<tr><td>5</td><td>Session</td><td>Data</td><td>Dialog control, synchronisation</td><td>—</td><td>Gateway</td><td>RPC, NetBIOS, PPTP</td></tr>
+<tr><td>4</td><td>Transport</td><td><b>Segment</b> (TCP) / datagram (UDP)</td><td>Process-to-process delivery, segmentation, flow/error/congestion control</td><td><b>Port</b></td><td>Firewall, gateway</td><td><b>TCP, UDP</b>, SCTP</td></tr>
+<tr><td>3</td><td>Network</td><td><b>Packet</b> / datagram</td><td>Source-to-destination delivery, logical addressing, routing, fragmentation</td><td><b>IP</b> (logical)</td><td><b>Router</b>, L3 switch</td><td>IP, ICMP, IGMP, ARP*, RIP, OSPF, BGP</td></tr>
+<tr><td>2</td><td>Data Link</td><td><b>Frame</b></td><td>Hop-to-hop delivery, framing, physical addressing, access/flow/error control</td><td><b>MAC</b> (physical)</td><td><b>Switch, bridge</b>, NIC</td><td>Ethernet, PPP, HDLC, 802.11 MAC</td></tr>
+<tr><td>1</td><td>Physical</td><td><b>Bits</b></td><td>Bits ↔ signals, media, encoding, data rate, topology, modes</td><td>—</td><td><b>Hub, repeater</b>, cables, modem</td><td>RS-232, 10Base-T, DSL, Bluetooth PHY</td></tr>
+</table></div>
+<p style="font-size:13px">*ARP is usually described as a layer 2.5 protocol (it maps between L3 and L2 addresses).</p>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"Which layer does routing?" → <b>Network</b>. "Encryption and compression?" → <b>Presentation</b>. "Checkpoints / dialog control?" → <b>Session</b>. "End-to-end, process-to-process delivery?" → <b>Transport</b>. "Framing and MAC?" → <b>Data Link</b>. "Bits to signals?" → <b>Physical</b>.</li>
+<li>"Switch works at?" → <b>L2</b>. "Router?" → <b>L3</b>. "Hub and repeater?" → <b>L1</b>. "Gateway?" → <b>all layers</b> (often L4–7).</li>
+<li>Trailer added only at the → <b>Data Link layer</b>. Sender is top-down; receiver is bottom-up.</li>
+</ul></div>
+</section>
+
+<section id="s12">
+<h3><span class="n">6.12</span>TCP/IP Model &amp; OSI vs TCP/IP <span class="badge">ADDED</span></h3>
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-label="Mapping of OSI 7 layers to TCP/IP 4-layer model">
+  <text x="150" y="20" text-anchor="middle" class="b">OSI (7)</text><text x="470" y="20" text-anchor="middle" class="b">TCP/IP (4 layers; 5 in some books)</text>
+  <g>
+  <rect x="60" y="30" width="180" height="34" class="pu"/><text x="150" y="52" text-anchor="middle">7 Application</text>
+  <rect x="60" y="66" width="180" height="34" class="pu"/><text x="150" y="88" text-anchor="middle">6 Presentation</text>
+  <rect x="60" y="102" width="180" height="34" class="pu"/><text x="150" y="124" text-anchor="middle">5 Session</text>
+  <rect x="60" y="138" width="180" height="34" class="ac"/><text x="150" y="160" text-anchor="middle">4 Transport</text>
+  <rect x="60" y="174" width="180" height="34" class="gr"/><text x="150" y="196" text-anchor="middle">3 Network</text>
+  <rect x="60" y="210" width="180" height="34" class="gr"/><text x="150" y="232" text-anchor="middle">2 Data Link</text>
+  <rect x="60" y="246" width="180" height="34" class="or"/><text x="150" y="268" text-anchor="middle">1 Physical</text>
+  </g>
+  <g>
+  <rect x="380" y="30" width="180" height="106" class="pu"/><text x="470" y="80" text-anchor="middle" class="b">Application</text><text x="470" y="98" text-anchor="middle" class="mut">HTTP, FTP, SMTP, DNS</text>
+  <rect x="380" y="138" width="180" height="34" class="ac"/><text x="470" y="160" text-anchor="middle" class="b">Transport (TCP/UDP)</text>
+  <rect x="380" y="174" width="180" height="34" class="gr"/><text x="470" y="196" text-anchor="middle" class="b">Internet (IP)</text>
+  <rect x="380" y="210" width="180" height="70" class="or"/><text x="470" y="242" text-anchor="middle" class="b">Network Access</text><text x="470" y="260" text-anchor="middle" class="mut">(Link / Host-to-Network)</text>
+  </g>
+  <path d="M240 83 H380 M240 155 H380 M240 191 H380 M240 245 H380" class="ln dash"/>
+</svg>
+<figcaption>Figure 6.6: OSI vs TCP/IP layer mapping</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Basis</th><th>OSI</th><th>TCP/IP</th></tr>
+<tr><td>Developed by</td><td><b>ISO</b> (1984)</td><td><b>US DoD / ARPANET</b> (1970s; Cerf &amp; Kahn)</td></tr>
+<tr><td>Layers</td><td><b>7</b></td><td><b>4</b> (Application, Transport, Internet, Network Access); 5 in Forouzan's version</td></tr>
+<tr><td>Nature</td><td>Reference / <b>theoretical</b> model; the model came first, then protocols</td><td><b>Practical</b>, the protocols came first; the <b>Internet uses it</b></td></tr>
+<tr><td>Session and presentation</td><td>Separate layers</td><td>Merged into the application layer</td></tr>
+<tr><td>Network layer</td><td>Connection-oriented and connectionless</td><td>Connectionless only (IP)</td></tr>
+<tr><td>Transport layer</td><td>Connection-oriented</td><td>Both (TCP and UDP)</td></tr>
+<tr><td>Distinction service / interface / protocol</td><td>Clear</td><td>Less clear</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Number of layers in TCP/IP?" → <b>4</b> (most common answer; 5 if the question uses the "hybrid" Forouzan model). "Layer in TCP/IP equivalent to OSI's network layer?" → the <b>Internet layer</b>. The OSI model is <b>not used directly</b> on the Internet; it is a reference model.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 6</h3>
+<ul>
+<li><b>OSI</b> = 7-layer ISO reference model (1984). <b>Physical → Data Link → Network → Transport → Session → Presentation → Application</b> ("Please Do Not Throw Sausage Pizza Away"). The lecture's focus: <b>DLL, Network, Transport, Application</b>.</li>
+<li><b>Encapsulation</b> (sender, top-down): each layer adds a <b>header</b> and treats what came from above as <b>payload</b>; the <b>DLL adds a trailer</b> (FCS/CRC); the physical layer sends bits. Letters inside envelopes.</li>
+<li><b>Decapsulation</b> (receiver, bottom-up): <b>only the peer layer opens its own envelope</b> (the network-layer header is read only by the network layer). Routers use only L1–3.</li>
+<li><b>L1 Physical</b>: bits ↔ signals (encoding), data rate, line configuration, topology, transmission modes. Hub, repeater.</li>
+<li><b>L2 DLL</b>: <b>framing</b> (biscuit pieces), <b>MAC</b> addressing, <b>access control</b> (collisions), <b>flow control</b> ("don't send more than I can receive"), <b>error control</b> (checksum, CRC), <b>hop-to-hop</b>. LLC + MAC sublayers. Switch, bridge.</li>
+<li><b>L3 Network</b>: <b>source-to-destination</b> packet delivery, <b>IP</b> addressing, <b>routing</b> (best path via routing tables), packetization, fragmentation. Router.</li>
+<li><b>L4 Transport</b>: <b>process-to-process</b> via <b>ports</b>, <b>segments</b>, congestion, flow and error control end to end. TCP, UDP.</li>
+<li><b>L5 Session</b>: manage the session, dialog control, synchronisation and checkpoints.</li>
+<li><b>L6 Presentation</b>: <b>translation</b> (L1 ↔ L2 code formats), <b>encryption/decryption</b> (plain ↔ cipher text with keys), <b>compression</b> (ZIP; lossless and lossy).</li>
+<li><b>L7 Application</b>: the first layer at the sender and the last at the receiver. HTTP, HTTPS, FTP, POP, SMTP (push).</li>
+<li>PDUs: data → <b>segment → packet → frame → bits</b>. TCP/IP has 4 layers (Application, Transport, Internet, Network Access).</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 6 · Next: Chapter 7 — Transmission Media</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="05-Types-of-Networks.html">← Ch 5: Types of Networks</a><a href="index.html">☰ All topics</a><a href="07-Transmission-Media.html">Ch 7: Transmission Media →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

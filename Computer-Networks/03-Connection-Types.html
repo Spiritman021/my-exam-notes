@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Connection Types Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="02-Transmission-Modes.html">← Ch 2: Transmission Modes</a><a href="index.html">☰ All topics</a><a href="04-Network-Topologies.html">Ch 4: Network Topologies →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 3: Connection Types (Line Configuration)</h1>
+  <p class="sub">Volume 02 · Part 3 · Built from the one-shot CN lecture transcript (section 3), plus the exam points the lecture skipped.</p>
+  <ul class="tags"><li>Point-to-Point</li><li>Multipoint (Multidrop)</li><li>Dedicated vs Shared Link</li><li>Spatial vs Temporal Sharing</li><li>Primary / Secondary Stations</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">3.0</span>What is Line Configuration?</a></li>
+<li><a href="#s1"><span class="n">3.1</span>Point-to-Point vs Multipoint Connection</a></li>
+<li><a href="#s1a"><span class="n">3.1A</span>Comparison, Examples &amp; Sharing Types<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 3</div>
+<h2 class="ch">Connection Types (Line Configuration)</h2>
+<p>Chapter 2 covered the <b>direction</b> of data flow. Before looking at how many devices are arranged (topologies, Chapter 4), we need the most basic question: is a link <b>dedicated to two devices</b>, or <b>shared by many</b>?</p>
+
+<section id="s0">
+<h3><span class="n">3.0</span>What is Line Configuration?</h3>
+<div class="def"><b>Line configuration</b> (type of connection): the way <b>two or more devices are attached to a link</b>. A <b>link</b> is the physical communication pathway that carries data from one device to another. For communication to happen, devices must be connected to the same link at the same time. There are two types: <b>point-to-point</b> and <b>multipoint</b>.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">3.1</span>Point-to-Point vs Multipoint Connection</h3>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="Point-to-point dedicated link between two devices versus multipoint shared link with several devices">
+  <text x="150" y="20" text-anchor="middle" class="b">Point-to-point (dedicated link)</text>
+  <rect x="20" y="70" width="90" height="44" rx="6" class="ac"/><text x="65" y="97" text-anchor="middle" class="b">D1</text>
+  <rect x="190" y="70" width="90" height="44" rx="6" class="ac"/><text x="235" y="97" text-anchor="middle" class="b">D2</text>
+  <path d="M110 92 H190" style="stroke:var(--accent);stroke-width:4"/>
+  <text x="150" y="140" text-anchor="middle" class="mut">whole capacity reserved for D1 ↔ D2</text>
+  <path d="M320 20 V215" class="ln dash"/>
+  <text x="490" y="20" text-anchor="middle" class="b">Multipoint (shared link)</text>
+  <path d="M360 120 H620" style="stroke:var(--alert);stroke-width:4"/>
+  <rect x="360" y="40" width="70" height="40" rx="6" class="ac"/><text x="395" y="65" text-anchor="middle">D1</text>
+  <rect x="455" y="40" width="70" height="40" rx="6" class="ac"/><text x="490" y="65" text-anchor="middle">D2</text>
+  <rect x="550" y="40" width="70" height="40" rx="6" class="ac"/><text x="585" y="65" text-anchor="middle">D3</text>
+  <rect x="410" y="160" width="70" height="40" rx="6" class="ac"/><text x="445" y="185" text-anchor="middle">D4</text>
+  <rect x="505" y="160" width="70" height="40" rx="6" class="ac"/><text x="540" y="185" text-anchor="middle">D5</text>
+  <path d="M395 80 V120 M490 80 V120 M585 80 V120 M445 160 V120 M540 160 V120" class="ln"/>
+  <text x="490" y="222" text-anchor="middle" class="mut">one channel shared by 2+ devices</text>
+</svg>
+<figcaption>Figure 3.1: Point-to-point vs multipoint line configuration</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Point-to-point</b>: a <b>direct, dedicated link</b> between two devices, D1 and D2. All communication and data exchange between them happens through this one link, which belongs only to them.</li>
+<li><b>Multipoint</b>: one link to which <b>more than two devices</b> (D1, D2, D3…) are connected. It is a <b>shared link / shared channel</b>, not a dedicated one, between two or more devices.</li>
+</ul></div>
+</section>
+
+<section id="s1a">
+<h3><span class="n">3.1A</span>Comparison, Examples &amp; Sharing Types <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Point-to-point</th><th>Multipoint (multidrop)</th></tr>
+<tr><td>Link</td><td><b>Dedicated</b> to exactly two devices</td><td><b>Shared</b> by more than two devices</td></tr>
+<tr><td>Capacity</td><td>Whole capacity reserved for the pair</td><td>Capacity shared, spatially or by time</td></tr>
+<tr><td>Addressing</td><td>Not needed: there is only one receiver</td><td>Needed: frames must carry the destination address</td></tr>
+<tr><td>Collisions / access control</td><td>None</td><td>Possible, so a <b>multiple-access protocol</b> is needed (Chapter 12)</td></tr>
+<tr><td>Security / privacy</td><td>Higher</td><td>Lower (others on the line can listen)</td></tr>
+<tr><td>Cost</td><td>More links for many devices</td><td>Fewer cables, cheaper</td></tr>
+<tr><td>Topologies</td><td>Point-to-point, <b>mesh</b>, the device-to-hub links of a star, ring</td><td><b>Bus</b>; shared wireless channel</td></tr>
+<tr><td>Examples</td><td>TV ↔ remote (infrared), leased line between bank branches, PPP dial-up, a cable from PC to switch, satellite link pair</td><td>Old bus Ethernet (coaxial), Wi-Fi channel, mainframe with many terminals on one line, cable TV</td></tr>
+</table></div>
+<ul>
+<li><b>Spatially shared</b>: several devices use the link <b>at the same time</b>, each with part of the capacity (e.g. frequency division).</li>
+<li><b>Temporally shared</b> (time-shared): devices <b>take turns</b> using the whole link (e.g. time division, polling).</li>
+<li>In multipoint lines with a controller, one station is the <b>primary</b> (it polls and selects) and the others are <b>secondaries</b>, as in HDLC's normal response mode and old mainframe networks.</li>
+</ul>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"A link shared by more than two devices" → <b>multipoint</b>. "TV remote control uses?" → a <b>point-to-point</b> connection (and <b>simplex</b> mode). <b>PPP</b> (Point-to-Point Protocol) is the data-link protocol for point-to-point links such as dial-up and DSL.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 3</h3>
+<ul>
+<li>Line configuration = how devices attach to a link. Two types.</li>
+<li><b>Point-to-point</b>: a dedicated link between exactly 2 devices (D1 ↔ D2); full capacity, no addressing or collisions. Remote control, leased line, PPP; mesh topology.</li>
+<li><b>Multipoint</b>: one <b>shared</b> link/channel for 3+ devices; needs addressing and access control (CSMA etc.). Bus topology, Wi-Fi, mainframe terminals.</li>
+<li>Sharing can be <b>spatial</b> (simultaneous) or <b>temporal</b> (time-shared, turns); primary/secondary stations do the polling.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 3 · Next: Chapter 4 — Network Topologies</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="02-Transmission-Modes.html">← Ch 2: Transmission Modes</a><a href="index.html">☰ All topics</a><a href="04-Network-Topologies.html">Ch 4: Network Topologies →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

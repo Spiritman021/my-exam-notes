@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS Threads Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="03-System-Calls.html">← Ch 3: System Calls</a><a href="index.html">☰ All topics</a><a href="05-Process-Management.html">Ch 5: Process Management →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Operating System — Chapter 4: Threads</h1>
+  <p class="sub">Volume 01 · Part 4 · Built from the one-shot OS lecture transcript (section 4), plus the exam points the lecture skipped.</p>
+  <ul class="tags">
+    <li>Lightweight Process</li><li>Shared vs Private (TCB)</li><li>Single vs Multi-threaded</li><li>Browser Tabs</li>
+    <li>4 Benefits</li><li>Process vs Thread</li><li>Concurrency vs Parallelism</li><li>Amdahl's Law</li>
+    <li>ULT vs KLT</li><li>Many-to-One</li><li>One-to-One</li><li>Many-to-Many / Two-Level</li><li>Threading Issues</li><li>Thread Pools</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s0"><span class="n">4.0</span>From fork() to Threads: The 8-Hands Analogy</a></li>
+    <li><a href="#s1"><span class="n">4.1</span>Threads as Lightweight Processes</a></li>
+    <li><a href="#s2"><span class="n">4.2</span>Single-Threaded vs Multi-Threaded Processes</a></li>
+    <li><a href="#s3"><span class="n">4.3</span>Example: Multiple Tabs in a Browser</a></li>
+    <li><a href="#s4"><span class="n">4.4</span>Need and Benefits of Threads</a></li>
+    <li><a href="#s4a"><span class="n">4.4A</span>Process vs Thread, Concurrency vs Parallelism, Amdahl's Law<span class="x">ADDED</span></a></li>
+    <li><a href="#s5"><span class="n">4.5</span>User-Level vs Kernel-Level Threads</a></li>
+    <li><a href="#s6"><span class="n">4.6</span>Multithreading Models: Many-to-One</a></li>
+    <li><a href="#s7"><span class="n">4.7</span>One-to-One Model</a></li>
+    <li><a href="#s8"><span class="n">4.8</span>Many-to-Many Model</a></li>
+    <li><a href="#s8a"><span class="n">4.8A</span>Thread Libraries, Threading Issues &amp; Thread Pools<span class="x">ADDED</span></a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 4</div>
+<h2 class="ch">Threads</h2>
+<p>Chapter 3 ended with a problem. <code>fork()</code> lets us create identical workers, but each child is a <b>full process</b> with its own PCB, memory and resources: "wages for every worker". Threads solve this. Instead of hiring new workers, we give the <b>same worker more hands</b>.</p>
+
+<!-- 4.0 -->
+<section id="s0">
+<h3><span class="n">4.0</span>From fork() to Threads: The 8-Hands Analogy</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — The magic boon (vardaan)</span>
+Same scenario: a <b>1,000-brick wall in one day</b>. This time the contractor says, "I have magic powers. I won't bring more workers like you, because I'd have to pay each of them separately. Instead, I'll <b>add more hands to you</b>."
+<ul>
+<li>2 hands → <b>4</b> → <b>6</b> (3 on each side) → full capacity: <b>8 hands</b> (4 on each side). "Now you can't argue that you only have two hands!"</li>
+<li>The key point: the contractor still pays <b>only one worker</b>. The work gets done <b>cheaply</b>.</li>
+<li>The <b>core is common</b>: the torso, body, digestive system, respiratory system and brain stay the same. Only <b>hands</b> are added. <b>These hands are the threads.</b></li>
+</ul></div>
+
+<figure>
+<svg viewBox="0 0 680 250" role="img" aria-label="fork creates whole new workers each needing wages, threads add hands to one worker">
+  <text x="160" y="20" text-anchor="middle" class="b">fork(): more WORKERS (processes)</text>
+  <g>
+    <circle cx="70" cy="60" r="16" class="or"/><rect x="52" y="78" width="36" height="60" rx="8" class="or"/>
+    <circle cx="160" cy="60" r="16" class="or"/><rect x="142" y="78" width="36" height="60" rx="8" class="or"/>
+    <circle cx="250" cy="60" r="16" class="or"/><rect x="232" y="78" width="36" height="60" rx="8" class="or"/>
+    <path d="M52 95 l-18 18 M88 95 l18 18 M142 95 l-18 18 M178 95 l18 18 M232 95 l-18 18 M268 95 l18 18" class="ln"/>
+  </g>
+  <text x="70" y="160" text-anchor="middle" class="mut">₹ wages</text><text x="160" y="160" text-anchor="middle" class="mut">₹ wages</text><text x="250" y="160" text-anchor="middle" class="mut">₹ wages</text>
+  <text x="160" y="190" text-anchor="middle" class="mut">each has its own body = own PCB,</text><text x="160" y="206" text-anchor="middle" class="mut">memory, resources → heavy</text>
+  <path d="M330 20 V230" class="ln dash"/>
+  <text x="510" y="20" text-anchor="middle" class="b">Threads: more HANDS (one worker)</text>
+  <circle cx="510" cy="60" r="18" class="ac"/>
+  <rect x="488" y="80" width="44" height="78" rx="10" class="ac"/>
+  <text x="510" y="124" text-anchor="middle" class="mut">core</text>
+  <path d="M488 90 l-40 -12 M488 105 l-44 0 M488 120 l-44 12 M488 135 l-40 22 M532 90 l40 -12 M532 105 l44 0 M532 120 l44 12 M532 135 l40 22" class="lna"/>
+  <text x="430" y="70" class="mut">T1</text><text x="420" y="108" class="mut">T2</text><text x="420" y="140" class="mut">T3</text><text x="428" y="168" class="mut">T4</text>
+  <text x="580" y="70" class="mut">T5</text><text x="582" y="108" class="mut">T6</text><text x="582" y="140" class="mut">T7</text><text x="578" y="168" class="mut">T8</text>
+  <text x="510" y="190" text-anchor="middle" class="mut">₹ one wage · shared body (code, data, files)</text><text x="510" y="206" text-anchor="middle" class="mut">each hand = a thread → lightweight</text>
+</svg>
+<figcaption>Figure 4.1: Processes vs threads — new workers vs extra hands</figcaption>
+</figure>
+</section>
+
+<!-- 4.1 -->
+<section id="s1">
+<h3><span class="n">4.1</span>Threads as Lightweight Processes</h3>
+<div class="def"><b>Thread:</b> the <b>basic unit of CPU utilisation</b>, a single sequential flow of execution <b>within a process</b>. A thread is also called a <b>Lightweight Process (LWP)</b>, because creating it and switching between threads is much cheaper than for a process.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The work is done "<b>saste mein</b>" (cheaply), which is why a thread is called a <b>lightweight process</b>. The main expense, the core, is not repeated. Only hands are added.</div>
+
+<div class="box add"><span class="t">➕ Added for exam — What a thread owns vs shares</span>
+<div class="tw"><table>
+<tr><th>Private to each thread</th><th>Shared by all threads of the process</th></tr>
+<tr><td><ul><li><b>Thread ID</b></li><li><b>Program counter (PC)</b></li><li><b>Register set</b></li><li><b>Stack</b> (its own local variables and function calls)</li><li>Thread state, priority</li></ul></td>
+<td><ul><li><b>Code (text) section</b></li><li><b>Data section</b> (global variables)</li><li><b>Heap</b></li><li><b>Open files</b>, signals</li><li>Address space, PCB, process ID</li></ul></td></tr>
+</table></div>
+The per-thread information is stored in a <b>TCB (Thread Control Block)</b>, which is much smaller than a PCB.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap (PCB vs TCB)</span>
+The lecture says "no PCB is made for a thread". That is right: threads <b>share the process's single PCB</b>. But a thread is not tracked by nothing; each thread has its own small <b>TCB</b> holding its thread ID, PC, registers, stack pointer and state. MCQ: "Which is NOT shared between threads?" → <b>Stack / registers / program counter</b>.</div>
+</section>
+
+<!-- 4.2 -->
+<section id="s2">
+<h3><span class="n">4.2</span>Single-Threaded vs Multi-Threaded Processes</h3>
+<figure>
+<svg viewBox="0 0 680 280" role="img" aria-label="Single-threaded process with one register set and stack vs multithreaded process with shared code data files and per-thread registers and stacks">
+  <text x="150" y="20" text-anchor="middle" class="b">Single-threaded process</text>
+  <rect x="30" y="30" width="240" height="40" class="gr"/>
+  <text x="70" y="55" text-anchor="middle">code</text><text x="150" y="55" text-anchor="middle">data</text><text x="230" y="55" text-anchor="middle">files</text>
+  <path d="M110 30 V70 M190 30 V70" class="ln"/>
+  <rect x="30" y="70" width="240" height="40" class="ac"/>
+  <text x="90" y="95" text-anchor="middle">registers</text><text x="210" y="95" text-anchor="middle">stack</text><path d="M150 70 V110" class="ln"/>
+  <rect x="30" y="110" width="240" height="140" class="bx"/>
+  <path d="M150 125 c 20 20, -20 40, 0 60 c 20 20, -20 40, 0 50" class="lna"/>
+  <text x="185" y="185" class="mut">one thread</text>
+
+  <text x="490" y="20" text-anchor="middle" class="b">Multi-threaded process</text>
+  <rect x="330" y="30" width="330" height="40" class="gr"/>
+  <text x="385" y="55" text-anchor="middle">code</text><text x="495" y="55" text-anchor="middle">data</text><text x="605" y="55" text-anchor="middle">files</text>
+  <path d="M440 30 V70 M550 30 V70" class="ln"/>
+  <text x="495" y="84" text-anchor="middle" class="mut">↑ SHARED by all threads ↑</text>
+  <rect x="340" y="92" width="100" height="40" class="ac"/><text x="390" y="117" text-anchor="middle">registers</text>
+  <rect x="445" y="92" width="100" height="40" class="ac"/><text x="495" y="117" text-anchor="middle">registers</text>
+  <rect x="550" y="92" width="100" height="40" class="ac"/><text x="600" y="117" text-anchor="middle">registers</text>
+  <rect x="340" y="132" width="100" height="36" class="pu"/><text x="390" y="155" text-anchor="middle">stack</text>
+  <rect x="445" y="132" width="100" height="36" class="pu"/><text x="495" y="155" text-anchor="middle">stack</text>
+  <rect x="550" y="132" width="100" height="36" class="pu"/><text x="600" y="155" text-anchor="middle">stack</text>
+  <rect x="330" y="172" width="330" height="78" class="bx"/>
+  <path d="M390 180 c 15 15, -15 30, 0 45 c 10 10, -5 15, 0 20" class="lna"/>
+  <path d="M495 180 c 15 15, -15 30, 0 45 c 10 10, -5 15, 0 20" class="lna"/>
+  <path d="M600 180 c 15 15, -15 30, 0 45 c 10 10, -5 15, 0 20" class="lna"/>
+  <text x="390" y="270" text-anchor="middle" class="mut">thread 1</text><text x="495" y="270" text-anchor="middle" class="mut">thread 2</text><text x="600" y="270" text-anchor="middle" class="mut">thread 3</text>
+</svg>
+<figcaption>Figure 4.2: Single-threaded vs multi-threaded process</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>A <b>single-threaded process</b> has only <b>one thread</b>, one hand.</li>
+<li>A <b>multi-threaded process</b> P has <b>multiple threads</b>: T1, T2 and T3 are hands added to the process. No new process was created from scratch and no duplicate was made.</li>
+<li>The <b>code, data and files</b> part stays <b>common</b> to all the hands. It is the "core" of the process, so there is no need to create it again.</li>
+<li>The <b>PCB is one per process</b>; no separate PCB is made per thread.</li>
+<li>Context switching between threads is <b>easier and faster</b> than between processes.</li>
+<li><b>The OS's view:</b> for user-level threads, the OS sees <b>only one process</b> through its own eyes. Internally, at our end, we have created several threads, but the OS doesn't know about them. (This matters in 4.5.)</li>
+</ul></div>
+</section>
+
+<!-- 4.3 -->
+<section id="s3">
+<h3><span class="n">4.3</span>Example: Multiple Tabs in a Browser</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"Arre sir, this is our daily routine!" You open <b>one browser</b>, which is the <b>core body</b>, and inside it you open <b>many different tabs</b>. The browser is the process, and the tabs are like threads working inside it on the same shared base.</div>
+<figure>
+<svg viewBox="0 0 640 170" role="img" aria-label="Browser window with multiple tabs as threads sharing the browser process">
+  <rect x="20" y="20" width="600" height="130" rx="8" class="bx"/>
+  <rect x="30" y="30" width="130" height="30" rx="5" class="ac"/><text x="95" y="50" text-anchor="middle">Tab 1: Gmail</text>
+  <rect x="165" y="30" width="130" height="30" rx="5" class="gr"/><text x="230" y="50" text-anchor="middle">Tab 2: YouTube</text>
+  <rect x="300" y="30" width="130" height="30" rx="5" class="or"/><text x="365" y="50" text-anchor="middle">Tab 3: Notes</text>
+  <rect x="435" y="30" width="130" height="30" rx="5" class="pu"/><text x="500" y="50" text-anchor="middle">Tab 4: Bank</text>
+  <text x="320" y="95" text-anchor="middle" class="b">ONE browser = core body (process)</text>
+  <text x="320" y="118" text-anchor="middle" class="mut">tabs = threads: one loads a page, one plays video, one takes typing — at the same time</text>
+</svg>
+<figcaption>Figure 4.3: Browser tabs — the lecture's everyday example of multithreading</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam — Other classic multithreading examples</span>
+<ul>
+<li><b>Word processor</b>: one thread displays graphics, one reads keystrokes and one does <b>spell-check / auto-save</b> in the background. This is Galvin's standard example.</li>
+<li><b>Web server</b>: one thread per client request, so thousands of users are served by one server process.</li>
+<li><b>Media player</b>: one thread decodes audio, one decodes video and one handles the UI.</li>
+<li><b>Banking server</b>: many teller threads update shared account data, which needs synchronisation (Chapter 7).</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Chrome tabs)</span>
+Modern <b>Google Chrome</b> actually uses a <b>multi-process architecture</b>: each tab or site usually gets its own <b>renderer process</b>, so one crashing tab does not kill the others. The lecture's tabs-as-threads idea is a good <i>intuition</i>, and each process is itself multi-threaded. If an MCQ asks specifically about Chrome's architecture, the answer is <b>multi-process</b>.</div>
+</section>
+
+<!-- 4.4 -->
+<section id="s4">
+<h3><span class="n">4.4</span>Need and Benefits of Threads</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — Four benefits</span>
+<ol>
+<li><b>Creating a new thread</b> in the current process takes <b>less time and effort</b> than creating a new process from scratch.</li>
+<li><b>Threads can share common data</b>: code, data and files are in a shareable mode.</li>
+<li><b>Context switching is quicker</b> and easier.</li>
+<li>A thread <b>can be terminated in less time</b>: in less time than it takes to say "close it".</li>
+</ol></div>
+<div class="box add"><span class="t">➕ Added for exam — Galvin's four benefits (memorise as R-R-E-S)</span>
+<div class="tw"><table>
+<tr><th>Benefit</th><th>Meaning</th></tr>
+<tr><td><b>Responsiveness</b></td><td>If one thread is blocked or doing a long task, others keep the app responsive (the UI does not freeze while a file downloads).</td></tr>
+<tr><td><b>Resource sharing</b></td><td>Threads share memory and resources <b>by default</b>. Processes need explicit IPC (shared memory or message passing).</td></tr>
+<tr><td><b>Economy</b></td><td>Cheaper to create and context-switch. In Solaris, creating a process is about <b>30× slower</b> than creating a thread, and a context switch is about <b>5× slower</b>.</td></tr>
+<tr><td><b>Scalability</b></td><td>On multicore / multiprocessor machines, threads can run <b>in parallel</b> on different cores. A single-threaded process can use only one core.</td></tr>
+</table></div></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"Which is <b>not</b> a benefit of multithreading?" Distractors include "<b>increased protection between threads</b>" and "<b>isolation</b>". Threads share memory, so one buggy thread can corrupt the data of others and <b>crash the whole process</b>. Processes are better isolated than threads.</div>
+</section>
+
+<!-- 4.4A -->
+<section id="s4a">
+<h3><span class="n">4.4A</span>Process vs Thread, Concurrency vs Parallelism, Amdahl's Law <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Process</th><th>Thread</th></tr>
+<tr><td>Definition</td><td>Program in execution</td><td>A unit of execution <b>within</b> a process</td></tr>
+<tr><td>Weight</td><td><b>Heavyweight</b></td><td><b>Lightweight</b> (LWP)</td></tr>
+<tr><td>Memory</td><td>Own <b>separate address space</b></td><td><b>Shares</b> the address space of its process</td></tr>
+<tr><td>Control block</td><td>PCB</td><td>TCB (plus the shared PCB of its process)</td></tr>
+<tr><td>Creation / termination</td><td>Slow (<code>fork()</code>)</td><td>Fast (<code>pthread_create()</code>)</td></tr>
+<tr><td>Context switch</td><td>Slow: memory map / TLB must change</td><td>Fast: only registers, PC and stack pointer change</td></tr>
+<tr><td>Communication</td><td>Needs IPC (pipes, message queues, shared memory) via the kernel</td><td>Direct, through shared variables</td></tr>
+<tr><td>Isolation</td><td>One process crashing doesn't affect others</td><td>One thread crashing can kill the whole process</td></tr>
+<tr><td>Independence</td><td>Independent</td><td>Interdependent; need synchronisation</td></tr>
+</table></div>
+
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Concurrency on single core interleaves threads; parallelism on multicore runs them simultaneously">
+  <text x="10" y="22" class="b">Concurrency (single core): interleaved</text>
+  <text x="10" y="52" class="mut">core</text>
+  <g>
+  <rect x="50" y="35" width="70" height="28" class="ac"/><text x="85" y="54" text-anchor="middle">T1</text>
+  <rect x="120" y="35" width="70" height="28" class="gr"/><text x="155" y="54" text-anchor="middle">T2</text>
+  <rect x="190" y="35" width="70" height="28" class="or"/><text x="225" y="54" text-anchor="middle">T3</text>
+  <rect x="260" y="35" width="70" height="28" class="pu"/><text x="295" y="54" text-anchor="middle">T4</text>
+  <rect x="330" y="35" width="70" height="28" class="ac"/><text x="365" y="54" text-anchor="middle">T1</text>
+  <rect x="400" y="35" width="70" height="28" class="gr"/><text x="435" y="54" text-anchor="middle">T2</text>
+  <rect x="470" y="35" width="70" height="28" class="or"/><text x="505" y="54" text-anchor="middle">T3</text>
+  <rect x="540" y="35" width="70" height="28" class="pu"/><text x="575" y="54" text-anchor="middle">T4</text>
+  </g>
+  <text x="10" y="100" class="b">Parallelism (dual core): truly simultaneous</text>
+  <text x="10" y="130" class="mut">core 1</text><text x="10" y="166" class="mut">core 2</text>
+  <rect x="60" y="113" width="70" height="28" class="ac"/><text x="95" y="132" text-anchor="middle">T1</text>
+  <rect x="130" y="113" width="70" height="28" class="or"/><text x="165" y="132" text-anchor="middle">T3</text>
+  <rect x="200" y="113" width="70" height="28" class="ac"/><text x="235" y="132" text-anchor="middle">T1</text>
+  <rect x="270" y="113" width="70" height="28" class="or"/><text x="305" y="132" text-anchor="middle">T3</text>
+  <rect x="60" y="149" width="70" height="28" class="gr"/><text x="95" y="168" text-anchor="middle">T2</text>
+  <rect x="130" y="149" width="70" height="28" class="pu"/><text x="165" y="168" text-anchor="middle">T4</text>
+  <rect x="200" y="149" width="70" height="28" class="gr"/><text x="235" y="168" text-anchor="middle">T2</text>
+  <rect x="270" y="149" width="70" height="28" class="pu"/><text x="305" y="168" text-anchor="middle">T4</text>
+  <text x="480" y="150" text-anchor="middle" class="mut">same work, finishes in about half the time</text>
+  <path d="M50 190 H620" class="ln"/><text x="615" y="185" text-anchor="end" class="mut">time →</text>
+</svg>
+<figcaption>Figure 4.4: Concurrency vs parallelism</figcaption>
+</figure>
+<ul>
+<li><b>Concurrency</b>: several tasks <b>make progress</b> by interleaving. Possible on <b>one core</b>.</li>
+<li><b>Parallelism</b>: several tasks run <b>at the same instant</b>. Needs <b>multiple cores/CPUs</b>.</li>
+<li><b>Data parallelism</b>: the same operation on different parts of the data (sum of the first half and second half of an array on two cores). <b>Task parallelism</b>: different operations run on different cores.</li>
+</ul>
+
+<div class="num"><span class="t">Essential formula: Amdahl's Law</span>
+<div class="formula">Speedup ≤ 1 / ( S + (1 − S) / N )
+  S = serial (non-parallelisable) fraction,  N = number of cores
+  Maximum speedup as N → ∞  =  1 / S</div>
+<b>Given:</b> an application is 25% serial (S = 0.25) and 75% parallel.<br>
+<b>Step 1 (N = 2):</b> 1 / (0.25 + 0.75/2) = 1 / (0.25 + 0.375) = 1 / 0.625 = <b>1.6×</b><br>
+<b>Step 2 (N = 4):</b> 1 / (0.25 + 0.75/4) = 1 / (0.25 + 0.1875) = 1 / 0.4375 = <b>2.29×</b><br>
+<b>Step 3 (N → ∞):</b> 1 / 0.25 = <b>4×</b><br>
+<b>Conclusion:</b> the serial part limits the gain. Even infinitely many cores cannot make this program more than 4× faster.</div>
+<div class="box add"><span class="t">➕ Multicore programming challenges (Galvin)</span>
+<b>Identifying tasks</b> that can run separately · <b>Balance</b> (tasks should do equal work) · <b>Data splitting</b> · <b>Data dependency</b> (needs synchronisation) · <b>Testing and debugging</b> (many execution orders). <b>Hyper-Threading</b> (Intel SMT) makes one physical core appear as <b>two logical cores</b> by running two hardware threads.</div>
+</section>
+
+<!-- 4.5 -->
+<section id="s5">
+<h3><span class="n">4.5</span>User-Level vs Kernel-Level Threads</h3>
+<div class="def"><b>User-Level Threads (ULT):</b> created and managed <b>in user space</b> by a <b>thread library</b> inside the application. The <b>kernel does not know</b> they exist; it sees only one process.<br><br>
+<b>Kernel-Level Threads (KLT):</b> created, scheduled and managed <b>directly by the OS kernel</b>. The kernel knows about each thread.</div>
+
+<figure>
+<svg viewBox="0 0 680 270" role="img" aria-label="User-level threads invisible to kernel, kernel sees one process; kernel-level threads each known to kernel">
+  <text x="165" y="20" text-anchor="middle" class="b">User-Level Threads</text>
+  <rect x="20" y="30" width="290" height="110" rx="6" class="or" style="fill-opacity:.35"/>
+  <text x="34" y="48" class="mut">user space</text>
+  <rect x="45" y="58" width="240" height="70" rx="5" class="bx"/>
+  <circle cx="90" cy="82" r="12" class="ac"/><circle cx="140" cy="82" r="12" class="ac"/><circle cx="190" cy="82" r="12" class="ac"/><circle cx="240" cy="82" r="12" class="ac"/>
+  <text x="165" y="116" text-anchor="middle" class="mut">thread library (scheduler, TCBs)</text>
+  <rect x="20" y="150" width="290" height="70" rx="6" class="ac" style="fill-opacity:.6"/>
+  <text x="34" y="168" class="mut">kernel space</text>
+  <rect x="115" y="178" width="100" height="32" rx="5" class="bx"/><text x="165" y="199" text-anchor="middle">1 process (PCB)</text>
+  <path d="M165 128 V176" class="ln"/>
+  <text x="165" y="245" text-anchor="middle" class="mut">kernel sees ONE entity → one blocks, all block</text>
+
+  <text x="510" y="20" text-anchor="middle" class="b">Kernel-Level Threads</text>
+  <rect x="360" y="30" width="300" height="110" rx="6" class="or" style="fill-opacity:.35"/>
+  <text x="374" y="48" class="mut">user space</text>
+  <circle cx="420" cy="82" r="12" class="ac"/><circle cx="480" cy="82" r="12" class="ac"/><circle cx="540" cy="82" r="12" class="ac"/><circle cx="600" cy="82" r="12" class="ac"/>
+  <rect x="360" y="150" width="300" height="70" rx="6" class="ac" style="fill-opacity:.6"/>
+  <text x="374" y="168" class="mut">kernel space</text>
+  <rect x="395" y="178" width="50" height="32" rx="5" class="pu"/><text x="420" y="199" text-anchor="middle">K1</text>
+  <rect x="455" y="178" width="50" height="32" rx="5" class="pu"/><text x="480" y="199" text-anchor="middle">K2</text>
+  <rect x="515" y="178" width="50" height="32" rx="5" class="pu"/><text x="540" y="199" text-anchor="middle">K3</text>
+  <rect x="575" y="178" width="50" height="32" rx="5" class="pu"/><text x="600" y="199" text-anchor="middle">K4</text>
+  <path d="M420 94 V176 M480 94 V176 M540 94 V176 M600 94 V176" class="ln"/>
+  <text x="510" y="245" text-anchor="middle" class="mut">kernel schedules EACH thread → independent</text>
+</svg>
+<figcaption>Figure 4.5: User-level vs kernel-level threads</figcaption>
+</figure>
+
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>ULTs</b> are <b>managed by the user / applications</b> at the user end.</li>
+<li>Their big plus is a <b>faster context switch</b>, even compared with kernel-level threads.</li>
+<li>Their big <b>"duvidha"</b> (problem): <b>a ULT can get the entire process blocked</b>. The OS sees the three threads as <b>one entity</b>, so if something goes wrong in one thread, the OS can't block just that thread, because it doesn't know threads exist. It blocks the <b>whole process</b>, and the other threads suffer too.</li>
+<li><b>KLTs</b> are <b>managed by the OS itself</b>. There is <b>no effect of one kernel-level thread on another</b>. Their context switch is <b>slower</b> than ULTs'.</li>
+<li><b>Context-switch time order</b>: <b>ULT (least) &lt; KLT &lt; Process (most)</b>.</li>
+</ul></div>
+
+<figure>
+<svg viewBox="0 0 560 150" role="img" aria-label="Bar chart of context switch cost: user-level thread lowest, kernel-level thread medium, process highest">
+  <text x="10" y="40" class="b">ULT</text><rect x="110" y="25" width="90" height="24" class="gr"/><text x="210" y="42" class="mut">least (no kernel involved)</text>
+  <text x="10" y="80" class="b">KLT</text><rect x="110" y="65" width="200" height="24" class="ac"/><text x="320" y="82" class="mut">medium (mode switch)</text>
+  <text x="10" y="120" class="b">Process</text><rect x="110" y="105" width="320" height="24" class="or"/><text x="440" y="122" class="mut">most (address space)</text>
+</svg>
+<figcaption>Figure 4.6: Relative context-switch cost (lecture's ranking)</figcaption>
+</figure>
+
+<div class="tw"><table>
+<tr><th>Basis</th><th>User-Level Thread</th><th>Kernel-Level Thread</th></tr>
+<tr><td>Managed by</td><td>Thread library in user space</td><td>OS kernel</td></tr>
+<tr><td>Kernel aware?</td><td><b>No</b>: the kernel sees one process</td><td><b>Yes</b></td></tr>
+<tr><td>Creation and context switch</td><td><b>Fastest</b>: no mode switch or system call needed</td><td>Slower: needs a system call and kernel involvement</td></tr>
+<tr><td>Blocking system call</td><td><b>Blocks the entire process</b></td><td>Blocks only that thread; others keep running</td></tr>
+<tr><td>Multiprocessor use <span class="badge">ADDED</span></td><td><b>Cannot run in parallel</b> on multiple cores (the kernel gives the process one CPU)</td><td><b>Can run in parallel</b> on multiple cores</td></tr>
+<tr><td>Scheduling <span class="badge">ADDED</span></td><td>Application-specific (custom scheduler in the library)</td><td>Kernel's scheduler</td></tr>
+<tr><td>Portability <span class="badge">ADDED</span></td><td>Portable: runs on any OS, even one without thread support</td><td>OS-specific</td></tr>
+<tr><td>Examples <span class="badge">ADDED</span></td><td>POSIX Pthreads (as a user library), Java green threads (old), GNU Portable Threads</td><td>Windows threads, Linux threads (tasks), Solaris, macOS</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Why the whole process blocks)</span>
+The textbook reason is not that the OS "detects a malicious thread". When <b>one ULT makes a blocking system call</b> (e.g. <code>read()</code> waiting for disk), the kernel sees the <b>process</b> make that call and puts the <b>entire process</b> into the waiting state. All its other ULTs stop, even though they were ready to run.</div>
+</section>
+
+<!-- 4.6 -->
+<section id="s6">
+<h3><span class="n">4.6</span>Multithreading Models: Many-to-One</h3>
+<p>User threads must ultimately run on kernel threads. A <b>multithreading model</b> describes <b>how user-level threads are mapped to kernel-level threads</b>. There are three, and the lecture covers all three.</p>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Three multithreading models: many-to-one, one-to-one, many-to-many">
+  <text x="110" y="18" text-anchor="middle" class="b">Many-to-One</text>
+  <circle cx="40" cy="50" r="13" class="ac"/><circle cx="85" cy="50" r="13" class="ac"/><circle cx="130" cy="50" r="13" class="ac"/><circle cx="175" cy="50" r="13" class="ac"/>
+  <path d="M40 63 L110 145 M85 63 L110 145 M130 63 L110 145 M175 63 L110 145" class="ln"/>
+  <rect x="90" y="145" width="40" height="30" rx="4" class="pu"/><text x="110" y="165" text-anchor="middle">K</text>
+  <text x="110" y="200" text-anchor="middle" class="mut">many ULT → 1 KLT</text>
+
+  <text x="340" y="18" text-anchor="middle" class="b">One-to-One</text>
+  <circle cx="270" cy="50" r="13" class="ac"/><circle cx="317" cy="50" r="13" class="ac"/><circle cx="364" cy="50" r="13" class="ac"/><circle cx="411" cy="50" r="13" class="ac"/>
+  <path d="M270 63 V145 M317 63 V145 M364 63 V145 M411 63 V145" class="ln"/>
+  <rect x="255" y="145" width="30" height="30" rx="4" class="pu"/><text x="270" y="165" text-anchor="middle">K</text>
+  <rect x="302" y="145" width="30" height="30" rx="4" class="pu"/><text x="317" y="165" text-anchor="middle">K</text>
+  <rect x="349" y="145" width="30" height="30" rx="4" class="pu"/><text x="364" y="165" text-anchor="middle">K</text>
+  <rect x="396" y="145" width="30" height="30" rx="4" class="pu"/><text x="411" y="165" text-anchor="middle">K</text>
+  <text x="340" y="200" text-anchor="middle" class="mut">each ULT → its own KLT</text>
+
+  <text x="570" y="18" text-anchor="middle" class="b">Many-to-Many</text>
+  <circle cx="500" cy="50" r="13" class="ac"/><circle cx="547" cy="50" r="13" class="ac"/><circle cx="594" cy="50" r="13" class="ac"/><circle cx="641" cy="50" r="13" class="ac"/>
+  <path d="M500 63 L525 145 M547 63 L525 145 M547 63 L570 145 M594 63 L570 145 M594 63 L615 145 M641 63 L615 145" class="ln"/>
+  <rect x="510" y="145" width="30" height="30" rx="4" class="pu"/><text x="525" y="165" text-anchor="middle">K</text>
+  <rect x="555" y="145" width="30" height="30" rx="4" class="pu"/><text x="570" y="165" text-anchor="middle">K</text>
+  <rect x="600" y="145" width="30" height="30" rx="4" class="pu"/><text x="615" y="165" text-anchor="middle">K</text>
+  <text x="570" y="200" text-anchor="middle" class="mut">m ULT → n KLT (n ≤ m)</text>
+  <text x="340" y="225" text-anchor="middle" class="mut">○ = user-level thread · K = kernel-level thread</text>
+</svg>
+<figcaption>Figure 4.7: The three multithreading models</figcaption>
+</figure>
+<div class="def"><b>Many-to-One:</b> <b>many user-level threads</b> are mapped to a <b>single kernel-level thread</b>. Thread management is done by the thread library in user space.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — Disadvantages</span>
+<ul>
+<li>If <b>any one thread makes a blocking system call</b>, the <b>entire process gets blocked</b>.</li>
+<li>Because all ULTs map to one KLT, <b>only one user thread at a time</b> can access the kernel thread.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Advantage</b>: efficient, because thread management happens in user space with no kernel calls.</li>
+<li><b>Cannot exploit multicore</b>: only one thread can be in the kernel at a time, so there is no true parallelism.</li>
+<li>Examples: <b>Solaris Green Threads</b>, <b>GNU Portable Threads</b>. It is rarely used today.</li>
+</ul></div>
+</section>
+
+<!-- 4.7 -->
+<section id="s7">
+<h3><span class="n">4.7</span>One-to-One Model</h3>
+<div class="def"><b>One-to-One:</b> <b>each user-level thread</b> is mapped to <b>its own kernel-level thread</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+This is the <b>solution</b> to many-to-one's problem. Even if one user thread makes a <b>blocking system call</b>, the <b>others are not affected</b> and stay in the <b>active running state</b>.</div>
+<div class="tw"><table>
+<tr><th>Advantages</th><th>Disadvantages <span class="badge">ADDED</span></th></tr>
+<tr><td><ul><li>More concurrency: a blocking call does not block the others</li><li><b>True parallelism</b>: threads can run on multiple cores</li></ul></td>
+<td><ul><li>Creating a user thread means <b>creating a kernel thread</b>, which is overhead</li><li>Too many kernel threads burden the system, so many OSs <b>limit the number of threads</b></li></ul></td></tr>
+</table></div>
+<p><b>Examples</b> <span class="badge">ADDED</span>: <b>Linux</b>, the <b>Windows</b> family (95 onwards) and modern macOS. This is the model most used today.</p>
+</section>
+
+<!-- 4.8 -->
+<section id="s8">
+<h3><span class="n">4.8</span>Many-to-Many Model</h3>
+<div class="def"><b>Many-to-Many:</b> <b>many user-level threads</b> are multiplexed onto a <b>smaller or equal number</b> of kernel-level threads.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Both sides are "many". The mapping follows an <b>"equal to" or "less than"</b> rule: with <b>2 user threads</b>, you can map them to <b>2 kernel threads (equal)</b> or to <b>1 (less than)</b>. With <b>1 user thread</b>, map it to 1 kernel thread.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Best of both</b>: developers can create as many user threads as needed, which are cheap, and the corresponding kernel threads can still <b>run in parallel</b> on a multiprocessor. When one thread blocks, the kernel can schedule another.</li>
+<li><b>Disadvantage</b>: complex to implement.</li>
+<li><b>Two-level model</b>: a variation of many-to-many that <b>also allows a user thread to be bound to its own kernel thread</b> (one-to-one for important threads). Example: older Solaris (before version 9), IRIX, HP-UX.</li>
+<li>Examples of many-to-many: <b>Solaris before version 9</b>, <b>Windows with the ThreadFiber</b> package.</li>
+<li>Many-to-many and two-level models use an intermediate structure called an <b>LWP (Lightweight Process)</b>: a virtual processor that a user thread runs on. The kernel informs the thread library of events through <b>upcalls</b> (<b>scheduler activations</b>).</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Model</th><th>Mapping</th><th>Blocking call blocks</th><th>Parallel on multicore?</th><th>Example</th></tr>
+<tr><td>Many-to-One</td><td>M ULT : 1 KLT</td><td><b>Whole process</b></td><td>No</td><td>Solaris Green Threads, GNU Portable Threads</td></tr>
+<tr><td>One-to-One</td><td>1 ULT : 1 KLT</td><td>Only that thread</td><td>Yes</td><td>Linux, Windows</td></tr>
+<tr><td>Many-to-Many</td><td>M ULT : N KLT (N ≤ M)</td><td>Only that thread</td><td>Yes</td><td>Solaris &lt; 9, Windows ThreadFiber</td></tr>
+<tr><td>Two-level</td><td>M:N plus optional 1:1 binding</td><td>Only that thread</td><td>Yes</td><td>IRIX, HP-UX, Tru64</td></tr>
+</table></div>
+</section>
+
+<!-- 4.8A -->
+<section id="s8a">
+<h3><span class="n">4.8A</span>Thread Libraries, Threading Issues &amp; Thread Pools <span class="badge">ADDED</span></h3>
+<h4>Thread libraries (APIs for creating and managing threads)</h4>
+<div class="tw"><table>
+<tr><th>Library</th><th>Notes</th></tr>
+<tr><td><b>POSIX Pthreads</b></td><td>The IEEE 1003.1c standard. Can be user- or kernel-level. Used on UNIX, Linux and macOS. <code>pthread_create()</code>, <code>pthread_join()</code>, <code>pthread_exit()</code>.</td></tr>
+<tr><td><b>Windows threads</b></td><td>Kernel-level. <code>CreateThread()</code>, <code>WaitForSingleObject()</code>.</td></tr>
+<tr><td><b>Java threads</b></td><td>Managed by the JVM and implemented on the host OS's library. Created by <b>extending <code>Thread</code></b> or <b>implementing <code>Runnable</code></b>; started with <code>start()</code> (not <code>run()</code>).</td></tr>
+</table></div>
+<h4>Implicit threading: the compiler or runtime creates the threads</h4>
+<ul>
+<li><b>Thread pool</b>: create a fixed number of threads <b>in advance</b> at start-up and keep them waiting in a pool. When a request arrives, take a free thread; when it finishes, it <b>returns to the pool</b>. This is <b>faster</b> than creating a thread per request and <b>limits</b> the total number of threads. Used by web servers and Java's <code>ExecutorService</code>.</li>
+<li><b>Fork-Join</b>, <b>OpenMP</b> (<code>#pragma omp parallel</code>), <b>Grand Central Dispatch</b> (Apple), Intel TBB.</li>
+</ul>
+<h4>Threading issues</h4>
+<div class="tw"><table>
+<tr><th>Issue</th><th>Key point</th></tr>
+<tr><td><b>fork() and exec() in a multithreaded program</b></td><td>Does fork duplicate all threads or only the calling one? UNIX offers both versions. If <code>exec()</code> is called right after <code>fork()</code>, duplicating only the calling thread is enough, because exec replaces everything.</td></tr>
+<tr><td><b>Signal handling</b></td><td>Deliver the signal to the thread it applies to, to every thread, to certain threads, or to a designated signal-handling thread.</td></tr>
+<tr><td><b>Thread cancellation</b></td><td>Terminating a thread before it finishes (the <b>target thread</b>). <b>Asynchronous cancellation</b>: terminate immediately, which is risky because resources may not be freed. <b>Deferred cancellation</b>: the target periodically checks whether it should terminate, which is safer and the default in Pthreads.</td></tr>
+<tr><td><b>Thread-Local Storage (TLS)</b></td><td>Data each thread keeps its own copy of (e.g. a per-thread transaction ID). It differs from local variables because it persists across function calls.</td></tr>
+<tr><td><b>Scheduler activations</b></td><td>The kernel–library communication (upcalls via LWPs) used in M:N models.</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert (one-liners)</span>
+<ul>
+<li>A thread is called a <b>lightweight process</b>. It is the <b>basic unit of CPU utilisation</b>, while the process is the unit of resource ownership.</li>
+<li>Threads <b>share</b> code, data, heap and files. They have their <b>own</b> stack, registers, PC and thread ID.</li>
+<li>Many-to-one → whole process blocks, no parallelism. One-to-one → <b>Linux, Windows</b>. Many-to-many → user threads ≥ kernel threads.</li>
+<li>Thread states mirror process states: <b>New → Ready → Running → Waiting/Blocked → Terminated</b>.</li>
+<li>In Java, calling <code>run()</code> directly does <b>not</b> create a new thread; <code>start()</code> does.</li>
+</ul></div>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 4</h3>
+<ul>
+<li><b>Thread</b> = unit of execution inside a process = <b>Lightweight Process</b>. The lecture's analogy: instead of hiring identical workers (fork, so wages for each), give one worker <b>8 hands</b>, so you pay one wage and share one body.</li>
+<li><b>Shared</b>: code, data, heap, open files, PCB. <b>Private</b>: thread ID, PC, registers, <b>stack</b>, held in a <b>TCB</b>.</li>
+<li><b>Single-threaded</b> = one flow. <b>Multi-threaded</b> = many flows sharing the core. For ULTs, the OS sees only one process.</li>
+<li>Examples: <b>browser tabs</b> (lecture; note that Chrome is really multi-process), word processor (spell-check thread), web server (thread per client).</li>
+<li><b>Lecture benefits</b>: less time to create, shares data, fast context switch, fast termination. <b>Galvin's</b>: Responsiveness, Resource sharing, Economy, Scalability.</li>
+<li><b>Concurrency</b> = interleaving (one core). <b>Parallelism</b> = simultaneous (multicore). <b>Amdahl</b>: speedup ≤ 1/(S + (1−S)/N), and the maximum is 1/S.</li>
+<li><b>ULT</b>: library-managed, kernel unaware, <b>fastest switch</b>, but one blocking call <b>blocks the whole process</b> and it cannot use multiple cores. <b>KLT</b>: kernel-managed, independent, parallel, slower switch.</li>
+<li>Context-switch cost: <b>ULT &lt; KLT &lt; Process</b>.</li>
+<li><b>Many-to-One</b>: M ULT → 1 KLT; a blocking call blocks all; one thread in the kernel at a time (Green Threads). <b>One-to-One</b>: each ULT has its own KLT; no blocking issue but overhead (Linux, Windows). <b>Many-to-Many</b>: M ULT → N KLT with N ≤ M, flexible and parallel (Solaris &lt; 9). <b>Two-level</b> = M:N plus binding.</li>
+<li>Libraries: <b>Pthreads</b>, Windows threads, Java threads (Thread / Runnable, <code>start()</code>). <b>Thread pool</b> = pre-created threads reused per request.</li>
+<li>Issues: fork/exec semantics, signals, cancellation (<b>asynchronous vs deferred</b>), TLS, scheduler activations.</li>
+</ul>
+</div>
+<div class="end">End of Volume 01 — Part 4 · Next: Chapter 5 — Process Management</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="03-System-Calls.html">← Ch 3: System Calls</a><a href="index.html">☰ All topics</a><a href="05-Process-Management.html">Ch 5: Process Management →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('os-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

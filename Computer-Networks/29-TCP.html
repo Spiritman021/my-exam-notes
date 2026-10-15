@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN TCP Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="28-Transport-Layer.html">← Ch 28: Transport Layer</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 29: TCP (Transmission Control Protocol)</h1>
+  <p class="sub">Volume 02 · Part 29 · Built from the one-shot CN lecture transcript (section 29), plus the exam points the lecture skipped. "Open TCP's header and you have its whole horoscope": byte-stream numbering, ACK numbers, MSS, wrap-around, and the full life of a connection from SYN to FIN.</p>
+  <ul class="tags"><li>Header 20–60 B</li><li>Byte-Stream Protocol</li><li>Sequence No. 32 bits</li><li>ACK No. = next byte expected</li><li>Random ISN</li><li>MSS 1460</li><li>HLEN × 4</li><li>Wrap-Around Time</li><li>Lifetime 180 s</li><li>3-Way Handshake</li><li>SYN/FIN consume 1</li><li>URG · ACK · PSH · RST · SYN · FIN</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">29.1</span>TCP Header Format</a></li>
+<li><a href="#s2"><span class="n">29.2</span>Segments and Source/Destination Port Fields</a></li>
+<li><a href="#s3"><span class="n">29.3</span>Sequence Number: TCP as a Byte Stream Protocol</a></li>
+<li><a href="#s4"><span class="n">29.4</span>Acknowledgment Number</a></li>
+<li><a href="#s5"><span class="n">29.5</span>Why the Initial Sequence Number Is Random</a></li>
+<li><a href="#s6"><span class="n">29.6</span>Maximum Segment Size (MSS)</a></li>
+<li><a href="#s7"><span class="n">29.7</span>Header Length Field and Scaling Factor</a></li>
+<li><a href="#s8"><span class="n">29.8</span>Numerical: Finding the Acknowledgment Number</a></li>
+<li><a href="#s9"><span class="n">29.9</span>Sequence Number Wrap Around</a></li>
+<li><a href="#s10"><span class="n">29.10</span>Numerical: Wrap Around Time</a></li>
+<li><a href="#s11"><span class="n">29.11</span>Packet Lifetime vs Wrap Around Time</a></li>
+<li><a href="#s12"><span class="n">29.12</span>Numerical: Sequence Number Bits for High Bandwidth</a></li>
+<li><a href="#s13"><span class="n">29.13</span>TCP Connection Establishment: Three-Way Handshake</a></li>
+<li><a href="#s14"><span class="n">29.14</span>SYN Segment: Sequence Number, MSS and Window Size</a></li>
+<li><a href="#s15"><span class="n">29.15</span>Sequence Number Consumption (SYN/FIN vs Pure ACK)</a></li>
+<li><a href="#s16"><span class="n">29.16</span>TCP Data Transfer and Piggybacking</a></li>
+<li><a href="#s17"><span class="n">29.17</span>TCP Connection Termination (FIN)</a></li>
+<li><a href="#s18"><span class="n">29.18</span>SYN and ACK Flag Combinations</a></li>
+<li><a href="#s19"><span class="n">29.19</span>URG Flag and Urgent Pointer</a></li>
+<li><a href="#s20"><span class="n">29.20</span>RST Flag (Connection Reset)</a></li>
+<li><a href="#s21"><span class="n">29.21</span>Flags, Timers, States &amp; Solved Numericals<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 29</div>
+<h2 class="ch">TCP (Transmission Control Protocol)</h2>
+<p>TCP turns IP's best-effort packet delivery into a <b>reliable, ordered byte stream</b> between two processes. It does this with three ideas: it <b>numbers every byte</b> (sequence numbers), the receiver says <b>which byte it expects next</b> (acknowledgment numbers), and both sides agree on starting numbers and buffer sizes <b>before</b> any data flows (the three-way handshake). Most exam numericals come from those numbers: data length, ACK number, wrap-around time.</p>
+
+<section id="s1">
+<h3><span class="n">29.1</span>TCP Header Format</h3>
+<figure>
+<svg viewBox="0 0 680 300" role="img" aria-label="TCP header: source port 16, destination port 16; sequence number 32; acknowledgment number 32; header length 4, reserved, flags URG ACK PSH RST SYN FIN, window size 16; checksum 16, urgent pointer 16; options 0 to 40 bytes">
+  <g font-size="12"><text x="40" y="18" class="mut">0</text><text x="190" y="18" class="mut">8</text><text x="340" y="18" class="mut">16</text><text x="630" y="18" class="mut">31</text></g>
+  <rect x="40" y="26" width="300" height="38" class="ac"/><text x="190" y="42" text-anchor="middle" class="b" font-size="12">Source port</text><text x="190" y="57" text-anchor="middle" class="mut">16</text>
+  <rect x="340" y="26" width="300" height="38" class="ac"/><text x="490" y="42" text-anchor="middle" class="b" font-size="12">Destination port</text><text x="490" y="57" text-anchor="middle" class="mut">16</text>
+  <rect x="40" y="64" width="600" height="34" class="gr"/><text x="340" y="86" text-anchor="middle" class="b" font-size="12">Sequence number (32)</text>
+  <rect x="40" y="98" width="600" height="34" class="gr"/><text x="340" y="120" text-anchor="middle" class="b" font-size="12">Acknowledgment number (32)</text>
+  <rect x="40" y="132" width="75" height="40" class="pu"/><text x="77" y="149" text-anchor="middle" class="b" font-size="11">HLEN</text><text x="77" y="164" text-anchor="middle" class="mut">4</text>
+  <rect x="115" y="132" width="65" height="40" class="bx"/><text x="147" y="149" text-anchor="middle" font-size="11">Reserved</text><text x="147" y="164" text-anchor="middle" class="mut">6</text>
+  <rect x="180" y="132" width="160" height="40" class="or"/><text x="260" y="149" text-anchor="middle" class="b" font-size="11">U A P R S F</text><text x="260" y="164" text-anchor="middle" class="mut">6 flags</text>
+  <rect x="340" y="132" width="300" height="40" class="pu"/><text x="490" y="149" text-anchor="middle" class="b" font-size="12">Window size</text><text x="490" y="164" text-anchor="middle" class="mut">16</text>
+  <rect x="40" y="172" width="300" height="38" class="bx"/><text x="190" y="188" text-anchor="middle" class="b" font-size="12">Checksum</text><text x="190" y="203" text-anchor="middle" class="mut">16</text>
+  <rect x="340" y="172" width="300" height="38" class="bx"/><text x="490" y="188" text-anchor="middle" class="b" font-size="12">Urgent pointer</text><text x="490" y="203" text-anchor="middle" class="mut">16</text>
+  <rect x="40" y="210" width="600" height="34" class="or dash"/><text x="340" y="232" text-anchor="middle" class="b" font-size="12">Options (0 – 40 bytes)</text>
+  <text x="340" y="268" text-anchor="middle" class="mut">5 mandatory rows × 4 bytes = 20 bytes (minimum) · + 40 bytes options = 60 bytes (maximum)</text>
+  <text x="340" y="290" text-anchor="middle" class="mut">flags: URG · ACK · PSH · RST · SYN · FIN</text>
+</svg>
+<figcaption>Figure 29.1: TCP header</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+TCP is connection-oriented, delivers <b>in order</b> and is <b>reliable</b>; to know its whole <b>kundli</b> (horoscope), just open its header. Like IPv4, it has <b>6 horizontal slots</b>: <b>5 mandatory</b> (each 32 bits = 4 bytes, bit positions 0–31) and the 6th <b>optional</b> (0–40 bytes). So the header is <b>minimum 20 bytes, maximum 60 bytes</b>. Fields: <b>source port</b> and <b>destination port</b> (16 bits each, the end-to-end idea), sequence number, acknowledgment number, header length, flags, window size, checksum, urgent pointer (with the URG flag), options, then the data.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">29.2</span>Segments and Source/Destination Port Fields</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The general word is "packet", but at the transport layer the unit is a <b>segment</b>; at the network layer it is a <b>datagram</b>; in the DLL a <b>frame</b>. A segment = TCP header + data/payload from the layer above.<br>
+Example: the receiving host runs processes P1–P4. A segment's header carries <b>source port X</b> (the sender's process) and <b>destination port 80</b> (P2's port on the receiver), so on arrival it is delivered to P2: end-to-end delivery.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">29.3</span>Sequence Number: TCP as a Byte Stream Protocol</h3>
+<figure>
+<svg viewBox="0 0 680 120" role="img" aria-label="A segment with TCP header followed by data bytes numbered 201 to 209; the sequence number field holds 201, the number of the first data byte">
+  <rect x="20" y="30" width="130" height="44" class="pu"/><text x="85" y="50" text-anchor="middle" class="b">TCP header</text><text x="85" y="66" text-anchor="middle" class="mut">seq no. = 201</text>
+  <g font-family="monospace" font-size="12">
+  <rect x="150" y="30" width="56" height="44" class="gr"/><text x="178" y="57" text-anchor="middle" class="b">201</text>
+  <rect x="206" y="30" width="56" height="44" class="gr"/><text x="234" y="57" text-anchor="middle">202</text>
+  <rect x="262" y="30" width="56" height="44" class="gr"/><text x="290" y="57" text-anchor="middle">203</text>
+  <rect x="318" y="30" width="56" height="44" class="gr"/><text x="346" y="57" text-anchor="middle">…</text>
+  <rect x="374" y="30" width="56" height="44" class="gr"/><text x="402" y="57" text-anchor="middle">208</text>
+  <rect x="430" y="30" width="56" height="44" class="gr"/><text x="458" y="57" text-anchor="middle" class="b">209</text>
+  </g>
+  <text x="530" y="46" class="mut">receiver replies</text><text x="530" y="64" class="b" style="fill:var(--ok)">ACK no. = 210</text>
+  <text x="318" y="98" text-anchor="middle" class="mut">every data byte gets its own number; the header carries the FIRST byte's number</text>
+</svg>
+<figcaption>Figure 29.2: Byte numbering in TCP</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The most important idea: <b>TCP is a byte-stream protocol</b>, while IP is a packet-stream protocol. Byte stream means <b>every byte gets a number</b>. In a segment, the first data byte is numbered 201, the next 202, 203 … 209: numbered in the order the bytes are arranged. The <b>32-bit sequence number field</b> in the header stores the number of the <b>first data byte</b> of that segment.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">29.4</span>Acknowledgment Number</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Also a <b>32-bit</b> field. The sender sends a segment with sequence number 201; the receiver opens it and finds the last data byte is 209. Which byte does it expect next? <b>210</b>. That is what the acknowledgment number says: "<b>the next byte I expect from you</b>". The receiver sends ACK = 210; the sender's next segment then starts at byte 210, and 210 goes in its sequence number field.</div>
+<div class="box add"><span class="t">➕ Cumulative ACK</span>
+TCP's acknowledgment is <b>cumulative</b>: ACK = 210 means "I have received <b>everything up to 209</b>", not just the last segment. Ack number = <b>last byte received in order + 1</b>.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">29.5</span>Why the Initial Sequence Number Is Random</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"Sequence numbers should not start from zero" is not said lightly. Scenario: a sender (IP<sub>S</sub>, port X) and receiver (IP<sub>R</sub>, port Y) exchange 500-byte segments numbered 0, 500, 1000 … The segment numbered 500 gets <b>stuck and delayed</b> in the network, so long that the connection is terminated. A <b>new connection</b> is opened between the <b>same IPs and ports</b>, and again starts from 0. When the old segment 500 finally arrives, the receiver thinks "yes, I was expecting 500 after 0, from this very port" and <b>accepts it</b>, although it belongs to the <b>previous</b> connection and its data may be totally different. To avoid this conflict, each connection starts from a <b>random</b> number (10, 20, anything).</div>
+<div class="box add"><span class="t">➕ Also a security reason</span>
+A predictable ISN (Initial Sequence Number) lets an attacker forge segments that the receiver will accept (<b>TCP sequence prediction / session hijacking</b>). Modern stacks therefore pick the ISN pseudo-randomly (RFC 6528).</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">29.6</span>Maximum Segment Size (MSS)</h3>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="Ethernet frame data of 1500 bytes contains 20-byte IP header and 1480 bytes; that contains 20-byte TCP header and 1460 bytes of data, which is the MSS">
+  <rect x="20" y="20" width="640" height="30" class="bx"/><text x="340" y="40" text-anchor="middle" class="b">Ethernet frame: data field 1500 bytes (= MTU) + 18 bytes overhead = 1518</text>
+  <rect x="20" y="58" width="80" height="30" class="ac"/><text x="60" y="78" text-anchor="middle" class="b" font-size="12">IP 20</text>
+  <rect x="100" y="58" width="560" height="30" class="ac"/><text x="380" y="78" text-anchor="middle">IP payload 1480</text>
+  <rect x="100" y="96" width="80" height="30" class="pu"/><text x="140" y="116" text-anchor="middle" class="b" font-size="12">TCP 20</text>
+  <rect x="180" y="96" width="480" height="30" class="gr"/><text x="420" y="116" text-anchor="middle" class="b">TCP data = MSS = 1460 bytes</text>
+  <text x="340" y="144" text-anchor="middle" class="mut">MSS = MTU − IP header − TCP header = 1500 − 20 − 20</text>
+</svg>
+<figcaption>Figure 29.3: Where 1460 comes from</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Go back through the layers. An Ethernet frame's data field is at most <b>1500 bytes</b> (whole frame 1518, ch 15). Inside it is the IP datagram: minimum IP header <b>20 bytes</b>, leaving <b>1480</b>. Inside that is the TCP segment: minimum TCP header <b>20 bytes</b>, leaving <b>1460 bytes</b>. That is the <b>MSS (Maximum Segment Size)</b>: the largest amount of <b>data</b> one TCP segment carries. The 1500 is the datagram's whole transmission unit, the MTU.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+MSS counts <b>data only</b> (no TCP header). 1500 − 20 = <b>1480</b> (the transcript slips to "480"), − 20 = <b>1460</b>. With IPv6 (40-byte header) the MSS on Ethernet is 1440. MSS is announced in the <b>SYN</b> segments as a TCP option.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">29.7</span>Header Length Field and Scaling Factor</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Same as IPv4: <b>4 bits</b> → values 0–15, but the header is 20–60 bytes. Scaling factor = 60 ÷ 15 = <b>4</b>. Valid values <b>5–15</b>: 5 × 4 = 20 bytes, 15 × 4 = 60 bytes.</div>
+<div class="formula">TCP header length (bytes) = HLEN × 4      HLEN 5 … 15  →  20 … 60 bytes</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">29.8</span>Numerical: Finding the Acknowledgment Number</h3>
+<figure>
+<svg viewBox="0 0 680 140" role="img" aria-label="IP datagram total length contains IP header and X; X contains TCP header and Y data bytes; ACK = sequence number + Y">
+  <rect x="20" y="20" width="640" height="28" class="bx"/><text x="340" y="39" text-anchor="middle" class="b">IP Total Length</text>
+  <rect x="20" y="56" width="120" height="30" class="ac"/><text x="80" y="76" text-anchor="middle" class="b" font-size="12">IP header</text>
+  <rect x="140" y="56" width="520" height="30" class="ac"/><text x="400" y="76" text-anchor="middle" class="b">X = Total Length − IP HLEN×4</text>
+  <rect x="140" y="94" width="120" height="30" class="pu"/><text x="200" y="114" text-anchor="middle" class="b" font-size="12">TCP header</text>
+  <rect x="260" y="94" width="400" height="30" class="gr"/><text x="460" y="114" text-anchor="middle" class="b">Y = X − TCP HLEN×4 (data bytes)</text>
+  <text x="340" y="138" text-anchor="middle" class="mut">ACK = sequence number + Y   (last byte = seq + Y − 1)</text>
+</svg>
+<figcaption>Figure 29.4: Peeling the datagram to find the data length</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+How does the receiver compute the ACK number? Peel the layers. The IP datagram's <b>total length</b> = IP header + X. <b>Step 1:</b> X = total length − IP header length. X is the TCP segment. <b>Step 2:</b> Y = X − TCP header length; Y = the number of data bytes. <b>Step 3:</b> the sequence number field gives the first byte's number, e.g. <b>100</b>. Last byte = 100 + Y − 1; with Y = 6, last byte = <b>105</b>. ACK = last byte + 1 = <b>106</b>: "send 106 next". This also shows <b>encapsulation</b>: the TCP segment sits inside the IP datagram.</div>
+<div class="num"><span class="t">Worked example</span>
+<div class="formula">IP Total Length = 46, IP HLEN = 5 (20 B), TCP HLEN = 5 (20 B), seq = 100
+X = 46 − 20 = 26        Y = 26 − 20 = 6 data bytes
+bytes 100 … 105        →  ACK = 106</div></div>
+</section>
+
+<section id="s9">
+<h3><span class="n">29.9</span>Sequence Number Wrap Around</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The sequence field is 32 bits → <b>2³²</b> numbers = 4 × 2³⁰ = "<b>4 G</b>" sequence numbers. One byte consumes one number, so up to <b>4 GB</b> of data there's no problem. With 4 GB + 1 byte, all numbers are used up: where does the extra byte get its number? <b>Go round again</b>: after the last number, start reusing from the beginning (or, with a random start x, go up to 2³² − 1 and wrap around to 0 … x). This reuse is <b>wrap around</b>.<br>
+<b>Wrap-around time</b> = the time taken to <b>reuse the same sequence number</b> again: from first using number 0 until the stream comes all the way round and uses 0 again.<br>
+People often think more bandwidth means more wrap-around time. No: <b>wrap-around time ∝ 1 / bandwidth</b>. Higher bandwidth uses up sequence numbers faster, so they repeat sooner.</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">29.10</span>Numerical: Wrap Around Time</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Bandwidth <b>1 MBps</b> = 10⁶ bytes per second → 10⁶ sequence numbers consumed per second. One number takes 1/10⁶ s. All 2³² numbers take <b>2³² / 10⁶ s</b>. Three questions answered: numbers per second, time per number, and time for the whole space.</div>
+<div class="formula">wrap-around time = 2^(sequence bits) / (bandwidth in BYTES per second)
+1 MBps : 2³² / 10⁶ ≈ 4295 s ≈ 71.6 minutes
+1 GBps : 2³² / 10⁹ ≈ 4.29 s</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Divide by bandwidth in <b>bytes</b>/s, because sequence numbers count bytes. If given 10 Mbps (bits), first convert: 10 × 10⁶ / 8 = 1.25 × 10⁶ B/s → 2³² / 1.25×10⁶ ≈ <b>3436 s</b>.</div>
+</section>
+
+<section id="s11">
+<h3><span class="n">29.11</span>Packet Lifetime vs Wrap Around Time</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Lifetime of a packet</b> = t2 − t1, from leaving the sender to arriving at the receiver: at most <b>180 seconds</b> (3 minutes). Suppose a segment is sent with sequence number 100; later, after the wrap-around time, number 100 is used again for new data.<br>
+The rule: <b>wrap-around time must be greater than lifetime</b>. If wrap-around were shorter, sequence number 100 could be reused while the old segment with 100 is still alive in the network; two segments with the same number could reach the receiver: a <b>conflict</b>.</div>
+<div class="formula">Wrap-around time  &gt;  Lifetime (MSL)        otherwise old and new segments can carry the same sequence number</div>
+</section>
+
+<section id="s12">
+<h3><span class="n">29.12</span>Numerical: Sequence Number Bits for High Bandwidth</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Raise the bandwidth to <b>1 GBps</b>: wrap-around = 2³² / 10⁹ ≈ <b>4.29 s</b>, far below the 180 s lifetime. The feared case! Reduce bandwidth? "Are you mad? People go crazy for bandwidth." Instead <b>add sequence-number bits</b>.<br>
+In 180 s at 10⁹ B/s, 10⁹ × 180 numbers are consumed. We need at least that many: bits = <b>⌈log₂(bandwidth × lifetime)⌉</b> = ⌈log₂(1.8 × 10¹¹)⌉ = ⌈37.39⌉ = <b>38 bits</b>. The header has only 32, so take the extra <b>6 bits from the options field</b>: 32 + 6 = 38. Mission accomplished.</div>
+<div class="formula">required sequence bits = ⌈ log₂ (bandwidth (B/s) × lifetime (s)) ⌉
+1 GBps, 180 s → ⌈log₂(1.8 × 10¹¹)⌉ = 38 bits</div>
+<div class="box add"><span class="t">➕ How real TCP does it</span>
+Real TCP does not lengthen the sequence field. It uses the <b>Timestamps option</b> (RFC 7323): every segment carries a timestamp, and <b>PAWS</b> (Protection Against Wrapped Sequences) rejects old segments whose timestamp is too old, so the timestamp effectively extends the numbering, in the options field as the lecture suggests. The same RFC defines the <b>Window Scale</b> option for windows above 65 535 bytes.</div>
+</section>
+
+<section id="s13">
+<h3><span class="n">29.13</span>TCP Connection Establishment: Three-Way Handshake</h3>
+<figure>
+<svg viewBox="0 0 680 470" role="img" aria-label="Timeline between client and server: SYN seq 500; SYN+ACK seq 1000 ack 501; ACK seq 501 ack 1001; data seq 501 to 600 ack 1001; data seq 1001 to 1100 ack 601; ACK seq 601 ack 1101; FIN seq 601 ack 1101; FIN+ACK seq 1101 ack 602; ACK seq 602 ack 1102">
+  <defs><marker id="tc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker><marker id="ts" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker></defs>
+  <text x="120" y="20" text-anchor="middle" class="b">Client</text><text x="560" y="20" text-anchor="middle" class="b">Server</text>
+  <path d="M120 28 V460 M560 28 V460" class="ln"/>
+  <text x="20" y="60" class="b" style="fill:var(--accent)" font-size="12">Connection</text><text x="20" y="76" class="b" style="fill:var(--accent)" font-size="12">establishment</text>
+  <path d="M120 40 L556 70" class="lna" marker-end="url(#tc)"/><text style="paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round" x="340" y="34" text-anchor="middle" font-size="12" class="b">① SYN · seq 500 · MSS 1460 · win 14600</text>
+  <path d="M560 84 L124 114" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ts)"/><text style="paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round" x="340" y="78" text-anchor="middle" font-size="12" class="b">② SYN+ACK · seq 1000 · ack 501 · MSS 500 · win 1000</text>
+  <path d="M120 128 L556 158" class="lna" marker-end="url(#tc)"/><text style="paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round" x="340" y="122" text-anchor="middle" font-size="12" class="b">③ ACK · seq 501 · ack 1001 (pure ACK, no data)</text>
+  <path d="M40 180 H640" class="ln dash"/>
+  <text x="20" y="214" class="b" style="fill:var(--ok)" font-size="12">Data</text><text x="20" y="230" class="b" style="fill:var(--ok)" font-size="12">transfer</text>
+  <path d="M120 196 L556 226" class="lna" marker-end="url(#tc)"/><text style="paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round" x="340" y="190" text-anchor="middle" font-size="12">DATA bytes 501–600 · seq 501 · ACK · ack 1001 (piggyback)</text>
+  <path d="M560 240 L124 270" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ts)"/><text style="paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round" x="340" y="234" text-anchor="middle" font-size="12">DATA bytes 1001–1100 · seq 1001 · ACK · ack 601</text>
+  <path d="M120 284 L556 314" class="lna" marker-end="url(#tc)"/><text style="paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round" x="340" y="278" text-anchor="middle" font-size="12">ACK · seq 601 · ack 1101 (pure ACK)</text>
+  <path d="M40 334 H640" class="ln dash"/>
+  <text x="20" y="372" class="b" style="fill:var(--alert)" font-size="12">Connection</text><text x="20" y="388" class="b" style="fill:var(--alert)" font-size="12">termination</text>
+  <path d="M120 350 L556 380" class="lna" marker-end="url(#tc)"/><text style="paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round" x="340" y="344" text-anchor="middle" font-size="12" class="b">FIN · seq 601 · ACK · ack 1101</text>
+  <path d="M560 394 L124 424" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ts)"/><text style="paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round" x="340" y="388" text-anchor="middle" font-size="12" class="b">FIN+ACK · seq 1101 · ack 602</text>
+  <path d="M120 434 L556 456" class="lna" marker-end="url(#tc)"/><text style="paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round" x="340" y="426" text-anchor="middle" font-size="12" class="b">ACK · seq 602 · ack 1102</text>
+</svg>
+<figcaption>Figure 29.5: The lecture's complete connection: open, exchange data, close</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Three phases: <b>connection establishment</b>, <b>data transfer</b>, <b>connection termination</b>. Communication will be <b>full duplex</b>, but someone must start: the <b>client</b> approaches the server with a request. Establishment takes three segments, hence the <b>three-way handshake</b>.</div>
+</section>
+
+<section id="s14">
+<h3><span class="n">29.14</span>SYN Segment: Sequence Number, MSS and Window Size</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>① SYN (client → server):</b> starts with sequence number <b>500</b> (random) and <b>SYN = 1</b>. SYN (synchronise) is set only while establishing a connection: the server doesn't know which random number the client chose, so both sides <b>synchronise sequence numbers</b>. It also sends its <b>MSS</b> ("don't send bigger than this or you'll be broken up") and its <b>window size</b>, i.e. its buffer: e.g. window 14 600 bytes with MSS 1460 → 14 600 / 1460 = <b>10 segments</b> at a time. "Don't send me more than I can receive."<br>
+<b>② SYN+ACK (server → client):</b> "I start from random <b>1000</b>; please sync." SYN = 1 again, its own MSS (500) and buffer (1000), <b>ACK flag = 1</b> and <b>ack number = 501</b>: "you used 500; your next segment's first byte should be 501". Note the ACK <b>flag</b> (field is valid) differs from the ACK <b>number</b> (32-bit field).<br>
+<b>③ ACK (client → server):</b> the client respects the reply: sequence <b>501</b>, ACK = 1, ack number <b>1001</b> ("send me byte 1001 next"). It carries <b>no data</b>: a <b>pure acknowledgement</b>.</div>
+</section>
+
+<section id="s15">
+<h3><span class="n">29.15</span>Sequence Number Consumption (SYN/FIN vs Pure ACK)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+After SYN with 500, the client used <b>501</b> next, so 500 was <b>consumed</b> by the SYN. But in step ③ (a pure ACK) the client used 501, and right after the handshake it uses <b>501 again</b> for data. Illegal? No: a <b>pure ACK does not consume</b> a sequence number, so it can be reused immediately.</div>
+<div class="tw"><table>
+<tr><th>Segment carries…</th><th>Sequence numbers consumed</th></tr>
+<tr><td>SYN flag</td><td><b>1</b></td></tr>
+<tr><td>FIN flag</td><td><b>1</b></td></tr>
+<tr><td>n data bytes</td><td><b>n</b></td></tr>
+<tr><td>pure ACK (no data, no SYN/FIN)</td><td><b>0</b></td></tr>
+</table></div>
+</section>
+
+<section id="s16">
+<h3><span class="n">29.16</span>TCP Data Transfer and Piggybacking</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The client sends bytes <b>501–600</b> (first byte 501, last 600): seq 501, ACK flag 1, ack 1001. Data and acknowledgement travel together: <b>piggybacked acknowledgement</b>.<br>
+The server sends data <b>1001–1100</b>: seq 1001 (exactly what the client asked for), ACK = 1, ack <b>601</b> (it decoded the last byte as 600, so it wants 601).<br>
+The client has nothing more to send, so it sends a <b>pure ACK</b>: seq 601, ack <b>1101</b>.<br>
+Pattern: the <b>ack number one side sends becomes the other side's next sequence number</b>, both ways.</div>
+</section>
+
+<section id="s17">
+<h3><span class="n">29.17</span>TCP Connection Termination (FIN)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The client is done: it no longer needs the buffers and link the server reserved for it. It sends <b>FIN = 1</b> (terminate from my end) with seq <b>601</b> (reusable, since the pure ACK didn't consume it), ACK = 1, ack 1101.<br>
+After its FIN, the <b>client may send only pure ACKs</b>, no more data. The server is still connected and <b>may still send data</b> with piggybacked ACKs (this is a <b>half-close</b>).<br>
+When the server is also done, it sends <b>FIN+ACK</b>: seq <b>1101</b>, ack <b>602</b> (the client's FIN consumed 601). The client sends the final <b>ACK</b>: seq 602, ack <b>1102</b>. The connection is fully closed.</div>
+<div class="box add"><span class="t">➕ Three-way vs four-way close</span>
+In the general case termination takes <b>four segments</b>: FIN →, ← ACK, (the server may keep sending data), ← FIN, ACK →. When the server has nothing left to send it combines its ACK and FIN into one segment, giving the <b>three-segment close</b> shown in the lecture. The side that closes first waits in <b>TIME-WAIT</b> for <b>2 × MSL</b> before forgetting the connection, so that a lost final ACK can be resent and old duplicates die out.</div>
+</section>
+
+<section id="s18">
+<h3><span class="n">29.18</span>SYN and ACK Flag Combinations</h3>
+<div class="tw"><table>
+<tr><th>SYN</th><th>ACK</th><th>Where you see it</th></tr>
+<tr><td>1</td><td>0</td><td>first segment of the handshake (client's SYN)</td></tr>
+<tr><td>1</td><td>1</td><td>second segment (server's SYN+ACK)</td></tr>
+<tr><td>0</td><td>1</td><td>everything after: third handshake segment, data, pure ACKs, FIN segments</td></tr>
+<tr><td>0</td><td>0</td><td>not seen in a normal connection (only a very first SYN has ACK = 0)</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The ACK flag says "the value in the acknowledgment number field is <b>valid</b>", so after the first segment it is set in practically every segment, during transfer and termination too.</div>
+</section>
+
+<section id="s19">
+<h3><span class="n">29.19</span>URG Flag and Urgent Pointer</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The sender has messages m1, m2, m3 queued, but <b>m3 is very important</b> and must reach first. Set its <b>URG flag</b>. But routers work only up to the network layer; they can't read transport-layer flags. So the lecture translates it into the network layer: give that packet IP <b>precedence 7</b> (the highest, in TOS, ch 22); routers then forward m3 ahead of m1 and m2.<br>
+The <b>urgent pointer</b> works only when URG = 1. It tells <b>how many bytes</b>, counted from the first data byte, are urgent: last urgent byte = sequence number + urgent pointer. Everything from the first byte up to that point is urgent data.</div>
+<div class="num"><span class="t">Example</span>
+seq = 100, URG = 1, urgent pointer = 10 → urgent data = bytes <b>100 … 110</b> (last urgent byte = 100 + 10, Forouzan's convention).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+In the TCP standard, URG does <b>not</b> change how routers forward the segment (no IP priority is set automatically); the "precedence 7" mapping is the lecture's way of explaining. What URG really does is tell the <b>receiving TCP</b> to deliver the urgent bytes to the application <b>out of band</b>, ahead of the queued normal data (e.g. Ctrl+C in Telnet). Don't confuse it with <b>PSH</b>, which asks the receiver to pass buffered data to the application <b>immediately</b>.</div>
+</section>
+
+<section id="s20">
+<h3><span class="n">29.20</span>RST Flag (Connection Reset)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>RST = 1</b> resets the connection when something has gone wrong.<br>
+<b>1. Receiver crashed and rebooted:</b> it has forgotten the old connection (the synchronised numbers, all of it). Valid segments from the sender now look like a <b>stranger's</b>. It sends RST: "stop, I remember nothing; let's set up a new connection first".<br>
+<b>2. Unexpected packets:</b> host A keeps sending segments host B never asked for ("I didn't order this, I won't pay for it!"). B won't spend resources on them and sends RST.<br>
+<b>3. Wrong sequence number:</b> the receiver expects 100 and gets 300: "I called Suresh, and Ramesh turned up!" RST.</div>
+<div class="box add"><span class="t">➕ Also</span>
+A host replies with RST to a <b>SYN aimed at a closed port</b> (that is how port scanners detect closed ports). RST closes the connection <b>immediately</b>, without the FIN exchange and without waiting; any data in transit is discarded.</div>
+</section>
+
+<section id="s21">
+<h3><span class="n">29.21</span>Flags, Timers, States &amp; Solved Numericals <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Flag</th><th>Meaning</th></tr>
+<tr><td><b>URG</b></td><td>urgent pointer field is valid</td></tr>
+<tr><td><b>ACK</b></td><td>acknowledgment number field is valid</td></tr>
+<tr><td><b>PSH</b></td><td>push: deliver data to the application now</td></tr>
+<tr><td><b>RST</b></td><td>reset the connection</td></tr>
+<tr><td><b>SYN</b></td><td>synchronise sequence numbers (connection set-up)</td></tr>
+<tr><td><b>FIN</b></td><td>sender has finished sending (connection tear-down)</td></tr>
+<tr><td>ECE, CWR (and NS)</td><td>Explicit Congestion Notification support</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>TCP timer</th><th>Purpose</th></tr>
+<tr><td>Retransmission timer (RTO)</td><td>resend a segment if its ACK doesn't arrive in time (RTO computed from measured RTT)</td></tr>
+<tr><td>Persistence timer</td><td>after a zero window, periodically probe so a lost window update can't deadlock both sides</td></tr>
+<tr><td>Keep-alive timer</td><td>check whether an idle peer is still alive (e.g. every 2 hours)</td></tr>
+<tr><td>TIME-WAIT timer</td><td>wait 2 × MSL after closing</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Connection states (names to recognise)</span>
+CLOSED → LISTEN (server) → SYN-SENT (client) / SYN-RECEIVED (server) → <b>ESTABLISHED</b> → FIN-WAIT-1 → FIN-WAIT-2 → <b>TIME-WAIT</b> → CLOSED (active closer); CLOSE-WAIT → LAST-ACK → CLOSED (passive closer). Attack to know: the <b>SYN flood</b> (many SYNs, never the final ACK, filling the server's half-open table); defence: SYN cookies.</div>
+<div class="num"><span class="t">Solved numericals</span>
+<b>Q1.</b> TCP HLEN field = 8. Header size? Options? 8 × 4 = <b>32 bytes</b>; options = <b>12 bytes</b>.<br><br>
+<b>Q2.</b> A segment has seq 2000 and carries 500 data bytes. Its last byte number and the ACK the receiver sends? Last = <b>2499</b>; ACK = <b>2500</b>.<br><br>
+<b>Q3.</b> IP total length 1000, IP HLEN 5, TCP HLEN 8, seq 5000. ACK number? Data = 1000 − 20 − 32 = 948 → ACK = <b>5948</b>.<br><br>
+<b>Q4.</b> Client SYN with seq 100, server SYN+ACK with seq 300. What are the ack numbers in step ② and ③? ② ack <b>101</b>; ③ seq 101, ack <b>301</b>.<br><br>
+<b>Q5.</b> Wrap-around time at 10 Mbps? 2³² / (10⁷/8) ≈ <b>3436 s</b>.<br><br>
+<b>Q6.</b> Sequence bits needed for 10 Mbps with lifetime 180 s? ⌈log₂(1.25×10⁶ × 180)⌉ = ⌈log₂(2.25×10⁸)⌉ = <b>28</b> → 32 bits are enough.<br><br>
+<b>Q7.</b> Window 14 600 B, MSS 1460 B: how many full segments can be outstanding? <b>10</b>.<br><br>
+<b>Q8.</b> Which flags consume a sequence number? <b>SYN</b> and <b>FIN</b> (and each data byte); a pure ACK does not.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Most asked: TCP header 20–60 bytes; sequence and ACK numbers 32 bits; window 16 bits; ACK = next byte expected; three-way handshake = <b>SYN, SYN+ACK, ACK</b>; SYN and FIN consume one number; MSS on Ethernet = 1460; TCP is <b>full-duplex, connection-oriented, byte-stream</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 29</h3>
+<ul>
+<li>Header: 5 rows × 4 B = <b>20</b>, + options ≤ 40 → <b>60</b>. Ports 16+16, seq 32, ack 32, HLEN 4 (×4), flags 6, window 16, checksum 16, urgent pointer 16.</li>
+<li><b>Byte stream</b>: every byte numbered; seq field = first data byte. <b>ACK = next byte expected</b> (201–209 → ACK 210); cumulative.</li>
+<li><b>Random ISN</b>: an old delayed segment from a previous connection with the same IPs/ports must not be mistaken for new data.</li>
+<li><b>MSS</b> = 1500 − 20 − 20 = <b>1460</b> (data only).</li>
+<li>ACK numerical: X = IP total − IP header; Y = X − TCP header; ACK = seq + Y.</li>
+<li>Wrap-around: 2³² numbers; time = <b>2³² / bandwidth (B/s)</b>; ∝ 1/bandwidth. Must exceed lifetime (180 s). Bits needed = <b>⌈log₂(B × LT)⌉</b> (1 GBps → 38 bits; extra from options).</li>
+<li>Handshake: <b>SYN</b> seq 500 (MSS, window) → <b>SYN+ACK</b> seq 1000 ack 501 → <b>ACK</b> seq 501 ack 1001.</li>
+<li>SYN, FIN and each data byte consume a number; a <b>pure ACK consumes none</b>.</li>
+<li>Data 501–600 (ack 1001, piggyback) ↔ 1001–1100 (ack 601) → pure ACK 601/1101. Close: FIN 601 → FIN+ACK 1101/602 → ACK 602/1102.</li>
+<li>Flags: URG (+ urgent pointer), ACK, PSH, RST (crash, unexpected segments, wrong seq), SYN, FIN.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 29 · Next: Chapter 30 — User Datagram Protocol (UDP)</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="28-Transport-Layer.html">← Ch 28: Transport Layer</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

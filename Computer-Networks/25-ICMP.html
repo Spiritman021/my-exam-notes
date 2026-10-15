@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN ICMP Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="24-ARP-and-RARP.html">← Ch 24: ARP and RARP</a><a href="index.html">☰ All topics</a><a href="26-IGMP.html">Ch 26: IGMP →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 25: ICMP (Internet Control Message Protocol)</h1>
+  <p class="sub">Volume 02 · Part 25 · Built from the one-shot CN lecture transcript (section 25), plus the exam points the lecture skipped. IP itself has no way to report problems; ICMP is its messenger: error reports back to the source, and query/reply messages such as ping.</p>
+  <ul class="tags"><li>Network Layer</li><li>Protocol No. 1</li><li>Error Reporting</li><li>Query Messages</li><li>Who · Why · Which</li><li>Destination Unreachable (3)</li><li>Time Exceeded (11)</li><li>Redirect (5)</li><li>Source Quench (4)</li><li>Parameter Problem (12)</li><li>Echo 8 / 0 (ping)</li><li>traceroute</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">25.0</span>Where ICMP Lives and Why</a></li>
+<li><a href="#s1"><span class="n">25.1</span>Error Reporting and Query Messages</a></li>
+<li><a href="#s2"><span class="n">25.2</span>No ICMP Error for a Discarded ICMP Packet</a></li>
+<li><a href="#s3"><span class="n">25.3</span>ICMP Error Message Format: Who, Why, Which Packet</a></li>
+<li><a href="#s4"><span class="n">25.4</span>Destination Unreachable</a></li>
+<li><a href="#s5"><span class="n">25.5</span>Time Exceeded</a></li>
+<li><a href="#s6"><span class="n">25.6</span>Redirection</a></li>
+<li><a href="#s7"><span class="n">25.7</span>Source Quench</a></li>
+<li><a href="#s8"><span class="n">25.8</span>Parameter Problem</a></li>
+<li><a href="#s9"><span class="n">25.9</span>Message Types Table, ping &amp; traceroute<span class="x">ADDED</span></a></li>
+<li><a href="#s10"><span class="n">25.10</span>Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 25</div>
+<h2 class="ch">ICMP (Internet Control Message Protocol)</h2>
+<p>IP is best-effort: when a router drops a packet, IP alone says nothing. <b>ICMP</b> fills that gap. A router or host that drops a packet sends an ICMP <b>error message</b> back to the original source, saying who dropped it, why, and which packet it was. ICMP also carries <b>query messages</b>, the request/reply pairs behind tools like <b>ping</b>. The exam asks mostly for the message <b>types</b>, the <b>rules</b> on when no error may be sent, and how ping and traceroute use ICMP.</p>
+
+<section id="s0">
+<h3><span class="n">25.0</span>Where ICMP Lives and Why</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Another protocol: the <b>Internet Control Message Protocol</b>. As said in ch 22, its importance (priority) is the lowest compared with IGMP, UDP and TCP. It operates in the <b>network layer</b>: IP occupies the major portion, and ICMP sits alongside it ("top-left corner" in the layer diagram). It is used for <b>error handling</b> and for <b>request–reply</b> exchanges.</div>
+<div class="box add"><span class="t">➕ Placement facts</span>
+ICMP is a <b>network-layer</b> protocol, but its messages travel <b>inside IP datagrams</b> (IP header Protocol field = <b>1</b>). It <b>does not correct</b> errors; it only <b>reports</b> them to the <b>original source</b> (the only address the router knows). ICMPv4 is RFC 792; <b>ICMPv6</b> (RFC 4443) also absorbs ARP and IGMP functions (Neighbour Discovery, MLD).</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">25.1</span>Error Reporting and Query Messages</h3>
+<figure>
+<svg viewBox="0 0 680 220" role="img" aria-label="Error reporting: a packet from source passes R1 and is discarded at R2; R2 sends an ICMP error back hop by hop to the source. Query: source sends ICMP request to destination and gets an ICMP reply">
+  <defs><marker id="ie" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker><marker id="ib" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--alert)"/></marker></defs>
+  <text x="20" y="22" class="b">(a) Error reporting</text>
+  <rect x="20" y="40" width="80" height="34" rx="5" class="ac"/><text x="60" y="62" text-anchor="middle" class="b">Source</text>
+  <circle cx="210" cy="57" r="20" class="pu"/><text x="210" y="62" text-anchor="middle" class="b">R1</text>
+  <circle cx="350" cy="57" r="20" class="pu"/><text x="350" y="62" text-anchor="middle" class="b">R2</text>
+  <rect x="460" y="40" width="100" height="34" rx="5" class="bx"/><text x="510" y="62" text-anchor="middle">Destination</text>
+  <path d="M100 50 H188 M232 50 H328" class="lna" marker-end="url(#ie)"/>
+  <text x="390" y="50" style="fill:var(--bad)" class="b" font-size="18">✗</text><text x="410" y="50" class="mut">dropped</text>
+  <path d="M330 70 H232 M188 70 H102" style="stroke:var(--alert);stroke-width:2;fill:none" class="dash" marker-end="url(#ib)"/>
+  <text x="215" y="98" text-anchor="middle" style="fill:var(--alert)" class="b">ICMP error back to the source</text>
+  <path d="M10 120 H670" class="ln dash"/>
+  <text x="20" y="146" class="b">(b) Query (request / reply)</text>
+  <rect x="20" y="164" width="80" height="34" rx="5" class="ac"/><text x="60" y="186" text-anchor="middle" class="b">Source</text>
+  <rect x="460" y="164" width="100" height="34" rx="5" class="ac"/><text x="510" y="186" text-anchor="middle" class="b">Destination</text>
+  <path d="M100 174 H456" class="lna" marker-end="url(#ie)"/><text x="280" y="168" text-anchor="middle" class="mut">ICMP request (e.g. echo request, ping)</text>
+  <path d="M460 192 H104" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ib)"/><text x="280" y="212" text-anchor="middle" class="mut">ICMP reply (echo reply)</text>
+</svg>
+<figcaption>Figure 25.1: The two jobs of ICMP</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>1. Error handling (feedback).</b> A packet goes source → R1 → R2, and at R2 something goes wrong, so R2 <b>discards</b> it. Discarding a host's packet without telling it would be wrong; the source deserves feedback. So R2 sends an <b>ICMP packet</b> back, hop by hop, to the source, which learns that its packet was dropped.<br>
+<b>2. Request and reply.</b> The sender sends an <b>ICMP request</b> to the destination to ask for some information; the destination answers with an <b>ICMP reply</b>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">25.2</span>No ICMP Error for a Discarded ICMP Packet</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+An important rule. If an <b>IP</b> packet is discarded, sending an ICMP report is correct. But what if the packet discarded is itself an <b>ICMP</b> packet?<br>
+Suppose R2 drops an ICMP packet and sends an ICMP report towards the source. At R1 the buffer is full, and ICMP has the lowest priority, so R1 drops <b>that</b> report too. R1 must now report to R2 with another ICMP packet; R2 is busy and drops it; R2 reports back to R1; R1 drops it… <b>An endless circle.</b><br>
+Tie a knot: <b>do not generate an ICMP packet when an ICMP packet is discarded.</b></div>
+<div class="box trap"><span class="t">⚠️ Exam trap: the exact rule</span>
+The standard (RFC 792/1122) forbids ICMP errors <b>about ICMP error messages</b>. An ICMP <b>query</b> (e.g. an echo request) that is dropped <b>can</b> still produce an error. The full list of cases where <b>no ICMP error is sent</b>:
+<ul><li>for a datagram that carries an <b>ICMP error message</b>;</li>
+<li>for a fragment that is <b>not the first fragment</b>;</li>
+<li>for a datagram with a <b>multicast</b> (or broadcast) destination address;</li>
+<li>for a datagram with a <b>special source address</b> such as 127.0.0.0 or 0.0.0.0.</li></ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">25.3</span>ICMP Error Message Format: Who, Why, Which Packet</h3>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="ICMP error message inside an IP datagram: IP header with source = the router that discarded, destination = original source; ICMP header with type, code and checksum; then the original packet's IP header plus first 8 bytes of its data">
+  <rect x="20" y="40" width="190" height="70" class="ac"/><text x="115" y="62" text-anchor="middle" class="b">IP header</text><text x="115" y="80" text-anchor="middle" font-size="12">src = R2 (discarder)</text><text x="115" y="96" text-anchor="middle" font-size="12">dst = original source</text>
+  <rect x="210" y="40" width="190" height="70" class="pu"/><text x="305" y="62" text-anchor="middle" class="b">ICMP header</text><text x="305" y="80" text-anchor="middle" font-size="12">Type · Code · Checksum</text><text x="305" y="96" text-anchor="middle" font-size="12">(8 + 8 + 16 bits)</text>
+  <rect x="400" y="40" width="260" height="70" class="gr"/><text x="530" y="62" text-anchor="middle" class="b">Original IP header</text><text x="530" y="80" text-anchor="middle" font-size="12">+ first 8 bytes of its data</text><text x="530" y="96" text-anchor="middle" font-size="12">(incl. TCP/UDP ports)</text>
+  <text x="115" y="134" text-anchor="middle" class="b" style="fill:var(--accent)">WHO dropped it?</text>
+  <text x="305" y="134" text-anchor="middle" class="b" style="fill:var(--add)">WHY? (type)</text>
+  <text x="530" y="134" text-anchor="middle" class="b" style="fill:var(--lec)">WHICH packet?</text>
+  <text x="340" y="22" text-anchor="middle" class="b">ICMP error = an IP datagram with Protocol = 1</text>
+  <text x="340" y="172" text-anchor="middle" class="mut">the router "cuts off the head" of the dropped packet and returns it with a little data</text>
+</svg>
+<figcaption>Figure 25.2: An ICMP error answers who, why and which</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The source must get the answers to <b>three questions</b>: <b>Who</b> had the nerve to discard my packet? <b>Why</b> was it discarded? <b>Which</b> packet was it (so I can retransmit)?<br>
+• <b>Who:</b> the ICMP message rides in an IP datagram whose <b>source IP</b> is the router that discarded it (I<sub>R2</sub>) and whose destination IP is the original source (I<sub>S</sub>). Looking at the source IP, the sender knows it was R2's doing.<br>
+• <b>Why:</b> the ICMP packet inside has a <b>Type</b> field that names the kind of error (3, 11, 5, 4, 12 …).<br>
+• <b>Which:</b> the router gets "a bit violent": it <b>cuts off the head</b> (the header) of the discarded packet, which holds its source and destination IP, and attaches it plus <b>a small part of its data</b>, so the sender can identify the packet and retransmit.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The data part copied is the original <b>IP header + the first 8 bytes (64 bits)</b> of the original data, not 8 bits as said in the lecture. Those 8 bytes contain the TCP/UDP <b>port numbers</b> (and the TCP sequence number), which tell the source which connection the packet belonged to.</div>
+<div class="formula">ICMP header:  Type (8 bits) | Code (8 bits) | Checksum (16 bits) | rest of header (32 bits)
+Type = category of message · Code = the specific reason within that type</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">25.4</span>Destination Unreachable</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The sender's packet reaches R1, then R2, and R2 finds the <b>destination is down</b>: the house where the letter must go is <b>locked</b>. The router has many other letters to deliver; it won't wait for the owner to come home with the key. It simply <b>discards</b> the packet and reports type <b>"destination unreachable"</b>.</div>
+<div class="box add"><span class="t">➕ Type 3 codes worth knowing</span>
+<b>0</b> network unreachable · <b>1</b> host unreachable · <b>2</b> protocol unreachable · <b>3</b> port unreachable (sent by the destination host itself, e.g. no process on that UDP port) · <b>4</b> fragmentation needed but DF set (used by Path MTU Discovery, ch 22) · <b>5</b> source route failed · <b>13</b> communication administratively prohibited (firewall).</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">25.5</span>Time Exceeded</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Time exceeded = <b>TTL exceeded</b> (the TTL idea from IPv4). Say the source sends with <b>TTL = 2</b>: it drops to 1 at R1 and to <b>0</b> at R2, while the packet is still at a router and has not reached the destination. So R2 <b>discards</b> it and reports "<b>time exceeded</b>": the timer ran out before you reached the destination. Next time the source can send with TTL = 3 and the packet will get through.</div>
+<div class="box add"><span class="t">➕ Two codes</span>
+<b>Code 0</b>: TTL reached 0 in transit (sent by a router). <b>Code 1</b>: <b>fragment reassembly time exceeded</b>: the destination did not receive all fragments of a datagram in time, so it discards the pieces it has (sent by the destination host).</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">25.6</span>Redirection</h3>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="Source sends via router R2 on a long path; R2 forwards the packet but sends an ICMP redirect telling the source that R1 is a better first hop to the destination">
+  <defs><marker id="rd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="64" width="80" height="34" rx="5" class="ac"/><text x="60" y="86" text-anchor="middle" class="b">Source</text>
+  <circle cx="230" cy="30" r="20" class="pu"/><text x="230" y="35" text-anchor="middle" class="b">R2</text>
+  <circle cx="230" cy="135" r="20" class="pu"/><text x="230" y="140" text-anchor="middle" class="b">R1</text>
+  <circle cx="400" cy="30" r="20" class="pu"/><text x="400" y="35" text-anchor="middle" class="b">R3</text>
+  <rect x="540" y="64" width="110" height="34" rx="5" class="ac"/><text x="595" y="86" text-anchor="middle" class="b">Destination</text>
+  <path d="M100 72 L210 36 M250 30 H378 M420 34 L540 72" style="stroke:var(--alert);stroke-width:2;fill:none" class="dash"/>
+  <text x="320" y="18" text-anchor="middle" style="fill:var(--alert)" class="mut">long path the source chose</text>
+  <path d="M100 90 L210 130 M250 132 L540 90" style="stroke:var(--ok);stroke-width:2.5;fill:none"/>
+  <text x="400" y="132" style="fill:var(--ok)" class="mut">short path via R1</text>
+  <path d="M214 46 C 180 70, 140 80, 104 80" class="lna" marker-end="url(#rd)"/>
+  <text x="262" y="84" style="fill:var(--accent)" class="b" font-size="12">← ICMP redirect from R2: "use R1"</text>
+</svg>
+<figcaption>Figure 25.3: Redirect points the source to a better first hop</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The source routes its packets the long way: via R2, then R3, then to the destination. Router R2 says "are you joking? Why take such a long road when you can reach the destination directly through <b>R1</b>?" So R2 sends an <b>ICMP redirect</b> message to the source: next time use the shorter route; you will arrive sooner.</div>
+<div class="box add"><span class="t">➕ How it works in practice</span>
+A redirect is sent by a router to a <b>host on the same local network</b> when the host has used the router as its next hop but another router on that same network is a better first hop. The router still <b>forwards</b> this packet (it is not discarded); the host updates its routing table for that destination. Redirects go only from <b>routers to hosts</b>, never router to router.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">25.7</span>Source Quench</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The source is overflowing and fires packets <b>phat-phat-phat</b>, packet after packet, as if it hadn't sent data in years. The router says "<b>ruk, ruk, ruk!</b> Have you gone mad? I have a life too; my buffers are busy, I have other work." It sends an <b>ICMP source quench</b> message: "slow down, send more gently; too much load at once will <b>congest</b> the network."</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Source quench (type <b>4</b>) is ICMP's <b>congestion / flow-control</b> message and is still asked in exams. But it was <b>deprecated</b> (RFC 6633, 2012): routers no longer send it. Congestion is now handled by TCP's own congestion control (ch 31) and ECN.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">25.8</span>Parameter Problem</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The source uses <b>strict source routing</b> (Mummy's exact route, ch 22): "go R1, then R2, then the destination, no other road". At R1 it turns out <b>R2 is down</b>. R3 is free and also reaches the destination, but strict routing forbids using it. So the router reports a problem with the <b>parameters</b> the source gave: loosen them (use loose source routing) or change the route (go via R3).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+In the standard, <b>parameter problem (type 12)</b> means a field in the IP header is <b>wrong or ambiguous</b> (e.g. an invalid option or bad header length); the Pointer field shows the bad byte. A strict source route that cannot be followed is reported as <b>destination unreachable, code 5 "source route failed"</b>. If a question says "header field error", answer parameter problem.</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">25.9</span>Message Types Table, ping &amp; traceroute <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Category</th><th>Type</th><th>Message</th><th>Typical sender / use</th></tr>
+<tr><td rowspan="5">Error reporting</td><td>3</td><td>Destination unreachable</td><td>router or destination host</td></tr>
+<tr><td>4</td><td>Source quench (deprecated)</td><td>congested router</td></tr>
+<tr><td>5</td><td>Redirect</td><td>router → local host</td></tr>
+<tr><td>11</td><td>Time exceeded</td><td>router (TTL 0) or host (reassembly)</td></tr>
+<tr><td>12</td><td>Parameter problem</td><td>bad header field</td></tr>
+<tr><td rowspan="3">Query</td><td>8 / 0</td><td>Echo request / echo reply</td><td><b>ping</b></td></tr>
+<tr><td>13 / 14</td><td>Timestamp request / reply</td><td>round-trip time, clock sync</td></tr>
+<tr><td>10 / 9</td><td>Router solicitation / advertisement</td><td>finding routers on the LAN</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ ping</span>
+<code>ping host</code> sends ICMP <b>echo request (type 8)</b>; a live host answers with <b>echo reply (type 0)</b>. It reports reachability, packet loss and <b>round-trip time</b>. A blocked or silent ping does not prove the host is down; many firewalls drop ICMP.</div>
+<div class="box add"><span class="t">➕ traceroute / tracert</span>
+Sends packets with <b>TTL = 1, 2, 3 …</b>. The router where TTL hits 0 replies with <b>time exceeded (type 11)</b>, revealing itself, hop by hop. The final destination answers with <b>port unreachable (type 3, code 3)</b> (Unix, UDP probes) or <b>echo reply</b> (Windows <code>tracert</code>, ICMP probes), which ends the trace.</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">25.10</span>Solved Questions <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> ICMP is encapsulated in? An <b>IP datagram</b>, protocol number <b>1</b>.<br><br>
+<b>Q2.</b> Which ICMP message does ping use? <b>Echo request (8)</b> and <b>echo reply (0)</b>.<br><br>
+<b>Q3.</b> Which message is returned when TTL reaches 0? <b>Time exceeded (11)</b>, code 0.<br><br>
+<b>Q4.</b> A UDP packet reaches a host with no process on that port. Message? <b>Destination unreachable, code 3 (port unreachable)</b>.<br><br>
+<b>Q5.</b> Is an ICMP error generated when an ICMP error message is dropped? <b>No.</b> When a non-first fragment is dropped? <b>No.</b> When a multicast datagram is dropped? <b>No.</b><br><br>
+<b>Q6.</b> What does an ICMP error carry from the original packet? Its <b>IP header + first 8 bytes of data</b>.<br><br>
+<b>Q7.</b> Which ICMP message did routers use for congestion control? <b>Source quench (4)</b>.<br><br>
+<b>Q8.</b> To whom is an ICMP error sent? Always to the <b>original source</b> of the datagram.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Remember the type numbers <b>0, 3, 4, 5, 8, 11, 12</b>; that ICMP <b>reports</b> but does not correct errors; that errors go to the <b>source</b>; that ping = echo, traceroute = TTL + time exceeded; and the four "no ICMP error" cases.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 25</h3>
+<ul>
+<li>ICMP = network-layer messenger for IP; travels inside IP (protocol 1); lowest priority in the lecture's ordering.</li>
+<li>Two jobs: <b>error reporting</b> (feedback to the source when a packet is discarded) and <b>query</b> request/reply.</li>
+<li>Never send an ICMP error about an ICMP error (the endless R1 ↔ R2 loop); also none for non-first fragments, multicast destinations, special addresses.</li>
+<li>Error message answers <b>Who</b> (source IP = router), <b>Why</b> (Type), <b>Which</b> (original IP header + first 8 bytes of data).</li>
+<li><b>3 Destination unreachable</b>: house locked, router won't wait. <b>11 Time exceeded</b>: TTL hit 0 at a router (or reassembly timeout).</li>
+<li><b>5 Redirect</b>: "use the shorter route via R1". <b>4 Source quench</b>: "ruk, ruk, slow down" (deprecated). <b>12 Parameter problem</b>: bad header field.</li>
+<li>ping = echo request 8 / reply 0. traceroute = TTL 1, 2, 3 … + time exceeded.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 25 · Next: Chapter 26 — IGMP (Internet Group Management Protocol)</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="24-ARP-and-RARP.html">← Ch 24: ARP and RARP</a><a href="index.html">☰ All topics</a><a href="26-IGMP.html">Ch 26: IGMP →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

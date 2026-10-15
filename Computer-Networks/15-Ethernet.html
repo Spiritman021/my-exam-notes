@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Ethernet Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="14-Error-Detection-and-Correction.html">← Ch 14: Error Detection and Correction</a><a href="index.html">☰ All topics</a><a href="16-MAC-Address.html">Ch 16: MAC Address →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 15: Ethernet (IEEE 802.3)</h1>
+  <p class="sub">Volume 02 · Part 15 · Built from the one-shot CN lecture transcript (section 15), plus the exam points the lecture skipped. The most widely used wired LAN technology: its characteristics, its weak spots, and its frame format field by field.</p>
+  <ul class="tags"><li>IEEE 802.3</li><li>Bus Topology</li><li>CSMA/CD</li><li>No ACK</li><li>Manchester</li><li>10 / 100 / 1000 Mbps</li><li>Preamble 7 B</li><li>SFD 10101011</li><li>MAC 6 B</li><li>Length 2 B</li><li>Data 46–1500 B</li><li>CRC 4 B</li><li>Frame 64–1518 B</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">15.1</span>Characteristics of Ethernet</a></li>
+<li><a href="#s2"><span class="n">15.2</span>Drawbacks: Real-Time and Interactive Applications</a></li>
+<li><a href="#s3"><span class="n">15.3</span>Ethernet Frame Format</a></li>
+<li><a href="#s4"><span class="n">15.4</span>Preamble and Start Frame Delimiter (SFD)</a></li>
+<li><a href="#s5"><span class="n">15.5</span>Destination and Source Address Fields</a></li>
+<li><a href="#s6"><span class="n">15.6</span>Data Field: Minimum and Maximum Size</a></li>
+<li><a href="#s7"><span class="n">15.7</span>Length Field</a></li>
+<li><a href="#s8"><span class="n">15.8</span>Why 64 Bytes? CSMA/CD and Minimum Frame Size<span class="x">ADDED</span></a></li>
+<li><a href="#s9"><span class="n">15.9</span>Ethernet Standards and Evolution<span class="x">ADDED</span></a></li>
+<li><a href="#s10"><span class="n">15.10</span>Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 15</div>
+<h2 class="ch">Ethernet (IEEE 802.3)</h2>
+<p>Everything from the last few chapters comes together here. Ethernet is a real data link layer protocol: it uses a <b>shared bus</b> (chapter 4), <b>CSMA/CD</b> (chapter 12), <b>Manchester encoding</b> (chapter 8) and a <b>CRC</b> trailer (chapter 14). The exam favourite is the <b>frame format</b>: know every field's size and job, and why the frame must be between <b>64 and 1518 bytes</b>.</p>
+
+<section id="s1">
+<h3><span class="n">15.1</span>Characteristics of Ethernet</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul><li><b>Topology: bus.</b> A multipoint connection: one <b>backbone</b> link (a shared channel) with every host station attached to it.</li>
+<li><b>Access control: CSMA/CD.</b> Obvious, because it is a bus and CSMA/CD is the <b>wired</b> method; Ethernet is wired.</li>
+<li><b>No acknowledgement.</b> Ethernet does not send ACKs for frames.</li>
+<li><b>Encoding: Manchester.</b> (Of Manchester and Differential Manchester, Ethernet uses Manchester.)</li>
+<li><b>Data rates:</b> <b>10 Mbps</b> is the normal, common one; <b>100 Mbps</b> is <b>Fast Ethernet</b>; <b>1 Gbps</b> is <b>Gigabit Ethernet</b>.</li></ul></div>
+<div class="tw"><table>
+<tr><th>Feature</th><th>Classic Ethernet</th></tr>
+<tr><td>IEEE standard</td><td><b>802.3</b> (802.5 = Token Ring, 802.11 = Wi-Fi)</td></tr>
+<tr><td>Topology</td><td>Bus (logical); star with a hub/switch physically today</td></tr>
+<tr><td>Access method</td><td>CSMA/CD, 1-persistent, binary exponential backoff</td></tr>
+<tr><td>Acknowledgement</td><td>None (connectionless, unreliable service)</td></tr>
+<tr><td>Line coding</td><td>Manchester (10 Mbps)</td></tr>
+<tr><td>Addressing</td><td>48-bit MAC address</td></tr>
+<tr><td>Error detection</td><td>CRC-32 (FCS); a bad frame is silently dropped</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Points the lecture skipped</span>
+Ethernet was developed at <b>Xerox PARC</b> (Bob Metcalfe, 1973) and standardised by DEC–Intel–Xerox (<b>DIX</b>) and then IEEE as <b>802.3</b>. Its service is <b>connectionless and unreliable</b>: a damaged frame is dropped and recovery is left to higher layers (TCP). CSMA/CD backoff: after the n-th collision a station waits a random K × 512 bit times, K ∈ {0 … 2<sup>min(n,10)</sup> − 1}; it gives up after <b>16</b> attempts.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Manchester is only for 10 Mbps Ethernet.</b> Fast Ethernet (100Base-TX) uses <b>4B/5B + MLT-3</b>, and Gigabit Ethernet uses <b>8B/10B</b> (1000Base-X) or PAM-5 (1000Base-T). If the question says "classic/standard Ethernet", answer Manchester.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">15.2</span>Drawbacks: Real-Time and Interactive Applications</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Ethernet performs <b>poorly</b> for two kinds of applications:<br>
+<b>1. Real-time applications.</b> In real time the <b>deadline</b> is everything; missing it can have disastrous consequences. But Ethernet is a shared bus, several stations want to transmit, <b>collisions keep happening</b>, and every collision adds <b>delay</b>. With unpredictable delay, you can never promise to meet a deadline.<br>
+<b>2. Interactive applications.</b> These are known for sending <b>very small</b> amounts of data. But an Ethernet frame has a <b>minimum size of 64 bytes</b>; you cannot send less. So small interactive messages do not fit well either ("iski daal nahi gal paayegi").</div>
+<div class="box add"><span class="t">➕ Exam wording</span>
+Classic Ethernet is <b>non-deterministic</b>: CSMA/CD gives <b>no upper bound</b> on access delay, and there are <b>no priorities</b>. That is why <b>Token Ring (802.5)</b> and Token Bus (802.4), which have bounded, predictable access, were preferred for real-time and factory use (next chapters). Small payloads must be <b>padded</b> up to 46 bytes, which wastes bandwidth.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">15.3</span>Ethernet Frame Format</h3>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="Ethernet frame: preamble 7 bytes, SFD 1, destination address 6, source address 6, length 2, data 46 to 1500, CRC 4">
+  <text x="340" y="20" text-anchor="middle" class="b">IEEE 802.3 Ethernet frame (sizes in bytes)</text>
+  <rect x="10" y="40" width="80" height="54" class="bx"/><text x="50" y="64" text-anchor="middle" class="b">Preamble</text><text x="50" y="82" text-anchor="middle" class="mut">7</text>
+  <rect x="90" y="40" width="50" height="54" class="bx"/><text x="115" y="64" text-anchor="middle" class="b">SFD</text><text x="115" y="82" text-anchor="middle" class="mut">1</text>
+  <rect x="140" y="40" width="90" height="54" class="ac"/><text x="185" y="64" text-anchor="middle" class="b">Dest. addr</text><text x="185" y="82" text-anchor="middle" class="mut">6</text>
+  <rect x="230" y="40" width="90" height="54" class="ac"/><text x="275" y="64" text-anchor="middle" class="b">Source addr</text><text x="275" y="82" text-anchor="middle" class="mut">6</text>
+  <rect x="320" y="40" width="64" height="54" class="ac"/><text x="352" y="64" text-anchor="middle" class="b">Length</text><text x="352" y="82" text-anchor="middle" class="mut">2</text>
+  <rect x="384" y="40" width="200" height="54" class="gr"/><text x="484" y="64" text-anchor="middle" class="b">Data (+ pad)</text><text x="484" y="82" text-anchor="middle" class="mut">46 – 1500</text>
+  <rect x="584" y="40" width="86" height="54" class="or"/><text x="627" y="64" text-anchor="middle" class="b">CRC (FCS)</text><text x="627" y="82" text-anchor="middle" class="mut">4</text>
+  <path d="M10 104 V112 H140 V104" class="ln"/><text x="75" y="128" text-anchor="middle" class="mut">8 B: physical-layer header,</text><text x="75" y="142" text-anchor="middle" class="mut">not counted in frame size</text>
+  <path d="M140 104 V112 H670 V104" class="lna"/><text x="405" y="128" text-anchor="middle" style="fill:var(--accent)" class="b">frame size: 64 – 1518 bytes</text>
+  <text x="405" y="146" text-anchor="middle" class="mut">header 6+6+2 = 14 · trailer 4 · overhead 18 bytes</text>
+  <text x="405" y="176" text-anchor="middle" class="mut">min data = 64 − 18 = 46 · max data = 1518 − 18 = 1500 (the MTU)</text>
+</svg>
+<figcaption>Figure 15.1: Ethernet (802.3) frame format</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Field by field, in bytes: <b>Preamble 7</b> · <b>SFD 1</b> (Start Frame Delimiter) · <b>Destination address 6</b> · <b>Source address 6</b> · <b>Length 2</b> · <b>Data</b> · <b>CRC 4</b>. As said in chapter 14, the CRC sits at the very end, in the <b>trailer</b> (tail).</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Memorise the order <b>P – S – D – S – L – D – C</b> ("Please Send Data Safely, Later Don't Crash") and the sizes <b>7-1-6-6-2-(46…1500)-4</b>. The destination address comes <b>before</b> the source address (the reason is in 15.5).</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">15.4</span>Preamble and Start Frame Delimiter (SFD)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Preamble</b> = a run of alternating 1s and 0s (<code>1010…</code>) for 7 bytes = <b>56 bits</b>.<br>
+<b>SFD</b> = 1 byte. Its first 6 bits carry on the same <code>10</code> pattern, but the <b>last two bits are <code>11</code></b>: <code>10101011</code>. That <code>11</code> says "<b>this is the beginning of the frame</b>". The two are often lumped together as one <b>8-byte</b> field because they do the same job: announce to everyone that a frame is coming on the link.<br>
+<b>Railway-station analogy:</b> the preamble is the <b>platform announcement</b> ("train XYZ is arriving on platform N"). The SFD is the <b>loud horn</b> when the train is right at the platform: the <b>last warning</b>. Get ready, <b>synchronise</b> yourself with the frame, step off the tracks!</div>
+<div class="formula">Preamble : 10101010 10101010 10101010 10101010 10101010 10101010 10101010   (7 bytes = 56 bits)
+SFD      : 10101011                                                             (1 byte, ends in 11)</div>
+<div class="box add"><span class="t">➕ Why it is needed</span>
+The alternating pattern produces a regular square wave, so the receiver's <b>clock can lock on (bit synchronisation)</b>. The <code>11</code> at the end of the SFD gives <b>frame (byte) synchronisation</b>: the next bit is the first bit of the destination address. Both are added by the <b>physical layer</b>, so they are <b>not counted</b> in the 64–1518-byte frame size.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">15.5</span>Destination and Source Address Fields</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+6 bytes = <b>48 bits</b> each. In the DLL, "address" means the <b>MAC address</b>. Example: station <b>A</b> sends to station <b>C</b>, so source = A and destination = C.<br>
+On a bus <b>everyone</b> gets alerted that a frame is coming ("the train is coming"). But only the <b>valid recipient</b> receives and reads it. Each station first checks the <b>destination</b> address: B sees "C? not for me, drop it"; C sees "C, that's me", accepts and reads it; D drops it.<br>
+Look how cleverly the fields are ordered: the destination comes <b>first</b>, so the other stations can discard the frame <b>before even reaching</b> the source address.</div>
+<div class="box add"><span class="t">➕ Address types (more in chapter 16)</span>
+The destination can be <b>unicast</b> (one station), <b>multicast</b> (a group; the least significant bit of the first byte = 1) or <b>broadcast</b> (<code>FF:FF:FF:FF:FF:FF</code>, all stations). The <b>source is always unicast</b>.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">15.6</span>Data Field: Minimum and Maximum Size</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Data field: <b>minimum 46 bytes</b>, <b>maximum 1500 bytes</b>. Where do these come from? Two universal facts about Ethernet: the <b>minimum frame is 64 bytes</b> and the <b>maximum frame is 1518 bytes</b>. Remove everything that is not data, the 18 bytes of overhead (6 + 6 + 2 + 4):<br>
+• 64 − 18 = <b>46 bytes</b> minimum data<br>
+• 1518 − 18 = <b>1500 bytes</b> maximum data<br>
+So you derive ("retrieve") the data range from the frame size.</div>
+<div class="box add"><span class="t">➕ Padding and MTU</span>
+If the upper layer hands down less than 46 bytes, the MAC layer adds <b>padding</b> bytes to reach 46. 1500 bytes is Ethernet's <b>MTU (Maximum Transmission Unit)</b>, the largest IP packet it can carry without fragmentation (chapter 22). <b>Jumbo frames</b> (non-standard, up to ~9000 bytes) are used inside data centres.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Minimum frame size" = <b>64 bytes</b>, "minimum data/payload" = <b>46 bytes</b>. "Maximum frame size" = <b>1518 bytes</b> (1526 if you include the preamble + SFD; 1522 with an 802.1Q VLAN tag), "maximum data" = <b>1500 bytes</b>. Read which one is asked.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">15.7</span>Length Field</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+As the name says: a <b>2-byte</b> field that tells the <b>length</b>. 2 bytes = <b>16 bits</b>, so it can hold 2¹⁶ different values, i.e. <b>0 to 65 535</b>.</div>
+<div class="box add"><span class="t">➕ Length vs Type (Ethernet II)</span>
+In IEEE 802.3 the field gives the length of the <b>data</b> field in bytes (so in practice ≤ 1500). In the older <b>DIX / Ethernet II</b> format the same 2 bytes are a <b>Type (EtherType)</b> that names the upper-layer protocol: <code>0x0800</code> = IPv4, <code>0x0806</code> = ARP, <code>0x86DD</code> = IPv6. Rule: a value <b>≤ 1500</b> is a length; a value <b>≥ 1536 (0x0600)</b> is a type. Almost all traffic today uses the Ethernet II (Type) form.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The range of a 16-bit field is <b>0 to 2¹⁶ − 1 = 65 535</b> (65 536 values). Don't write 65 534 or 65 536 as the maximum.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">15.8</span>Why 64 Bytes? CSMA/CD and Minimum Frame Size <span class="badge">ADDED</span></h3>
+<div class="def"><b>Rule:</b> for CSMA/CD to work, a station must <b>still be transmitting</b> when news of a collision gets back to it. So the transmission time must be at least the round-trip propagation time: <b>Tt ≥ 2Tp</b>, i.e. <b>L<sub>min</sub> = 2 × Tp × B</b>.</div>
+<div class="num"><span class="t">Where 64 bytes comes from</span>
+Classic 10 Mbps Ethernet allows a maximum network span of about 2500 m (with repeaters). The worst-case round trip including repeater delays was budgeted at <b>51.2 µs</b>.<br>
+L<sub>min</sub> = 51.2 × 10⁻⁶ s × 10 × 10⁶ bps = <b>512 bits = 64 bytes</b>. That 512-bit time is called the <b>slot time</b>.</div>
+<div class="box add"><span class="t">➕ Consequences</span>
+If you raise the speed 10× (Fast Ethernet) with the same 64-byte frame, the maximum collision domain shrinks about 10× (to ~200 m). Gigabit Ethernet in half-duplex used <b>carrier extension</b> (512-byte slot) to keep a usable span. Modern switched Ethernet is <b>full-duplex</b>: each link has its own collision-free path, so CSMA/CD is effectively <b>switched off</b>. The 64-byte minimum is kept for compatibility.</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">15.9</span>Ethernet Standards and Evolution <span class="badge">ADDED</span></h3>
+<div class="def"><b>Naming:</b> <code>10Base5</code> = <b>10</b> Mbps · <b>Base</b>band signalling · <b>5</b> × 100 m maximum segment. A letter at the end gives the medium: <b>T</b> = twisted pair, <b>F/FX</b> = fibre (chapter 7).</div>
+<div class="tw"><table>
+<tr><th>Standard</th><th>Name</th><th>Speed</th><th>Medium</th><th>Max segment</th></tr>
+<tr><td>10Base5</td><td>Thicknet</td><td>10 Mbps</td><td>thick coax</td><td>500 m</td></tr>
+<tr><td>10Base2</td><td>Thinnet</td><td>10 Mbps</td><td>thin coax</td><td>185 m (≈200)</td></tr>
+<tr><td>10Base-T</td><td>Twisted-pair Ethernet</td><td>10 Mbps</td><td>Cat 3 UTP, hub/star</td><td>100 m</td></tr>
+<tr><td>10Base-F</td><td>Fibre Ethernet</td><td>10 Mbps</td><td>fibre</td><td>2000 m</td></tr>
+<tr><td>100Base-TX</td><td>Fast Ethernet (802.3u)</td><td>100 Mbps</td><td>Cat 5 UTP</td><td>100 m</td></tr>
+<tr><td>100Base-FX</td><td>Fast Ethernet</td><td>100 Mbps</td><td>fibre</td><td>2000 m</td></tr>
+<tr><td>1000Base-T</td><td>Gigabit (802.3ab)</td><td>1 Gbps</td><td>Cat 5e/6 UTP</td><td>100 m</td></tr>
+<tr><td>1000Base-SX / LX</td><td>Gigabit (802.3z)</td><td>1 Gbps</td><td>multimode / single-mode fibre</td><td>550 m / 5 km</td></tr>
+<tr><td>10GBase-T / -SR / -LR</td><td>10 Gigabit (802.3ae/an)</td><td>10 Gbps</td><td>Cat 6a / fibre</td><td>100 m / 300 m / 10 km</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Common one-liners: Fast Ethernet = <b>802.3u</b>; Gigabit = <b>802.3z</b> (fibre) / <b>802.3ab</b> (copper); 10 Gigabit = <b>802.3ae</b>; Power over Ethernet = <b>802.3af</b>; VLAN tagging = <b>802.1Q</b>; Ethernet connector = <b>RJ-45</b>. 10 Gbps and above are <b>full-duplex only</b> (no CSMA/CD).</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">15.10</span>Solved Questions <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> An application sends 20 bytes of data in one Ethernet frame. How many pad bytes, and what is the frame size?<br>
+Pad = 46 − 20 = <b>26 bytes</b>; frame = 14 + 46 + 4 = <b>64 bytes</b>.<br><br>
+<b>Q2.</b> Maximum efficiency (data/frame) of a full-size Ethernet frame, excluding preamble?<br>
+1500 / 1518 ≈ <b>98.8%</b>. Of a minimum frame carrying 46 bytes: 46/64 ≈ <b>71.9%</b>.<br><br>
+<b>Q3.</b> A CSMA/CD LAN runs at 1 Gbps over 1 km of cable with v = 2 × 10⁸ m/s. Minimum frame size?<br>
+Tp = 10³ / (2 × 10⁸) = 5 µs; L = 2 × 5 × 10⁻⁶ × 10⁹ = <b>10 000 bits = 1250 bytes</b>.<br><br>
+<b>Q4.</b> Total bits on the wire for a maximum frame including preamble and SFD?<br>
+1518 + 8 = 1526 bytes = <b>12 208 bits</b>.<br><br>
+<b>Q5.</b> The 2-byte field reads <code>0x0800</code>. Length or type?<br>
+0x0800 = 2048 ≥ 1536 → it is a <b>Type</b>: <b>IPv4</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 15</h3>
+<ul>
+<li>Ethernet = <b>IEEE 802.3</b>: <b>bus</b> topology, <b>CSMA/CD</b> (wired), <b>no ACK</b>, <b>Manchester</b> (10 Mbps only), 48-bit MAC, CRC-32.</li>
+<li>Speeds: <b>10 Mbps</b> standard · <b>100 Mbps Fast Ethernet</b> (802.3u) · <b>1 Gbps Gigabit</b> (802.3z/ab) · 10 Gbps (802.3ae).</li>
+<li>Bad for <b>real-time</b> (collisions → unpredictable delay → deadlines missed) and <b>interactive</b> apps (min 64-byte frame for tiny messages).</li>
+<li>Frame: <b>Preamble 7 · SFD 1 · DA 6 · SA 6 · Length 2 · Data 46–1500 · CRC 4</b>.</li>
+<li>Preamble = 56 alternating bits (train announcement, clock sync). SFD = <b>10101011</b> (the horn: last warning; frame starts). Not counted in frame size.</li>
+<li>Destination first, so other stations can drop the frame early. Only the matching MAC reads it.</li>
+<li>Frame <b>64–1518 bytes</b>; overhead <b>18</b>; data <b>46–1500</b> (pad if less; 1500 = MTU).</li>
+<li>Length field 16 bits → 0–65 535. Ethernet II reads it as <b>Type</b> when ≥ 1536 (0x0800 IPv4, 0x0806 ARP).</li>
+<li>64 bytes = 512 bits = <b>slot time</b>, from Tt ≥ 2Tp → <b>L<sub>min</sub> = 2·Tp·B</b>.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 15 · Next: Chapter 16 — MAC Address</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="14-Error-Detection-and-Correction.html">← Ch 14: Error Detection and Correction</a><a href="index.html">☰ All topics</a><a href="16-MAC-Address.html">Ch 16: MAC Address →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

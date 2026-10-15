@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS File Systems Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="11-Disk-Scheduling.html">← Ch 11: Disk Management and Disk Scheduling</a><a href="index.html">☰ All topics</a><a href="#fin">Course conclusion ↓</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Operating System — Chapter 12: File Systems</h1>
+  <p class="sub">Volume 01 · Part 12 · Built from the one-shot OS lecture transcript (section 12), plus the exam points the lecture skipped. This is the final content chapter of the course.</p>
+  <ul class="tags">
+    <li>File &amp; Block–Sector Mapping</li><li>File Operations</li><li>File Attributes</li><li>Access Methods</li>
+    <li>Contiguous Allocation</li><li>External Fragmentation</li><li>Linked Allocation &amp; FAT</li><li>Indexed Allocation</li>
+    <li>UNIX inode Numerical</li><li>Directory Structures</li><li>Free-Space Management</li><li>Protection (rwx)</li><li>Hard vs Soft Links</li><li>FAT / NTFS / ext4</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">12.1</span>Introduction &amp; Block–Sector Mapping</a></li>
+    <li><a href="#s2"><span class="n">12.2</span>File Operations</a></li>
+    <li><a href="#s3"><span class="n">12.3</span>File Attributes</a></li>
+    <li><a href="#s3a"><span class="n">12.3A</span>File Types &amp; Access Methods<span class="x">ADDED</span></a></li>
+    <li><a href="#s4"><span class="n">12.4</span>Allocation Methods: Contiguous vs Non-Contiguous</a></li>
+    <li><a href="#s5"><span class="n">12.5</span>Contiguous Allocation</a></li>
+    <li><a href="#s6"><span class="n">12.6</span>External Fragmentation in Contiguous Allocation</a></li>
+    <li><a href="#s7"><span class="n">12.7</span>Linked List Allocation</a></li>
+    <li><a href="#s8"><span class="n">12.8</span>Indexed Allocation</a></li>
+    <li><a href="#s8a"><span class="n">12.8A</span>Multilevel Index &amp; UNIX inode<span class="x">ADDED</span></a></li>
+    <li><a href="#s9"><span class="n">12.9</span>Directory Structures<span class="x">ADDED</span></a></li>
+    <li><a href="#s10"><span class="n">12.10</span>Free-Space Management<span class="x">ADDED</span></a></li>
+    <li><a href="#s11"><span class="n">12.11</span>Protection, Links, Mounting &amp; Real File Systems<span class="x">ADDED</span></a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+    <li><a href="#fin"><span class="n">🏁</span>Course Conclusion</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 12</div>
+<h2 class="ch">File Systems</h2>
+<p>Chapter 11 showed the disk as raw <b>tracks and sectors</b>. Users never see sectors; they see <b>files</b> (documents, songs, videos, images). The <b>file system</b> is the OS layer that turns files into sectors and back: it decides <b>where each piece of a file goes on disk</b>, how to find it again quickly, and how to avoid wasting space.</p>
+
+<!-- 12.1 -->
+<section id="s1">
+<h3><span class="n">12.1</span>Introduction to File Systems and Block-Sector Mapping</h3>
+<div class="def"><b>File:</b> a named collection of related information stored on secondary storage. It is the smallest unit of logical storage from the user's point of view.<br><b>File system:</b> the part of the OS that <b>organises, stores, retrieves, names and protects</b> files on a storage device.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The file system is an <b>integral part of every OS</b>. For a user, everything appears as a file: a doc, audio, video or image. Internally, the file's data is <b>divided into blocks</b> (block 1, 2, 3 …) and each block is <b>mapped onto disk sectors</b>, where the data actually resides. This is <b>block–sector mapping</b>. To <b>store</b>, write into those sectors; to <b>fetch</b>, access the same sectors.</div>
+<figure>
+<svg viewBox="0 0 640 170" role="img" aria-label="File divided into blocks mapped onto disk sectors">
+  <defs><marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="110" y="20" text-anchor="middle" class="b">File "report.doc"</text>
+  <rect x="20" y="30" width="60" height="34" class="ac"/><text x="50" y="52" text-anchor="middle">blk 0</text>
+  <rect x="80" y="30" width="60" height="34" class="ac"/><text x="110" y="52" text-anchor="middle">blk 1</text>
+  <rect x="140" y="30" width="60" height="34" class="ac"/><text x="170" y="52" text-anchor="middle">blk 2</text>
+  <circle cx="470" cy="90" r="75" class="gr"/><circle cx="470" cy="90" r="45" class="bx"/><circle cx="470" cy="90" r="12" class="pu"/>
+  <path d="M470 90 L545 90 A75 75 0 0 0 523 37 Z" style="fill:var(--accent);opacity:.45"/>
+  <path d="M470 90 L417 37 A75 75 0 0 0 395 90 Z" style="fill:var(--accent);opacity:.45"/>
+  <path d="M470 90 L470 165 A75 75 0 0 0 523 143 Z" style="fill:var(--accent);opacity:.45"/>
+  <text x="470" y="10" text-anchor="middle" class="b">Disk sectors</text>
+  <path d="M110 64 C 200 120, 300 60, 393 70" class="lna" marker-end="url(#f1)"/>
+  <text x="250" y="140" text-anchor="middle" class="mut">block → sector mapping (store &amp; fetch)</text>
+</svg>
+<figcaption>Figure 12.1: A file's blocks mapped onto disk sectors</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ File-system layers (Galvin)</span>
+Application programs → <b>logical file system</b> (metadata, directories, the <b>FCB</b>, protection) → <b>file-organisation module</b> (logical block → physical block, free-space manager) → <b>basic file system</b> (generic block reads and writes, buffers) → <b>I/O control</b> (device drivers, interrupts) → devices.<br>
+<b>File Control Block (FCB)</b>: the per-file structure holding its attributes and block locations. In UNIX it is the <b>inode</b>; in NTFS it is an entry in the <b>MFT</b> (Master File Table).</div>
+</section>
+
+<!-- 12.2 -->
+<section id="s2">
+<h3><span class="n">12.2</span>File Operations</h3>
+<div class="tw"><table>
+<tr><th>Operation</th><th>Meaning</th></tr>
+<tr><td><b>Create</b></td><td>Find space and add a directory entry</td></tr>
+<tr><td><b>Read</b></td><td>Read the content from the current position (the read pointer)</td></tr>
+<tr><td><b>Write</b></td><td>Write data at the current position (the write pointer)</td></tr>
+<tr><td><b>Truncate</b></td><td><b>Erase the contents</b> but <b>keep the file and its attributes</b>; the file becomes empty and can be written again</td></tr>
+<tr><td><b>Reposition</b> (seek)</td><td>Move the file pointer to another position without reading or writing. E.g. the pointer is at <i>x</i> and you want reading to start from <i>z</i>.</td></tr>
+<tr><td><b>Delete</b> <span class="badge">ADDED</span></td><td>Remove the directory entry and free the space; everything goes</td></tr>
+<tr><td><b>Open / Close</b> <span class="badge">ADDED</span></td><td>Open loads the FCB into the <b>open-file table</b> and returns a handle; close removes it</td></tr>
+<tr><td>Append, Rename, Copy <span class="badge">ADDED</span></td><td>Write at the end; change the name; duplicate</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Truncate and Reposition (lecture)</span>
+<b>Truncate</b>: the old data is "udaa diya" (wiped). The file now looks empty, but you can still write new data into it. <b>Reposition</b>: the read/write pointer is at byte <i>x</i> of the data x, y, z…; reposition it to <i>z</i> so that reading starts from there.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Truncate keeps the file's <b>attributes</b> (name, permissions, creation time). Only the <b>length becomes 0</b>. Delete removes the file entirely. The lecture's wording blurs the two at one point. Also, the OS keeps per-process and system-wide <b>open-file tables</b>, with a file pointer, an open count, the disk location and access rights.</div>
+</section>
+
+<!-- 12.3 -->
+<section id="s3">
+<h3><span class="n">12.3</span>File Attributes</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Right-click a file and choose "Get Info / Properties" to see its <b>attributes</b>: <b>name, size, type</b> (MP3, MP4, PNG…), <b>date created, date last modified</b>, and <b>permissions</b> (read-only, or read and write).</div>
+<div class="tw"><table>
+<tr><th>Attribute</th><th>Description</th></tr>
+<tr><td>Name</td><td>Human-readable symbolic name</td></tr>
+<tr><td>Identifier <span class="badge">ADDED</span></td><td>A unique number used by the file system (e.g. the inode number)</td></tr>
+<tr><td>Type</td><td>Needed by systems that support types (shown by the extension)</td></tr>
+<tr><td>Location <span class="badge">ADDED</span></td><td>Pointer to the device and the block locations</td></tr>
+<tr><td>Size</td><td>Current size (and maximum allowed)</td></tr>
+<tr><td>Protection</td><td>Who can read, write or execute</td></tr>
+<tr><td>Time, date, user ID</td><td>Creation, last modification, last access; owner</td></tr>
+</table></div>
+</section>
+
+<!-- 12.3A -->
+<section id="s3a">
+<h3><span class="n">12.3A</span>File Types &amp; Access Methods <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Type</th><th>Common extensions</th></tr>
+<tr><td>Executable</td><td>.exe, .com, .bin, (none in UNIX)</td></tr>
+<tr><td>Object / library</td><td>.obj, .o, .dll, .so, .lib</td></tr>
+<tr><td>Source code</td><td>.c, .cpp, .java, .py</td></tr>
+<tr><td>Batch / script</td><td>.bat, .sh</td></tr>
+<tr><td>Text / document</td><td>.txt, .doc, .docx, .pdf</td></tr>
+<tr><td>Archive</td><td>.zip, .tar, .rar</td></tr>
+<tr><td>Multimedia</td><td>.mp3, .mp4, .png, .jpg</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Access method</th><th>How</th><th>Example</th></tr>
+<tr><td><b>Sequential</b></td><td>Records are read in order, one after another (read next, write next, rewind). Based on the tape model.</td><td>Editors, compilers, log files</td></tr>
+<tr><td><b>Direct (random / relative)</b></td><td>Jump straight to block n (read n, write n). Based on the disk model.</td><td>Databases, airline reservation</td></tr>
+<tr><td><b>Indexed (indexed-sequential, ISAM)</b></td><td>An <b>index</b> of keys points to blocks: search the index, then access directly</td><td>Large record files, the bank customer master</td></tr>
+</table></div>
+</section>
+
+<!-- 12.4 -->
+<section id="s4">
+<h3><span class="n">12.4</span>File Allocation Methods: Contiguous vs Non-Contiguous</h3>
+<div class="def"><b>Allocation method:</b> how the <b>blocks of a file are placed onto disk blocks or sectors</b>. The three methods are <b>contiguous</b>, <b>linked</b> and <b>indexed</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A file is split into blocks 0, 1 and 2. In <b>contiguous</b> allocation they go to <b>adjacent</b> sectors (0, 1, 2). In <b>non-contiguous</b> allocation each block can go <b>anywhere</b>. Any method has two goals:
+<ol>
+<li><b>Good disk utilisation</b>: don't waste space. Avoid <b>external fragmentation</b>, where space is available but can't be used.</li>
+<li><b>Fast access</b>: "fast &amp; furious" storing and fetching.</li>
+</ol></div>
+</section>
+
+<!-- 12.5 -->
+<section id="s5">
+<h3><span class="n">12.5</span>Contiguous Allocation</h3>
+<div class="def"><b>Contiguous allocation:</b> each file occupies a set of <b>consecutive blocks</b>. The directory entry stores only <b>(start block, length)</b>.</div>
+<figure><svg viewBox="0 0 600 234" role="img" aria-label="Figure 12.2: Contiguous allocation — X (start 0, length 5), Y (start 10, length 10), Z (start 20, length 5); grey = free"><defs><marker id="gC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--bad)"/></marker></defs><rect x="23" y="23" width="64" height="40" rx="4" class="ac"/><text x="28" y="36" class="mut" style="font-size:10px">0</text><text x="55.0" y="52" text-anchor="middle" class="b">X</text><rect x="93" y="23" width="64" height="40" rx="4" class="ac"/><text x="98" y="36" class="mut" style="font-size:10px">1</text><text x="125.0" y="52" text-anchor="middle" class="b">X</text><rect x="163" y="23" width="64" height="40" rx="4" class="ac"/><text x="168" y="36" class="mut" style="font-size:10px">2</text><text x="195.0" y="52" text-anchor="middle" class="b">X</text><rect x="233" y="23" width="64" height="40" rx="4" class="ac"/><text x="238" y="36" class="mut" style="font-size:10px">3</text><text x="265.0" y="52" text-anchor="middle" class="b">X</text><rect x="303" y="23" width="64" height="40" rx="4" class="ac"/><text x="308" y="36" class="mut" style="font-size:10px">4</text><text x="335.0" y="52" text-anchor="middle" class="b">X</text><rect x="373" y="23" width="64" height="40" rx="4" class="bx"/><text x="378" y="36" class="mut" style="font-size:10px">5</text><rect x="443" y="23" width="64" height="40" rx="4" class="bx"/><text x="448" y="36" class="mut" style="font-size:10px">6</text><rect x="513" y="23" width="64" height="40" rx="4" class="bx"/><text x="518" y="36" class="mut" style="font-size:10px">7</text><rect x="23" y="69" width="64" height="40" rx="4" class="bx"/><text x="28" y="82" class="mut" style="font-size:10px">8</text><rect x="93" y="69" width="64" height="40" rx="4" class="bx"/><text x="98" y="82" class="mut" style="font-size:10px">9</text><rect x="163" y="69" width="64" height="40" rx="4" class="gr"/><text x="168" y="82" class="mut" style="font-size:10px">10</text><text x="195.0" y="98" text-anchor="middle" class="b">Y</text><rect x="233" y="69" width="64" height="40" rx="4" class="gr"/><text x="238" y="82" class="mut" style="font-size:10px">11</text><text x="265.0" y="98" text-anchor="middle" class="b">Y</text><rect x="303" y="69" width="64" height="40" rx="4" class="gr"/><text x="308" y="82" class="mut" style="font-size:10px">12</text><text x="335.0" y="98" text-anchor="middle" class="b">Y</text><rect x="373" y="69" width="64" height="40" rx="4" class="gr"/><text x="378" y="82" class="mut" style="font-size:10px">13</text><text x="405.0" y="98" text-anchor="middle" class="b">Y</text><rect x="443" y="69" width="64" height="40" rx="4" class="gr"/><text x="448" y="82" class="mut" style="font-size:10px">14</text><text x="475.0" y="98" text-anchor="middle" class="b">Y</text><rect x="513" y="69" width="64" height="40" rx="4" class="gr"/><text x="518" y="82" class="mut" style="font-size:10px">15</text><text x="545.0" y="98" text-anchor="middle" class="b">Y</text><rect x="23" y="115" width="64" height="40" rx="4" class="gr"/><text x="28" y="128" class="mut" style="font-size:10px">16</text><text x="55.0" y="144" text-anchor="middle" class="b">Y</text><rect x="93" y="115" width="64" height="40" rx="4" class="gr"/><text x="98" y="128" class="mut" style="font-size:10px">17</text><text x="125.0" y="144" text-anchor="middle" class="b">Y</text><rect x="163" y="115" width="64" height="40" rx="4" class="gr"/><text x="168" y="128" class="mut" style="font-size:10px">18</text><text x="195.0" y="144" text-anchor="middle" class="b">Y</text><rect x="233" y="115" width="64" height="40" rx="4" class="gr"/><text x="238" y="128" class="mut" style="font-size:10px">19</text><text x="265.0" y="144" text-anchor="middle" class="b">Y</text><rect x="303" y="115" width="64" height="40" rx="4" class="pu"/><text x="308" y="128" class="mut" style="font-size:10px">20</text><text x="335.0" y="144" text-anchor="middle" class="b">Z</text><rect x="373" y="115" width="64" height="40" rx="4" class="pu"/><text x="378" y="128" class="mut" style="font-size:10px">21</text><text x="405.0" y="144" text-anchor="middle" class="b">Z</text><rect x="443" y="115" width="64" height="40" rx="4" class="pu"/><text x="448" y="128" class="mut" style="font-size:10px">22</text><text x="475.0" y="144" text-anchor="middle" class="b">Z</text><rect x="513" y="115" width="64" height="40" rx="4" class="pu"/><text x="518" y="128" class="mut" style="font-size:10px">23</text><text x="545.0" y="144" text-anchor="middle" class="b">Z</text><rect x="23" y="161" width="64" height="40" rx="4" class="pu"/><text x="28" y="174" class="mut" style="font-size:10px">24</text><text x="55.0" y="190" text-anchor="middle" class="b">Z</text><rect x="93" y="161" width="64" height="40" rx="4" class="bx"/><text x="98" y="174" class="mut" style="font-size:10px">25</text><rect x="163" y="161" width="64" height="40" rx="4" class="bx"/><text x="168" y="174" class="mut" style="font-size:10px">26</text><rect x="233" y="161" width="64" height="40" rx="4" class="bx"/><text x="238" y="174" class="mut" style="font-size:10px">27</text><rect x="303" y="161" width="64" height="40" rx="4" class="bx"/><text x="308" y="174" class="mut" style="font-size:10px">28</text><rect x="373" y="161" width="64" height="40" rx="4" class="bx"/><text x="378" y="174" class="mut" style="font-size:10px">29</text><rect x="443" y="161" width="64" height="40" rx="4" class="bx"/><text x="448" y="174" class="mut" style="font-size:10px">30</text><rect x="513" y="161" width="64" height="40" rx="4" class="bx"/><text x="518" y="174" class="mut" style="font-size:10px">31</text></svg><figcaption>Figure 12.2: Contiguous allocation — X (start 0, length 5), Y (start 10, length 10), Z (start 20, length 5); grey = free</figcaption></figure>
+<div class="tw"><table>
+<tr><th>Directory: file</th><th>Start</th><th>Length</th><th>Blocks</th></tr>
+<tr><td>X</td><td>0</td><td>5</td><td>0–4</td></tr>
+<tr><td>Y</td><td>10</td><td>10</td><td>10–19</td></tr>
+<tr><td>Z</td><td>20</td><td>5</td><td>20–24</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Only the start and the length are needed, because the rest follows in sequence. It is <b>easy and fast</b>:
+<ul><li><b>Sequential access</b>: start at block 0 and read 0 → 4 in order.</li>
+<li><b>Direct / random access</b>: block 2 of X = start + 2 = disk block 2. Jump straight there.</li></ul></div>
+<div class="num"><span class="t">Formula (added)</span>
+<div class="formula">Physical block of logical block i = start + i     (valid if i &lt; length)</div>
+X: logical block 3 → 0 + 3 = <b>block 3</b>. Y: logical block 7 → 10 + 7 = <b>block 17</b>. Each takes one disk access.</div>
+</section>
+
+<!-- 12.6 -->
+<section id="s6">
+<h3><span class="n">12.6</span>External Fragmentation in Contiguous Allocation</h3>
+<figure><svg viewBox="0 0 600 234" role="img" aria-label="Figure 12.3: New file A (start 7, length 5) — only 7, 8, 9 are free before Y; 25–31 are free elsewhere, but A can't be split"><defs><marker id="gC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--bad)"/></marker></defs><rect x="23" y="23" width="64" height="40" rx="4" class="ac"/><text x="28" y="36" class="mut" style="font-size:10px">0</text><text x="55.0" y="52" text-anchor="middle" class="b">X</text><rect x="93" y="23" width="64" height="40" rx="4" class="ac"/><text x="98" y="36" class="mut" style="font-size:10px">1</text><text x="125.0" y="52" text-anchor="middle" class="b">X</text><rect x="163" y="23" width="64" height="40" rx="4" class="ac"/><text x="168" y="36" class="mut" style="font-size:10px">2</text><text x="195.0" y="52" text-anchor="middle" class="b">X</text><rect x="233" y="23" width="64" height="40" rx="4" class="ac"/><text x="238" y="36" class="mut" style="font-size:10px">3</text><text x="265.0" y="52" text-anchor="middle" class="b">X</text><rect x="303" y="23" width="64" height="40" rx="4" class="ac"/><text x="308" y="36" class="mut" style="font-size:10px">4</text><text x="335.0" y="52" text-anchor="middle" class="b">X</text><rect x="373" y="23" width="64" height="40" rx="4" class="bx"/><text x="378" y="36" class="mut" style="font-size:10px">5</text><rect x="443" y="23" width="64" height="40" rx="4" class="bx"/><text x="448" y="36" class="mut" style="font-size:10px">6</text><rect x="513" y="23" width="64" height="40" rx="4" class="or"/><text x="518" y="36" class="mut" style="font-size:10px">7</text><text x="545.0" y="52" text-anchor="middle" class="b">A?</text><rect x="23" y="69" width="64" height="40" rx="4" class="or"/><text x="28" y="82" class="mut" style="font-size:10px">8</text><text x="55.0" y="98" text-anchor="middle" class="b">A?</text><rect x="93" y="69" width="64" height="40" rx="4" class="or"/><text x="98" y="82" class="mut" style="font-size:10px">9</text><text x="125.0" y="98" text-anchor="middle" class="b">A?</text><rect x="163" y="69" width="64" height="40" rx="4" class="gr"/><text x="168" y="82" class="mut" style="font-size:10px">10</text><text x="195.0" y="98" text-anchor="middle" class="b">Y</text><rect x="233" y="69" width="64" height="40" rx="4" class="gr"/><text x="238" y="82" class="mut" style="font-size:10px">11</text><text x="265.0" y="98" text-anchor="middle" class="b">Y</text><rect x="303" y="69" width="64" height="40" rx="4" class="gr"/><text x="308" y="82" class="mut" style="font-size:10px">12</text><text x="335.0" y="98" text-anchor="middle" class="b">Y</text><rect x="373" y="69" width="64" height="40" rx="4" class="gr"/><text x="378" y="82" class="mut" style="font-size:10px">13</text><text x="405.0" y="98" text-anchor="middle" class="b">Y</text><rect x="443" y="69" width="64" height="40" rx="4" class="gr"/><text x="448" y="82" class="mut" style="font-size:10px">14</text><text x="475.0" y="98" text-anchor="middle" class="b">Y</text><rect x="513" y="69" width="64" height="40" rx="4" class="gr"/><text x="518" y="82" class="mut" style="font-size:10px">15</text><text x="545.0" y="98" text-anchor="middle" class="b">Y</text><rect x="23" y="115" width="64" height="40" rx="4" class="gr"/><text x="28" y="128" class="mut" style="font-size:10px">16</text><text x="55.0" y="144" text-anchor="middle" class="b">Y</text><rect x="93" y="115" width="64" height="40" rx="4" class="gr"/><text x="98" y="128" class="mut" style="font-size:10px">17</text><text x="125.0" y="144" text-anchor="middle" class="b">Y</text><rect x="163" y="115" width="64" height="40" rx="4" class="gr"/><text x="168" y="128" class="mut" style="font-size:10px">18</text><text x="195.0" y="144" text-anchor="middle" class="b">Y</text><rect x="233" y="115" width="64" height="40" rx="4" class="gr"/><text x="238" y="128" class="mut" style="font-size:10px">19</text><text x="265.0" y="144" text-anchor="middle" class="b">Y</text><rect x="303" y="115" width="64" height="40" rx="4" class="pu"/><text x="308" y="128" class="mut" style="font-size:10px">20</text><text x="335.0" y="144" text-anchor="middle" class="b">Z</text><rect x="373" y="115" width="64" height="40" rx="4" class="pu"/><text x="378" y="128" class="mut" style="font-size:10px">21</text><text x="405.0" y="144" text-anchor="middle" class="b">Z</text><rect x="443" y="115" width="64" height="40" rx="4" class="pu"/><text x="448" y="128" class="mut" style="font-size:10px">22</text><text x="475.0" y="144" text-anchor="middle" class="b">Z</text><rect x="513" y="115" width="64" height="40" rx="4" class="pu"/><text x="518" y="128" class="mut" style="font-size:10px">23</text><text x="545.0" y="144" text-anchor="middle" class="b">Z</text><rect x="23" y="161" width="64" height="40" rx="4" class="pu"/><text x="28" y="174" class="mut" style="font-size:10px">24</text><text x="55.0" y="190" text-anchor="middle" class="b">Z</text><rect x="93" y="161" width="64" height="40" rx="4" class="bx"/><text x="98" y="174" class="mut" style="font-size:10px">25</text><rect x="163" y="161" width="64" height="40" rx="4" class="bx"/><text x="168" y="174" class="mut" style="font-size:10px">26</text><rect x="233" y="161" width="64" height="40" rx="4" class="bx"/><text x="238" y="174" class="mut" style="font-size:10px">27</text><rect x="303" y="161" width="64" height="40" rx="4" class="bx"/><text x="308" y="174" class="mut" style="font-size:10px">28</text><rect x="373" y="161" width="64" height="40" rx="4" class="bx"/><text x="378" y="174" class="mut" style="font-size:10px">29</text><rect x="443" y="161" width="64" height="40" rx="4" class="bx"/><text x="448" y="174" class="mut" style="font-size:10px">30</text><rect x="513" y="161" width="64" height="40" rx="4" class="bx"/><text x="518" y="174" class="mut" style="font-size:10px">31</text></svg><figcaption>Figure 12.3: New file A (start 7, length 5) — only 7, 8, 9 are free before Y; 25–31 are free elsewhere, but A can't be split</figcaption></figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A new file <b>A</b> must start at block <b>7</b> with <b>length 5</b>. Blocks 7, 8 and 9 are free, but block 10 belongs to Y. The remaining 2 blocks can't be placed in the free region at 25–28, because "you can't break and place; it's contiguous." <b>Space is available but the file can't be stored: external fragmentation.</b> If A had been allowed to start at block 5, blocks 5–9 would have fit.</div>
+<div class="box add"><span class="t">➕ Other problems of contiguous allocation</span>
+<ul>
+<li><b>File growth</b>: if a file needs to grow but the next block is taken, it must be moved, or space must be over-allocated in advance (internal waste).</li>
+<li><b>Size must be known</b> at creation time.</li>
+<li>Placement uses first fit, best fit or worst fit (Chapter 9), and <b>compaction</b> (defragmentation) fixes fragmentation but is slow.</li>
+<li><b>Extents</b> (used by ext4 and NTFS): a modified contiguous scheme in which a file is a list of contiguous chunks.</li>
+<li>CD-ROMs and DVDs use contiguous allocation (the files never change).</li>
+</ul></div>
+</section>
+
+<!-- 12.7 -->
+<section id="s7">
+<h3><span class="n">12.7</span>Linked List Allocation</h3>
+<div class="def"><b>Linked allocation:</b> each file is a <b>linked list of disk blocks</b> that may be scattered anywhere. <b>Each block holds a pointer to the next block.</b> The directory stores the <b>start</b> and <b>end</b> blocks.</div>
+<figure><svg viewBox="0 0 600 234" role="img" aria-label="Figure 12.4: Linked allocation — file X: 5 → 11 → 15 → 12 → 18 → 24 (end)"><defs><marker id="gL" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--bad)"/></marker></defs><rect x="23" y="23" width="64" height="40" rx="4" class="bx"/><text x="28" y="36" class="mut" style="font-size:10px">0</text><rect x="93" y="23" width="64" height="40" rx="4" class="bx"/><text x="98" y="36" class="mut" style="font-size:10px">1</text><rect x="163" y="23" width="64" height="40" rx="4" class="bx"/><text x="168" y="36" class="mut" style="font-size:10px">2</text><rect x="233" y="23" width="64" height="40" rx="4" class="bx"/><text x="238" y="36" class="mut" style="font-size:10px">3</text><rect x="303" y="23" width="64" height="40" rx="4" class="bx"/><text x="308" y="36" class="mut" style="font-size:10px">4</text><rect x="373" y="23" width="64" height="40" rx="4" class="ac"/><text x="378" y="36" class="mut" style="font-size:10px">5</text><text x="405.0" y="52" text-anchor="middle" class="b">X</text><rect x="443" y="23" width="64" height="40" rx="4" class="bx"/><text x="448" y="36" class="mut" style="font-size:10px">6</text><rect x="513" y="23" width="64" height="40" rx="4" class="bx"/><text x="518" y="36" class="mut" style="font-size:10px">7</text><rect x="23" y="69" width="64" height="40" rx="4" class="bx"/><text x="28" y="82" class="mut" style="font-size:10px">8</text><rect x="93" y="69" width="64" height="40" rx="4" class="bx"/><text x="98" y="82" class="mut" style="font-size:10px">9</text><rect x="163" y="69" width="64" height="40" rx="4" class="bx"/><text x="168" y="82" class="mut" style="font-size:10px">10</text><rect x="233" y="69" width="64" height="40" rx="4" class="ac"/><text x="238" y="82" class="mut" style="font-size:10px">11</text><text x="265.0" y="98" text-anchor="middle" class="b">X</text><rect x="303" y="69" width="64" height="40" rx="4" class="ac"/><text x="308" y="82" class="mut" style="font-size:10px">12</text><text x="335.0" y="98" text-anchor="middle" class="b">X</text><rect x="373" y="69" width="64" height="40" rx="4" class="bx"/><text x="378" y="82" class="mut" style="font-size:10px">13</text><rect x="443" y="69" width="64" height="40" rx="4" class="bx"/><text x="448" y="82" class="mut" style="font-size:10px">14</text><rect x="513" y="69" width="64" height="40" rx="4" class="ac"/><text x="518" y="82" class="mut" style="font-size:10px">15</text><text x="545.0" y="98" text-anchor="middle" class="b">X</text><rect x="23" y="115" width="64" height="40" rx="4" class="bx"/><text x="28" y="128" class="mut" style="font-size:10px">16</text><rect x="93" y="115" width="64" height="40" rx="4" class="bx"/><text x="98" y="128" class="mut" style="font-size:10px">17</text><rect x="163" y="115" width="64" height="40" rx="4" class="ac"/><text x="168" y="128" class="mut" style="font-size:10px">18</text><text x="195.0" y="144" text-anchor="middle" class="b">X</text><rect x="233" y="115" width="64" height="40" rx="4" class="bx"/><text x="238" y="128" class="mut" style="font-size:10px">19</text><rect x="303" y="115" width="64" height="40" rx="4" class="bx"/><text x="308" y="128" class="mut" style="font-size:10px">20</text><rect x="373" y="115" width="64" height="40" rx="4" class="bx"/><text x="378" y="128" class="mut" style="font-size:10px">21</text><rect x="443" y="115" width="64" height="40" rx="4" class="bx"/><text x="448" y="128" class="mut" style="font-size:10px">22</text><rect x="513" y="115" width="64" height="40" rx="4" class="bx"/><text x="518" y="128" class="mut" style="font-size:10px">23</text><rect x="23" y="161" width="64" height="40" rx="4" class="ac"/><text x="28" y="174" class="mut" style="font-size:10px">24</text><text x="55.0" y="190" text-anchor="middle" class="b">X</text><rect x="93" y="161" width="64" height="40" rx="4" class="bx"/><text x="98" y="174" class="mut" style="font-size:10px">25</text><rect x="163" y="161" width="64" height="40" rx="4" class="bx"/><text x="168" y="174" class="mut" style="font-size:10px">26</text><rect x="233" y="161" width="64" height="40" rx="4" class="bx"/><text x="238" y="174" class="mut" style="font-size:10px">27</text><rect x="303" y="161" width="64" height="40" rx="4" class="bx"/><text x="308" y="174" class="mut" style="font-size:10px">28</text><rect x="373" y="161" width="64" height="40" rx="4" class="bx"/><text x="378" y="174" class="mut" style="font-size:10px">29</text><rect x="443" y="161" width="64" height="40" rx="4" class="bx"/><text x="448" y="174" class="mut" style="font-size:10px">30</text><rect x="513" y="161" width="64" height="40" rx="4" class="bx"/><text x="518" y="174" class="mut" style="font-size:10px">31</text><path d="M405.0 43.0 L265.0 89.0" style="stroke:var(--bad);stroke-width:2;fill:none" marker-end="url(#gL)"/><path d="M265.0 89.0 L545.0 89.0" style="stroke:var(--bad);stroke-width:2;fill:none" marker-end="url(#gL)"/><path d="M545.0 89.0 L335.0 89.0" style="stroke:var(--bad);stroke-width:2;fill:none" marker-end="url(#gL)"/><path d="M335.0 89.0 L195.0 135.0" style="stroke:var(--bad);stroke-width:2;fill:none" marker-end="url(#gL)"/><path d="M195.0 135.0 L55.0 181.0" style="stroke:var(--bad);stroke-width:2;fill:none" marker-end="url(#gL)"/></svg><figcaption>Figure 12.4: Linked allocation — file X: 5 → 11 → 15 → 12 → 18 → 24 (end)</figcaption></figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Directory: X, start = <b>5</b>, end = <b>24</b>. Block 5 holds the first block of X and says "next is 11". Then 11 → <b>15</b> → <b>12</b> → <b>18</b> → <b>24</b>. At 24 the file ends. The list itself is the "hero": each block tells you where the next one is.
+<ul><li>✔ <b>No external fragmentation</b>, because any free block can be used.</li>
+<li>✗ <b>High seek time</b>: the blocks are scattered across tracks, so the read/write head gets a lot of "exercise". To avoid external fragmentation you <b>compromise on seek time</b>.</li></ul></div>
+<div class="box add"><span class="t">➕ More disadvantages, and FAT</span>
+<ul>
+<li><b>No direct (random) access</b>: to reach block i you must follow i pointers from the start. Only sequential access is efficient.</li>
+<li><b>Pointer overhead</b>: e.g. 4 bytes of each 512-byte block (0.78%) is spent on pointers. <b>Clusters</b> (groups of blocks) reduce it.</li>
+<li><b>Reliability</b>: one damaged pointer loses the rest of the file.</li>
+<li><b>FAT (File Allocation Table)</b>: the pointers are kept in a <b>table at the start of the partition</b>, with one entry per block, instead of inside the blocks. The table can be cached in memory, which makes random access faster. Used by <b>MS-DOS, FAT16/FAT32, USB drives</b>.</li>
+</ul></div>
+<div class="num"><span class="t">Numerical (added)</span>
+The disk block is 1 KB and a pointer is 4 B, so usable data per block = 1020 B.<br>
+A file of 10,200 B needs 10,200 / 1020 = <b>10 blocks</b>.<br>
+To read byte 5000: 5000 / 1020 = logical block <b>4</b> (0-based), so <b>5 block reads</b> are needed to follow the chain. Contiguous allocation would need just 1.</div>
+</section>
+
+<!-- 12.8 -->
+<section id="s8">
+<h3><span class="n">12.8</span>Indexed Allocation</h3>
+<div class="def"><b>Indexed allocation:</b> all of a file's block pointers are gathered into one <b>index block</b>. Entry i of the index block points to the file's i-th block. The directory stores the <b>index-block address</b>.</div>
+<figure><svg viewBox="0 0 600 234" role="img" aria-label="Figure 12.5: Indexed allocation — index block 5 holds [1, 7, 30, 11, 16] for file X"><defs><marker id="gI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--bad)"/></marker></defs><rect x="23" y="23" width="64" height="40" rx="4" class="bx"/><text x="28" y="36" class="mut" style="font-size:10px">0</text><rect x="93" y="23" width="64" height="40" rx="4" class="ac"/><text x="98" y="36" class="mut" style="font-size:10px">1</text><text x="125.0" y="52" text-anchor="middle" class="b">X</text><rect x="163" y="23" width="64" height="40" rx="4" class="bx"/><text x="168" y="36" class="mut" style="font-size:10px">2</text><rect x="233" y="23" width="64" height="40" rx="4" class="bx"/><text x="238" y="36" class="mut" style="font-size:10px">3</text><rect x="303" y="23" width="64" height="40" rx="4" class="bx"/><text x="308" y="36" class="mut" style="font-size:10px">4</text><rect x="373" y="23" width="64" height="40" rx="4" class="or"/><text x="378" y="36" class="mut" style="font-size:10px">5</text><text x="405.0" y="52" text-anchor="middle" class="b">I</text><rect x="443" y="23" width="64" height="40" rx="4" class="bx"/><text x="448" y="36" class="mut" style="font-size:10px">6</text><rect x="513" y="23" width="64" height="40" rx="4" class="ac"/><text x="518" y="36" class="mut" style="font-size:10px">7</text><text x="545.0" y="52" text-anchor="middle" class="b">X</text><rect x="23" y="69" width="64" height="40" rx="4" class="bx"/><text x="28" y="82" class="mut" style="font-size:10px">8</text><rect x="93" y="69" width="64" height="40" rx="4" class="bx"/><text x="98" y="82" class="mut" style="font-size:10px">9</text><rect x="163" y="69" width="64" height="40" rx="4" class="bx"/><text x="168" y="82" class="mut" style="font-size:10px">10</text><rect x="233" y="69" width="64" height="40" rx="4" class="ac"/><text x="238" y="82" class="mut" style="font-size:10px">11</text><text x="265.0" y="98" text-anchor="middle" class="b">X</text><rect x="303" y="69" width="64" height="40" rx="4" class="bx"/><text x="308" y="82" class="mut" style="font-size:10px">12</text><rect x="373" y="69" width="64" height="40" rx="4" class="bx"/><text x="378" y="82" class="mut" style="font-size:10px">13</text><rect x="443" y="69" width="64" height="40" rx="4" class="bx"/><text x="448" y="82" class="mut" style="font-size:10px">14</text><rect x="513" y="69" width="64" height="40" rx="4" class="bx"/><text x="518" y="82" class="mut" style="font-size:10px">15</text><rect x="23" y="115" width="64" height="40" rx="4" class="ac"/><text x="28" y="128" class="mut" style="font-size:10px">16</text><text x="55.0" y="144" text-anchor="middle" class="b">X</text><rect x="93" y="115" width="64" height="40" rx="4" class="bx"/><text x="98" y="128" class="mut" style="font-size:10px">17</text><rect x="163" y="115" width="64" height="40" rx="4" class="bx"/><text x="168" y="128" class="mut" style="font-size:10px">18</text><rect x="233" y="115" width="64" height="40" rx="4" class="bx"/><text x="238" y="128" class="mut" style="font-size:10px">19</text><rect x="303" y="115" width="64" height="40" rx="4" class="bx"/><text x="308" y="128" class="mut" style="font-size:10px">20</text><rect x="373" y="115" width="64" height="40" rx="4" class="bx"/><text x="378" y="128" class="mut" style="font-size:10px">21</text><rect x="443" y="115" width="64" height="40" rx="4" class="bx"/><text x="448" y="128" class="mut" style="font-size:10px">22</text><rect x="513" y="115" width="64" height="40" rx="4" class="bx"/><text x="518" y="128" class="mut" style="font-size:10px">23</text><rect x="23" y="161" width="64" height="40" rx="4" class="bx"/><text x="28" y="174" class="mut" style="font-size:10px">24</text><rect x="93" y="161" width="64" height="40" rx="4" class="bx"/><text x="98" y="174" class="mut" style="font-size:10px">25</text><rect x="163" y="161" width="64" height="40" rx="4" class="bx"/><text x="168" y="174" class="mut" style="font-size:10px">26</text><rect x="233" y="161" width="64" height="40" rx="4" class="bx"/><text x="238" y="174" class="mut" style="font-size:10px">27</text><rect x="303" y="161" width="64" height="40" rx="4" class="bx"/><text x="308" y="174" class="mut" style="font-size:10px">28</text><rect x="373" y="161" width="64" height="40" rx="4" class="bx"/><text x="378" y="174" class="mut" style="font-size:10px">29</text><rect x="443" y="161" width="64" height="40" rx="4" class="ac"/><text x="448" y="174" class="mut" style="font-size:10px">30</text><text x="475.0" y="190" text-anchor="middle" class="b">X</text><rect x="513" y="161" width="64" height="40" rx="4" class="bx"/><text x="518" y="174" class="mut" style="font-size:10px">31</text><path d="M405.0 43.0 L125.0 43.0" style="stroke:var(--bad);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#gI)"/><path d="M405.0 43.0 L545.0 43.0" style="stroke:var(--bad);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#gI)"/><path d="M405.0 43.0 L475.0 181.0" style="stroke:var(--bad);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#gI)"/><path d="M405.0 43.0 L265.0 89.0" style="stroke:var(--bad);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#gI)"/><path d="M405.0 43.0 L55.0 135.0" style="stroke:var(--bad);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#gI)"/></svg><figcaption>Figure 12.5: Indexed allocation — index block 5 holds [1, 7, 30, 11, 16] for file X</figcaption></figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Directory: X → <b>index block 5</b>. Block 5 doesn't hold data; it lists where every block of X is: <b>1, 7, 30, 11, 16</b>.
+<ul><li>✔ <b>No external fragmentation</b> (non-contiguous).</li>
+<li>✔ <b>Easy random access</b>: the index tells you exactly where each block is, so jump straight there.</li></ul></div>
+<div class="box add"><span class="t">➕ Disadvantages and remedies</span>
+<ul>
+<li><b>Index-block overhead</b>: even a 2-block file needs a whole index block, which is wasted space for small files.</li>
+<li>The size of the index block limits the file size. Remedies: a <b>linked scheme</b> (chain index blocks together), a <b>multilevel index</b> (an index of index blocks), or the <b>combined scheme</b> (UNIX inode, next section).</li>
+<li>Access costs one extra read for the index block, unless it is cached.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Contiguous</th><th>Linked</th><th>Indexed</th></tr>
+<tr><td>Directory stores</td><td>Start, length</td><td>Start, end</td><td>Index-block address</td></tr>
+<tr><td>External fragmentation</td><td><b>Yes</b></td><td>No</td><td>No</td></tr>
+<tr><td>Sequential access</td><td>Fast</td><td>Fast (but scattered seeks)</td><td>Fast</td></tr>
+<tr><td>Direct / random access</td><td><b>Fast</b> (start + i)</td><td><b>No</b> (follow the chain)</td><td><b>Fast</b> (via the index)</td></tr>
+<tr><td>File growth</td><td>Difficult</td><td>Easy</td><td>Easy (up to the index limit)</td></tr>
+<tr><td>Space overhead</td><td>None</td><td>Pointer in every block</td><td>Index block per file</td></tr>
+<tr><td>Seek time</td><td><b>Lowest</b></td><td>High</td><td>Medium to high</td></tr>
+<tr><td>Used in</td><td>CD/DVD, extents (ext4)</td><td>FAT (MS-DOS, USB)</td><td>UNIX inode, NTFS</td></tr>
+</table></div>
+</section>
+
+<!-- 12.8A -->
+<section id="s8a">
+<h3><span class="n">12.8A</span>Multilevel Index &amp; UNIX inode <span class="badge">ADDED</span></h3>
+<figure>
+<svg viewBox="0 0 640 260" role="img" aria-label="UNIX inode with 12 direct pointers, single, double and triple indirect pointers">
+  <defs><marker id="f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="20" width="150" height="225" class="bx"/><text x="95" y="14" text-anchor="middle" class="b">inode</text>
+  <text x="95" y="40" text-anchor="middle" class="mut">mode, owner, size,</text><text x="95" y="56" text-anchor="middle" class="mut">timestamps, links …</text>
+  <rect x="30" y="70" width="130" height="80" class="ac"/><text x="95" y="105" text-anchor="middle" class="b">12 direct</text><text x="95" y="122" text-anchor="middle" class="mut">pointers</text>
+  <rect x="30" y="155" width="130" height="26" class="gr"/><text x="95" y="173" text-anchor="middle">single indirect</text>
+  <rect x="30" y="185" width="130" height="26" class="pu"/><text x="95" y="203" text-anchor="middle">double indirect</text>
+  <rect x="30" y="215" width="130" height="26" class="or"/><text x="95" y="233" text-anchor="middle">triple indirect</text>
+  <g>
+  <rect x="250" y="70" width="60" height="22" class="bx"/><rect x="250" y="96" width="60" height="22" class="bx"/><rect x="250" y="122" width="60" height="22" class="bx"/>
+  <text x="280" y="62" text-anchor="middle" class="mut">data</text>
+  <path d="M160 85 H248 M160 110 H248 M160 133 H248" class="ln" marker-end="url(#f2)"/>
+  <rect x="250" y="158" width="60" height="22" class="gr"/><text x="280" y="174" text-anchor="middle" class="mut">index</text>
+  <path d="M160 168 H248" class="ln" marker-end="url(#f2)"/>
+  <rect x="360" y="158" width="60" height="22" class="bx"/><text x="390" y="174" text-anchor="middle" class="mut">data</text>
+  <path d="M310 169 H358" class="ln" marker-end="url(#f2)"/>
+  <rect x="250" y="188" width="60" height="22" class="pu"/><rect x="360" y="188" width="60" height="22" class="pu"/><rect x="470" y="188" width="60" height="22" class="bx"/>
+  <path d="M160 198 H248 M310 199 H358 M420 199 H468" class="ln" marker-end="url(#f2)"/>
+  <rect x="250" y="218" width="60" height="22" class="or"/><rect x="360" y="218" width="60" height="22" class="or"/><rect x="470" y="218" width="60" height="22" class="or"/><rect x="570" y="218" width="50" height="22" class="bx"/>
+  <path d="M160 228 H248 M310 229 H358 M420 229 H468 M530 229 H568" class="ln" marker-end="url(#f2)"/>
+  </g>
+</svg>
+<figcaption>Figure 12.6: UNIX inode — the combined (multilevel) indexing scheme</figcaption>
+</figure>
+<div class="num"><span class="t">Numerical: maximum file size with an inode</span>
+Block size = <b>4 KB</b>, pointer = <b>4 B</b>, so each index block holds 4 KB / 4 B = <b>1024</b> pointers.<br>
+Direct: 12 × 4 KB = <b>48 KB</b>.<br>
+Single indirect: 1024 × 4 KB = <b>4 MB</b>.<br>
+Double indirect: 1024² × 4 KB = <b>4 GB</b>.<br>
+Triple indirect: 1024³ × 4 KB = <b>4 TB</b>.<br>
+<b>Maximum file size</b> ≈ 48 KB + 4 MB + 4 GB + 4 TB ≈ <b>4 TB</b>.<br>
+<b>Conclusion:</b> small files are reached quickly through the direct pointers, and huge files are still possible through the indirect levels.</div>
+<div class="num"><span class="t">Variant (practice)</span>
+Block = 1 KB, pointer = 4 B, so 256 pointers per block. With 10 direct pointers plus single and double indirect: 10 KB + 256 KB + 64 MB ≈ <b>64.26 MB</b>.</div>
+</section>
+
+<!-- 12.9 -->
+<section id="s9">
+<h3><span class="n">12.9</span>Directory Structures <span class="badge">ADDED</span></h3>
+<div class="def"><b>Directory:</b> a symbol table that maps <b>file names to their FCBs / directory entries</b>. Operations: search, create, delete, list, rename and traverse files.</div>
+<div class="tw"><table>
+<tr><th>Structure</th><th>Idea</th><th>Pros / cons</th></tr>
+<tr><td><b>Single-level</b></td><td>One directory for all files of all users</td><td>Simple; <b>name clashes</b> between users, and poor grouping</td></tr>
+<tr><td><b>Two-level</b></td><td>A master file directory (MFD) with a separate user file directory (UFD) per user</td><td>Isolates users; no sub-grouping, and sharing is hard</td></tr>
+<tr><td><b>Tree-structured</b></td><td>Directories within directories; absolute and relative path names</td><td>Natural grouping; most common; no sharing of a file between directories</td></tr>
+<tr><td><b>Acyclic graph</b></td><td>A tree plus <b>shared</b> files and subdirectories through links</td><td>Allows sharing; deletion and dangling pointers are complex</td></tr>
+<tr><td><b>General graph</b></td><td>Cycles are allowed</td><td>Flexible; needs <b>garbage collection</b> and cycle detection during traversal</td></tr>
+</table></div>
+<figure>
+<svg viewBox="0 0 640 200" role="img" aria-label="Tree-structured directory with root, user directories and files">
+  <rect x="285" y="10" width="70" height="30" rx="4" class="ac"/><text x="320" y="30" text-anchor="middle" class="b">/ (root)</text>
+  <rect x="110" y="75" width="80" height="30" rx="4" class="gr"/><text x="150" y="95" text-anchor="middle">home</text>
+  <rect x="280" y="75" width="80" height="30" rx="4" class="gr"/><text x="320" y="95" text-anchor="middle">bin</text>
+  <rect x="450" y="75" width="80" height="30" rx="4" class="gr"/><text x="490" y="95" text-anchor="middle">etc</text>
+  <rect x="40" y="145" width="80" height="30" rx="4" class="pu"/><text x="80" y="165" text-anchor="middle">vikas</text>
+  <rect x="160" y="145" width="80" height="30" rx="4" class="pu"/><text x="200" y="165" text-anchor="middle">notes.txt</text>
+  <rect x="290" y="145" width="60" height="30" rx="4" class="bx"/><text x="320" y="165" text-anchor="middle">ls</text>
+  <rect x="455" y="145" width="70" height="30" rx="4" class="bx"/><text x="490" y="165" text-anchor="middle">passwd</text>
+  <path d="M320 40 L150 75 M320 40 V75 M320 40 L490 75 M150 105 L80 145 M150 105 L200 145 M320 105 V145 M490 105 V145" class="ln"/>
+  <text x="320" y="195" text-anchor="middle" class="mut">absolute path: /home/vikas · relative path from /home: vikas</text>
+</svg>
+<figcaption>Figure 12.7: Tree-structured directory</figcaption>
+</figure>
+</section>
+
+<!-- 12.10 -->
+<section id="s10">
+<h3><span class="n">12.10</span>Free-Space Management <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Method</th><th>How</th><th>Note</th></tr>
+<tr><td><b>Bit vector (bitmap)</b></td><td>One bit per block (by Galvin's convention <b>1 = free</b>, 0 = allocated)</td><td>Easy to find contiguous free blocks; the bitmap needs memory</td></tr>
+<tr><td><b>Linked list</b></td><td>Free blocks are chained together; the head pointer is kept in memory</td><td>No wasted space, but traversal is slow</td></tr>
+<tr><td><b>Grouping</b></td><td>The first free block stores the addresses of n free blocks; the last of these points to the next group</td><td>Many free blocks are found quickly</td></tr>
+<tr><td><b>Counting</b></td><td>Store (first free block, count of contiguous free blocks)</td><td>Good when frees come in runs</td></tr>
+</table></div>
+<div class="num"><span class="t">Numerical: bitmap size</span>
+Disk = 1 TB, block = 4 KB, so blocks = 2⁴⁰ / 2¹² = 2²⁸.<br>
+The bitmap needs 2²⁸ bits = 2²⁵ bytes = <b>32 MB</b>.<br>
+<b>Example:</b> blocks 2, 3, 4, 5, 8, 9, 10 are free in a 12-block disk, so the bitmap (blocks 0–11) is <b>0011 1100 1110</b>.</div>
+</section>
+
+<!-- 12.11 -->
+<section id="s11">
+<h3><span class="n">12.11</span>Protection, Links, Mounting &amp; Real File Systems <span class="badge">ADDED</span></h3>
+<h4>UNIX file protection (rwx)</h4>
+<p>Three classes, <b>owner (u), group (g), others (o)</b>, each with <b>read (4), write (2), execute (1)</b> permissions.</p>
+<div class="num"><span class="t">Numerical: chmod</span>
+<code>chmod 754 file</code> → owner 7 = rwx (4+2+1), group 5 = r-x (4+1), others 4 = r-- → <b>rwxr-xr--</b>.<br>
+<code>chmod 644</code> → <b>rw-r--r--</b> (typical for files). <code>chmod 755</code> → <b>rwxr-xr-x</b> (typical for programs and directories).<br>
+Other mechanisms: <b>access-control lists (ACLs)</b> per file and per user, and passwords.</div>
+<div class="tw"><table>
+<tr><th>Hard link</th><th>Soft (symbolic) link</th></tr>
+<tr><td>Another directory entry pointing to the <b>same inode</b></td><td>A small file containing the <b>path</b> of the target</td></tr>
+<tr><td>Deleting the original keeps the data (the link count is above 0)</td><td>Deleting the target leaves a <b>dangling</b> link</td></tr>
+<tr><td>Cannot cross file systems or link to directories</td><td>Can cross file systems and point to directories</td></tr>
+<tr><td><code>ln a b</code></td><td><code>ln -s a b</code> (Windows: shortcut)</td></tr>
+</table></div>
+<ul>
+<li><b>Mounting</b>: attaching a file system (e.g. a USB drive) at a <b>mount point</b> in the existing directory tree. UNIX: <code>/mnt/usb</code>. Windows assigns drive letters.</li>
+<li><b>Virtual File System (VFS)</b>: a common interface that lets one OS support many file-system types.</li>
+</ul>
+<div class="tw"><table>
+<tr><th>File system</th><th>Used by</th><th>Key points</th></tr>
+<tr><td><b>FAT32</b></td><td>USB drives, old Windows</td><td>Linked allocation via a table; max file size <b>4 GB</b>; no permissions and no journaling</td></tr>
+<tr><td><b>exFAT</b></td><td>SD cards, flash drives</td><td>Removes FAT32's 4 GB limit</td></tr>
+<tr><td><b>NTFS</b></td><td>Windows</td><td>MFT, <b>journaling</b>, ACL security, encryption, compression, large files</td></tr>
+<tr><td><b>ext4</b></td><td>Linux</td><td>inodes + extents, journaling, large volumes</td></tr>
+<tr><td><b>APFS</b> / HFS+</td><td>macOS, iOS</td><td>Copy-on-write, snapshots, encryption</td></tr>
+<tr><td>ISO 9660 / UDF</td><td>CD / DVD</td><td>Contiguous allocation</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert (one-liners)</span>
+<ul>
+<li>Contiguous allocation causes <b>external fragmentation</b> but has the best seek time and direct access. Linked allocation has <b>no random access</b>; FAT is its table form. Indexed allocation supports random access and is used by the <b>UNIX inode</b>.</li>
+<li>Maximum file size in FAT32 = <b>4 GB</b>. A <b>journaling</b> file system (NTFS, ext3/4) logs changes first, which makes recovery after a crash fast.</li>
+<li>The default permissions of a new file come from the <b>umask</b> (e.g. 022 gives 644 for files).</li>
+</ul></div>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 12</h3>
+<ul>
+<li><b>File system</b>: maps a file's <b>blocks → disk sectors</b> (block–sector mapping) for storing and fetching. The FCB holds the metadata (the UNIX inode).</li>
+<li><b>Operations</b>: create, read, write, <b>truncate</b> (empty the contents, keep the file), <b>reposition</b> (move the pointer x → z), delete, open, close.</li>
+<li><b>Attributes</b>: name, identifier, type, location, size, protection, time and date (from "Get Info").</li>
+<li>Access methods: sequential, direct, indexed (ISAM).</li>
+<li><b>Contiguous</b>: directory = (start, length). X(0, 5), Y(10, 10), Z(20, 5). Fast sequential and direct access (start + i). <b>External fragmentation</b>: file A(7, 5) can't fit even though blocks 25–28 are free.</li>
+<li><b>Linked</b>: directory = (start, end). X: 5 → 11 → 15 → 12 → 18 → 24. No external fragmentation, but <b>high seek time</b>, <b>no random access</b>, pointer overhead. <b>FAT</b> keeps the pointers in a table.</li>
+<li><b>Indexed</b>: directory = index block (5) → [1, 7, 30, 11, 16]. No external fragmentation, easy random access; index-block overhead. The <b>UNIX inode</b> has 12 direct + single, double and triple indirect pointers (4 KB blocks give about 4 TB maximum).</li>
+<li>Directories: single-level → two-level → tree → acyclic graph → general graph. Free space: bitmap (1 TB / 4 KB → 32 MB), linked list, grouping, counting.</li>
+<li>Protection: rwx = 4/2/1 (754 = rwxr-xr--). Hard link = same inode; soft link = a path (can dangle). FAT32 has a 4 GB limit; NTFS and ext4 use journaling.</li>
+</ul>
+</div>
+
+<section id="fin" style="border:2px solid var(--accent)">
+<h3>🏁 Course Conclusion</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"That's the journey of today's one-shot Operating System video." The whole subject was covered from start to finish. The teacher asks for continued support for Five Minutes Engineering: like, share and subscribe.</div>
+<p>You have now covered the full OS syllabus in 12 chapters:</p>
+<ol>
+<li><b>Introduction</b>: what an OS is, its functions, and the types of OS</li>
+<li><b>Structure</b>: simple, layered, microkernel, monolithic and hybrid</li>
+<li><b>System calls</b>: dual mode, fork()</li>
+<li><b>Threads</b>: user-level vs kernel-level threads, and the mapping models</li>
+<li><b>Process management</b>: PCB, process states, schedulers</li>
+<li><b>CPU scheduling</b>: FCFS → multilevel feedback queues, with numericals</li>
+<li><b>Synchronization</b>: critical section, Peterson's solution, semaphores and the classic problems</li>
+<li><b>Deadlocks</b>: the four conditions, Banker's algorithm, resource allocation graphs</li>
+<li><b>Memory management</b>: partitions, paging, TLB, segmentation</li>
+<li><b>Virtual memory</b>: FIFO / Optimal / LRU page replacement, Belady's anomaly, thrashing</li>
+<li><b>Disk scheduling</b>: FCFS → C-LOOK, RAID</li>
+<li><b>File systems</b>: allocation methods, inodes, directories</li>
+</ol>
+<p>For final revision, read only the <b>⚡ Rapid Revision</b> box, the <b>⚠️ Exam traps</b> and the <b>🎯 alerts</b> in each chapter, then redo every <b>numerical</b> box without looking at the answer.</p>
+</section>
+<div class="end">End of Volume 01 — Operating System · All chapters complete</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="11-Disk-Scheduling.html">← Ch 11: Disk Management and Disk Scheduling</a><a href="index.html">☰ All topics</a><a href="#fin">Course conclusion ↓</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('os-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

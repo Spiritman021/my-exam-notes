@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS Process Synchronization Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="06-CPU-Scheduling.html">← Ch 6: CPU Scheduling</a><a href="index.html">☰ All topics</a><a href="08-Deadlocks.html">Ch 8: Deadlocks →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Operating System — Chapter 7: Process Synchronization</h1>
+  <p class="sub">Volume 01 · Part 7 · Built from the one-shot OS lecture transcript (section 7), plus the exam points the lecture skipped.</p>
+  <ul class="tags">
+    <li>Cooperative Processes</li><li>Race Condition</li><li>Critical Section</li><li>Entry / Exit Section</li>
+    <li>ME · Progress · Bounded Waiting</li><li>Turn Variable</li><li>Flag Array</li><li>Peterson's Solution</li>
+    <li>Lock Variable</li><li>Test-and-Set</li><li>Mutex</li><li>Binary &amp; Counting Semaphores</li>
+    <li>Producer-Consumer</li><li>Readers-Writers</li><li>Dining Philosophers</li><li>Monitors</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s0"><span class="n">7.0</span>Why Synchronization?</a></li>
+    <li><a href="#s1"><span class="n">7.1</span>Cooperative vs Independent Processes</a></li>
+    <li><a href="#s2"><span class="n">7.2</span>Race Condition: Shared Data Example</a></li>
+    <li><a href="#s3"><span class="n">7.3</span>Critical Section: count++ / count−−</a></li>
+    <li><a href="#s4"><span class="n">7.4</span>Entry Section and Exit Section</a></li>
+    <li><a href="#s5"><span class="n">7.5</span>Requirement 1: Mutual Exclusion</a></li>
+    <li><a href="#s6"><span class="n">7.6</span>Requirement 2: Progress</a></li>
+    <li><a href="#s7"><span class="n">7.7</span>Requirement 3: Bounded Waiting</a></li>
+    <li><a href="#s8"><span class="n">7.8</span>Two-Process Solutions</a></li>
+    <li><a href="#s9"><span class="n">7.9</span>Turn Variable (Strict Alternation)</a></li>
+    <li><a href="#s10"><span class="n">7.10</span>Turn Variable: Why Progress Fails</a></li>
+    <li><a href="#s11"><span class="n">7.11</span>Flag Array Solution</a></li>
+    <li><a href="#s12"><span class="n">7.12</span>Flag Array: Deadlock Problem</a></li>
+    <li><a href="#s13"><span class="n">7.13</span>Peterson's Solution</a></li>
+    <li><a href="#s14"><span class="n">7.14</span>Peterson: Mutual Exclusion Scenario</a></li>
+    <li><a href="#s15"><span class="n">7.15</span>Peterson: Progress Guaranteed</a></li>
+    <li><a href="#s16"><span class="n">7.16</span>Lock Variable</a></li>
+    <li><a href="#s17"><span class="n">7.17</span>Lock Variable: ME Failure under Preemption</a></li>
+    <li><a href="#s18"><span class="n">7.18</span>Test-and-Set (TSL) Instruction</a></li>
+    <li><a href="#s19"><span class="n">7.19</span>Test-and-Set: ME with Two Processes</a></li>
+    <li><a href="#s19a"><span class="n">7.19A</span>Busy Waiting, Spinlocks, Mutex &amp; Hardware Support<span class="x">ADDED</span></a></li>
+    <li><a href="#s20"><span class="n">7.20</span>Semaphores: Introduction</a></li>
+    <li><a href="#s21"><span class="n">7.21</span>Binary Semaphore: Wait (P) and Signal (V)</a></li>
+    <li><a href="#s22"><span class="n">7.22</span>Binary Semaphore: Working Example</a></li>
+    <li><a href="#s23"><span class="n">7.23</span>Counting Semaphore and Block List</a></li>
+    <li><a href="#s24"><span class="n">7.24</span>Counting Semaphore: Signal &amp; Wake-up</a></li>
+    <li><a href="#s24a"><span class="n">7.24A</span>Semaphore Numericals<span class="x">ADDED</span></a></li>
+    <li><a href="#s25"><span class="n">7.25</span>Producer-Consumer Problem</a></li>
+    <li><a href="#s26"><span class="n">7.26</span>Full, Empty and Mutex Semaphores</a></li>
+    <li><a href="#s27"><span class="n">7.27</span>Producer Code Walkthrough</a></li>
+    <li><a href="#s28"><span class="n">7.28</span>Consumer Code Walkthrough</a></li>
+    <li><a href="#s29"><span class="n">7.29</span>Readers-Writers Problem</a></li>
+    <li><a href="#s30"><span class="n">7.30</span>Writer Process Code</a></li>
+    <li><a href="#s31"><span class="n">7.31</span>Reader Process Code</a></li>
+    <li><a href="#s32"><span class="n">7.32</span>Walkthrough with Multiple Readers</a></li>
+    <li><a href="#s33"><span class="n">7.33</span>Dining Philosophers Problem</a></li>
+    <li><a href="#s34"><span class="n">7.34</span>Dining Philosophers: Semaphore Code</a></li>
+    <li><a href="#s35"><span class="n">7.35</span>Concurrent Eating by Non-Adjacent Philosophers</a></li>
+    <li><a href="#s36"><span class="n">7.36</span>Dining Philosophers: Deadlock Scenario</a></li>
+    <li><a href="#s37"><span class="n">7.37</span>Deadlock Solutions</a></li>
+    <li><a href="#s38"><span class="n">7.38</span>Monitors, IPC &amp; Master Comparison<span class="x">ADDED</span></a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 7</div>
+<h2 class="ch">Process Synchronization</h2>
+<p>In Chapters 5 and 6 the scheduler could <b>preempt any process at any instruction</b>. That is harmless when processes are independent, but dangerous when they <b>share data</b>. A process preempted halfway through updating a shared variable can leave it <b>inconsistent</b>. This chapter covers how that happens (race condition), where it happens (the critical section), the rules a fix must follow, and the tools that provide the fix: software solutions, hardware instructions and semaphores. It ends with the three classic problems.</p>
+
+<!-- 7.0 -->
+<section id="s0">
+<h3><span class="n">7.0</span>Why Synchronization?</h3>
+<div class="def"><b>Process synchronization:</b> coordinating processes that <b>share resources</b> (data, memory, files) so that they do not <b>interfere</b> with each other and the shared data stays <b>consistent</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P1 and P2 share some common data. P1 changes it, then P2 changes it, and the data can become <b>inconsistent</b>. Synchronization makes them take turns on the shared part. The two "very important terms" are the <b>race condition</b> and the <b>critical section</b>.</div>
+</section>
+
+<!-- 7.1 -->
+<section id="s1">
+<h3><span class="n">7.1</span>Cooperative vs Independent Processes</h3>
+<div class="tw"><table>
+<tr><th>Independent process</th><th>Cooperative process</th></tr>
+<tr><td>Shares <b>nothing</b> with other processes</td><td><b>Shares</b> data, memory, files or other resources</td></tr>
+<tr><td>Cannot affect, and is not affected by, others</td><td><b>Can affect and be affected by</b> others; "look at it from both sides"</td></tr>
+<tr><td>No synchronization needed</td><td><b>Needs synchronization</b></td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Why processes cooperate, and how</span>
+<b>Reasons (Galvin):</b> information sharing, computation speed-up, modularity, convenience.<br>
+<b>IPC models:</b> (1) <b>Shared memory</b>: fast, but needs synchronization (this chapter). (2) <b>Message passing</b> (<code>send</code> / <code>receive</code>): the kernel handles it; easier, slower; can be direct or indirect (mailbox) and blocking (synchronous) or non-blocking. <b>Pipes</b> (ordinary and named / FIFO), <b>sockets</b> and <b>RPC</b> are forms of message passing.</div>
+</section>
+
+<!-- 7.2 -->
+<section id="s2">
+<h3><span class="n">7.2</span>Race Condition: Shared Data Example</h3>
+<div class="def"><b>Race condition:</b> several processes access and change shared data <b>concurrently</b>, and the <b>final result depends on the order</b> in which their instructions happen to run.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — data = 100</span>
+Shared <code>data = 100</code>.<br>
+<b>P1:</b> ① <code>a = data</code> ② <code>a = a + 50</code> ③ <code>data = a</code>.<br>
+<b>P2:</b> ① <code>b = data</code> ② <code>b = b + 5</code> ③ <code>data = b</code>.<br>
+"The OS can preempt any process at any moment, forcibly."</div>
+<div class="tw"><table>
+<tr><th>Interleaving</th><th>What happens</th><th>Final data</th></tr>
+<tr><td>A: P1 ①②, preempt → P2 ①②, preempt → P1 ③ → P2 ③</td><td>a = 150, b = 105 (still read 100). P1 writes 150; P2 then <b>overwrites</b> it with 105.</td><td><b>105</b> ✗</td></tr>
+<tr><td>B: P1 fully, then P2 (or P2 fully, then P1)</td><td>100 → 150 → 155</td><td><b>155</b> ✔ correct</td></tr>
+<tr><td>C: P2 ①②, preempt → P1 ①②, preempt → P2 ③ → P1 ③</td><td>P2 writes 105; P1 overwrites it with 150.</td><td><b>150</b> ✗</td></tr>
+</table></div>
+<p><b>Conclusion:</b> three different answers (105, 150, 155) from the same code. "When the result depends on the <b>order of execution</b>, something is wrong. Everyone is racing." That is a race condition. Only serial execution gives the correct 155. The +50 or +5 update was <b>lost</b> in A and C, which is called a <b>lost update</b>.</p>
+</section>
+
+<!-- 7.3 -->
+<section id="s3">
+<h3><span class="n">7.3</span>Critical Section: Count Increment/Decrement Example</h3>
+<div class="def"><b>Critical Section (CS):</b> the <b>segment of code</b> in which a process <b>accesses or updates shared data</b>. Only that part needs protection; the rest of the code is the <b>remainder section</b> (the lecture calls it the "non-critical section").</div>
+<div class="box lec"><span class="t">🎓 From the lecture — count = 10</span>
+A single high-level statement is <b>three machine instructions</b>, and preemption can strike between any two of them.
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">P1: count++               P2: count--
+ ① r1 = count              ① r2 = count
+ ② r1 = r1 + 1             ② r2 = r2 - 1
+ ③ count = r1              ③ count = r2</pre></div>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Interleaving of count++ and count-- producing wrong value 9">
+  <text x="20" y="22" class="b">Order 2 — the lost update (count starts at 10)</text>
+  <text x="20" y="55" class="b">P1</text><text x="20" y="125" class="b">P2</text>
+  <rect x="60" y="38" width="110" height="30" class="ac"/><text x="115" y="58" text-anchor="middle">r1 = 10</text>
+  <rect x="170" y="38" width="110" height="30" class="ac"/><text x="225" y="58" text-anchor="middle">r1 = 11</text>
+  <rect x="280" y="108" width="110" height="30" class="or"/><text x="335" y="128" text-anchor="middle">r2 = 10</text>
+  <rect x="390" y="108" width="110" height="30" class="or"/><text x="445" y="128" text-anchor="middle">r2 = 9</text>
+  <rect x="500" y="38" width="80" height="30" class="ac"/><text x="540" y="58" text-anchor="middle">count=11</text>
+  <rect x="580" y="108" width="80" height="30" class="or"/><text x="620" y="128" text-anchor="middle">count=9</text>
+  <path d="M280 75 V100 M500 75 V100 M580 75 V100" class="ln dash"/>
+  <text x="280" y="92" class="mut">preempt</text>
+  <path d="M60 170 H660" class="ln"/>
+  <text x="340" y="195" text-anchor="middle" style="fill:var(--bad)">Final count = 9 ✗ (should be 10). P1's increment is LOST.</text>
+  <text x="340" y="215" text-anchor="middle" class="mut">Reverse interleaving (P2 first) → final 11 ✗ · serial → 10 ✔</text>
+</svg>
+<figcaption>Figure 7.1: Race condition at machine-instruction level</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Order</th><th>Result</th></tr>
+<tr><td>1. P1 fully, then P2 (serial)</td><td>10 → 11 → <b>10</b> ✔</td></tr>
+<tr><td>2. P1 ①②, P2 ①②, P1 ③, P2 ③</td><td><b>9</b> ✗</td></tr>
+<tr><td>3. P2 ①②, P1 ①②, P2 ③, P1 ③</td><td><b>11</b> ✗</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Galvin's version of this example uses <code>counter = 5</code>, with wrong answers <b>4 or 6</b>. The idea is identical. Remember also that the <b>critical section is code</b>, not the shared variable itself; the lecture sometimes uses the term loosely.</div>
+</section>
+
+<!-- 7.4 -->
+<section id="s4">
+<h3><span class="n">7.4</span>Entry Section and Exit Section</h3>
+<figure>
+<svg viewBox="0 0 520 230" role="img" aria-label="General structure of a process: entry section, critical section, exit section, remainder section inside a loop">
+  <rect x="140" y="10" width="240" height="210" rx="6" class="bx"/>
+  <text x="155" y="32" class="mut" style="font-family:var(--code)">do {</text>
+  <rect x="170" y="42" width="190" height="34" class="pu"/><text x="265" y="64" text-anchor="middle" class="b">entry section</text>
+  <rect x="170" y="80" width="190" height="34" class="or"/><text x="265" y="102" text-anchor="middle" class="b">CRITICAL SECTION</text>
+  <rect x="170" y="118" width="190" height="34" class="pu"/><text x="265" y="140" text-anchor="middle" class="b">exit section</text>
+  <rect x="170" y="156" width="190" height="34" class="gr"/><text x="265" y="178" text-anchor="middle" class="b">remainder section</text>
+  <text x="155" y="210" class="mut" style="font-family:var(--code)">} while (true);</text>
+  <text x="390" y="64" class="mut">"may I enter?"</text>
+  <text x="390" y="102" class="mut">touches shared data</text>
+  <text x="390" y="140" class="mut">"I'm leaving"</text>
+  <text x="10" y="64" class="mut">permission check</text>
+  <text x="10" y="140" class="mut">release / signal</text>
+</svg>
+<figcaption>Figure 7.2: General structure of a process with a critical section</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Entry section</b>: the code just above the CS that <b>checks whether I may enter</b>. "We put a <b>trap</b> here" (a waiting loop).<br>
+<b>Exit section</b>: code that <b>tells the other process I've left</b> the CS, so it can now enter.</div>
+</section>
+
+<!-- 7.5 -->
+<section id="s5">
+<h3><span class="n">7.5</span>Critical Section Requirements: Mutual Exclusion</h3>
+<p>Any solution to the critical-section problem is judged on <b>three conditions</b>.</p>
+<div class="def"><b>1. Mutual Exclusion (ME):</b> at any time, <b>at most one process</b> can be in its critical section. If P1 is inside, P2 must stay out. This is <b>mandatory</b>.</div>
+</section>
+
+<!-- 7.6 -->
+<section id="s6">
+<h3><span class="n">7.6</span>Critical Section Requirements: Progress</h3>
+<div class="def"><b>2. Progress</b> (lecture's version): an <b>interested</b> process must be able to enter the CS; a <b>not-interested</b> process must <b>not block</b> it. Also, <b>no deadlock</b>. This is <b>mandatory</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P1 wants to enter, P2 doesn't care right now. P2 must not stand in P1's way. The uninterested process says: "We have <b>progressive thinking</b>. You go ahead; if we change our mind later, we'll come too."</div>
+<div class="box add"><span class="t">➕ Textbook definition (Galvin)</span>
+If <b>no process is in its CS</b> and some processes want to enter, then <b>only those not in their remainder section</b> can take part in deciding who enters next, and that decision <b>cannot be postponed indefinitely</b>.</div>
+</section>
+
+<!-- 7.7 -->
+<section id="s7">
+<h3><span class="n">7.7</span>Critical Section Requirements: Bounded Waiting</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — The phone call</span>
+There must be a <b>limit</b>. You phone a busy friend:
+<ul><li>"I'm busy, <b>I'll call back in 5 minutes</b>" → a known bound, so the wait is bounded ✔.</li>
+<li>"I'll call, I'll call…" from a meeting, with no time given → you wait indefinitely ✗.</li></ul>
+A process saying "I'll enter my CS at most 3 times" gives a bound; "infinite times" is not allowed, because the other process would wait forever.</div>
+<div class="def"><b>3. Bounded Waiting (textbook):</b> after a process has <b>requested</b> entry to its CS, there is a <b>limit on how many times other processes may enter their CS</b> before that request is granted. This guarantees <b>no starvation</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Is bounded waiting optional?)</span>
+The lecture calls bounded waiting "not so mandatory". In <b>Galvin, all three (ME, Progress, Bounded Waiting) are requirements</b> of a correct CS solution. GATE/IBPS-style questions often say "ME and Progress are <b>mandatory</b>; Bounded Waiting is <b>desirable</b>". Answer according to the question's wording, but know that a solution without bounded waiting <b>allows starvation</b>.</div>
+<div class="box add"><span class="t">➕ A fourth, informal condition</span>
+<b>No assumptions about speed or number of CPUs</b>. A solution must not rely on relative process speeds or on running on a single processor. This is often called "architectural neutrality" (Tanenbaum).</div>
+</section>
+
+<!-- 7.8 -->
+<section id="s8">
+<h3><span class="n">7.8</span>Two-Process Solutions</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A popular way to study solutions: take only <b>two processes</b>, try a technique to remove the CS problem, and <b>test it against the three conditions</b>. The lecture names the processes <b>P1 and P2</b>, with array index 0 for P1 and 1 for P2.</div>
+<div class="box add"><span class="t">➕ The full map of solutions</span>
+<div class="tw"><table>
+<tr><th>Category</th><th>Solutions</th></tr>
+<tr><td>Software (user mode, busy waiting)</td><td>Lock variable · Turn variable (strict alternation) · Flag array · <b>Peterson's</b> · Dekker's · Bakery (n processes)</td></tr>
+<tr><td>Hardware</td><td>Disabling interrupts · <b>Test-and-Set (TSL)</b> · Swap / Compare-and-Swap</td></tr>
+<tr><td>OS / language level</td><td><b>Semaphores</b> · Mutex locks · <b>Monitors</b> · Condition variables</td></tr>
+</table></div></div>
+</section>
+
+<!-- 7.9 -->
+<section id="s9">
+<h3><span class="n">7.9</span>Turn Variable (Strict Alternation)</h3>
+<div class="def">A shared variable <code>turn</code> (0 or 1) says <b>whose turn it is</b>: <code>turn = 0</code> means P1 may enter; <code>turn = 1</code> means P2 may enter.</div>
+<div class="num"><span class="t">Code (lecture)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">// shared: int turn = 0;
+P1:                               P2:
+while (1) {                       while (1) {
+    while (turn != 0);  // trap       while (turn != 1);  // trap
+    &lt;critical section&gt;                &lt;critical section&gt;
+    turn = 1;           // exit       turn = 0;           // exit
+    &lt;non-critical section&gt;            &lt;non-critical section&gt;
+}                                 }</pre>
+<b>Two kinds of while:</b> <code>while(1){…}</code> repeats its body forever. <code>while(cond);</code> (note the <b>semicolon</b>) is a <b>trap</b>: it spins on the condition and moves on only when the condition becomes false. This is <b>busy waiting</b>.</div>
+<div class="box lec"><span class="t">🎓 Mutual exclusion check</span>
+<code>turn</code> can hold only one value at a time. With turn = 0, P2 is trapped; with turn = 1, P1 is trapped. Only one can be inside, so <b>ME is satisfied ✔</b>.</div>
+</section>
+
+<!-- 7.10 -->
+<section id="s10">
+<h3><span class="n">7.10</span>Turn Variable: Why Progress Fails</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+turn = 0, but <b>P1 is not interested</b>. <b>P2 wants to enter</b>, but it is stuck in <code>while(turn != 1)</code> until P1 goes through its CS and sets turn = 1. The <b>uninterested P1 is blocking the interested P2</b>, so <b>Progress fails ✗</b>. Entry is forced into <b>strict alternation</b>: P1, P2, P1, P2…</div>
+<div class="tw"><table>
+<tr><th>Turn variable</th><th>Verdict</th></tr>
+<tr><td>Mutual exclusion</td><td>✔ Yes</td></tr>
+<tr><td>Progress</td><td>✗ No: strict alternation</td></tr>
+<tr><td>Bounded waiting <span class="badge">ADDED</span></td><td>✔ Yes: after one turn each, the other process is guaranteed entry</td></tr>
+</table></div>
+</section>
+
+<!-- 7.11 -->
+<section id="s11">
+<h3><span class="n">7.11</span>Flag Array Solution</h3>
+<div class="def"><code>boolean flag[2] = {false, false}</code>. <code>flag[i] = true</code> means "<b>I am interested</b> in entering the CS".</div>
+<div class="num"><span class="t">Code (lecture)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">P1:                               P2:
+flag[0] = true;    // interested  flag[1] = true;
+while (flag[1]);   // trap        while (flag[0]);
+&lt;critical section&gt;                &lt;critical section&gt;
+flag[0] = false;   // exit        flag[1] = false;
+&lt;non-critical section&gt;            &lt;non-critical section&gt;</pre></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>ME ✔</b>: a process waits while the other's flag is true. <b>Progress (no contention)</b>: if P1 is not interested (flag[0] = false), P2 sets flag[1] = true, finds flag[0] false and enters, so an uninterested process doesn't block. "<b>But, but, but… the picture isn't over yet.</b>"</div>
+</section>
+
+<!-- 7.12 -->
+<section id="s12">
+<h3><span class="n">7.12</span>Flag Array: Deadlock Problem</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — Both say "after you"</span>
+<ol>
+<li>P1 sets <code>flag[0] = true</code>, then is <b>preempted</b>.</li>
+<li>P2 sets <code>flag[1] = true</code>, then is preempted. <b>Both flags are true.</b></li>
+<li>P1 resumes: <code>while(flag[1])</code> is true, so it waits.</li>
+<li>P2 resumes: <code>while(flag[0])</code> is true, so it waits.</li>
+</ol>
+Each waits for the other to reset its flag. <b>Neither enters, forever: deadlock</b>, so progress is hampered.</div>
+<div class="tw"><table>
+<tr><th>Flag array</th><th>Verdict</th></tr>
+<tr><td>Mutual exclusion</td><td>✔ Yes</td></tr>
+<tr><td>Progress</td><td>✗ No: <b>deadlock</b> possible when both set their flags together</td></tr>
+<tr><td>Bounded waiting</td><td>✔ Yes (when no deadlock occurs)</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<code>flag[j] = true</code> means "the other process is <b>interested</b>", not that it is <i>in</i> the CS. Summary: <b>turn variable fails Progress through strict alternation; flag array fails Progress through deadlock.</b> Peterson combines the two and fixes both.</div>
+</section>
+
+<!-- 7.13 -->
+<section id="s13">
+<h3><span class="n">7.13</span>Peterson's Solution</h3>
+<div class="def"><b>Peterson's solution (1981):</b> a <b>software</b> solution for <b>two processes</b> that <b>combines the flag array and the turn variable</b>. A process announces interest (flag) and then <b>politely gives the turn to the other</b>. It satisfies <b>all three conditions</b>.</div>
+<div class="num"><span class="t">Code (lecture form; initially turn = 0, flag = {F, F})</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">P1:                                    P2:
+flag[0] = true;   // I'm interested    flag[1] = true;
+turn = 1;         // "you go first"    turn = 0;
+while (turn == 1 &amp;&amp; flag[1] == true);  while (turn == 0 &amp;&amp; flag[0] == true);
+&lt;critical section&gt;                     &lt;critical section&gt;
+flag[0] = false;                       flag[1] = false;
+&lt;non-critical section&gt;                 &lt;non-critical section&gt;</pre>
+Spin <b>only while both</b> are true: "it's the other's turn" <b>and</b> "the other is interested". If either is false, enter.</div>
+<div class="box add"><span class="t">➕ Galvin's form (Pi / Pj, j = 1 − i)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0">flag[i] = true;  turn = j;
+while (flag[j] &amp;&amp; turn == j);   // busy wait
+    /* critical section */
+flag[i] = false;
+    /* remainder section */</pre>
+This is logically identical to the lecture's code; only the order of the <code>&amp;&amp;</code> operands differs.</div>
+</section>
+
+<!-- 7.14 -->
+<section id="s14">
+<h3><span class="n">7.14</span>Peterson's Solution: Mutual Exclusion Scenario</h3>
+<div class="num"><span class="t">Walkthrough (lecture): both want to enter</span>
+<div class="tw"><table>
+<tr><th>Step</th><th>Action</th><th>turn</th><th>flag[0]</th><th>flag[1]</th><th>Result</th></tr>
+<tr><td>1</td><td>P1: flag[0] = T, turn = 1 → preempted</td><td>1</td><td>T</td><td>F</td><td></td></tr>
+<tr><td>2</td><td>P2: flag[1] = T, turn = 0</td><td>0</td><td>T</td><td>T</td><td></td></tr>
+<tr><td>3</td><td>P2 checks turn==0 (T) &amp;&amp; flag[0]==T (T)</td><td>0</td><td>T</td><td>T</td><td><b>P2 spins</b></td></tr>
+<tr><td>4</td><td>P1 resumes: turn==1? <b>F</b> → loop exits</td><td>0</td><td>T</td><td>T</td><td><b>P1 enters CS</b></td></tr>
+<tr><td>5</td><td>P1 exits: flag[0] = F</td><td>0</td><td>F</td><td>T</td><td></td></tr>
+<tr><td>6</td><td>P2: turn==0 (T) &amp;&amp; flag[0]==T (<b>F</b>)</td><td>0</td><td>F</td><td>T</td><td><b>P2 enters CS</b></td></tr>
+</table></div>
+<b>Conclusion:</b> <code>turn</code> can hold only one value, so whoever wrote <code>turn</code> <b>last</b> waits. Only one process enters at a time, so <b>ME ✔</b>. Unlike the flag array, there is <b>no deadlock</b> when both are interested.</div>
+</section>
+
+<!-- 7.15 -->
+<section id="s15">
+<h3><span class="n">7.15</span>Peterson's Solution: Progress Guaranteed</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P1 is <b>not interested</b> (flag[0] = F, turn = 0). P2 sets flag[1] = T and turn = 0, then checks <code>turn==0 (T) &amp;&amp; flag[0]==T (F)</code>, which is <b>false</b>, so <b>P2 enters immediately</b>. It can do this again and again while P1 stays uninterested. The uninterested process never blocks, so <b>Progress ✔</b>.</div>
+<div class="tw"><table>
+<tr><th>Peterson's solution</th><th>Verdict</th></tr>
+<tr><td>Mutual exclusion</td><td>✔</td></tr>
+<tr><td>Progress</td><td>✔</td></tr>
+<tr><td>Bounded waiting <span class="badge">ADDED</span></td><td>✔: a waiting process enters after <b>at most one</b> entry by the other, because the other sets turn in its favour on the next attempt</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Limitations (textbook)</span>
+<ul>
+<li>Works only for <b>2 processes</b>. For n processes, use the <b>Bakery algorithm</b> (Lamport). <b>Dekker's algorithm</b> was the first correct two-process software solution (1965).</li>
+<li>Uses <b>busy waiting</b>, which wastes CPU cycles.</li>
+<li>It is <b>not guaranteed on modern CPUs</b>, because compilers and processors may <b>reorder</b> independent reads and writes. Memory barriers are needed.</li>
+</ul></div>
+</section>
+
+<!-- 7.16 -->
+<section id="s16">
+<h3><span class="n">7.16</span>Lock Variable</h3>
+<div class="def"><b>Lock variable:</b> a single shared variable <code>lock</code>. <b>0 means the CS "room" is free</b>; <b>1 means someone is inside, so it is locked</b>. A process waits while the room is locked, then locks it, enters, and unlocks it on exit.</div>
+<div class="num"><span class="t">Code (lecture)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">// shared: int lock = 0;
+while (lock != 0);   // ① test  (same as while(lock == 1);  "kaam ek, naam alag")
+lock = 1;            // ② set — lock the room
+&lt;critical section&gt;
+lock = 0;            // exit: open the lock
+&lt;non-critical section&gt;</pre></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Without preemption, P1 finds lock = 0, sets it to 1, enters, and sets it back to 0 on leaving. Then P2 does the same. It looks perfect in either order. "<b>But there is a very big BUT: preemption.</b>" Lock variables run in user mode and work for any number of processes.</div>
+</section>
+
+<!-- 7.17 -->
+<section id="s17">
+<h3><span class="n">7.17</span>Lock Variable: Mutual Exclusion Failure under Preemption</h3>
+<div class="num"><span class="t">Walkthrough (lecture): lock = 0 initially</span>
+<div class="tw"><table>
+<tr><th>Step</th><th>Event</th><th>lock</th></tr>
+<tr><td>1</td><td>P1 runs ① <code>while(lock != 0)</code>, which is false (lock = 0)</td><td>0</td></tr>
+<tr><td>2</td><td>P1 is <b>preempted just before ②</b> (a higher-priority process or an expired quantum)</td><td>0</td></tr>
+<tr><td>3</td><td>P2 runs ①: still 0, so it passes, sets lock = 1 and <b>enters the CS</b></td><td>1</td></tr>
+<tr><td>4</td><td>P1 resumes <b>at ②</b> (it already "saw" 0), sets lock = 1 and <b>enters the CS</b></td><td>1</td></tr>
+<tr><td>5</td><td><b>Both P1 and P2 are inside the CS</b></td><td>✗</td></tr>
+</table></div>
+<b>Conclusion:</b> <b>Mutual exclusion fails</b> ("dhajjiyan ud gayi", torn to shreds). Without ME, "why even talk about progress or bounded waiting?" <b>Root cause:</b> the <b>test</b> (①) and the <b>set</b> (②) are <b>two separate instructions</b>, and preemption can strike between them. Fix: <b>combine test and set into one atomic instruction</b>.</div>
+</section>
+
+<!-- 7.18 -->
+<section id="s18">
+<h3><span class="n">7.18</span>Test-and-Set (TSL) Instruction</h3>
+<div class="def"><b>Test-and-Set (TSL, Test and Set Lock):</b> a <b>hardware instruction</b> that, in <b>one atomic (uninterruptible) step</b>, <b>returns the old value</b> of a lock variable and <b>sets it to true</b>.</div>
+<div class="num"><span class="t">Code (lecture's "most popular snippet")</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">boolean TestAndSet(boolean *target) {   // executed ATOMICALLY by hardware
+    boolean s = *target;   // remember OLD value of lock
+    *target = true;        // ALWAYS set lock = true
+    return s;              // return OLD value
+}
+
+// shared: boolean lock = false;
+while (TestAndSet(&amp;lock));   // spin while old value was true
+&lt;critical section&gt;
+lock = false;                // release</pre>
+<b>First caller</b> (lock = false): s = false, lock becomes true, and false is returned. The loop exits and the process <b>enters the CS</b>. Whatever the old value, TSL <b>always</b> leaves lock = true.</div>
+</section>
+
+<!-- 7.19 -->
+<section id="s19">
+<h3><span class="n">7.19</span>Test-and-Set: Mutual Exclusion with Two Processes</h3>
+<div class="num"><span class="t">Walkthrough (lecture)</span>
+<ol>
+<li>P1: <code>TestAndSet(&amp;lock)</code> with lock = false returns <b>false</b> and sets lock = true. P1 leaves the loop, then is <b>preempted before entering the CS</b>.</li>
+<li>P2: <code>TestAndSet(&amp;lock)</code> sees lock = true, returns <b>true</b>, and sets lock = true again. <b>P2 is trapped</b> and spins.</li>
+<li>P1 resumes. The test and the set already happened <b>together</b>, so it simply enters the CS, and on exit sets lock = false.</li>
+<li>P2's next call returns false, so it enters.</li>
+</ol>
+<b>Conclusion:</b> preemption can no longer split the test from the set, so <b>ME is guaranteed ✔</b>.</div>
+<div class="tw"><table>
+<tr><th>Simple TSL lock <span class="badge">ADDED</span></th><th>Verdict</th></tr>
+<tr><td>Mutual exclusion</td><td>✔</td></tr>
+<tr><td>Progress</td><td>✔</td></tr>
+<tr><td>Bounded waiting</td><td>✗: an unlucky process may lose the race every time. Galvin gives an extended TSL algorithm with a <code>waiting[]</code> array to fix this.</td></tr>
+<tr><td>Busy waiting</td><td>Yes: the process spins, so it is a <b>spinlock</b></td></tr>
+</table></div>
+</section>
+
+<!-- 7.19A -->
+<section id="s19a">
+<h3><span class="n">7.19A</span>Busy Waiting, Spinlocks, Mutex &amp; Hardware Support <span class="badge">ADDED</span></h3>
+<ul>
+<li><b>Busy waiting</b>: a waiting process loops continuously (the lecture's "trap"), <b>wasting CPU cycles</b>. A lock that busy-waits is a <b>spinlock</b>. It is useful on <b>multiprocessors</b> when the wait is short, because it avoids a context switch.</li>
+<li><b>Disabling interrupts</b>: on a uniprocessor, turn interrupts off before the CS so no preemption can occur. It is <b>not feasible on multiprocessors</b> and too dangerous to give to user programs (it is a privileged instruction, Chapter 3).</li>
+<li><b>Swap / Compare-and-Swap (CAS)</b>: another atomic instruction. <code>compare_and_swap(&amp;lock, 0, 1)</code> sets lock to 1 only if it is currently 0, and returns the old value. It is used in x86 (<code>CMPXCHG</code>) and in lock-free data structures.</li>
+<li><b>Mutex lock</b>: the simplest OS tool. <code>acquire()</code> waits until <code>available</code> is true, then sets it false; <code>release()</code> sets it true. Both must be atomic. A mutex is <b>owned</b>: only the process that locked it may unlock it.</li>
+</ul>
+</section>
+
+<!-- 7.20 -->
+<section id="s20">
+<h3><span class="n">7.20</span>Semaphores: Introduction</h3>
+<div class="def"><b>Semaphore</b> (Dijkstra, 1965): an <b>integer variable</b> that, apart from initialization, is accessed <b>only through two atomic operations</b>, <b>wait()</b> and <b>signal()</b>. It is used to manage concurrency and solve synchronization problems.</div>
+<div class="tw"><table>
+<tr><th>Binary semaphore</th><th>Counting semaphore</th></tr>
+<tr><td>Value only <b>0 or 1</b></td><td>Value is an <b>unrestricted integer</b> (lecture: −∞ to +∞)</td></tr>
+<tr><td>Used for <b>mutual exclusion</b>; behaves like a mutex lock</td><td>Used to control access to a resource with <b>N instances</b> (initial value = N)</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Atomicity)</span>
+The lecture calls a semaphore "just an integer variable". The key point is that <b>wait and signal are atomic</b>: no two processes can run wait/signal on the same semaphore at the same time. Otherwise a semaphore would fail exactly as the lock variable did in 7.17. Atomicity is achieved by disabling interrupts (uniprocessor) or with spinlocks or TSL (multiprocessor).</div>
+</section>
+
+<!-- 7.21 -->
+<section id="s21">
+<h3><span class="n">7.21</span>Binary Semaphore: Wait (P) and Signal (V)</h3>
+<div class="tw"><table>
+<tr><th>Operation</th><th>Other names</th><th>Lecture's meaning</th></tr>
+<tr><td><b>P(S)</b></td><td><b>wait</b> · sleep · <b>down</b> (Dutch <i>proberen</i>, "to test") <span class="badge">ADDED</span></td><td>"Wait, I'm in the CS" · "you go to sleep" · "no need to be up right now". Called <b>before</b> the CS.</td></tr>
+<tr><td><b>V(S)</b></td><td><b>signal</b> · wakeup · <b>up</b> (Dutch <i>verhogen</i>, "to increment") <span class="badge">ADDED</span></td><td>"I'm out, you can come" · "I'll wake you up" · "I'll make you up". Called <b>after</b> the CS.</td></tr>
+</table></div>
+<div class="num"><span class="t">Code (lecture, busy-wait form)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">P(S) {                 // wait / down
+    while (S == 0);    // trap while 0      (Galvin: while (S &lt;= 0);)
+    S--;               // 1 → 0
+}
+V(S) {                 // signal / up
+    S++;               // 0 → 1, no check at all
+}
+
+// each process:
+P(S);   &lt;critical section&gt;   V(S);   &lt;remainder&gt;</pre></div>
+</section>
+
+<!-- 7.22 -->
+<section id="s22">
+<h3><span class="n">7.22</span>Binary Semaphore: Working Example</h3>
+<div class="num"><span class="t">Walkthrough (lecture): S = 1</span>
+<div class="tw"><table>
+<tr><th>Step</th><th>Event</th><th>S</th></tr>
+<tr><td>1</td><td>P1 does P(S): S == 0? No → S-- → <b>P1 enters the CS</b></td><td>0</td></tr>
+<tr><td>2</td><td>P2 does P(S): S == 0? Yes → <b>P2 trapped</b> ("no matter how hard it tries")</td><td>0</td></tr>
+<tr><td>3</td><td>P1 leaves → V(S)</td><td>1</td></tr>
+<tr><td>4</td><td>P2: S == 0? No → S-- → <b>P2 enters</b></td><td>0</td></tr>
+</table></div>
+<b>Conclusion:</b> a binary semaphore initialised to <b>1</b> gives mutual exclusion. If it were initialised to <b>0</b>, nobody could enter until someone signals, which is useful for <b>ordering</b> (see 7.24A).</div>
+</section>
+
+<!-- 7.23 -->
+<section id="s23">
+<h3><span class="n">7.23</span>Counting Semaphore and Block List</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — S = 5</span>
+The initial value S = 5 means up to 5 processes may proceed at once. Each P(S) decrements S:
+P1 → 4, P2 → 3, P3 → 2, P4 → 1, P5 → 0 (capacity full). P6 → <b>−1</b>, so it goes to the <b>block list</b>. P7 → −2 (block list), P8 → −3 (block list).</div>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Counting semaphore from 5 down to minus 3 with processes P6 P7 P8 in block list">
+  <text x="20" y="25" class="b">S value after each P(S):</text>
+  <g>
+  <rect x="20" y="40" width="70" height="34" class="gr"/><text x="55" y="62" text-anchor="middle">5 start</text>
+  <rect x="95" y="40" width="70" height="34" class="gr"/><text x="130" y="62" text-anchor="middle">P1 → 4</text>
+  <rect x="170" y="40" width="70" height="34" class="gr"/><text x="205" y="62" text-anchor="middle">P2 → 3</text>
+  <rect x="245" y="40" width="70" height="34" class="gr"/><text x="280" y="62" text-anchor="middle">P3 → 2</text>
+  <rect x="320" y="40" width="70" height="34" class="gr"/><text x="355" y="62" text-anchor="middle">P4 → 1</text>
+  <rect x="395" y="40" width="70" height="34" class="ac"/><text x="430" y="62" text-anchor="middle">P5 → 0</text>
+  <rect x="470" y="40" width="65" height="34" class="or"/><text x="502" y="62" text-anchor="middle">P6 → −1</text>
+  <rect x="540" y="40" width="65" height="34" class="or"/><text x="572" y="62" text-anchor="middle">P7 → −2</text>
+  <rect x="610" y="40" width="65" height="34" class="or"/><text x="642" y="62" text-anchor="middle">P8 → −3</text>
+  </g>
+  <rect x="470" y="110" width="205" height="44" rx="5" class="or"/><text x="572" y="128" text-anchor="middle" class="b">BLOCK LIST</text><text x="572" y="146" text-anchor="middle">P6 → P7 → P8</text>
+  <path d="M502 74 V108 M572 74 V108 M642 74 V108" class="ln dash"/>
+  <text x="20" y="110" class="mut">S &gt; 0 : that many more may proceed</text>
+  <text x="20" y="130" class="mut">S = 0 : full, block list empty</text>
+  <text x="20" y="150" class="mut">S &lt; 0 : |S| processes blocked (here 3)</text>
+</svg>
+<figcaption>Figure 7.3: Counting semaphore values and the block list (lecture example)</figcaption>
+</figure>
+<div class="num"><span class="t">wait / P with a block list (lecture)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">P(S) {
+    S--;
+    if (S &lt; 0) {
+        add this process to block list;   // "so ja bhaiya, thodi der ke liye"
+        block();                          // sleep — NO busy waiting
+    }
+    // else: proceed into critical section / use resource
+}</pre></div>
+<div class="box add"><span class="t">➕ Textbook form (Galvin)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0">typedef struct { int value; struct process *list; } semaphore;</pre>
+<code>block()</code> suspends the caller and moves it to the semaphore's waiting queue (the lecture's "block list"). This version has <b>no busy waiting</b>, unlike 7.21. Here the value can go negative; in the classic busy-wait definition it never does.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The lecture says "S = how many processes can be <i>in the critical section</i>". Strictly, a CS admits one process. A counting semaphore counts <b>available instances of a resource</b>, e.g. 5 printers or 5 database connections, so "5 processes may <b>use the resource</b> at once".</div>
+</section>
+
+<!-- 7.24 -->
+<section id="s24">
+<h3><span class="n">7.24</span>Counting Semaphore: Signal Operation and Wake-up</h3>
+<div class="num"><span class="t">signal / V with wake-up (lecture)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">V(S) {
+    S++;
+    if (S &lt;= 0) {                       // someone is still blocked
+        remove a process P from block list;
+        wakeup(P);                       // "jaag jao" → moves to ready queue
+    }
+}</pre>
+<b>Example:</b> S = −3 (P6, P7, P8 blocked). P1 leaves and does V(S), so S = −2. Since −2 ≤ 0, one blocked process is <b>woken up</b> and can proceed.</div>
+<div class="box alert"><span class="t">🎯 Interpreting the value (memorise)</span>
+<ul>
+<li><b>Initial S</b> = number of processes allowed through at the same time (resource instances).</li>
+<li><b>S &gt; 0</b>: that many more can enter without blocking.</li>
+<li><b>S = 0</b>: all instances in use and the block list empty.</li>
+<li><b>S &lt; 0</b>: <b>|S| processes are blocked</b>.</li>
+<li>The woken process is often chosen <b>FIFO</b>, which gives bounded waiting. A woken process has already decremented S, so it proceeds directly.</li>
+</ul></div>
+</section>
+
+<!-- 7.24A -->
+<section id="s24a">
+<h3><span class="n">7.24A</span>Semaphore Numericals <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Numerical 1: final value</span>
+A counting semaphore is initialised to <b>10</b>. Then <b>6 P (wait)</b> and <b>4 V (signal)</b> operations are performed. Final value?<br>
+<b>Step:</b> each P is −1 and each V is +1, so 10 − 6 + 4 = <b>8</b>. The order does not matter for the final value.</div>
+<div class="num"><span class="t">Numerical 2: blocked processes</span>
+S = 7. Twenty P operations and fifteen V operations are done. Final S? 7 − 20 + 15 = <b>2</b>.<br>
+If instead only 12 P operations were done and no V, S = 7 − 12 = <b>−5</b>, so <b>5 processes are blocked</b>.</div>
+<div class="num"><span class="t">Numerical 3: ordering with a semaphore initialised to 0</span>
+We need statement S1 (in P1) to run <b>before</b> S2 (in P2). Use <code>synch = 0</code>:
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0">P1:  S1;  signal(synch);        P2:  wait(synch);  S2;</pre>
+P2 blocks until P1 signals, so <b>S1 always precedes S2</b>.</div>
+<div class="num"><span class="t">Numerical 4: deadlock with two semaphores</span>
+S = Q = 1.
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0">P0: wait(S); wait(Q); …      P1: wait(Q); wait(S); …</pre>
+P0 takes S and P1 takes Q. Then each waits forever for the other's semaphore: <b>deadlock</b>. Using the <b>same order</b> in both processes prevents it (see Chapter 8).</div>
+<div class="box add"><span class="t">➕ Problems with semaphores</span>
+<b>Deadlock</b> (above) · <b>starvation</b> (LIFO waiting list) · <b>priority inversion</b>: a low-priority process holds a semaphore needed by a high-priority one, fixed by the <b>priority-inheritance protocol</b> (the Mars Pathfinder bug) · <b>programmer errors</b>: swapping wait and signal breaks ME, and omitting signal causes deadlock. These errors led to <b>monitors</b> (7.38).</div>
+</section>
+
+<!-- 7.25 -->
+<section id="s25">
+<h3><span class="n">7.25</span>Producer-Consumer Problem (Bounded Buffer)</h3>
+<div class="def">A <b>producer</b> produces items one at a time and puts them into a <b>shared buffer of n slots</b>. A <b>consumer</b> takes items out one at a time. The two must be synchronized so that the producer never inserts into a full buffer, the consumer never removes from an empty one, and both never touch the buffer at the same time.</div>
+<figure>
+<svg viewBox="0 0 680 160" role="img" aria-label="Producer inserting into bounded buffer of n slots, consumer removing">
+  <defs><marker id="a71" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="50" width="110" height="50" rx="6" class="ac"/><text x="65" y="80" text-anchor="middle" class="b">Producer</text>
+  <path d="M120 75 H175" class="lna" marker-end="url(#a71)"/><text x="148" y="66" text-anchor="middle" class="mut">insert</text>
+  <g>
+  <rect x="180" y="55" width="50" height="40" class="gr"/><rect x="230" y="55" width="50" height="40" class="gr"/><rect x="280" y="55" width="50" height="40" class="gr"/>
+  <rect x="330" y="55" width="50" height="40" class="bx"/><rect x="380" y="55" width="50" height="40" class="bx"/><rect x="430" y="55" width="50" height="40" class="bx"/>
+  </g>
+  <text x="255" y="80" text-anchor="middle">item</text><text x="305" y="80" text-anchor="middle">item</text><text x="205" y="80" text-anchor="middle">item</text>
+  <text x="330" y="40" text-anchor="middle" class="b">Buffer of n slots</text>
+  <text x="255" y="118" text-anchor="middle" class="mut">full = 3</text><text x="405" y="118" text-anchor="middle" class="mut">empty = 3</text>
+  <path d="M480 75 H555" class="lna" marker-end="url(#a71)"/><text x="518" y="66" text-anchor="middle" class="mut">remove</text>
+  <rect x="560" y="50" width="110" height="50" rx="6" class="or"/><text x="615" y="80" text-anchor="middle" class="b">Consumer</text>
+  <text x="65" y="130" text-anchor="middle" style="fill:var(--bad);font-size:12px">all full → OVERFLOW</text>
+  <text x="615" y="130" text-anchor="middle" style="fill:var(--bad);font-size:12px">all empty → UNDERFLOW</text>
+</svg>
+<figcaption>Figure 7.4: Bounded-buffer producer-consumer</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"Very popular; many questions can be asked." Two dangers: <b>overflow</b>, when the producer keeps inserting into a full buffer, and <b>underflow</b>, when the consumer tries to consume from an empty buffer. "Remember these two words: <b>empty</b> and <b>full</b>."</div>
+</section>
+
+<!-- 7.26 -->
+<section id="s26">
+<h3><span class="n">7.26</span>Producer-Consumer: Full, Empty and Mutex Semaphores</h3>
+<div class="tw"><table>
+<tr><th>Semaphore</th><th>Initial value</th><th>Counts / purpose</th><th>Prevents</th></tr>
+<tr><td><b>full</b> (counting)</td><td><b>0</b></td><td>Number of <b>filled</b> slots; nothing is inserted yet</td><td>Underflow (consumer blocks at 0)</td></tr>
+<tr><td><b>empty</b> (counting)</td><td><b>n</b></td><td>Number of <b>empty</b> slots; all are empty at the start</td><td>Overflow (producer blocks at 0)</td></tr>
+<tr><td><b>mutex</b> (binary)</td><td><b>1</b></td><td>Mutual exclusion on the buffer: producer and consumer must never meet face to face ("aamna-saamna")</td><td>Race on the buffer</td></tr>
+</table></div>
+<p>At any time, <b>full + empty = n</b> (ignoring operations in progress).</p>
+</section>
+
+<!-- 7.27 -->
+<section id="s27">
+<h3><span class="n">7.27</span>Producer Code Walkthrough</h3>
+<div class="num"><span class="t">Producer (lecture; buffer index added from Galvin)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">// semaphore full = 0, empty = n, mutex = 1;   int in = 0;
+Producer() {
+    while (true) {
+        item = produce_item();
+        wait(empty);        // one fewer empty slot   (n → n−1); blocks if 0 = FULL
+        wait(mutex);        // lock buffer            (1 → 0)
+        buffer[in] = item;  // insert
+        in = (in + 1) % n;  //                        [Galvin]
+        signal(mutex);      // unlock                 (0 → 1)
+        signal(full);       // one more filled slot   (0 → 1)
+    }
+}</pre></div>
+</section>
+
+<!-- 7.28 -->
+<section id="s28">
+<h3><span class="n">7.28</span>Consumer Code Walkthrough</h3>
+<div class="num"><span class="t">Consumer (lecture; buffer index added from Galvin)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">// int out = 0;
+Consumer() {
+    while (true) {
+        wait(full);          // one fewer filled slot  (blocks if 0 = EMPTY)
+        wait(mutex);         // lock buffer
+        item = buffer[out];  // remove
+        out = (out + 1) % n; //                         [Galvin]
+        signal(mutex);       // unlock
+        signal(empty);       // one more empty slot
+        consume_item(item);  // Galvin consumes outside the CS
+    }
+}</pre></div>
+<div class="box lec"><span class="t">🎓 Lecture's key insight: "look how opposite they are"</span>
+The <b>producer</b> does <b>wait(empty) … signal(full)</b>. The <b>consumer</b> does <b>wait(full) … signal(empty)</b>. "Once you get this, producer-consumer becomes a <b>chindi</b> (trivial) problem."</div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Order of the waits)</span>
+<b>Never swap</b> <code>wait(empty)</code> and <code>wait(mutex)</code> in the producer, or <code>wait(full)</code> and <code>wait(mutex)</code> in the consumer. If the producer takes the mutex first and then blocks on <code>empty</code> (buffer full), the consumer can never get the mutex to free a slot: <b>deadlock</b>. Swapping the two <b>signals</b> is harmless.</div>
+<div class="num"><span class="t">Numerical: trace with n = 3</span>
+Start: full = 0, empty = 3, mutex = 1.<br>
+The producer inserts 3 items, giving full = 3 and empty = 0. A 4th produce blocks on wait(empty), because empty would become −1 and the producer goes to the block list.<br>
+The consumer removes 1 item, giving full = 2 and empty = 1 after signal(empty), which <b>wakes the producer</b>.<br>
+<b>Conclusion:</b> overflow and underflow are prevented automatically by the counting semaphores.</div>
+</section>
+
+<!-- 7.29 -->
+<section id="s29">
+<h3><span class="n">7.29</span>Readers-Writers Problem</h3>
+<div class="def">A shared database or file is accessed by many <b>readers</b> (only read) and <b>writers</b> (update). <b>Many readers may read together</b>, but a <b>writer needs exclusive access</b>: no other writer and no reader.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — conflicting pairs (as in DBMS)</span>
+<div class="tw"><table>
+<tr><th>Pair</th><th>Allowed together?</th></tr>
+<tr><td>Read – Read</td><td>✔ Non-conflicting: no inconsistency</td></tr>
+<tr><td>Read – Write</td><td>✗ Conflicting</td></tr>
+<tr><td>Write – Read</td><td>✗ Conflicting</td></tr>
+<tr><td>Write – Write</td><td>✗ Conflicting</td></tr>
+</table></div>
+"Anything paired with a <b>write</b> is conflicting."</div>
+<div class="tw"><table>
+<tr><th>Shared variable</th><th>Initial</th><th>Purpose</th></tr>
+<tr><td><b>mutex</b> (semaphore)</td><td>1</td><td>Protects <code>readcount</code></td></tr>
+<tr><td><b>wrt</b> (semaphore; Galvin: rw_mutex)</td><td>1</td><td>Exclusive access for writers; held by the <b>first reader</b> on behalf of all readers</td></tr>
+<tr><td><b>readcount</b> (int)</td><td>0</td><td>Number of readers currently reading</td></tr>
+</table></div>
+</section>
+
+<!-- 7.30 -->
+<section id="s30">
+<h3><span class="n">7.30</span>Readers-Writers: Writer Process Code</h3>
+<div class="num"><span class="t">Writer (lecture)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0">Writer() {
+    wait(wrt);      // 1 → 0: no other writer, no reader
+    /* perform WRITE */
+    signal(wrt);    // 0 → 1: others may now read/write
+}</pre>
+"While I'm writing, please nobody come to write and nobody come to read."</div>
+</section>
+
+<!-- 7.31 -->
+<section id="s31">
+<h3><span class="n">7.31</span>Readers-Writers: Reader Process Code</h3>
+<div class="num"><span class="t">Reader (lecture): it uses the mutex twice</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">Reader() {
+    wait(mutex);                 // protect readcount
+    readcount++;
+    if (readcount == 1)          // FIRST reader…
+        wait(wrt);               // …locks out writers for ALL readers
+    signal(mutex);
+
+    /* perform READ */           // many readers can be here together
+
+    wait(mutex);
+    readcount--;
+    if (readcount == 0)          // LAST reader leaving…
+        signal(wrt);             // …lets writers in
+    signal(mutex);
+}</pre></div>
+<p>Only the <b>first</b> reader competes with writers on <code>wrt</code>, and only the <b>last</b> reader releases it. Readers in between just update <code>readcount</code>.</p>
+</section>
+
+<!-- 7.32 -->
+<section id="s32">
+<h3><span class="n">7.32</span>Readers-Writers: Walkthrough with Multiple Readers</h3>
+<div class="num"><span class="t">Walkthrough (lecture)</span>
+<div class="tw"><table>
+<tr><th>Event</th><th>mutex</th><th>readcount</th><th>wrt</th><th>Effect</th></tr>
+<tr><td>Start</td><td>1</td><td>0</td><td>1</td><td></td></tr>
+<tr><td>R1 enters: wait(mutex), rc++ → 1, first reader → wait(wrt), signal(mutex)</td><td>1</td><td>1</td><td><b>0</b></td><td>R1 reads; writers locked out</td></tr>
+<tr><td>R2 enters: rc++ → 2; not the first, so wrt is untouched</td><td>1</td><td>2</td><td>0</td><td>R1 and R2 read together ✔</td></tr>
+<tr><td>A writer arrives: wait(wrt) with wrt = 0</td><td>1</td><td>2</td><td>0</td><td><b>Writer blocked</b></td></tr>
+<tr><td>R1 leaves: rc-- → 1; not the last reader</td><td>1</td><td>1</td><td>0</td><td>Writer still blocked; R3, R4 may still enter</td></tr>
+<tr><td>R2 leaves: rc-- → 0; <b>last reader</b> → signal(wrt)</td><td>1</td><td>0</td><td><b>1</b></td><td>Writer can now enter</td></tr>
+</table></div></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Writer starvation)</span>
+This is the <b>first readers-writers problem</b> (<b>reader preference</b>). As long as readers keep arriving, readcount never reaches 0, so <b>writers can starve</b>. The <b>second readers-writers problem</b> (<b>writer preference</b>) makes new readers wait if a writer is waiting, but then <b>readers can starve</b>. Some systems provide <b>reader-writer locks</b> for this purpose.</div>
+</section>
+
+<!-- 7.33 -->
+<section id="s33">
+<h3><span class="n">7.33</span>Dining Philosophers Problem</h3>
+<div class="def"><b>Dining philosophers</b> (Dijkstra): <b>5 philosophers</b> sit at a round table with a bowl of rice and <b>5 forks (chopsticks)</b>, one between each pair. A philosopher alternates between <b>thinking</b> and <b>eating</b>, and needs <b>both adjacent forks</b> (left and right) to eat. It models <b>allocating several resources among processes without deadlock or starvation</b>.</div>
+<figure>
+<svg viewBox="0 0 680 300" role="img" aria-label="Five philosophers around round table with five forks between them">
+  <circle cx="250" cy="150" r="105" class="bx"/>
+  <circle cx="250" cy="150" r="30" class="gr"/><text x="250" y="155" text-anchor="middle" class="mut">rice</text>
+  <circle cx="250" cy="30" r="22" class="ac"/><text x="250" y="35" text-anchor="middle" class="b">P0</text>
+  <circle cx="364" cy="113" r="22" class="ac"/><text x="364" y="118" text-anchor="middle" class="b">P1</text>
+  <circle cx="320" cy="247" r="22" class="ac"/><text x="320" y="252" text-anchor="middle" class="b">P2</text>
+  <circle cx="180" cy="247" r="22" class="ac"/><text x="180" y="252" text-anchor="middle" class="b">P3</text>
+  <circle cx="136" cy="113" r="22" class="ac"/><text x="136" y="118" text-anchor="middle" class="b">P4</text>
+  <g style="stroke:var(--alert);stroke-width:4;stroke-linecap:round">
+    <line x1="312" y1="68" x2="296" y2="88"/>
+    <line x1="338" y1="190" x2="314" y2="186"/>
+    <line x1="250" y1="225" x2="250" y2="205"/>
+    <line x1="162" y1="190" x2="186" y2="186"/>
+    <line x1="188" y1="68" x2="204" y2="88"/>
+  </g>
+  <text x="322" y="62" class="mut">f1</text><text x="345" y="198" class="mut">f2</text><text x="256" y="232" class="mut">f3</text><text x="138" y="198" class="mut">f4</text><text x="165" y="62" class="mut">f0</text>
+  <text x="420" y="60" class="b">Philosopher i needs:</text>
+  <text x="420" y="85" class="mut">left fork  = f[i]</text>
+  <text x="420" y="105" class="mut">right fork = f[(i+1) % 5]</text>
+  <text x="420" y="140" class="mut">P0 → f0, f1   P1 → f1, f2</text>
+  <text x="420" y="160" class="mut">P2 → f2, f3   P3 → f3, f4</text>
+  <text x="420" y="180" class="mut">P4 → f4, f0   ← (4+1)%5 = 0</text>
+  <text x="420" y="215" class="mut">5 forks, 5 philosophers,</text><text x="420" y="233" class="mut">but each needs 2 — "badi naainsaafi"</text>
+</svg>
+<figcaption>Figure 7.5: Dining philosophers — forks are shared resources</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"A very interesting problem; you get hungry looking at it." Philosophers only <b>think and eat</b> ("to think you need to eat"). There are exactly 5 forks, one per person, but eating rice needs <b>two</b>.</div>
+</section>
+
+<!-- 7.34 -->
+<section id="s34">
+<h3><span class="n">7.34</span>Dining Philosophers: Semaphore Solution Code</h3>
+<div class="num"><span class="t">Code (lecture): one binary semaphore per fork</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">semaphore f[5] = {1, 1, 1, 1, 1};   // 1 = fork on table, 0 = picked up
+Philosopher(i) {
+    while (true) {
+        think();
+        down(f[i]);              // pick LEFT fork   (wait / P)
+        down(f[(i + 1) % 5]);    // pick RIGHT fork
+        eat();
+        up(f[i]);                // put LEFT fork down (signal / V)
+        up(f[(i + 1) % 5]);      // put RIGHT fork down
+    }
+}</pre>
+<b>Example:</b> P2 wants to eat. down(f[2]) takes the left fork, and (2+1) % 5 = 3, so down(f[3]) takes the right fork. It eats, then puts back f2 and f3. For P4, the right fork is (4+1) % 5 = <b>0</b>, which closes the circle.</div>
+</section>
+
+<!-- 7.35 -->
+<section id="s35">
+<h3><span class="n">7.35</span>Dining Philosophers: Concurrent Eating by Non-Adjacent Philosophers</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+P0 takes f0 and f1 and eats. P1 needs f1, which is taken, so <b>P1 is blocked</b>. P2 needs f2 and f3, which are both free, so <b>P2 eats at the same time as P0</b>. <b>Non-adjacent</b> philosophers can eat together: P0 with P2, or P0 with P3, but never P0 with P1.</div>
+<div class="box add"><span class="t">➕ Maximum eating at once</span>
+With n philosophers, at most <b>⌊n/2⌋</b> can eat simultaneously. With 5 philosophers that is <b>2</b> (each eater uses 2 of the 5 forks).</div>
+</section>
+
+<!-- 7.36 -->
+<section id="s36">
+<h3><span class="n">7.36</span>Dining Philosophers: Deadlock Scenario</h3>
+<div class="num"><span class="t">Walkthrough (lecture): everyone picks the left fork, then is preempted</span>
+<div class="tw"><table>
+<tr><th>Step</th><th>Event</th><th>f0 f1 f2 f3 f4</th></tr>
+<tr><td>0</td><td>Start</td><td>1 1 1 1 1</td></tr>
+<tr><td>1–5</td><td>P0 takes f0, P1 takes f1, P2 takes f2, P3 takes f3, P4 takes f4, each preempted before taking its right fork</td><td>0 0 0 0 0</td></tr>
+<tr><td>6</td><td>P0 needs f1, P1 needs f2, P2 needs f3, P3 needs f4, P4 needs f0, and all are taken</td><td>0 0 0 0 0</td></tr>
+</table></div>
+<b>Conclusion:</b> every philosopher holds <b>only the left fork</b> and waits forever for the right one: <b>deadlock</b>. In Chapter 8 terms this is <b>circular wait</b>: P0 → P1 → P2 → P3 → P4 → P0.</div>
+</section>
+
+<!-- 7.37 -->
+<section id="s37">
+<h3><span class="n">7.37</span>Dining Philosophers: Deadlock Solutions (Reversing Fork Order)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — two approaches</span>
+<ol>
+<li><b>Change the problem</b> (e.g. add more forks). The lecture <b>rejects</b> this: it changes the given constraints ("galat baat hai").</li>
+<li><b>Reverse the order for ONE philosopher.</b> Four philosophers pick <b>left then right</b>; one chosen philosopher (any one, e.g. P4) picks <b>right then left</b>: <code>down(f[(i+1)%5]); down(f[i]);</code></li>
+</ol></div>
+<div class="num"><span class="t">Walkthrough (lecture): P4 reversed, so it picks f0 first, then f4</span>
+<ol>
+<li>P0 takes f0, P1 takes f1, P2 takes f2, P3 takes f3 (each preempted).</li>
+<li>P4 tries its <b>first</b> fork, <b>f0</b>, which is taken, so <b>P4 blocks without taking f4</b>. <b>f4 stays free.</b></li>
+<li>P3 takes f4, <b>eats</b>, and releases f3 and f4.</li>
+<li>P2 takes f3, eats, and releases f2 and f3. Then P1 eats and releases, then P0 eats and releases.</li>
+<li>All forks are free, so P4 takes f0 and f4 and eats.</li>
+</ol>
+<b>Conclusion:</b> the circle of waiting is broken, so <b>no deadlock</b>.</div>
+<div class="box add"><span class="t">➕ Galvin's three remedies (know all of them)</span>
+<ol>
+<li>Allow <b>at most 4 philosophers</b> at the table at once (a counting semaphore initialised to 4).</li>
+<li>A philosopher picks up forks <b>only if both are available</b>, doing the check-and-pick inside a critical section.</li>
+<li><b>Asymmetric solution</b>: <b>odd</b> philosophers pick left then right; <b>even</b> philosophers pick right then left. The lecture's "reverse one philosopher" is a variant of this.</li>
+</ol>
+A <b>monitor</b>-based solution uses philosopher states THINKING, HUNGRY and EATING and lets i eat only if both neighbours are not eating. <b>Note:</b> a deadlock-free solution does <b>not</b> automatically prevent <b>starvation</b>.</div>
+</section>
+
+<!-- 7.38 -->
+<section id="s38">
+<h3><span class="n">7.38</span>Monitors, IPC &amp; Master Comparison <span class="badge">ADDED</span></h3>
+<div class="def"><b>Monitor:</b> a high-level language construct (an abstract data type) that bundles <b>shared data plus the procedures that operate on it</b>. <b>Only one process can be active inside a monitor at a time</b>; mutual exclusion is automatic. For waiting, it provides <b>condition variables</b> with <code>x.wait()</code> (suspend) and <code>x.signal()</code> (resume exactly one waiting process; if none is waiting, it does nothing, unlike a semaphore signal).</div>
+<ul>
+<li>Monitors remove the semaphore programmer errors (a wrong order, a missing signal). Examples: Java <code>synchronized</code> methods with <code>wait()</code> / <code>notify()</code>; C# <code>lock</code>.</li>
+<li>Signal semantics: <b>signal-and-wait</b> (Hoare) vs <b>signal-and-continue</b> (Mesa / Java).</li>
+</ul>
+<div class="tw"><table>
+<tr><th>Solution</th><th>ME</th><th>Progress</th><th>Bounded waiting</th><th>Busy waiting?</th><th>Note</th></tr>
+<tr><td>Lock variable</td><td>✗</td><td>✔</td><td>✗</td><td>Yes</td><td>Test and set split → fails under preemption</td></tr>
+<tr><td>Turn variable</td><td>✔</td><td>✗</td><td>✔</td><td>Yes</td><td>Strict alternation</td></tr>
+<tr><td>Flag array</td><td>✔</td><td>✗</td><td>✔</td><td>Yes</td><td>Deadlock possible</td></tr>
+<tr><td><b>Peterson's</b></td><td>✔</td><td>✔</td><td>✔</td><td>Yes</td><td>2 processes only</td></tr>
+<tr><td>Test-and-Set</td><td>✔</td><td>✔</td><td>✗</td><td>Yes (spinlock)</td><td>Hardware atomic instruction</td></tr>
+<tr><td>Disabling interrupts</td><td>✔ (uniprocessor)</td><td>✔</td><td>✗</td><td>No</td><td>Not for multiprocessors or user mode</td></tr>
+<tr><td>Semaphore (block list)</td><td>✔</td><td>✔</td><td>✔ (FIFO list)</td><td>No</td><td>Deadlock or starvation if misused</td></tr>
+<tr><td>Monitor</td><td>✔</td><td>✔</td><td>✔</td><td>No</td><td>Language-level; safest</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Mutex</th><th>Binary semaphore</th></tr>
+<tr><td>A <b>locking</b> mechanism with <b>ownership</b>: only the locker can unlock</td><td>A <b>signalling</b> mechanism: any process can signal</td></tr>
+<tr><td>Used only for mutual exclusion</td><td>Used for ME and also for ordering or signalling between processes</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert (one-liners)</span>
+<ul>
+<li>Race condition: the result depends on the <b>order of execution</b>. The CS is the <b>code</b> that touches shared data.</li>
+<li>Three requirements: <b>ME, Progress, Bounded Waiting</b>. Peterson's satisfies all three, for 2 processes.</li>
+<li>Semaphore operations: <b>wait = P = down</b>, <b>signal = V = up</b>. Inventor: <b>Dijkstra</b>.</li>
+<li>Producer-consumer: <b>full = 0, empty = n, mutex = 1</b>. Readers-writers: <b>mutex = 1, wrt = 1, readcount = 0</b>. Dining: <b>fork[5] = 1</b>.</li>
+<li>Counting semaphore at −k means <b>k processes are blocked</b>. Final value = initial − (number of P) + (number of V).</li>
+<li>Dining philosophers is a classic illustration of <b>deadlock (circular wait)</b>.</li>
+</ul></div>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 7</h3>
+<ul>
+<li><b>Independent</b> processes share nothing; <b>cooperative</b> processes share data and affect each other, so they need synchronization. IPC is via shared memory or message passing.</li>
+<li><b>Race condition</b>: data = 100, with +50 and +5 → results 105, 150 or 155 depending on order. count = 10 with ++/−− → 9, 10 or 11. Each statement is <b>3 machine instructions</b>, and preemption between them causes a lost update.</li>
+<li><b>CS structure</b>: entry section ("trap") → CS → exit section → remainder.</li>
+<li><b>ME</b>: only one process in the CS. <b>Progress</b>: an uninterested process can't block an interested one, and no deadlock. <b>Bounded waiting</b>: a limit on how often others enter before you (the phone "5 minutes" analogy); it means no starvation.</li>
+<li><b>Turn variable</b>: ME ✔, progress ✗ (strict alternation). <b>Flag array</b>: ME ✔, progress ✗ (both flags true → <b>deadlock</b>).</li>
+<li><b>Peterson's</b>: <code>flag[i]=T; turn=j; while(turn==j &amp;&amp; flag[j]);</code>. ME ✔, progress ✔, bounded waiting ✔. Two processes; busy waiting.</li>
+<li><b>Lock variable</b>: <code>while(lock!=0); lock=1;</code>. Preemption between the test and the set means <b>both enter</b>, so ME ✗.</li>
+<li><b>TSL</b>: atomic {old = lock; lock = true; return old}; <code>while(TestAndSet(&amp;lock));</code>. ME ✔, bounded waiting ✗, spinlock.</li>
+<li><b>Semaphore</b> (Dijkstra): an integer with <b>atomic</b> P/wait/down and V/signal/up. <b>Binary</b> (0/1) for ME. <b>Counting</b>: S=5 → P1–P5 enter, P6–P8 blocked (S = −3); V wakes one if S ≤ 0.</li>
+<li><b>Producer-consumer</b>: full=0, empty=n, mutex=1. Producer: wait(empty), wait(mutex), insert, signal(mutex), signal(full). Consumer: the opposite. Never swap the waits.</li>
+<li><b>Readers-writers</b>: mutex=1, wrt=1, readcount=0. The first reader does wait(wrt); the last does signal(wrt); R-R is allowed and anything with W conflicts. Writers can <b>starve</b>.</li>
+<li><b>Dining philosophers</b>: fork[i]=1; take f[i] then f[(i+1)%5]. Everyone holding the left fork → <b>deadlock</b>. Fix: reverse the order for one philosopher (or odd/even), allow at most 4, or take both-or-none. At most 2 eat at once.</li>
+<li><b>Monitor</b>: data + procedures, one process active at a time, condition variables with wait/signal.</li>
+</ul>
+</div>
+<div class="end">End of Volume 01 — Part 7 · Next: Chapter 8 — Deadlocks</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="06-CPU-Scheduling.html">← Ch 6: CPU Scheduling</a><a href="index.html">☰ All topics</a><a href="08-Deadlocks.html">Ch 8: Deadlocks →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('os-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

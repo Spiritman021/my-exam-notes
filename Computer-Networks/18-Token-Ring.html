@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Token Ring Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="17-Framing.html">← Ch 17: Framing in Data Link Layer</a><a href="index.html">☰ All topics</a><a href="19-Network-Layer.html">Ch 19: Network Layer →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 18: Token Ring (IEEE 802.5)</h1>
+  <p class="sub">Volume 02 · Part 18 · Built from the one-shot CN lecture transcript (section 18), plus the exam points the lecture skipped. A collision-free LAN in which a station may transmit only while it holds the token: how the token moves, what can go wrong, how the monitor station fixes it, and the frame format bit by bit.</p>
+  <ul class="tags"><li>Ring Topology</li><li>Unidirectional</li><li>Token Passing</li><li>Differential Manchester</li><li>4 / 16 Mbps</li><li>Ring Latency d/v + N·b</li><li>THT 10 ms</li><li>Delayed vs Early Reinsertion</li><li>Monitor Station</li><li>Orphan / Stray Packet</li><li>A · C · E Bits</li><li>TRT Min / Max</li><li>PPP T M RRR</li><li>J K Symbols</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">18.0</span>Token Ring at a Glance</a></li>
+<li><a href="#s1"><span class="n">18.1</span>Token Passing</a></li>
+<li><a href="#s2"><span class="n">18.2</span>Ring Latency</a></li>
+<li><a href="#s3"><span class="n">18.3</span>Token Holding Time</a></li>
+<li><a href="#s4"><span class="n">18.4</span>Delayed Token Reinsertion</a></li>
+<li><a href="#s5"><span class="n">18.5</span>Early Token Reinsertion</a></li>
+<li><a href="#s6"><span class="n">18.6</span>Source-Related Problems: Orphan Packet and Monitor Station</a></li>
+<li><a href="#s7"><span class="n">18.7</span>Stray Packet Problem</a></li>
+<li><a href="#s8"><span class="n">18.8</span>Destination-Related Problems (A, C, E Bits)</a></li>
+<li><a href="#s9"><span class="n">18.9</span>Token-Related Problems: Captured Token</a></li>
+<li><a href="#s10"><span class="n">18.10</span>Lost Token and Token Return Time</a></li>
+<li><a href="#s11"><span class="n">18.11</span>Corrupted Token</a></li>
+<li><a href="#s12"><span class="n">18.12</span>Monitor-Related Problems</a></li>
+<li><a href="#s13"><span class="n">18.13</span>Token Ring Frame Format</a></li>
+<li><a href="#s14"><span class="n">18.14</span>Start Delimiter (J and K Symbols)</a></li>
+<li><a href="#s15"><span class="n">18.15</span>Access Control Field: Priority, Token and Monitor Bits</a></li>
+<li><a href="#s16"><span class="n">18.16</span>Reservation Bits and Priority Scheduling</a></li>
+<li><a href="#s17"><span class="n">18.17</span>Frame Control and Address Fields</a></li>
+<li><a href="#s18"><span class="n">18.18</span>End Delimiter and Frame Status Fields</a></li>
+<li><a href="#s19"><span class="n">18.19</span>Token Ring Data Field Size</a></li>
+<li><a href="#s20"><span class="n">18.20</span>Efficiency Formulas, Ethernet vs Token Ring &amp; Solved Numericals<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 18</div>
+<h2 class="ch">Token Ring (IEEE 802.5)</h2>
+<p>Ethernet lets everyone talk and then sorts out collisions. Token Ring does the opposite: a small permission packet, the <b>token</b>, travels around the ring, and only the station holding it may transmit. There are <b>no collisions</b> and the access delay has an upper bound, which is why it suits deadline-sensitive traffic. The price is housekeeping: lost tokens, frames nobody removes, and a <b>monitor station</b> to clean up. The lecture walks through every one of these problems, and each one explains a bit in the frame format at the end.</p>
+
+<section id="s0">
+<h3><span class="n">18.0</span>Token Ring at a Glance</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+As the name says, it is about a <b>token</b> and a <b>ring</b>.
+<ul><li><b>Topology: ring.</b></li>
+<li><b>Data flow is unidirectional</b>: frames go one way round the ring only; bidirectional flow is not allowed.</li>
+<li><b>Acknowledgement exists</b> (unlike Ethernet), of the <b>piggybacking</b> type (ACK + data together).</li>
+<li><b>Encoding: Differential Manchester (DME).</b></li>
+<li><b>Data rates: 4 Mbps or 16 Mbps.</b></li>
+<li><b>Access control: token passing</b> (next section).</li></ul></div>
+<div class="tw"><table>
+<tr><th>Feature</th><th>Ethernet (802.3)</th><th>Token Ring (802.5)</th></tr>
+<tr><td>Topology</td><td>bus</td><td>ring (physically a star through a MAU)</td></tr>
+<tr><td>Access method</td><td>CSMA/CD (contention)</td><td>token passing (controlled access)</td></tr>
+<tr><td>Collisions</td><td>yes</td><td>none</td></tr>
+<tr><td>Encoding</td><td>Manchester</td><td>Differential Manchester</td></tr>
+<tr><td>Speed</td><td>10 / 100 / 1000 Mbps</td><td>4 / 16 Mbps</td></tr>
+<tr><td>Acknowledgement</td><td>none</td><td>yes (A and C bits in the frame status)</td></tr>
+<tr><td>Min frame / data</td><td>64 bytes / 46 bytes</td><td>no minimum: data 0 to max</td></tr>
+<tr><td>End of frame</td><td>length field</td><td>end delimiter (ED)</td></tr>
+<tr><td>Priorities</td><td>none</td><td>8 levels (3 priority bits)</td></tr>
+<tr><td>Delay</td><td>unbounded (non-deterministic)</td><td>bounded (deterministic)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Background</span>
+Developed by <b>IBM</b> (1980s), standardised as <b>IEEE 802.5</b>. Physically the stations are wired in a <b>star</b> to a <b>MAU / MSAU</b> (Multistation Access Unit), which forms the logical ring inside and <b>bypasses</b> a failed or switched-off station using relays. That is the "alternative path" the lecture mentions in 18.6. A faster cousin, <b>FDDI</b> (100 Mbps, dual fibre ring), uses the same token idea.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Piggybacking" is the lecture's word. In the standard, the "acknowledgement" is really the <b>A and C bits</b> in the frame status field, which the destination sets as the frame passes by and the sender reads when the frame comes back round (18.8). If asked how Token Ring acknowledges, answer with the A/C bits.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">18.1</span>Token Passing</h3>
+<figure>
+<svg viewBox="0 0 680 260" role="img" aria-label="Four stations on a ring with arrows going clockwise; a small token packet circulates; only the station holding the token transmits">
+  <defs><marker id="ta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <circle cx="200" cy="130" r="90" style="fill:none;stroke:var(--accent);stroke-width:3"/>
+  <path d="M283 95 A90 90 0 0 1 286 160" class="lna" marker-end="url(#ta)"/>
+  <path d="M117 165 A90 90 0 0 1 114 100" class="lna" marker-end="url(#ta)"/>
+  <rect x="175" y="20" width="50" height="28" rx="5" class="ac"/><text x="200" y="39" text-anchor="middle" class="b">S1</text>
+  <rect x="275" y="116" width="50" height="28" rx="5" class="ac"/><text x="300" y="135" text-anchor="middle" class="b">S2</text>
+  <rect x="175" y="212" width="50" height="28" rx="5" class="ac"/><text x="200" y="231" text-anchor="middle" class="b">S3</text>
+  <rect x="75" y="116" width="50" height="28" rx="5" class="ac"/><text x="100" y="135" text-anchor="middle" class="b">S4</text>
+  <circle cx="264" cy="66" r="13" class="or"/><text x="264" y="71" text-anchor="middle" class="b" font-size="11">T</text>
+  <text x="200" y="125" text-anchor="middle" class="mut">one direction</text><text x="200" y="141" text-anchor="middle" class="mut">only →</text>
+  <text x="360" y="50" class="b">Rules</text>
+  <text x="360" y="76">1. Hold the token, then transmit.</text>
+  <text x="360" y="100">2. No token = no transmission (illegal).</text>
+  <text x="360" y="124">3. Only one token, so only one sender</text>
+  <text x="378" y="142">at a time → no collisions.</text>
+  <text x="360" y="166">4. Token = 3-byte frame (SD, AC, ED).</text>
+  <text x="360" y="190">5. The sender removes its own frame</text>
+  <text x="378" y="208">when it comes back round.</text>
+</svg>
+<figcaption>Figure 18.1: Token passing on a unidirectional ring</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The token is "<b>chhota packet, bada dhamaka</b>": a small message with a big impact, because the whole access control depends on it. The first fundamental rule: <b>whoever holds the token transmits</b>. "Hold the token, then transmit the data." Accessing the ring <b>without</b> the token is like boarding a train without a ticket: <b>illegal</b>.<br>
+Because flow is unidirectional and access is so <b>strict</b> (only one station holds the token at a time; the others simply cannot transmit), <b>no collisions</b> can happen. It is like a SIM card: with one number you cannot make two calls at the same time.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">18.2</span>Ring Latency</h3>
+<div class="def"><b>Ring latency (RL):</b> the time for one bit to travel <b>all the way round the ring</b> and return to the point where it was sent.
+<div class="formula">RL = d / v  +  N × b
+d = ring length · v = propagation speed
+N = number of stations · b = delay (bit holding time) at each station</div></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A station holds the token and transmits. Its <b>first bit</b> goes out, takes a full turn round the ring, and comes back to the same position: the time this takes is the <b>ring latency</b>. A longer ring means more time (d); a faster signal means less time (÷ v). On the way, every station <b>holds the bit and releases it</b> (hold, release, hold, release); that takes a tiny time <b>b</b> at each of the <b>N</b> stations, so add <b>N × b</b>.</div>
+<div class="box add"><span class="t">➕ In bit units</span>
+b is often given in <b>bits</b> (e.g. 1-bit delay per station). Convert using the data rate: a 1-bit delay at 4 Mbps = 1/(4×10⁶) s = <b>0.25 µs</b>. Ring latency in bits = RL × data rate: this is the number of bits "in flight" on the ring.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">18.3</span>Token Holding Time</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Token Holding Time (THT)</b>: how long one station may keep the token. The token is so important that if one station just held on to it forever, nobody else could transmit. So there must be a rule: the <b>default THT is 10 ms</b>. Questions often come from THT in two categories: <b>delayed</b> and <b>early token reinsertion</b>.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">18.4</span>Delayed Token Reinsertion</h3>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Delayed token reinsertion: S1 sends frame F1 which travels round the ring while S1 keeps the token; the token is released only after F1 returns. Early token reinsertion: the token follows right behind F1, so S2 and S3 can add F2 and F3 and several frames are on the ring">
+  <text x="170" y="20" text-anchor="middle" class="b">(a) Delayed (DTR)</text>
+  <circle cx="170" cy="120" r="75" style="fill:none;stroke:var(--accent);stroke-width:3"/>
+  <rect x="148" y="34" width="44" height="24" rx="5" class="ac"/><text x="170" y="51" text-anchor="middle" class="b">S1</text>
+  <circle cx="200" cy="75" r="11" class="or"/><text x="200" y="79" text-anchor="middle" font-size="10" class="b">T</text>
+  <rect x="226" y="112" width="34" height="20" rx="3" class="gr"/><text x="243" y="126" text-anchor="middle" font-size="11" class="b">F1</text>
+  <text x="170" y="115" text-anchor="middle" class="mut">S1 keeps T</text><text x="170" y="131" text-anchor="middle" class="mut">until F1 returns</text>
+  <text x="170" y="216" text-anchor="middle" class="b" style="fill:var(--accent)">time per turn = Tt + RL</text>
+  <path d="M340 10 V220" class="ln dash"/>
+  <text x="510" y="20" text-anchor="middle" class="b">(b) Early (ETR)</text>
+  <circle cx="510" cy="120" r="75" style="fill:none;stroke:var(--accent);stroke-width:3"/>
+  <rect x="488" y="34" width="44" height="24" rx="5" class="ac"/><text x="510" y="51" text-anchor="middle" class="b">S1</text>
+  <rect x="566" y="80" width="34" height="20" rx="3" class="gr"/><text x="583" y="94" text-anchor="middle" font-size="11" class="b">F1</text>
+  <rect x="566" y="140" width="34" height="20" rx="3" class="gr"/><text x="583" y="154" text-anchor="middle" font-size="11" class="b">F2</text>
+  <rect x="470" y="182" width="34" height="20" rx="3" class="gr"/><text x="487" y="196" text-anchor="middle" font-size="11" class="b">F3</text>
+  <circle cx="440" cy="150" r="11" class="or"/><text x="440" y="154" text-anchor="middle" font-size="10" class="b">T</text>
+  <text x="510" y="115" text-anchor="middle" class="mut">token right behind</text><text x="510" y="131" text-anchor="middle" class="mut">the frame; always last</text>
+  <text x="510" y="216" text-anchor="middle" class="b" style="fill:var(--ok)">time per turn = Tt only</text>
+</svg>
+<figcaption>Figure 18.2: Delayed vs early token reinsertion</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Station 1 holds the token and transmits its frame. The frame goes all the way round the ring and comes back, and <b>all this time S1 still holds the token</b>.<br>
+A golden rule: <b>whoever put a frame on the ring is responsible for removing it</b>. When the frame returns, only S1 may discard it; S2, S3 and the others never remove it.<br>
+Only after its frame has come back does S1 <b>release the token</b>; then S2 can grab it and transmit. It reinserts the token "in a relaxed, delayed manner": transmit → frame takes a round trip → returns to the station → token released.<br>
+<b>Total time ≈ Tt + RL</b> (transmission time + ring latency).</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">18.5</span>Early Token Reinsertion</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Here S1 transmits frame 1 and <b>immediately releases the token</b>, so the token follows <b>right behind</b> its frame. S2 receives F1, holds and forwards it, then grabs the token behind it, sends <b>F2</b>, and releases the token behind F2. S3 does the same. The order is always F1, F2, F3 … with the <b>token always last</b>: an important, frequently asked pattern.<br>
+When the train of frames reaches S1, S1 may remove <b>only F1</b>. F2 and F3 are removed by their own senders.<br>
+There is <b>no round trip</b> wait, so the ring-latency part disappears: <b>total time = Tt only</b>.<br>
+<b>Efficiency:</b> in delayed reinsertion there is <b>only one frame on the ring at a time</b>. In early reinsertion there can be <b>as many frames as stations</b>. So <b>early is more efficient</b>, delayed less.</div>
+<div class="tw"><table>
+<tr><th></th><th>Delayed Token Reinsertion (DTR)</th><th>Early Token Reinsertion (ETR)</th></tr>
+<tr><td>Token released</td><td>after own frame returns</td><td>immediately after transmitting</td></tr>
+<tr><td>Time per station</td><td>Tt + RL</td><td>Tt</td></tr>
+<tr><td>Frames on ring</td><td>only one</td><td>many (up to N)</td></tr>
+<tr><td>Efficiency</td><td>lower: 1 / (1 + a(N+1)/N)</td><td>higher: 1 / (1 + a/N)</td></tr>
+<tr><td>Used by</td><td>4 Mbps Token Ring</td><td>16 Mbps Token Ring (option), FDDI</td></tr>
+</table></div>
+<p class="mut" style="font-size:13.5px">a = RL / Tt. The efficiency formulas are added for the exam and derived in 18.20.</p>
+</section>
+
+<section id="s6">
+<h3><span class="n">18.6</span>Source-Related Problems: Orphan Packet and Monitor Station</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Orphan packet:</b> S1 holds the token and transmits frame 1, but then S1 <b>goes down</b> (hardware, software, OS: any reason). The ring takes the <b>alternative path</b> around the dead station. Since only the sender may remove its frame, and the sender is dead, F1 keeps circling for ever: it has no "parent" left, so it is an <b>orphan</b>.<br>
+<b>Solution: the monitor station.</b> Like a <b>class monitor</b> who watches everyone, reports to the teacher who did mischief or skipped homework, and comes running when anything goes wrong, the monitor station watches the whole ring.<br>
+Each frame has a <b>monitor bit (M)</b>. The sender transmits it with <b>M = 0</b>. When the frame first passes the monitor, the monitor sets <b>M = 1</b> ("I have seen this one"). If a frame with <b>M = 1 reaches the monitor again</b>, it has gone round once already without being removed, so something is wrong (the source is probably down). The monitor has the authority to <b>discard</b> it.</div>
+<div class="box add"><span class="t">➕ Standard terms</span>
+The standard calls it the <b>active monitor</b>; every other station is a <b>standby monitor</b> ready to take over. The active monitor also supplies the <b>master clock</b>, keeps a minimum <b>latency buffer</b> so the whole token fits on a short ring, and (18.10) regenerates lost tokens.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">18.7</span>Stray Packet Problem</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Stray packet:</b> the frame gets <b>so badly corrupted</b> on its way round that when it returns, the source <b>cannot recognise it</b>: "this isn't mine, I didn't send it, someone else will remove it". So nobody removes it and it keeps circling.<br>
+<b>Solution:</b> the monitor again, using the <b>CRC</b>. When the frame was healthy and passed the monitor, its CRC pattern was correct. Now the CRC <b>mismatches</b>, so the monitor knows something went wrong while it was going round, detects it, and <b>removes the frame</b> from the ring.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">18.8</span>Destination-Related Problems (A, C, E Bits)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The source is fine; the frame's destination address is S2. What can go wrong at S2?<br>
+• <b>Destination down:</b> like calling a phone that is <b>switched off</b>: no matter how many times you try, nobody answers.<br>
+• <b>Destination busy:</b> "the number you are calling is busy". Every station has a <b>buffer</b> for incoming frames; if it is <b>full</b>, the station cannot copy the frame.<br>
+• <b>Error:</b> the station is available, but its <b>CRC check</b> finds an error, so it does not copy the frame; it must be retransmitted.<br>
+• <b>Success:</b> the station <b>copied</b> the frame into its buffer.<br>
+Three bits record this: <b>A</b> = address recognised / <b>available</b>, <b>C</b> = frame <b>copied</b>, <b>E</b> = <b>error</b> detected. The sender reads them when the frame comes back.</div>
+<div class="tw"><table>
+<tr><th>Situation</th><th>A</th><th>C</th><th>E</th><th>Meaning for the sender</th></tr>
+<tr><td>Initial (as sent) / destination <b>down</b></td><td>0</td><td>0</td><td>0</td><td>nobody recognised the address</td></tr>
+<tr><td>Destination <b>busy</b> (buffer full)</td><td>1</td><td>0</td><td>0</td><td>available but could not copy → retry later</td></tr>
+<tr><td><b>Error</b> (CRC failed)</td><td>1</td><td>0</td><td>1</td><td>frame damaged → retransmit</td></tr>
+<tr><td><b>Success</b></td><td>1</td><td>1</td><td>0</td><td>copied correctly ✔ (this is the acknowledgement)</td></tr>
+</table></div>
+</section>
+
+<section id="s9">
+<h3><span class="n">18.9</span>Token-Related Problems: Captured Token</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Working through these problems is really teaching us the frame format (the A, C, E bits just now).<br>
+<b>Captured token:</b> S1 grabs the token and won't let go. Everyone else is tired of waiting: "kab chhodega? Monopoly karna chahta hai? Yeh injustice nahi chalega!" So a <b>maximum Token Holding Time of 10 ms</b> is fixed. After 10 ms, whatever the situation, the station <b>must release</b> the token.</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">18.10</span>Lost Token and Token Return Time</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+How can a token be <b>lost</b>? S1 holds the token, sends data, and then <b>goes down while holding it</b>: "woh to dooba hi, lekin token ko leke dooba". Now there is <b>no token</b> on the ring and nobody can transmit.<br>
+The saviour (<b>masiha</b>) is again the <b>monitor</b>. It uses the <b>Token Return Time (TRT)</b>, which has a range:
+<ul><li><b>Minimum TRT = RL</b>: nobody grabbed the token; it just went once round the ring.</li>
+<li><b>Maximum TRT = N × THT + RL</b>: the worst case, where <b>every</b> one of the N stations grabbed the token and held it for the full THT, plus the trip round the ring.</li></ul>
+If the token reappears within this range, all is well. If <b>no token is seen for longer than the maximum TRT</b>, the monitor <b>regenerates</b> a new token and releases it into the ring. Without this, nobody could ever transmit again.</div>
+<div class="formula">TRT(min) = RL            TRT(max) = N × THT + RL
+monitor regenerates the token if none is seen within TRT(max)</div>
+</section>
+
+<section id="s11">
+<h3><span class="n">18.11</span>Corrupted Token</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The token is a small <b>3-byte</b> packet, and its bits can get corrupted too. The ring then looks "disturbed" (noise). The monitor <b>discards</b> the corrupted token. Even though it discarded the token itself, it still follows procedure: it <b>waits for the maximum TRT</b>, and when no valid token appears, it <b>regenerates</b> one and releases it into the ring.</div>
+</section>
+
+<section id="s12">
+<h3><span class="n">18.12</span>Monitor-Related Problems</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The one who looks after everyone can fall sick too. Half the problems so far were solved by the monitor, so if it goes down, everyone panics.<br>
+<b>Heartbeat:</b> the monitor periodically circulates an <b>AMP (Alive Monitor Packet)</b> round the ring so that everyone knows "<b>apna tiger zinda hai</b>".<br>
+<b>Monitor down:</b> the AMPs stop arriving, the stations stop hearing the heartbeat and realise the monitor is gone. <b>Solution: polling / election</b>: another station on the ring is elected as the new monitor and takes over. "The show must go on."<br>
+<b>Monitor malfunctioning</b> (it works, but behaves strangely, e.g. hacked by a third party): the only option left is <b>human intervention</b>: someone must inspect and fix it.</div>
+<div class="box add"><span class="t">➕ Standard names</span>
+The standard name is <b>AMP = Active Monitor Present</b> frame (the lecture expands it as "Alive Monitor Packet"; same idea), sent about every <b>7 seconds</b>. Standby monitors that miss it start the <b>Claim Token</b> process, an election in which the station with the <b>highest MAC address</b> wins and becomes the new active monitor. A station that detects a hard fault (e.g. a broken cable) sends <b>Beacon</b> frames to locate the fault.</div>
+</section>
+
+<section id="s13">
+<h3><span class="n">18.13</span>Token Ring Frame Format</h3>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Token Ring data frame: SD 1, AC 1, FC 1, DA 6, SA 6, Data 0 to max, CRC 4, ED 1, FS 1 bytes; token: SD, AC, ED, 3 bytes">
+  <text x="340" y="18" text-anchor="middle" class="b">Data / control frame (sizes in bytes)</text>
+  <rect x="10" y="30" width="54" height="50" class="bx"/><text x="37" y="53" text-anchor="middle" class="b">SD</text><text x="37" y="70" text-anchor="middle" class="mut">1</text>
+  <rect x="64" y="30" width="54" height="50" class="pu"/><text x="91" y="53" text-anchor="middle" class="b">AC</text><text x="91" y="70" text-anchor="middle" class="mut">1</text>
+  <rect x="118" y="30" width="54" height="50" class="bx"/><text x="145" y="53" text-anchor="middle" class="b">FC</text><text x="145" y="70" text-anchor="middle" class="mut">1</text>
+  <rect x="172" y="30" width="80" height="50" class="ac"/><text x="212" y="53" text-anchor="middle" class="b">DA</text><text x="212" y="70" text-anchor="middle" class="mut">6</text>
+  <rect x="252" y="30" width="80" height="50" class="ac"/><text x="292" y="53" text-anchor="middle" class="b">SA</text><text x="292" y="70" text-anchor="middle" class="mut">6</text>
+  <rect x="332" y="30" width="130" height="50" class="gr"/><text x="397" y="53" text-anchor="middle" class="b">Data</text><text x="397" y="70" text-anchor="middle" class="mut">0 – max</text>
+  <rect x="462" y="30" width="70" height="50" class="or"/><text x="497" y="53" text-anchor="middle" class="b">CRC</text><text x="497" y="70" text-anchor="middle" class="mut">4</text>
+  <rect x="532" y="30" width="54" height="50" class="bx"/><text x="559" y="53" text-anchor="middle" class="b">ED</text><text x="559" y="70" text-anchor="middle" class="mut">1</text>
+  <rect x="586" y="30" width="54" height="50" class="pu"/><text x="613" y="53" text-anchor="middle" class="b">FS</text><text x="613" y="70" text-anchor="middle" class="mut">1</text>
+  <path d="M118 88 V96 H532 V88" style="stroke:var(--alert);stroke-width:1.5;fill:none"/><text x="325" y="112" text-anchor="middle" style="fill:var(--alert)" class="b">covered by CRC (FC … data)</text>
+  <text x="613" y="104" text-anchor="middle" class="mut">outside CRC</text>
+  <text x="325" y="132" text-anchor="middle" class="mut">overhead without data = 1+1+1+6+6+4+1+1 = 21 bytes</text>
+  <text x="340" y="168" text-anchor="middle" class="b">Token (3 bytes)</text>
+  <rect x="259" y="180" width="54" height="40" class="bx"/><text x="286" y="205" text-anchor="middle" class="b">SD</text>
+  <rect x="313" y="180" width="54" height="40" class="pu"/><text x="340" y="205" text-anchor="middle" class="b">AC</text>
+  <rect x="367" y="180" width="54" height="40" class="bx"/><text x="394" y="205" text-anchor="middle" class="b">ED</text>
+  <text x="440" y="205" class="mut">AC has T = 1 in a token</text>
+</svg>
+<figcaption>Figure 18.3: Token Ring frame and token formats</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The numbers in circles are <b>bytes</b>, not bits: SD 1 · AC 1 · FC 1 · DA 6 · SA 6 · Data · CRC 4 · ED 1 · FS 1. Leaving out the data, that is <b>21 bytes</b>. The token is just <b>SD + AC + ED = 3 bytes</b>.<br>
+<b>SD</b> is like Ethernet's SFD: it alerts every station to synchronise its clock because a frame is starting. The <b>ED</b> is new and important: Ethernet found the end of a frame with a length field, Token Ring uses an <b>end delimiter</b> (chapter 17).</div>
+</section>
+
+<section id="s14">
+<h3><span class="n">18.14</span>Start Delimiter (J and K Symbols)</h3>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="Differential Manchester signal for SD: J K 0 J K 0 0 0; J stays high and K stays low for the whole bit with no mid-bit transition, unlike a normal 0 which transitions">
+  <g font-family="monospace" font-size="13">
+  <text x="70" y="22" text-anchor="middle" class="b">J</text><text x="140" y="22" text-anchor="middle" class="b">K</text><text x="210" y="22" text-anchor="middle">0</text>
+  <text x="280" y="22" text-anchor="middle" class="b">J</text><text x="350" y="22" text-anchor="middle" class="b">K</text><text x="420" y="22" text-anchor="middle">0</text>
+  <text x="490" y="22" text-anchor="middle">0</text><text x="560" y="22" text-anchor="middle">0</text>
+  </g>
+  <path d="M35 30 V120 M105 30 V120 M175 30 V120 M245 30 V120 M315 30 V120 M385 30 V120 M455 30 V120 M525 30 V120 M595 30 V120" class="ln dash"/>
+  <path d="M35 50 H105 V100 H175 V50 H210 V100 H245 V50 H315 V100 H385 V50 H420 V100 H455 V50 H490 V100 H525 V50 H560 V100 H595" style="stroke:var(--accent);stroke-width:2.5;fill:none"/>
+  <text x="70" y="140" text-anchor="middle" class="mut">high all bit</text><text x="140" y="140" text-anchor="middle" class="mut">low all bit</text><text x="210" y="140" text-anchor="middle" class="mut">mid-bit change</text>
+  <text x="610" y="78" class="mut">no mid-bit</text><text x="610" y="94" class="mut">transition in</text><text x="610" y="110" class="mut">J / K = violation</text>
+</svg>
+<figcaption>Figure 18.4: Start delimiter J K 0 J K 0 0 0 (schematic, Differential Manchester)</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+SD = <b>J K 0 J K 0 0 0</b> ("thoda alag gaana ban raha hai"). In DME, a normal 0 and 1 each have a <b>transition in the middle</b> of the bit (high goes to low or low to high). <b>J</b> stays <b>high for the entire bit</b> and <b>K</b> stays <b>low for the entire bit</b>: no transition at all. So J and K can never be confused with data; they mark the start of a frame and alert every station.</div>
+<div class="box add"><span class="t">➕ Exam wording</span>
+J and K are <b>code violations</b>: patterns that break the Differential Manchester rule (a mid-bit transition in every bit), so they can never appear in data. This is the "<b>physical-layer coding violation</b>" framing method from chapter 17. (Strictly, J has <i>no</i> transition at the start of the bit and K <i>does</i>, relative to the previous bit; the lecture's "J high, K low" picture is a simplification.)</div>
+</section>
+
+<section id="s15">
+<h3><span class="n">18.15</span>Access Control Field: Priority, Token and Monitor Bits</h3>
+<div class="formula">AC (1 byte) =  P P P | T | M | R R R
+               priority  token  monitor  reservation</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+• <b>PPP: priority bits.</b> 3 bits give 000 to 111, so priorities <b>0 to 7</b>. Generally, the <b>bigger the number, the higher the priority</b>: a station given 7 gets the best chance to transmit; 0, 1 or 2 means low priority.<br>
+• <b>T: token bit.</b> The AC byte is in both the token and the frame, so T says which one this is. The lecture says <b>T = 1</b> means "this is the token"; for anything else (data or control frame) <b>T = 0</b>.<br>
+• <b>M: monitor bit.</b> The orphan-packet hero (18.6): 0 when sent, set to 1 by the monitor on the first pass, and the frame is discarded if it comes round again with M = 1.<br>
+• <b>RRR: reservation bits</b>, explained next.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+In the IEEE 802.5 standard the T bit works the other way: <b>T = 0 means token</b> and <b>T = 1 means frame</b>. Some textbooks follow the lecture's convention. If the question names IEEE 802.5, use T = 0 for the token.</div>
+</section>
+
+<section id="s16">
+<h3><span class="n">18.16</span>Reservation Bits and Priority Scheduling</h3>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="S1 priority 1 sends frame with reservation 1; S2 priority 2 raises it to 2; S3 priority 3 raises it to 3; when frame returns S1 releases the token to the priority-3 reservation, S3">
+  <defs><marker id="rr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="40" width="110" height="46" rx="6" class="ac"/><text x="75" y="60" text-anchor="middle" class="b">S1 (prio 1)</text><text x="75" y="77" text-anchor="middle" class="mut">sends F, RRR = 1</text>
+  <path d="M130 63 H180" class="lna" marker-end="url(#rr)"/>
+  <rect x="182" y="40" width="110" height="46" rx="6" class="ac"/><text x="237" y="60" text-anchor="middle" class="b">S2 (prio 2)</text><text x="237" y="77" text-anchor="middle" class="mut">2 &gt; 1 → RRR = 2</text>
+  <path d="M292 63 H342" class="lna" marker-end="url(#rr)"/>
+  <rect x="344" y="40" width="110" height="46" rx="6" class="pu"/><text x="399" y="60" text-anchor="middle" class="b">S3 (prio 3)</text><text x="399" y="77" text-anchor="middle" class="mut">3 &gt; 2 → RRR = 3</text>
+  <path d="M454 63 H504" class="lna" marker-end="url(#rr)"/>
+  <rect x="506" y="40" width="150" height="46" rx="6" class="ac"/><text x="581" y="60" text-anchor="middle" class="b">back at S1</text><text x="581" y="77" text-anchor="middle" class="mut">sees RRR = 3</text>
+  <path d="M581 86 V130 H399 V96" class="lna" marker-end="url(#rr)"/>
+  <text x="490" y="150" text-anchor="middle" class="b" style="fill:var(--ok)">token goes to the highest reservation: S3 transmits next</text>
+  <text x="340" y="178" text-anchor="middle" class="mut">a station may only RAISE the reservation, never lower it</text>
+</svg>
+<figcaption>Figure 18.5: Reservation bits decide who gets the token next</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Stations S1, S2, S3 have priorities <b>1, 2, 3</b> (S3 highest). S1 holds the token, transmits a frame, and writes its own priority <b>1</b> in the reservation field: "I want the token again next time."<br>
+The frame reaches S2 (each station holds and releases it). S2 sees "reservation 1? My priority is higher and I want the token next" and overwrites it with <b>2</b>.<br>
+At S3: "S2 wants it, but my priority is higher still" → it changes 2 to <b>3</b>.<br>
+With delayed token reinsertion, the frame comes back to S1. S1 sees that a higher-priority station (3) has reserved the token, so it has no option: it <b>releases the token</b> with that priority, and it goes to <b>S3</b>, which transmits next.</div>
+<div class="box add"><span class="t">➕ The full rule</span>
+A station may grab a token only if its frame's priority ≥ the token's priority (PPP). When the sender releases the token it sets PPP to the reserved value, so lower-priority stations must let it pass. The station that raised the priority must later lower it back (it is called the <b>stacking station</b>), so low-priority stations are not starved for ever.</div>
+</section>
+
+<section id="s17">
+<h3><span class="n">18.17</span>Frame Control and Address Fields</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>FC (Frame Control, 1 byte)</b> tells which <b>kind</b> of frame this is (when it is not a token). Its <b>first two bits</b>: <b>00</b> → a proper <b>data frame</b>; <b>11</b> → a <b>control frame</b> carrying control information, e.g. the AMP heartbeat or a <b>beacon</b>. The remaining <b>6 bits</b> say which type of control frame it is; in a data frame they are all zeros.<br>
+<b>DA / SA (6 bytes each):</b> 48-bit <b>MAC addresses</b> of the destination and the source, exactly as in chapter 16. <b>CRC (4 bytes):</b> error detection, as in chapter 14.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The IEEE 802.5 standard codes the first two FC bits (the <b>FF</b> "frame type" bits) as <b>00 = MAC frame</b> (control/management, e.g. AMP, beacon, claim token) and <b>01 = LLC frame</b> (user data). The lecture's "00 = data, 11 = control" is a simplified teaching version. If a question quotes the standard, go with 00 = MAC/control, 01 = LLC/data.</div>
+</section>
+
+<section id="s18">
+<h3><span class="n">18.18</span>End Delimiter and Frame Status Fields</h3>
+<div class="formula">ED (1 byte) =  J K 1 J K 1 | I | E          FS (1 byte) =  A C r r | A C r r
+                             intermediate  error             duplicated (not covered by CRC)</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>ED</b> uses J and K like the SD, but with <b>1s instead of 0s</b>: <code>J K 1 J K 1</code>, followed by two new bits:<br>
+• <b>I (intermediate)</b>: <b>I = 1</b> means "I am an intermediate frame; more frames of this data are coming". <b>I = 0</b> means "I am the last one, no more data".<br>
+• <b>E (error)</b>: as explained in 18.8.<br>
+<b>FS (Frame Status)</b> carries the <b>A and C</b> bits (available, copied). Why do they appear <b>twice</b>? Because FS comes <b>after the CRC</b>, so the CRC does not protect it. If A and C were 1 1 and noise turned them into 0 0, the sender would get the wrong message. So the bits are <b>repeated (100% redundancy)</b>: if the two copies don't match, the sender knows they were corrupted.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The <b>E bit lives in the ED</b>, not in the FS. The FS holds only A and C (twice) plus reserved bits. And A/C/E are <b>set by the stations on the way</b>, which is exactly why they must sit outside the CRC: changing them would otherwise break the checksum.</div>
+</section>
+
+<section id="s19">
+<h3><span class="n">18.19</span>Token Ring Data Field Size</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Data = <b>0 to max</b>: much more flexible than Ethernet, which needed at least 46 bytes (64 − 18). Token Ring has <b>no minimum</b>; you can send even 2–3 bytes.<br>
+And the maximum? You may transmit only while you hold the token, so the maximum is however much you can send within the <b>Token Holding Time</b>. Because there is no minimum size, Token Ring suits <b>interactive applications</b>, exactly where Ethernet was weak (chapter 15.2).</div>
+<div class="num"><span class="t">Max data from THT</span>
+<div class="formula">Max bits ≈ THT × data rate
+4 Mbps × 10 ms  = 40 000 bits = 5000 bytes      (standard max ≈ 4500 bytes at 4 Mbps)
+16 Mbps × 10 ms = 160 000 bits = 20 000 bytes   (standard max ≈ 17 800 bytes at 16 Mbps)</div></div>
+</section>
+
+<section id="s20">
+<h3><span class="n">18.20</span>Efficiency Formulas, Ethernet vs Token Ring &amp; Solved Numericals <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Deriving the efficiency (N stations, each sends one frame per token turn)</span>
+<div class="formula">a = RL / Tt
+
+Early (ETR):   one cycle = N·Tt + RL
+               η = N·Tt / (N·Tt + RL) = 1 / (1 + a/N)
+
+Delayed (DTR): each station waits for its own frame → N·(Tt + RL),
+               plus the token's trip round the ring = RL
+               η = N·Tt / (N·(Tt + RL) + RL) = 1 / (1 + a(N + 1)/N)
+
+Throughput = η × data rate</div></div>
+<div class="num"><span class="t">Solved numericals</span>
+<b>Q1.</b> A 2 km ring, v = 2×10⁸ m/s, 20 stations each adding a 1-bit delay, 4 Mbps. Ring latency?<br>
+d/v = 2000 / 2×10⁸ = 10 µs; b = 1/4×10⁶ = 0.25 µs; N·b = 5 µs → <b>RL = 15 µs</b> (= 60 bits on the ring).<br><br>
+<b>Q2.</b> Same ring, 1000-bit frames. Efficiency with DTR and ETR?<br>
+Tt = 1000 / 4×10⁶ = 250 µs; a = 15/250 = 0.06.<br>
+DTR: η = 1/(1 + 0.06 × 21/20) = 1/1.063 ≈ <b>94.1%</b>. ETR: η = 1/(1 + 0.06/20) ≈ <b>99.7%</b>.<br><br>
+<b>Q3.</b> Same ring with THT = 10 ms. Minimum and maximum token return time?<br>
+Min = RL = <b>15 µs</b>. Max = 20 × 10 ms + 15 µs = <b>200.015 ms</b>. The monitor regenerates the token only after this.<br><br>
+<b>Q4.</b> A frame comes back with A = 1, C = 0, E = 0. What happened? The destination exists but its buffer was full (<b>busy</b>): retry later.<br><br>
+<b>Q5.</b> Number of priority levels in Token Ring? 3 bits → <b>8 levels (0–7)</b>.<br><br>
+<b>Q6.</b> Token size? <b>3 bytes</b> (SD, AC, ED). Frame overhead? <b>21 bytes</b>.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Common one-liners: Token Ring = <b>IEEE 802.5</b>; Token Bus = <b>802.4</b>; FDDI uses a <b>dual ring</b> (fault tolerant) at 100 Mbps; Token Ring is <b>deterministic / collision-free</b>; its encoding is <b>Differential Manchester</b>; a <b>MAU</b> makes it a physical star but logical ring.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 18</h3>
+<ul>
+<li>802.5: <b>ring</b>, <b>unidirectional</b>, <b>token passing</b>, no collisions, ACK via A/C bits, <b>Differential Manchester</b>, <b>4 / 16 Mbps</b>.</li>
+<li>Hold the token, then transmit; no token = no transmission. The sender removes its own frame.</li>
+<li><b>RL = d/v + N·b</b>. <b>THT = 10 ms</b> (default max).</li>
+<li><b>Delayed TR</b>: release the token after the frame returns; time Tt + RL; one frame on the ring; less efficient. <b>Early TR</b>: release immediately; time Tt; many frames, token always last; more efficient. η: DTR 1/(1 + a(N+1)/N), ETR 1/(1 + a/N).</li>
+<li><b>Monitor station</b> (class monitor): orphan packet (sender down) → <b>M bit</b> 0 → 1, discard on the second pass. Stray packet (unrecognisable) → <b>CRC mismatch</b> → discard.</li>
+<li><b>A C E</b>: 000 down/initial, 100 busy, 101 error, 110 copied ✔.</li>
+<li>Captured token → THT limit. Lost token → <b>TRT min = RL, max = N·THT + RL</b>; monitor regenerates after the max. Corrupted token → discard, wait max TRT, regenerate.</li>
+<li>Monitor heartbeat = <b>AMP</b>; monitor down → election (claim token); malfunction → human intervention.</li>
+<li>Frame: <b>SD 1 · AC 1 · FC 1 · DA 6 · SA 6 · Data 0–max · CRC 4 · ED 1 · FS 1</b> → 21 bytes overhead. Token = <b>SD AC ED = 3 bytes</b>.</li>
+<li>SD = <b>JK0JK000</b>, ED = <b>JK1JK1 I E</b>; J/K = no mid-bit transition (code violation).</li>
+<li>AC = <b>PPP T M RRR</b>: 8 priorities; reservation bits can only be raised; highest reservation gets the token next.</li>
+<li>FC first 2 bits: data vs control (lecture 00/11; standard 01 LLC / 00 MAC). FS = <b>A C r r A C r r</b>, duplicated because it is outside the CRC.</li>
+<li>Data <b>0 to max</b> (limited by THT) → good for interactive apps.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 18 · Next: Chapter 19 — Network Layer</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="17-Framing.html">← Ch 17: Framing in Data Link Layer</a><a href="index.html">☰ All topics</a><a href="19-Network-Layer.html">Ch 19: Network Layer →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

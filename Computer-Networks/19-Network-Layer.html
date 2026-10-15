@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Network Layer Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="18-Token-Ring.html">← Ch 18: Token Ring (IEEE 802.5)</a><a href="index.html">☰ All topics</a><a href="20-Subnetting.html">Ch 20: Subnetting →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 19: Network Layer</h1>
+  <p class="sub">Volume 02 · Part 19 · Built from the one-shot CN lecture transcript (section 19), plus the exam points the lecture skipped. Layer 3: host-to-host delivery, the IP address, and classful addressing: how to tell an address's class and count its networks and hosts.</p>
+  <ul class="tags"><li>Host-to-Host Delivery</li><li>Logical Address</li><li>Network ID + Host ID</li><li>Routing</li><li>Fragmentation &amp; MTU</li><li>IP vs MAC</li><li>Dotted Decimal</li><li>2³² Addresses</li><li>Classes A–E</li><li>Leading Bits 0 · 10 · 110 · 1110 · 1111</li><li>2ⁿ − 2 Hosts</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">19.0</span>Host-to-Host Delivery</a></li>
+<li><a href="#s1"><span class="n">19.1</span>Logical Addressing (Network ID and Host ID)</a></li>
+<li><a href="#s2"><span class="n">19.2</span>Routing Overview</a></li>
+<li><a href="#s3"><span class="n">19.3</span>Fragmentation and MTU</a></li>
+<li><a href="#s4"><span class="n">19.4</span>IP Address vs MAC Address</a></li>
+<li><a href="#s5"><span class="n">19.5</span>IP Address Notations (Binary and Dotted Decimal)</a></li>
+<li><a href="#s6"><span class="n">19.6</span>Classful Addressing</a></li>
+<li><a href="#s7"><span class="n">19.7</span>Unicast (Classes A–C) vs Multicast (Class D) and Reserved (Class E)</a></li>
+<li><a href="#s8"><span class="n">19.8</span>Network ID and Host ID: Two-Bit Example</a></li>
+<li><a href="#s9"><span class="n">19.9</span>Division of the Address Space Among Classes</a></li>
+<li><a href="#s10"><span class="n">19.10</span>Identifying the Class from the First Byte (Decimal Ranges)</a></li>
+<li><a href="#s11"><span class="n">19.11</span>Identifying the Class from the Leading Bits</a></li>
+<li><a href="#s12"><span class="n">19.12</span>Class A: Networks and Hosts</a></li>
+<li><a href="#s13"><span class="n">19.13</span>Class B: Networks and Hosts</a></li>
+<li><a href="#s14"><span class="n">19.14</span>Class C: Networks and Hosts</a></li>
+<li><a href="#s15"><span class="n">19.15</span>Class D and Class E Ranges</a></li>
+<li><a href="#s16"><span class="n">19.16</span>Hosts per Network</a></li>
+<li><a href="#s17"><span class="n">19.17</span>Special Addresses, Private Ranges &amp; Default Masks<span class="x">ADDED</span></a></li>
+<li><a href="#s18"><span class="n">19.18</span>Master Table &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 19</div>
+<h2 class="ch">Network Layer</h2>
+<p>The data link layer moved frames one hop at a time inside a single network. The network layer takes a packet from a host on one network to a host on <b>another</b> network, possibly across many routers. To do that it needs an address that says <b>which network</b> as well as <b>which host</b>: the IP address. This chapter introduces the layer's jobs (addressing, routing, fragmentation) and then classful addressing, which is the base for subnetting (ch 20) and CIDR (ch 21), the most numerical-heavy part of CN.</p>
+
+<section id="s0">
+<h3><span class="n">19.0</span>Host-to-Host Delivery</h3>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="Host H1 in network 1 sends to host H2 in network 2 through routers; data link layer handles each hop, network layer handles the whole source-to-destination path">
+  <defs><marker id="na" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <ellipse cx="110" cy="95" rx="95" ry="55" class="gr"/><text x="110" y="62" text-anchor="middle" class="b">Network 1</text>
+  <rect x="80" y="85" width="60" height="30" rx="5" class="ac"/><text x="110" y="105" text-anchor="middle" class="b">H1</text>
+  <ellipse cx="570" cy="95" rx="95" ry="55" class="gr"/><text x="570" y="62" text-anchor="middle" class="b">Network 2</text>
+  <rect x="540" y="85" width="60" height="30" rx="5" class="ac"/><text x="570" y="105" text-anchor="middle" class="b">H2</text>
+  <circle cx="270" cy="100" r="22" class="pu"/><text x="270" y="105" text-anchor="middle" class="b">R1</text>
+  <circle cx="410" cy="100" r="22" class="pu"/><text x="410" y="105" text-anchor="middle" class="b">R2</text>
+  <path d="M140 100 H246 M292 100 H386 M432 100 H538" class="ln"/>
+  <text x="193" y="138" text-anchor="middle" class="mut">hop</text><text x="340" y="138" text-anchor="middle" class="mut">hop</text><text x="485" y="138" text-anchor="middle" class="mut">hop</text>
+  <text x="340" y="160" text-anchor="middle" class="mut">data link layer: hop-to-hop (node-to-node)</text>
+  <path d="M110 30 H570" class="lna" marker-end="url(#na)"/><text x="340" y="22" text-anchor="middle" style="fill:var(--accent)" class="b">network layer: host-to-host (source-to-destination)</text>
+  <text x="340" y="182" text-anchor="middle" class="mut">transport layer (later): process-to-process</text>
+</svg>
+<figcaption>Figure 19.1: Delivery scope of layers 2, 3 and 4</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The second floor of the OSI "building" (the DLL) is done; now we go up to the <b>third floor: the network layer</b>. Its biggest speciality is <b>host-to-host delivery</b>: host H1 in one network sends data to host H2 in <b>another</b> network. The DLL did <b>hop-to-hop / node-to-node</b> delivery; the network layer talks at a higher level, <b>source-to-destination</b>. Higher still, the transport layer does <b>process-to-process</b> delivery between programs running on the machines.</div>
+<div class="box add"><span class="t">➕ Network layer at a glance</span>
+<b>Data unit:</b> packet / datagram. <b>Device:</b> router (layer-3 switch). <b>Protocols:</b> IP (IPv4, IPv6), ICMP, IGMP, routing protocols (RIP, OSPF, BGP); ARP sits between layers 2 and 3. <b>Functions:</b> logical addressing, routing, forwarding, fragmentation and reassembly, and (partly) congestion control. IP is <b>connectionless</b> and <b>best-effort</b>: no guarantee of delivery or order.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">19.1</span>Logical Addressing (Network ID and Host ID)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The network layer uses <b>IP addresses</b>, which are <b>logical addresses</b> (classful and classless addressing in detail ahead). An IP address is divided into <b>two parts</b>: the <b>NID (network ID)</b>, which tells which network, and the <b>HID (host ID)</b>, which tells which host inside that network.</div>
+<div class="formula">IP address  =  Network ID  +  Host ID
+            "which street"    "which house on that street"</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">19.2</span>Routing Overview</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Between source and destination there are many nodes and many <b>alternative paths</b> (three are visible in the lecture's picture alone). Which one should we take? <b>Routing</b> decides <b>where to send the packet next</b> so that the overall path is the <b>optimal / best route</b>. Later we study it with numericals: <b>RIP</b> (Routing Information Protocol), which uses <b>DVR</b> (Distance Vector Routing), and <b>OSPF</b> (Open Shortest Path First), which uses the <b>link-state</b> algorithm.</div>
+<div class="box add"><span class="t">➕ Routing vs forwarding</span>
+<b>Routing</b> = building the routing table (deciding the best paths, a control-plane job, done by routing protocols). <b>Forwarding</b> = for each arriving packet, looking up the table and sending it out of the right interface (a data-plane job, done per packet).</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">19.3</span>Fragmentation and MTU</h3>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="A 500-byte packet from network 1 must enter network 2 whose MTU is 200 bytes, so it is split into fragments of 200, 200 and 100 bytes">
+  <defs><marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="120" y="22" text-anchor="middle" class="b">Network 1</text>
+  <rect x="20" y="40" width="200" height="40" class="gr"/><text x="120" y="65" text-anchor="middle" class="b">packet: 500 bytes</text>
+  <path d="M228 60 H290" class="lna" marker-end="url(#fa)"/><text x="259" y="50" text-anchor="middle" class="mut">router</text>
+  <text x="480" y="22" text-anchor="middle" class="b">Network 2 (MTU = 200 bytes)</text>
+  <rect x="300" y="40" width="140" height="40" class="ac"/><text x="370" y="65" text-anchor="middle" class="b">frag 1: 200</text>
+  <rect x="446" y="40" width="140" height="40" class="ac"/><text x="516" y="65" text-anchor="middle" class="b">frag 2: 200</text>
+  <rect x="592" y="40" width="70" height="40" class="ac"/><text x="627" y="65" text-anchor="middle" class="b">3: 100</text>
+  <text x="480" y="108" text-anchor="middle" class="mut">each piece ≤ MTU; reassembled only at the final destination</text>
+  <text x="480" y="130" text-anchor="middle" class="mut">(simplified: real fragments also carry their own 20-byte IP header, ch 22)</text>
+</svg>
+<figcaption>Figure 19.2: Fragmentation when the next network's MTU is smaller</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A host in network 1 wants to send a <b>500-byte</b> packet to a host in network 2, whose <b>MTU (Maximum Transmission Unit)</b> is <b>200 bytes</b>: "I can't digest anything bigger than 200 bytes." So before sending, the packet is divided into <b>fragments</b>: 200 + 200 + 100. Each is ≤ 200, so network 2 accepts them. We will dismantle this field by field in the <b>IPv4 header</b> (ch 22).</div>
+<div class="box add"><span class="t">➕ Key facts</span>
+Ethernet's MTU = <b>1500 bytes</b> (ch 15). In IPv4, routers <b>and</b> the source may fragment; fragments are <b>reassembled only at the destination</b>. In IPv6, <b>only the source</b> fragments (routers never do; they drop the packet and send an ICMPv6 "Packet Too Big").</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">19.4</span>IP Address vs MAC Address</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A "<b>ghamasaan muqabla</b>" (fierce contest) over many rounds, with the lecturer as commentator: <b>IP</b> (Internet Protocol) address vs <b>MAC</b> (Media Access Control) address.</div>
+<div class="tw"><table>
+<tr><th>Round</th><th>IP address</th><th>MAC address</th></tr>
+<tr><td>Full form</td><td>Internet Protocol address</td><td>Media Access Control address</td></tr>
+<tr><td>Size</td><td>IPv4: <b>4 bytes = 32 bits</b>; IPv6: <b>16 bytes = 128 bits</b></td><td><b>6 bytes = 48 bits</b></td></tr>
+<tr><td>Notation</td><td>dotted decimal (IPv4)</td><td>hexadecimal with : or -</td></tr>
+<tr><td>Provided by</td><td><b>ISP</b> / network admin (DHCP)</td><td><b>NIC manufacturer</b></td></tr>
+<tr><td>Called</td><td><b>logical</b> address</td><td><b>physical</b> address</td></tr>
+<tr><td>Layer</td><td><b>network</b> layer (3)</td><td><b>data link</b> layer (2)</td></tr>
+<tr><td>Identifies</td><td>the device's <b>connection on a network</b> (where it is)</td><td>the <b>device itself</b> (its interface card)</td></tr>
+<tr><td>Nature</td><td>software-oriented</td><td>hardware-oriented</td></tr>
+<tr><td>Can it change?</td><td><b>yes</b> (moving networks, DHCP)</td><td><b>no</b> (burned in; can be spoofed)</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The lecture says IPv6 is "16 bits"; it is <b>16 bytes</b> = <b>128 bits</b>. IPv4 = 4 bytes = 32 bits, MAC = 6 bytes = 48 bits. The numbers 32 / 48 / 128 are asked directly.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">19.5</span>IP Address Notations (Binary and Dotted Decimal)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Two popular notations. <b>Dotted decimal:</b> MAC used hex digits separated by : or -; IPv4 uses <b>decimal</b> numbers separated by <b>dots</b>, one number per byte, 4 bytes. <b>Binary:</b> the same 4 bytes written as 8 bits each, only 0s and 1s.<br>
+4 bytes = <b>32 bits</b>, so the total number of IPv4 addresses is <b>2³²</b>.</div>
+<div class="formula">dotted decimal :  192    .  168    .  10     .  5
+binary         :  11000000 10101000 00001010 00000101
+each byte = 8 bits → value 0 to 255</div>
+<div class="box add"><span class="t">➕ Validity rules for dotted decimal</span>
+Exactly <b>4</b> numbers, each <b>0–255</b>, no leading zeros in strict notation, no other characters. <code>192.168.1.256</code> is invalid (256 &gt; 255); <code>10.0.0</code> is invalid (only 3 parts). 2³² = <b>4 294 967 296</b> addresses (about 4.3 billion).</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">19.6</span>Classful Addressing</h3>
+<figure>
+<svg viewBox="0 0 680 260" role="img" aria-label="Class A: 1 byte network, 3 bytes host. Class B: 2 bytes network, 2 bytes host. Class C: 3 bytes network, 1 byte host. Class D: multicast. Class E: reserved">
+  <text x="20" y="38" class="b">Class A</text>
+  <rect x="110" y="20" width="135" height="30" class="ac"/><text x="177" y="40" text-anchor="middle" class="b">0 · Net</text>
+  <rect x="245" y="20" width="405" height="30" class="gr"/><text x="447" y="40" text-anchor="middle">Host (3 bytes)</text>
+  <text x="20" y="88" class="b">Class B</text>
+  <rect x="110" y="70" width="270" height="30" class="ac"/><text x="245" y="90" text-anchor="middle" class="b">10 · Net (2 bytes)</text>
+  <rect x="380" y="70" width="270" height="30" class="gr"/><text x="515" y="90" text-anchor="middle">Host (2 bytes)</text>
+  <text x="20" y="138" class="b">Class C</text>
+  <rect x="110" y="120" width="405" height="30" class="ac"/><text x="312" y="140" text-anchor="middle" class="b">110 · Net (3 bytes)</text>
+  <rect x="515" y="120" width="135" height="30" class="gr"/><text x="582" y="140" text-anchor="middle">Host</text>
+  <text x="20" y="188" class="b">Class D</text>
+  <rect x="110" y="170" width="540" height="30" class="pu"/><text x="380" y="190" text-anchor="middle" class="b">1110 · multicast group address</text>
+  <text x="20" y="238" class="b">Class E</text>
+  <rect x="110" y="220" width="540" height="30" class="or"/><text x="380" y="240" text-anchor="middle" class="b">1111 · reserved (future / experimental)</text>
+  <text x="110" y="15" class="mut">byte 1</text><text x="245" y="15" class="mut">byte 2</text><text x="380" y="15" class="mut">byte 3</text><text x="515" y="15" class="mut">byte 4</text>
+</svg>
+<figcaption>Figure 19.3: Network/host split in each class</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Take all <b>2³²</b> possible addresses (the <b>address space</b>) and divide them into <b>classes A, B, C, D, E</b>: that is <b>classful addressing</b>. Many questions come from this.<br>
+The network/host split differs by class. <b>Class A:</b> only the <b>first byte</b> is the network ID; bytes 2–4 (three bytes) are the host ID. <b>Class B:</b> the network ID grows to <b>2 bytes</b>, host ID 2 bytes. <b>Class C:</b> network ID <b>3 bytes</b>, host ID only <b>1 byte</b>. Most questions focus on A, B and C.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">19.7</span>Unicast (Classes A–C) vs Multicast (Class D) and Reserved (Class E)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Classes <b>A, B and C</b> are for <b>unicast</b> (one host). <b>Class D</b> holds only <b>multicast</b> addresses (group IDs, like the WhatsApp group of ch 16). <b>Class E</b> is <b>reserved for future use</b>. D and E have <b>no</b> network ID / host ID split.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">19.8</span>Network ID and Host ID: Two-Bit Example</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Shrink the idea to just <b>2 bits</b>: combinations 00, 01, 10, 11. Let the MSB be the <b>network ID</b> and the LSB the <b>host ID</b>. Then there are two networks (0 and 1), and inside each, two hosts (0 and 1).<br>
+Address <code>00</code> = network 0, host 0. <code>01</code> = network 0, host 1. <code>10</code> = network 1, host 0. <code>11</code> = network 1, host 1. The network ID takes you to the right network; then the host ID picks the host inside it.</div>
+<figure>
+<svg viewBox="0 0 680 120" role="img" aria-label="Two-bit addresses: network bit then host bit; 00 and 01 in network 0, 10 and 11 in network 1">
+  <rect x="60" y="20" width="250" height="80" rx="8" class="gr"/><text x="185" y="40" text-anchor="middle" class="b">Network 0</text>
+  <rect x="90" y="52" width="80" height="34" rx="5" class="ac"/><text x="130" y="74" text-anchor="middle" font-family="monospace" class="b">0 0</text>
+  <rect x="200" y="52" width="80" height="34" rx="5" class="ac"/><text x="240" y="74" text-anchor="middle" font-family="monospace" class="b">0 1</text>
+  <rect x="370" y="20" width="250" height="80" rx="8" class="gr"/><text x="495" y="40" text-anchor="middle" class="b">Network 1</text>
+  <rect x="400" y="52" width="80" height="34" rx="5" class="ac"/><text x="440" y="74" text-anchor="middle" font-family="monospace" class="b">1 0</text>
+  <rect x="510" y="52" width="80" height="34" rx="5" class="ac"/><text x="550" y="74" text-anchor="middle" font-family="monospace" class="b">1 1</text>
+  <text x="340" y="115" text-anchor="middle" class="mut">first bit = network ID · second bit = host ID</text>
+</svg>
+<figcaption>Figure 19.4: Network ID + host ID with only two bits</figcaption>
+</figure>
+</section>
+
+<section id="s9">
+<h3><span class="n">19.9</span>Division of the Address Space Among Classes</h3>
+<figure>
+<svg viewBox="0 0 680 110" role="img" aria-label="Address space bar: class A 50 percent, class B 25 percent, class C 12.5 percent, class D 6.25 percent, class E 6.25 percent">
+  <rect x="20" y="30" width="320" height="44" class="ac"/><text x="180" y="50" text-anchor="middle" class="b">Class A · 50%</text><text x="180" y="66" text-anchor="middle" class="mut">first bit 0</text>
+  <rect x="340" y="30" width="160" height="44" class="gr"/><text x="420" y="50" text-anchor="middle" class="b">B · 25%</text><text x="420" y="66" text-anchor="middle" class="mut">10</text>
+  <rect x="500" y="30" width="80" height="44" class="pu"/><text x="540" y="50" text-anchor="middle" class="b">C · 12.5%</text><text x="540" y="66" text-anchor="middle" class="mut">110</text>
+  <rect x="580" y="30" width="40" height="44" class="or"/><text x="600" y="56" text-anchor="middle" class="b" font-size="11">D</text>
+  <rect x="620" y="30" width="40" height="44" class="bx"/><text x="640" y="56" text-anchor="middle" class="b" font-size="11">E</text>
+  <text x="620" y="96" text-anchor="middle" class="mut">6.25% each</text>
+  <text x="20" y="20" class="mut">2³² = 4 294 967 296 addresses</text>
+</svg>
+<figcaption>Figure 19.5: Each class takes half of what is left</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Out of the whole address space: give <b>50%</b> straight to <b>class A</b>. Of the remaining 50%, half (<b>25%</b>) goes to <b>class B</b>. Of what remains, half (<b>12.5%</b>) to <b>class C</b>. The last 12.5% is split equally: <b>6.25%</b> to <b>class D</b> and <b>6.25%</b> to <b>class E</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The total is 2³² = <b>4 294 967 296</b> (the transcript's number has a slip). Class A = 2³¹ ≈ 2.1 billion, B = 2³⁰ ≈ 1.07 billion, C = 2²⁹ ≈ 537 million, D = E = 2²⁸ ≈ 268 million each.</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">19.10</span>Identifying the Class from the First Byte (Decimal Ranges)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+To tell an address's class, <b>look only at the first byte</b>. 8 bits → values <b>0 to 255</b> (256 values). Halve it the same way: <b>0–127</b> (128 values) → <b>class A</b>; half of the remaining 128 → 64 values, <b>128–191</b> → <b>class B</b>; half of the next 64 → 32 values, <b>192–223</b> → <b>class C</b>; the last 32 split equally: <b>224–239</b> → <b>class D</b>, <b>240–255</b> → <b>class E</b>.</div>
+<div class="tw"><table>
+<tr><th>Class</th><th>First byte (decimal)</th><th>Values</th><th>Leading bits</th></tr>
+<tr><td>A</td><td><b>0 – 127</b></td><td>128</td><td>0</td></tr>
+<tr><td>B</td><td><b>128 – 191</b></td><td>64</td><td>10</td></tr>
+<tr><td>C</td><td><b>192 – 223</b></td><td>32</td><td>110</td></tr>
+<tr><td>D</td><td><b>224 – 239</b></td><td>16</td><td>1110</td></tr>
+<tr><td>E</td><td><b>240 – 255</b></td><td>16</td><td>1111</td></tr>
+</table></div>
+</section>
+
+<section id="s11">
+<h3><span class="n">19.11</span>Identifying the Class from the Leading Bits</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The same split, bit-wise. Look at the <b>MSB</b> (left-most bit) of the first byte. To divide 50/50, the MSB can be 0 or 1: <b>0 → class A</b>. If it is 1, keep dividing by adding one more bit each time:<br>
+• <code>10</code> → class <b>B</b>; <code>11</code> → divide further<br>
+• <code>110</code> → class <b>C</b>; <code>111</code> → divide further<br>
+• <code>1110</code> → class <b>D</b>; <code>1111</code> → class <b>E</b><br>
+Method: write the first byte in <b>binary</b>. MSB 0? Class A. Otherwise check the next bit: 0 → B; 1 → check the next: 0 → C; 1 → check the next: 0 → D, 1 → E.</div>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="Decision tree on first-byte bits: 0 gives class A; 1 then 0 gives B; 1 1 0 gives C; 1 1 1 0 gives D; 1 1 1 1 gives E">
+  <circle cx="60" cy="40" r="20" class="bx"/><text x="60" y="45" text-anchor="middle" class="b">bit1</text>
+  <path d="M60 60 V110" class="ln"/><text x="68" y="90" class="mut">0</text><rect x="30" y="112" width="60" height="30" rx="5" class="ac"/><text x="60" y="132" text-anchor="middle" class="b">A</text>
+  <path d="M80 40 H170" class="ln"/><text x="125" y="34" text-anchor="middle" class="mut">1</text>
+  <circle cx="190" cy="40" r="20" class="bx"/><text x="190" y="45" text-anchor="middle" class="b">bit2</text>
+  <path d="M190 60 V110" class="ln"/><text x="198" y="90" class="mut">0</text><rect x="160" y="112" width="60" height="30" rx="5" class="ac"/><text x="190" y="132" text-anchor="middle" class="b">B</text>
+  <path d="M210 40 H300" class="ln"/><text x="255" y="34" text-anchor="middle" class="mut">1</text>
+  <circle cx="320" cy="40" r="20" class="bx"/><text x="320" y="45" text-anchor="middle" class="b">bit3</text>
+  <path d="M320 60 V110" class="ln"/><text x="328" y="90" class="mut">0</text><rect x="290" y="112" width="60" height="30" rx="5" class="ac"/><text x="320" y="132" text-anchor="middle" class="b">C</text>
+  <path d="M340 40 H430" class="ln"/><text x="385" y="34" text-anchor="middle" class="mut">1</text>
+  <circle cx="450" cy="40" r="20" class="bx"/><text x="450" y="45" text-anchor="middle" class="b">bit4</text>
+  <path d="M450 60 V110" class="ln"/><text x="458" y="90" class="mut">0</text><rect x="420" y="112" width="60" height="30" rx="5" class="pu"/><text x="450" y="132" text-anchor="middle" class="b">D</text>
+  <path d="M470 40 H560" class="ln"/><text x="515" y="34" text-anchor="middle" class="mut">1</text>
+  <rect x="562" y="25" width="60" height="30" rx="5" class="or"/><text x="592" y="45" text-anchor="middle" class="b">E</text>
+  <text x="340" y="165" text-anchor="middle" class="mut">a 0 stops the search; a 1 means "look at the next bit"</text>
+</svg>
+<figcaption>Figure 19.6: Finding the class from the leading bits</figcaption>
+</figure>
+</section>
+
+<section id="s12">
+<h3><span class="n">19.12</span>Class A: Networks and Hosts</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Focus on the first byte. Its MSB is fixed at <b>0</b>, so <b>7 bits</b> remain for the network: <b>2⁷ = 128</b> networks (first byte 0 to 127).<br>
+Host bits = 32 − 8 = <b>24</b> → <b>2²⁴ ≈ 16 million</b> addresses per network.<br>
+But not all are usable: the <b>all-0s</b> host part is the <b>network ID</b> (the address of the network itself) and the <b>all-1s</b> host part is the <b>broadcast</b> address. Remove these two: <b>2²⁴ − 2 = 16 777 214</b> hosts per network. Of the first-byte values, only <b>1 to 126</b> are used for networks.</div>
+<div class="box trap"><span class="t">⚠️ Why 1–126 and not 0–127</span>
+First byte <b>0</b> is reserved (0.0.0.0 = "this host / this network", default route), and <b>127</b> is reserved for <b>loopback</b> (127.0.0.1 = localhost). So usable class A networks = 2⁷ − 2 = <b>126</b>. The −2 for networks is <b>class A only</b>; the −2 for hosts applies to every class.</div>
+</section>
+
+<section id="s13">
+<h3><span class="n">19.13</span>Class B: Networks and Hosts</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+16 bits network, 16 bits host. Two bits (<code>10</code>) are fixed, so the network ID has <b>14 free bits</b>: <b>2¹⁴ = 16 384</b> networks. Logic: the more bits, the more space; class A had only 7 network bits, class B has double (14), so far more networks.<br>
+In the first byte, 6 free bits → <b>64</b> values: <b>128–191</b>, proving the range given earlier.<br>
+Hosts: 2¹⁶ addresses, minus 2 (all-0s network ID, all-1s broadcast) → <b>2¹⁶ − 2 = 65 534</b> hosts per network.</div>
+</section>
+
+<section id="s14">
+<h3><span class="n">19.14</span>Class C: Networks and Hosts</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The network space grows again: <b>3 bytes</b> network, only <b>1 byte</b> host. Three bits (<code>110</code>) are fixed, leaving <b>21</b> network bits: <b>2²¹ = 2 097 152</b> networks. Hosts: 2⁸ = 256 addresses per network (<b>254 usable</b> after removing network ID and broadcast).<br>
+First byte: 5 free bits → <b>2⁵ = 32</b> values: <b>192–223</b>.<br>
+Tracking: MSB 1 → not A. Next bit 1 → not B. Next bit 0 → <b>C</b>. (If it were 1, check the next bit: 0 → D, 1 → E.)</div>
+</section>
+
+<section id="s15">
+<h3><span class="n">19.15</span>Class D and Class E Ranges</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Class D</b> (<code>1110</code>): multicast, so there is no network ID / host ID split. First byte: 4 bits fixed, 4 free → <b>16</b> values: <b>224–239</b>.<br>
+<b>Class E</b> (<code>1111</code>): reserved. 4 free bits → 16 values: <b>240–255</b>.<br>
+Notice the pattern of first-byte counts: E 16, D 16, C 32, B 64, A 128: each doubles.</div>
+<div class="box add"><span class="t">➕ Well-known class D addresses</span>
+<code>224.0.0.1</code> all hosts · <code>224.0.0.2</code> all routers · <code>224.0.0.5/6</code> OSPF · <code>224.0.0.9</code> RIPv2. Group membership is managed by <b>IGMP</b> (ch 26). <code>255.255.255.255</code> (in the E range) is the <b>limited broadcast</b> address.</div>
+</section>
+
+<section id="s16">
+<h3><span class="n">19.16</span>Hosts per Network</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A detail "most people won't tell you": the host count is <b>per network</b>.<br>
+Back to the 2-bit example: 1 network bit → 2¹ = <b>2 networks</b>; 1 host bit → 2¹ = <b>2 host IDs per network</b>.<br>
+With <b>3 bits</b> (1 network + 2 host): 2 networks, each with 2² = <b>4</b> host IDs. Switch it (2 network + 1 host): 2² = <b>4 networks</b>, each with 2 host IDs.<br>
+Scale it up: in class A, 2²⁴ hosts is the number <b>in each network</b>; in class B, 2¹⁶ per network; in class C, 2⁸ = 256 per network. 16 million hosts in one network is huge, so let's <b>break big networks into smaller ones</b>. That is <b>subnetting</b>, next chapter.</div>
+<div class="formula">networks          = 2^(network bits − fixed class bits)
+addresses / network = 2^(host bits)
+usable hosts / network = 2^(host bits) − 2</div>
+</section>
+
+<section id="s17">
+<h3><span class="n">19.17</span>Special Addresses, Private Ranges &amp; Default Masks <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Address</th><th>Meaning</th></tr>
+<tr><td>host part all 0s (e.g. 150.20.0.0)</td><td><b>network address</b>: names the network, not assigned to a host</td></tr>
+<tr><td>host part all 1s (e.g. 150.20.255.255)</td><td><b>directed broadcast</b>: all hosts of that network (routers can forward it)</td></tr>
+<tr><td>255.255.255.255</td><td><b>limited broadcast</b>: all hosts on this local network only (never forwarded)</td></tr>
+<tr><td>0.0.0.0</td><td>"this host" (e.g. DHCP client with no address yet); also the default route</td></tr>
+<tr><td>127.0.0.0/8 (127.0.0.1)</td><td><b>loopback</b>: the machine itself</td></tr>
+<tr><td>169.254.0.0/16</td><td>APIPA / link-local: self-assigned when DHCP fails</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Class</th><th>Private range (RFC 1918)</th><th>Default mask</th><th>Prefix</th></tr>
+<tr><td>A</td><td>10.0.0.0 – 10.255.255.255</td><td>255.0.0.0</td><td>/8</td></tr>
+<tr><td>B</td><td>172.16.0.0 – 172.31.255.255</td><td>255.255.0.0</td><td>/16</td></tr>
+<tr><td>C</td><td>192.168.0.0 – 192.168.255.255</td><td>255.255.255.0</td><td>/24</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Private addresses are <b>not routable on the Internet</b>; home and office networks use them behind <b>NAT</b>. Loopback = <b>127.0.0.1</b>. Frequently asked: "which is a private IP?" (10.x, 172.16–31.x, 192.168.x), "default mask of class B?" (255.255.0.0), and "what is 255.255.255.255?" (limited broadcast).</div>
+<div class="box add"><span class="t">➕ Why classful addressing was abandoned</span>
+It wastes addresses: a company needing 300 hosts is too big for class C (254) and must take a class B (65 534), wasting ~65 000. Class A networks were far too large to fill, and class C too small for most organisations. Fixes: <b>subnetting</b> (ch 20), <b>CIDR / classless addressing</b> (ch 21), <b>NAT</b> + private addresses, and finally <b>IPv6</b> (ch 23).</div>
+</section>
+
+<section id="s18">
+<h3><span class="n">19.18</span>Master Table &amp; Solved Questions <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Class</th><th>Leading bits</th><th>1st byte</th><th>Net / host bytes</th><th>Networks</th><th>Usable hosts / network</th><th>Default mask</th><th>Use</th></tr>
+<tr><td>A</td><td>0</td><td>0–127 (1–126 usable)</td><td>1 / 3</td><td>2⁷ − 2 = 126</td><td>2²⁴ − 2 = 16 777 214</td><td>/8</td><td>unicast</td></tr>
+<tr><td>B</td><td>10</td><td>128–191</td><td>2 / 2</td><td>2¹⁴ = 16 384</td><td>2¹⁶ − 2 = 65 534</td><td>/16</td><td>unicast</td></tr>
+<tr><td>C</td><td>110</td><td>192–223</td><td>3 / 1</td><td>2²¹ = 2 097 152</td><td>2⁸ − 2 = 254</td><td>/24</td><td>unicast</td></tr>
+<tr><td>D</td><td>1110</td><td>224–239</td><td>—</td><td>—</td><td>—</td><td>—</td><td>multicast</td></tr>
+<tr><td>E</td><td>1111</td><td>240–255</td><td>—</td><td>—</td><td>—</td><td>—</td><td>reserved</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> Classes of 10.5.6.7, 172.20.1.1, 200.1.1.1, 230.0.0.9, 245.3.3.3? <b>A, B, C, D, E</b> (first bytes 10, 172, 200, 230, 245).<br><br>
+<b>Q2.</b> Class of <code>11000001 00000011 …</code>? Leading bits 110 → <b>C</b> (first byte 193).<br><br>
+<b>Q3.</b> For 150.20.30.40: class, network address, broadcast address?<br>
+150 → <b>class B</b>; network = <b>150.20.0.0</b>; directed broadcast = <b>150.20.255.255</b>; usable hosts 150.20.0.1 – 150.20.255.254.<br><br>
+<b>Q4.</b> For 201.33.7.99: network and broadcast? Class C → <b>201.33.7.0</b> and <b>201.33.7.255</b>.<br><br>
+<b>Q5.</b> Is 192.168.300.4 valid? <b>No</b>: 300 &gt; 255.<br><br>
+<b>Q6.</b> Maximum usable hosts in a class C network? 2⁸ − 2 = <b>254</b>.<br><br>
+<b>Q7.</b> Which is a private address: 172.32.1.1, 172.20.1.1, 11.0.0.1? <b>172.20.1.1</b> (172.16–172.31 only).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 19</h3>
+<ul>
+<li>Network layer = 3rd floor: <b>host-to-host</b> (source-to-destination) delivery. DLL = hop-to-hop; transport = process-to-process.</li>
+<li>Jobs: <b>logical addressing</b> (IP = network ID + host ID), <b>routing</b> (best path: RIP/DVR, OSPF/link state), <b>fragmentation</b> (500 B packet, MTU 200 → 200 + 200 + 100).</li>
+<li><b>IP vs MAC</b>: 32/128 bits vs 48 bits; ISP vs NIC maker; logical vs physical; layer 3 vs 2; changeable vs fixed.</li>
+<li>IPv4 = 4 bytes, dotted decimal, each byte 0–255; 2³² ≈ 4.29 billion addresses.</li>
+<li>Classes split the space 50 / 25 / 12.5 / 6.25 / 6.25%.</li>
+<li>First byte: <b>A 0–127 · B 128–191 · C 192–223 · D 224–239 · E 240–255</b>. Leading bits <b>0 · 10 · 110 · 1110 · 1111</b>.</li>
+<li>A: 1 net byte, 2⁷ networks (126 usable), 2²⁴ − 2 hosts. B: 2 bytes, 2¹⁴ networks, 2¹⁶ − 2 = 65 534 hosts. C: 3 bytes, 2²¹ networks, 254 hosts.</li>
+<li>−2 hosts = all-0s (network address) and all-1s (broadcast). Host counts are <b>per network</b>.</li>
+<li>D = multicast, E = reserved; no net/host split. 127.x = loopback; 255.255.255.255 = limited broadcast.</li>
+<li>Private: 10/8, 172.16–31/12, 192.168/16. Default masks /8, /16, /24. Classful wastes addresses → subnetting, CIDR.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 19 · Next: Chapter 20 — Subnetting</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="18-Token-Ring.html">← Ch 18: Token Ring (IEEE 802.5)</a><a href="index.html">☰ All topics</a><a href="20-Subnetting.html">Ch 20: Subnetting →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

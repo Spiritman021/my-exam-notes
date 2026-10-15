@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS Virtual Memory Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="09-Memory-Management.html">← Ch 9: Memory Management</a><a href="index.html">☰ All topics</a><a href="11-Disk-Scheduling.html">Ch 11: Disk Scheduling →</a></nav>
+<style>
+table.pr{width:auto;min-width:100%;font-size:13.5px;text-align:center}
+table.pr th,table.pr td{text-align:center;padding:5px 7px;min-width:30px}
+table.pr td.new{background:var(--accent-soft);font-weight:700;color:var(--accent)}
+table.pr td.miss{color:var(--bad);font-weight:700}
+table.pr td.hit{color:var(--ok);font-weight:700}
+table.pr td.mutd{color:var(--muted)}
+</style>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Operating System — Chapter 10: Virtual Memory</h1>
+  <p class="sub">Volume 01 · Part 10 · Built from the one-shot OS lecture transcript (section 10), plus the exam points the lecture skipped. Every page-replacement table is generated by simulation.</p>
+  <ul class="tags">
+    <li>Virtual Memory</li><li>Demand Paging Recap</li><li>Page Fault &amp; Dirty Bit</li><li>Frame Allocation</li>
+    <li>Equal / Proportional / Priority</li><li>Global vs Local Replacement</li><li>FIFO</li><li>Belady's Anomaly</li>
+    <li>Optimal</li><li>LRU</li><li>Second-Chance (Clock)</li><li>LFU / MFU</li><li>Thrashing</li><li>Working Set</li><li>Page-Fault Frequency</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">10.1</span>Concept of Virtual Memory</a></li>
+    <li><a href="#s2"><span class="n">10.2</span>Virtual Memory &amp; Degree of Multiprogramming</a></li>
+    <li><a href="#s3"><span class="n">10.3</span>Page Fault Handling, Victim Page &amp; Dirty Bit</a></li>
+    <li><a href="#s4"><span class="n">10.4</span>Frame Allocation (Minimum &amp; Maximum)</a></li>
+    <li><a href="#s5"><span class="n">10.5</span>Equal Frame Allocation</a></li>
+    <li><a href="#s6"><span class="n">10.6</span>Weighted (Proportional) Allocation</a></li>
+    <li><a href="#s6a"><span class="n">10.6A</span>Global vs Local Replacement<span class="x">ADDED</span></a></li>
+    <li><a href="#s7"><span class="n">10.7</span>Page Replacement: FIFO</a></li>
+    <li><a href="#s8"><span class="n">10.8</span>Numerical: FIFO</a></li>
+    <li><a href="#s9"><span class="n">10.9</span>Belady's Anomaly</a></li>
+    <li><a href="#s10"><span class="n">10.10</span>Optimal Page Replacement</a></li>
+    <li><a href="#s11"><span class="n">10.11</span>LRU Page Replacement</a></li>
+    <li><a href="#s11a"><span class="n">10.11A</span>LRU Approximations, LFU, MFU &amp; Comparison<span class="x">ADDED</span></a></li>
+    <li><a href="#s12"><span class="n">10.12</span>Thrashing</a></li>
+    <li><a href="#s12a"><span class="n">10.12A</span>Working Set &amp; Page-Fault Frequency<span class="x">ADDED</span></a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 10</div>
+<h2 class="ch">Virtual Memory</h2>
+<p>Chapter 9 ended with <b>demand paging</b>: load a page only when it is needed, and if it is missing, take a page fault and fetch it. This chapter builds on that idea. If only <b>part</b> of a process needs to be in RAM, a process can be <b>bigger than RAM</b>, and many more processes can share RAM. That raises three questions: <b>how many frames</b> each process gets, <b>which page to evict</b> when RAM is full, and what happens when we overdo it (<b>thrashing</b>).</p>
+
+<!-- 10.1 -->
+<section id="s1">
+<h3><span class="n">10.1</span>Concept of Virtual Memory (Real-Life Example)</h3>
+<div class="def"><b>Virtual memory:</b> a technique that lets a process execute <b>without being completely in main memory</b>. Only the needed pages are loaded; the rest stay on disk. It gives the user the <b>illusion of a memory much larger than the physical RAM</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — The 80 kg feast</span>
+You are very hungry and in front of you lie <b>10 kg gulab jamun, 10 kg rasgulla, 10 kg kaju katli and 50 kg of samosa and vada pav</b>: 80 kg in all. Your stomach (RAM) holds maybe 2–3 kg. You can't eat it all at once, so you take a <b>few pieces of each now</b>, a few more tomorrow, and so on, as per your need. Later you tell everyone "I ate all of it!" That is an <b>illusion</b>. That is virtual memory.
+<p>In OS terms: a <b>huge process</b> (the 80 kg), <b>small RAM</b> (the stomach). Load only pages 0, 3, 6 and 9 into frames 1, 2, 3 and 4. In the page table, those entries have <b>present bit = 1</b>; all the others have 0 (on disk). The user believes the whole process is in memory.</p></div>
+<figure>
+<svg viewBox="0 0 680 260" role="img" aria-label="Large virtual address space with only pages 0,3,6,9 present in small physical memory, rest on disk">
+  <defs><marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="70" y="18" text-anchor="middle" class="b">Process (virtual)</text>
+  <g>
+  <rect x="30" y="25" width="80" height="20" class="ac"/><text x="70" y="40" text-anchor="middle">page 0</text>
+  <rect x="30" y="45" width="80" height="20" class="bx"/><text x="70" y="60" text-anchor="middle" class="mut">page 1</text>
+  <rect x="30" y="65" width="80" height="20" class="bx"/><text x="70" y="80" text-anchor="middle" class="mut">page 2</text>
+  <rect x="30" y="85" width="80" height="20" class="ac"/><text x="70" y="100" text-anchor="middle">page 3</text>
+  <rect x="30" y="105" width="80" height="20" class="bx"/><text x="70" y="120" text-anchor="middle" class="mut">page 4</text>
+  <rect x="30" y="125" width="80" height="20" class="bx"/><text x="70" y="140" text-anchor="middle" class="mut">page 5</text>
+  <rect x="30" y="145" width="80" height="20" class="ac"/><text x="70" y="160" text-anchor="middle">page 6</text>
+  <rect x="30" y="165" width="80" height="20" class="bx"/><text x="70" y="180" text-anchor="middle" class="mut">page 7</text>
+  <rect x="30" y="185" width="80" height="20" class="bx"/><text x="70" y="200" text-anchor="middle" class="mut">page 8</text>
+  <rect x="30" y="205" width="80" height="20" class="ac"/><text x="70" y="220" text-anchor="middle">page 9</text>
+  </g>
+  <text x="250" y="18" text-anchor="middle" class="b">Page table</text>
+  <rect x="200" y="25" width="100" height="200" class="bx"/>
+  <text x="225" y="40" class="mut">0 → f1 | 1</text><text x="225" y="60" class="mut">1 → – | 0</text><text x="225" y="80" class="mut">2 → – | 0</text>
+  <text x="225" y="100" class="mut">3 → f2 | 1</text><text x="225" y="120" class="mut">4 → – | 0</text><text x="225" y="140" class="mut">5 → – | 0</text>
+  <text x="225" y="160" class="mut">6 → f3 | 1</text><text x="225" y="180" class="mut">7 → – | 0</text><text x="225" y="200" class="mut">8 → – | 0</text>
+  <text x="225" y="220" class="mut">9 → f4 | 1</text>
+  <text x="430" y="18" text-anchor="middle" class="b">RAM (small)</text>
+  <rect x="380" y="25" width="100" height="25" class="bx"/><text x="430" y="42" text-anchor="middle" class="mut">f0</text>
+  <rect x="380" y="50" width="100" height="25" class="ac"/><text x="430" y="67" text-anchor="middle">f1: p0</text>
+  <rect x="380" y="75" width="100" height="25" class="ac"/><text x="430" y="92" text-anchor="middle">f2: p3</text>
+  <rect x="380" y="100" width="100" height="25" class="ac"/><text x="430" y="117" text-anchor="middle">f3: p6</text>
+  <rect x="380" y="125" width="100" height="25" class="ac"/><text x="430" y="142" text-anchor="middle">f4: p9</text>
+  <text x="600" y="18" text-anchor="middle" class="b">Disk (backing store)</text>
+  <rect x="540" y="25" width="120" height="200" class="gr"/>
+  <text x="600" y="110" text-anchor="middle">all pages</text><text x="600" y="130" text-anchor="middle" class="mut">(1,2,4,5,7,8 live only here)</text>
+  <path d="M300 40 L378 62 M300 100 L378 88 M300 160 L378 112 M300 220 L378 138" class="ln dash"/>
+  <path d="M480 180 H538" class="lna" marker-end="url(#b1)"/><text x="505" y="172" text-anchor="middle" class="mut">swap</text>
+  <text x="340" y="250" text-anchor="middle" class="mut">last column of the page table = present / valid bit</text>
+</svg>
+<figcaption>Figure 10.1: Virtual memory — only part of the process is in RAM (lecture example)</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Benefits and implementation</span>
+<ul>
+<li>Programs can be <b>larger than physical memory</b>, and programmers needn't worry about memory limits.</li>
+<li><b>More processes</b> fit in RAM, so CPU utilisation and throughput rise.</li>
+<li><b>Less I/O</b> for loading and swapping, because only the needed pages move.</li>
+<li>Easy <b>sharing</b> of libraries and memory, and fast process creation through <b>copy-on-write</b>.</li>
+<li>Implemented by <b>demand paging</b> (most common) or demand segmentation. The virtual address space is managed by the OS together with the MMU.</li>
+</ul></div>
+</section>
+
+<!-- 10.2 -->
+<section id="s2">
+<h3><span class="n">10.2</span>Virtual Memory and Degree of Multiprogramming</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+There are <b>100 processes</b>, each with <b>10 pages</b>, so <b>1000 pages</b> in all, but RAM has only <b>100 frames</b>. Without virtual memory, only about 10 whole processes fit. With virtual memory, load <b>one page of each process</b>: all <b>100 processes</b> are in memory at once. The <b>degree of multiprogramming rises</b>, and so does CPU utilisation. But this also brings problems, which leads to <b>thrashing</b> (10.12).</div>
+</section>
+
+<!-- 10.3 -->
+<section id="s3">
+<h3><span class="n">10.3</span>Page Fault Handling, Victim Page and Dirty Bit</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ol>
+<li>The CPU wants <b>page 2</b>, but its present bit = 0, so there is a <b>page fault</b>.</li>
+<li>Control goes to the <b>OS</b>, which fetches page 2 from secondary memory.</li>
+<li>If a <b>free frame</b> exists, put it there.</li>
+<li>If <b>no frame is free</b> (pages 0, 1, 2 occupy everything and page 3 must come in), pick a <b>victim page</b> to evict.</li>
+<li>Check the victim's <b>dirty bit</b>:
+  <ul><li><b>Dirty = 0</b>: the page was not modified, so just <b>discard</b> it. Its copy on disk is still valid.</li>
+  <li><b>Dirty = 1</b>: it was modified ("khilwaad hua hai"), so <b>write it back</b> to disk first. Otherwise consistency is ruined.</li></ul></li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Page replacement: swap out victim if dirty, swap in desired page, update page tables">
+  <defs><marker id="b2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="40" width="160" height="130" class="bx"/><text x="100" y="30" text-anchor="middle" class="b">RAM (full)</text>
+  <rect x="35" y="55" width="130" height="30" class="ac"/><text x="100" y="75" text-anchor="middle">page 0</text>
+  <rect x="35" y="90" width="130" height="30" class="or"/><text x="100" y="110" text-anchor="middle">page 2 ← victim</text>
+  <rect x="35" y="125" width="130" height="30" class="ac"/><text x="100" y="145" text-anchor="middle">page 1</text>
+  <rect x="470" y="40" width="190" height="130" class="gr"/><text x="565" y="30" text-anchor="middle" class="b">Disk</text>
+  <text x="565" y="110" text-anchor="middle">page 3 (wanted)</text>
+  <path d="M165 100 C 300 60, 360 60, 468 80" class="lna" marker-end="url(#b2)"/><text x="320" y="55" text-anchor="middle">① swap OUT victim — only if dirty = 1</text>
+  <path d="M468 120 C 360 150, 300 150, 168 110" class="lna" marker-end="url(#b2)"/><text x="320" y="165" text-anchor="middle">② swap IN page 3 into freed frame</text>
+  <text x="340" y="200" text-anchor="middle" class="mut">③ victim's entry → invalid · ④ page 3 entry → valid, frame no. · ⑤ restart instruction</text>
+</svg>
+<figcaption>Figure 10.2: Page replacement with the dirty-bit check</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Why the dirty bit matters</span>
+Without it, every replacement would need <b>two disk transfers</b> (one out, one in). With it, clean pages need only <b>one</b>, which halves the page-fault service time for clean victims. Read-only code pages are never dirty.</div>
+</section>
+
+<!-- 10.4 -->
+<section id="s4">
+<h3><span class="n">10.4</span>Frame Allocation (Minimum and Maximum Pages)</h3>
+<div class="def"><b>Frame allocation:</b> deciding <b>how many frames</b> (pages in RAM) each process gets.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — two extremes</span>
+<ul>
+<li><b>Minimum</b>: the number of pages needed to execute <b>a single instruction</b>. If instruction i1 needs pages P1 and P2 (e.g. the operand is in another page), both must be in RAM, because an instruction is <b>atomic</b> and can't run half-way.</li>
+<li><b>Maximum</b>: <b>all the pages</b> of the process (the whole process in RAM).</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Why there is a minimum</span>
+The minimum is defined by the <b>instruction-set architecture</b>. Example: a memory-to-memory MOVE whose operands straddle page boundaries may need up to 6 frames. With fewer frames than the minimum, the process faults forever and never finishes the instruction. The maximum is bounded by the total frames available.</div>
+</section>
+
+<!-- 10.5 -->
+<section id="s5">
+<h3><span class="n">10.5</span>Equal Frame Allocation</h3>
+<div class="num"><span class="t">Formula and numerical (lecture)</span>
+<div class="formula">Frames per process = m / n      (m = total frames, n = number of processes)</div>
+m = <b>60</b> frames. P1 = 20 pages, P2 = 100 pages, P3 = 100 pages.<br>
+Each gets 60 / 3 = <b>20 frames</b>.<br>
+<b>Result:</b> P1 is <b>100% loaded</b> (all 20 pages), but P2 and P3 get only <b>20%</b> of their pages.<br>
+<b>Conclusion:</b> equal allocation is simple but shows <b>"partiality"</b> (unfairness): small processes get too much and big ones too little.</div>
+</section>
+
+<!-- 10.6 -->
+<section id="s6">
+<h3><span class="n">10.6</span>Weighted (Proportional) Frame Allocation</h3>
+<div class="num"><span class="t">Formula and numerical (lecture)</span>
+<div class="formula">aᵢ = (sᵢ / S) × m      (sᵢ = pages of process i, S = Σ sᵢ, m = total frames)</div>
+m = <b>10</b> frames. P1 = 30, P2 = 40, P3 = 30 pages, so S = 100.<br>
+P1 = 30/100 × 10 = <b>3</b> · P2 = 40/100 × 10 = <b>4</b> · P3 = 30/100 × 10 = <b>3</b>. Total 3 + 4 + 3 = 10 ✔.<br>
+<b>Conclusion:</b> each process gets frames <b>in proportion to its size</b>.</div>
+<div class="num"><span class="t">Numerical (added, Galvin)</span>
+m = 62 frames; P1 = 10 pages, P2 = 127 pages, so S = 137.<br>
+a₁ = 10/137 × 62 ≈ <b>4</b>, a₂ = 127/137 × 62 ≈ <b>57</b> (round down; leftover frames go to a free pool).<br>
+Equal allocation would give 31 each, so P1 would waste 21 frames.</div>
+<div class="box add"><span class="t">➕ Priority allocation</span>
+Allocate in proportion to <b>priority</b> (or size and priority combined). A high-priority process that faults may take frames from lower-priority processes.</div>
+</section>
+
+<!-- 10.6A -->
+<section id="s6a">
+<h3><span class="n">10.6A</span>Global vs Local Replacement <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Global replacement</th><th>Local replacement</th></tr>
+<tr><td>The victim can be <b>any frame in the system</b>, including another process's</td><td>The victim must be <b>one of the faulting process's own frames</b></td></tr>
+<tr><td>Frames per process vary over time; better throughput (<b>most common</b>)</td><td>Frames per process are fixed; performance is more predictable</td></tr>
+<tr><td>A process's fault rate depends on others' behaviour</td><td>Memory may be under-used</td></tr>
+</table></div>
+</section>
+
+<!-- 10.7 -->
+<section id="s7">
+<h3><span class="n">10.7</span>Page Replacement Algorithms: FIFO</h3>
+<div class="def"><b>Page replacement:</b> when a page fault occurs and <b>no frame is free</b>, choose a <b>victim</b> page to evict. The goal is the <b>lowest page-fault rate</b>.<br><br><b>FIFO (First-In First-Out):</b> replace the page that was <b>brought into memory earliest</b>, the oldest page. Implemented with a <b>FIFO queue</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"Whoever came first goes out first." The page that entered first is replaced so a new page can be placed. The first few references always fault because the frames start <b>empty</b> (compulsory or cold-start misses).</div>
+</section>
+
+<!-- 10.8 -->
+<section id="s8">
+<h3><span class="n">10.8</span>Numerical Example: FIFO Page Replacement</h3>
+<div class="num"><span class="t">Numerical (lecture): reference string 4 7 6 1 7 6 1 2 7 2, frames = 3</span>
+<div class="tw"><table class="pr"><tr><th>Ref</th><th>4</th><th>7</th><th>6</th><th>1</th><th>7</th><th>6</th><th>1</th><th>2</th><th>7</th><th>2</th></tr><tr><th>F0</th><td class="new">4</td><td class="">4</td><td class="">4</td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td></tr><tr><th>F1</th><td class=""></td><td class="new">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="new">2</td><td class="">2</td><td class="">2</td></tr><tr><th>F2</th><td class=""></td><td class=""></td><td class="new">6</td><td class="">6</td><td class="">6</td><td class="">6</td><td class="">6</td><td class="">6</td><td class="new">7</td><td class="">7</td></tr><tr><th>Fault?</th><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td></tr><tr><th>Victim</th><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">4</td><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">7</td><td class="mutd">6</td><td class="mutd"></td></tr></table></div><p><b>FIFO: 6 page faults</b>, 4 hits · fault rate = 6/10 · hit ratio = 4/10</p>
+<b>Steps:</b> 4, 7, 6 fill the empty frames (3 faults). 1 faults and evicts the oldest, <b>4</b>. 7, 6, 1 are hits. 2 faults and evicts the oldest, <b>7</b>. Then <b>7 is requested immediately after being evicted</b>, so it faults again and evicts 6. 2 is a hit.<br>
+<b>Conclusion:</b> <b>6 page faults</b>. FIFO's weakness: it threw out page 7 just before it was needed. It ignores <b>how much</b> or <b>how recently</b> a page is used.</div>
+</section>
+
+<!-- 10.9 -->
+<section id="s9">
+<h3><span class="n">10.9</span>Belady's Anomaly</h3>
+<div class="def"><b>Belady's anomaly:</b> for some reference strings, <b>increasing the number of frames increases the number of page faults</b>. It occurs with <b>FIFO</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Normally we expect "<b>more frames → fewer page faults</b>" (3 → 10 → 100 frames). But with FIFO there is a <b>possibility</b> that adding frames makes the page-fault count <b>go up</b>. It doesn't happen every time, but it can.</div>
+<div class="num"><span class="t">Classic demonstration (added): reference string 1 2 3 4 1 2 5 1 2 3 4 5</span>
+<b>With 3 frames:</b>
+<div class="tw"><table class="pr"><tr><th>Ref</th><th>1</th><th>2</th><th>3</th><th>4</th><th>1</th><th>2</th><th>5</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr><tr><th>F0</th><td class="new">1</td><td class="">1</td><td class="">1</td><td class="new">4</td><td class="">4</td><td class="">4</td><td class="new">5</td><td class="">5</td><td class="">5</td><td class="">5</td><td class="">5</td><td class="">5</td></tr><tr><th>F1</th><td class=""></td><td class="new">2</td><td class="">2</td><td class="">2</td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="new">3</td><td class="">3</td><td class="">3</td></tr><tr><th>F2</th><td class=""></td><td class=""></td><td class="new">3</td><td class="">3</td><td class="">3</td><td class="new">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="new">4</td><td class="">4</td></tr><tr><th>Fault?</th><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td></tr><tr><th>Victim</th><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">1</td><td class="mutd">2</td><td class="mutd">3</td><td class="mutd">4</td><td class="mutd"></td><td class="mutd"></td><td class="mutd">1</td><td class="mutd">2</td><td class="mutd"></td></tr></table></div><p><b>FIFO: 9 page faults</b>, 3 hits · fault rate = 9/12 · hit ratio = 3/12</p>
+<b>With 4 frames:</b>
+<div class="tw"><table class="pr"><tr><th>Ref</th><th>1</th><th>2</th><th>3</th><th>4</th><th>1</th><th>2</th><th>5</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr><tr><th>F0</th><td class="new">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="new">5</td><td class="">5</td><td class="">5</td><td class="">5</td><td class="new">4</td><td class="">4</td></tr><tr><th>F1</th><td class=""></td><td class="new">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="new">5</td></tr><tr><th>F2</th><td class=""></td><td class=""></td><td class="new">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="new">2</td><td class="">2</td><td class="">2</td><td class="">2</td></tr><tr><th>F3</th><td class=""></td><td class=""></td><td class=""></td><td class="new">4</td><td class="">4</td><td class="">4</td><td class="">4</td><td class="">4</td><td class="">4</td><td class="new">3</td><td class="">3</td><td class="">3</td></tr><tr><th>Fault?</th><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td></tr><tr><th>Victim</th><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">1</td><td class="mutd">2</td><td class="mutd">3</td><td class="mutd">4</td><td class="mutd">5</td><td class="mutd">1</td></tr></table></div><p><b>FIFO: 10 page faults</b>, 2 hits · fault rate = 10/12 · hit ratio = 2/12</p>
+<b>Conclusion:</b> <b>3 frames give 9 faults, but 4 frames give 10 faults</b>. More memory gave worse results: Belady's anomaly.</div>
+<div class="box add"><span class="t">➕ Who suffers, who doesn't</span>
+<b>Stack algorithms</b> never show Belady's anomaly. In a stack algorithm, the set of pages in memory with n frames is always a <b>subset</b> of the set with n + 1 frames. <b>LRU and Optimal are stack algorithms</b>, so they are immune. <b>FIFO</b> (and Second-Chance, which is FIFO-based) is not.</div>
+</section>
+
+<!-- 10.10 -->
+<section id="s10">
+<h3><span class="n">10.10</span>Optimal Page Replacement</h3>
+<div class="def"><b>Optimal (OPT / MIN) algorithm:</b> replace the page that <b>will not be used for the longest time in the future</b>. It gives the <b>lowest possible page-fault rate</b> for a fixed number of frames.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — "Think of the future"</span>
+At the fault on <b>1</b>, look ahead: 7 and 6 will be needed soon, but <b>4 never appears again</b>, so evict 4. At the fault on <b>2</b>, look ahead: 7 comes next, so keep it. Neither 1 nor 6 appears again, so evict either one; the lecture evicts 1.</div>
+<div class="num"><span class="t">Numerical (lecture): same string, 3 frames</span>
+<div class="tw"><table class="pr"><tr><th>Ref</th><th>4</th><th>7</th><th>6</th><th>1</th><th>7</th><th>6</th><th>1</th><th>2</th><th>7</th><th>2</th></tr><tr><th>F0</th><td class="new">4</td><td class="">4</td><td class="">4</td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="new">2</td><td class="">2</td><td class="">2</td></tr><tr><th>F1</th><td class=""></td><td class="new">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="">7</td></tr><tr><th>F2</th><td class=""></td><td class=""></td><td class="new">6</td><td class="">6</td><td class="">6</td><td class="">6</td><td class="">6</td><td class="">6</td><td class="">6</td><td class="">6</td></tr><tr><th>Fault?</th><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td></tr><tr><th>Victim</th><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">4</td><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">1</td><td class="mutd"></td><td class="mutd"></td></tr></table></div><p><b>OPT: 5 page faults</b>, 5 hits · fault rate = 5/10 · hit ratio = 5/10</p>
+<b>Conclusion:</b> <b>5 page faults</b>, compared with 6 for FIFO on the same problem, because Optimal looks at <b>future</b> references.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Optimal is <b>impossible to implement</b> in a real OS, because the future reference string is unknown. It is used as a <b>benchmark</b> to measure how good other algorithms are. Like SJF in CPU scheduling, it is optimal but impractical.</div>
+</section>
+
+<!-- 10.11 -->
+<section id="s11">
+<h3><span class="n">10.11</span>LRU Page Replacement</h3>
+<div class="def"><b>LRU (Least Recently Used):</b> replace the page that <b>has not been used for the longest time in the past</b>. It uses the recent past as a predictor of the near future (locality).</div>
+<div class="box lec"><span class="t">🎓 From the lecture — "Look at the past"</span>
+At the fault on <b>1</b>, look back: 6 was used most recently, 7 before it, and <b>4 longest ago</b>, so evict 4. At the fault on <b>2</b>: 1 is the most recent, then 6, and <b>7 the oldest</b>, so evict 7. But 7 is needed immediately afterwards ("if we had looked ahead…"), so it faults again. Then 2 is the most recent, 1 is older and <b>6 the oldest</b>, so evict 6. The <b>reference bit</b> of the PTE helps track recent use.</div>
+<div class="num"><span class="t">Numerical (lecture): same string, 3 frames</span>
+<div class="tw"><table class="pr"><tr><th>Ref</th><th>4</th><th>7</th><th>6</th><th>1</th><th>7</th><th>6</th><th>1</th><th>2</th><th>7</th><th>2</th></tr><tr><th>F0</th><td class="new">4</td><td class="">4</td><td class="">4</td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td></tr><tr><th>F1</th><td class=""></td><td class="new">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="">7</td><td class="new">2</td><td class="">2</td><td class="">2</td></tr><tr><th>F2</th><td class=""></td><td class=""></td><td class="new">6</td><td class="">6</td><td class="">6</td><td class="">6</td><td class="">6</td><td class="">6</td><td class="new">7</td><td class="">7</td></tr><tr><th>Fault?</th><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td></tr><tr><th>Victim</th><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">4</td><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">7</td><td class="mutd">6</td><td class="mutd"></td></tr></table></div><p><b>LRU: 6 page faults</b>, 4 hits · fault rate = 6/10 · hit ratio = 4/10</p>
+<b>Conclusion:</b> <b>6 page faults</b> for this string, the same as FIFO. In general LRU performs much closer to Optimal.</div>
+<div class="num"><span class="t">Practice (added): Galvin's 20-reference string, 3 frames</span>
+Reference string 7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1.
+<div class="tw"><table class="pr"><tr><th>Ref</th><th>7</th><th>0</th><th>1</th><th>2</th><th>0</th><th>3</th><th>0</th><th>4</th><th>2</th><th>3</th><th>0</th><th>3</th><th>2</th><th>1</th><th>2</th><th>0</th><th>1</th><th>7</th><th>0</th><th>1</th></tr><tr><th>F0</th><td class="new">7</td><td class="">7</td><td class="">7</td><td class="new">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="new">4</td><td class="">4</td><td class="">4</td><td class="new">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="new">7</td><td class="">7</td><td class="">7</td></tr><tr><th>F1</th><td class=""></td><td class="new">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="new">3</td><td class="">3</td><td class="">3</td><td class="new">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="new">0</td><td class="">0</td></tr><tr><th>F2</th><td class=""></td><td class=""></td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="new">0</td><td class="">0</td><td class="">0</td><td class="new">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="new">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="new">1</td></tr><tr><th>Fault?</th><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td></tr><tr><th>Victim</th><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">7</td><td class="mutd"></td><td class="mutd">0</td><td class="mutd">1</td><td class="mutd">2</td><td class="mutd">3</td><td class="mutd">0</td><td class="mutd">4</td><td class="mutd"></td><td class="mutd"></td><td class="mutd">2</td><td class="mutd">3</td><td class="mutd"></td><td class="mutd"></td><td class="mutd">0</td><td class="mutd">1</td><td class="mutd">2</td></tr></table></div><p><b>FIFO: 15 page faults</b>, 5 hits · fault rate = 15/20 · hit ratio = 5/20</p>
+<div class="tw"><table class="pr"><tr><th>Ref</th><th>7</th><th>0</th><th>1</th><th>2</th><th>0</th><th>3</th><th>0</th><th>4</th><th>2</th><th>3</th><th>0</th><th>3</th><th>2</th><th>1</th><th>2</th><th>0</th><th>1</th><th>7</th><th>0</th><th>1</th></tr><tr><th>F0</th><td class="new">7</td><td class="">7</td><td class="">7</td><td class="new">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="new">7</td><td class="">7</td><td class="">7</td></tr><tr><th>F1</th><td class=""></td><td class="new">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="new">4</td><td class="">4</td><td class="">4</td><td class="new">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td></tr><tr><th>F2</th><td class=""></td><td class=""></td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="new">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td></tr><tr><th>Fault?</th><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="miss">F</td><td class="hit">✓</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td></tr><tr><th>Victim</th><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">7</td><td class="mutd"></td><td class="mutd">1</td><td class="mutd"></td><td class="mutd">0</td><td class="mutd"></td><td class="mutd"></td><td class="mutd">4</td><td class="mutd"></td><td class="mutd"></td><td class="mutd">3</td><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">2</td><td class="mutd"></td><td class="mutd"></td></tr></table></div><p><b>OPT: 9 page faults</b>, 11 hits · fault rate = 9/20 · hit ratio = 11/20</p>
+<div class="tw"><table class="pr"><tr><th>Ref</th><th>7</th><th>0</th><th>1</th><th>2</th><th>0</th><th>3</th><th>0</th><th>4</th><th>2</th><th>3</th><th>0</th><th>3</th><th>2</th><th>1</th><th>2</th><th>0</th><th>1</th><th>7</th><th>0</th><th>1</th></tr><tr><th>F0</th><td class="new">7</td><td class="">7</td><td class="">7</td><td class="new">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="new">4</td><td class="">4</td><td class="">4</td><td class="new">0</td><td class="">0</td><td class="">0</td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td><td class="">1</td></tr><tr><th>F1</th><td class=""></td><td class="new">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="new">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="">3</td><td class="new">0</td><td class="">0</td><td class="">0</td><td class="">0</td><td class="">0</td></tr><tr><th>F2</th><td class=""></td><td class=""></td><td class="new">1</td><td class="">1</td><td class="">1</td><td class="new">3</td><td class="">3</td><td class="">3</td><td class="new">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="">2</td><td class="new">7</td><td class="">7</td><td class="">7</td></tr><tr><th>Fault?</th><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="miss">F</td><td class="hit">✓</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td><td class="miss">F</td><td class="hit">✓</td><td class="miss">F</td><td class="hit">✓</td><td class="miss">F</td><td class="hit">✓</td><td class="hit">✓</td></tr><tr><th>Victim</th><td class="mutd"></td><td class="mutd"></td><td class="mutd"></td><td class="mutd">7</td><td class="mutd"></td><td class="mutd">1</td><td class="mutd"></td><td class="mutd">2</td><td class="mutd">3</td><td class="mutd">0</td><td class="mutd">4</td><td class="mutd"></td><td class="mutd"></td><td class="mutd">0</td><td class="mutd"></td><td class="mutd">3</td><td class="mutd"></td><td class="mutd">2</td><td class="mutd"></td><td class="mutd"></td></tr></table></div><p><b>LRU: 12 page faults</b>, 8 hits · fault rate = 12/20 · hit ratio = 8/20</p>
+<b>Conclusion:</b> <b>FIFO 15 · LRU 12 · Optimal 9</b>. This is the classic ranking: OPT ≤ LRU ≤ FIFO.</div>
+<div class="box add"><span class="t">➕ How LRU is implemented (both need hardware)</span>
+<ul>
+<li><b>Counters / time-stamps</b>: each PTE stores the time of last use, and the page with the <b>smallest</b> time is replaced. Finding it requires a search.</li>
+<li><b>Stack</b>: keep a doubly-linked stack of page numbers. A referenced page moves to the <b>top</b>, so the <b>bottom</b> is the LRU page. No search is needed, but every reference updates the stack.</li>
+</ul>
+Because exact LRU is costly, OSs use <b>LRU approximations</b> (next section).</div>
+</section>
+
+<!-- 10.11A -->
+<section id="s11a">
+<h3><span class="n">10.11A</span>LRU Approximations, LFU, MFU &amp; Comparison <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Algorithm</th><th>Idea</th></tr>
+<tr><td><b>Reference-bit algorithm</b></td><td>Hardware sets R = 1 on access; the OS periodically clears it. Replace a page with R = 0. With extra history bits (shift registers), this is the "additional reference bits" algorithm.</td></tr>
+<tr><td><b>Second-Chance (Clock)</b></td><td>FIFO plus the reference bit. The pages form a circular queue with a "clock hand". If the hand's page has R = 1, clear it to 0 (give it a <b>second chance</b>) and move on. Replace the first page with R = 0. If all bits are 1, it degenerates to FIFO.</td></tr>
+<tr><td><b>Enhanced Second-Chance (NRU)</b></td><td>Uses the pair (reference, dirty). Order of preference for the victim: <b>(0,0)</b> not used and clean → (0,1) → (1,0) → (1,1) used and dirty.</td></tr>
+<tr><td><b>LFU</b> (Least Frequently Used)</td><td>Replace the page with the <b>smallest use count</b>. Problem: a page heavily used early on stays forever. Fix by decaying the counts.</td></tr>
+<tr><td><b>MFU</b> (Most Frequently Used)</td><td>Replace the page with the <b>largest count</b>, on the argument that a small count means the page was just brought in. Rarely used.</td></tr>
+<tr><td><b>Page buffering</b></td><td>Keep a pool of free frames, so the faulting page is read in before the victim is written out.</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Algorithm</th><th>Looks at</th><th>Belady's anomaly?</th><th>Implementable?</th><th>Performance</th></tr>
+<tr><td>FIFO</td><td>Load time</td><td><b>Yes</b></td><td>✔ Very easy (queue)</td><td>Poor</td></tr>
+<tr><td>Optimal</td><td><b>Future</b></td><td>No</td><td>✗ Benchmark only</td><td><b>Best</b></td></tr>
+<tr><td>LRU</td><td><b>Past</b> (recency)</td><td>No</td><td>Costly (needs hardware)</td><td>Close to optimal</td></tr>
+<tr><td>Second-Chance</td><td>FIFO + reference bit</td><td>Possible</td><td>✔ Widely used</td><td>Good</td></tr>
+<tr><td>LFU / MFU</td><td>Frequency</td><td>Possible</td><td>✔</td><td>Not common</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"Which algorithm suffers from Belady's anomaly?" → <b>FIFO</b>. "Which gives the minimum page faults?" → <b>Optimal</b>. "Which cannot be implemented?" → <b>Optimal</b>.</li>
+<li>Minimum possible faults = the number of <b>distinct pages</b> in the string (compulsory misses), if frames ≥ distinct pages.</li>
+<li>Hit ratio = hits / total references. Fault rate = faults / total references.</li>
+</ul></div>
+</section>
+
+<!-- 10.12 -->
+<section id="s12">
+<h3><span class="n">10.12</span>Thrashing</h3>
+<div class="def"><b>Thrashing:</b> a state in which the system spends <b>more time paging (swapping pages in and out) than executing</b>. Page faults occur so often that <b>CPU utilisation collapses</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Raising the <b>degree of multiprogramming</b> (DoM) improves CPU utilisation, but each process then gets only a few pages, so the <b>chance of page faults rises</b>. After a certain <b>peak</b>, CPU utilisation starts <b>falling</b>: that is thrashing.
+<p><b>Example:</b> 4 processes P1 to P4 and <b>4 frames</b>. To maximise DoM, load <b>page 1 of each</b> process. Now the CPU wants P1's <b>page 2</b>: fault. P2's page 2: fault. P3's page 3: fault. "Page fault after page fault after page fault." The CPU sits idle while the disk works.</p>
+<p><b>Lecture's remedy:</b> look at the <b>past requests</b> the CPU made for each process, and keep <b>those</b> pages in memory. (This is the idea behind the <b>working-set model</b>, below.)</p></div>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="CPU utilisation rises with degree of multiprogramming, peaks, then falls sharply due to thrashing">
+  <path d="M60 190 H600 M60 190 V20" class="ln"/>
+  <text x="330" y="222" text-anchor="middle" class="mut">degree of multiprogramming →</text>
+  <text x="22" y="110" class="mut" transform="rotate(-90 22 110)">CPU utilisation</text>
+  <path d="M60 180 C 150 90, 230 50, 330 45 C 380 45, 400 60, 430 130 L 480 182" class="lna"/>
+  <path d="M340 30 V190" class="ln dash"/><text x="340" y="25" text-anchor="middle" class="mut">peak</text>
+  <rect x="400" y="30" width="200" height="160" style="fill:var(--bad);opacity:.08"/>
+  <text x="500" y="60" text-anchor="middle" style="fill:var(--bad)" class="b">THRASHING</text>
+  <text x="500" y="80" text-anchor="middle" class="mut">page fault on page fault</text>
+  <text x="500" y="96" text-anchor="middle" class="mut">disk busy · CPU idle</text>
+  <text x="180" y="120" class="mut">more processes → CPU busier</text>
+</svg>
+<figcaption>Figure 10.3: Thrashing</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ The vicious cycle (Galvin)</span>
+Faults rise, so processes wait on the paging disk, so CPU utilisation drops. The long-term scheduler sees low utilisation and <b>admits more processes</b>, which steal even more frames, so there are even more faults. Utilisation collapses.<br>
+<b>Root cause:</b> the total size of all processes' current <b>localities</b> exceeds the total memory (Σ localities &gt; m).<br>
+<b>Fixes:</b> reduce the degree of multiprogramming (suspend or swap out processes through the medium-term scheduler), use <b>local replacement</b>, the <b>working-set model</b>, <b>page-fault frequency</b> control, or add RAM.</div>
+</section>
+
+<!-- 10.12A -->
+<section id="s12a">
+<h3><span class="n">10.12A</span>Working Set &amp; Page-Fault Frequency <span class="badge">ADDED</span></h3>
+<div class="def"><b>Locality model:</b> a process moves from one <b>locality</b> (a set of pages actively used together, such as a function and its data) to another. To avoid thrashing, give each process enough frames for its current locality.<br><br>
+<b>Working set</b> WS(t, Δ): the set of distinct pages referenced in the most recent <b>Δ</b> references (the working-set window).</div>
+<div class="num"><span class="t">Numerical: working set</span>
+Reference string ending at time t₁: … <b>2 6 1 5 7 7 7 7 5 1</b>, with Δ = 10.<br>
+WS(t₁) = distinct pages among the last 10 = <b>{1, 2, 5, 6, 7}</b>, so WSS = <b>5</b>.<br>
+Later the references are … <b>3 4 4 4 3 4 3 4 4 4</b>, so WS(t₂) = {3, 4} and WSS = 2. The process has moved to a new locality.</div>
+<div class="num"><span class="t">Essential formula: working-set strategy</span>
+<div class="formula">D = Σ WSSᵢ   (total demand for frames)
+if D &gt; m (available frames)  →  thrashing will occur → SUSPEND a process
+if D &lt; m                      →  safe; another process may be admitted</div>
+Choosing Δ: too small and it misses the whole locality; too large and it overlaps several localities; Δ = ∞ means the whole program.</div>
+<figure>
+<svg viewBox="0 0 640 210" role="img" aria-label="Page-fault frequency: above upper bound give more frames, below lower bound take frames away">
+  <path d="M60 180 H600 M60 180 V20" class="ln"/>
+  <text x="330" y="205" text-anchor="middle" class="mut">number of frames allocated →</text>
+  <text x="22" y="105" class="mut" transform="rotate(-90 22 105)">page-fault rate</text>
+  <path d="M80 30 C 160 120, 300 160, 590 170" class="lna"/>
+  <path d="M60 70 H600" style="stroke:var(--bad);stroke-dasharray:6 4"/><text x="595" y="64" text-anchor="end" style="fill:var(--bad)">upper bound → give the process MORE frames</text>
+  <path d="M60 150 H600" style="stroke:var(--ok);stroke-dasharray:6 4"/><text x="595" y="144" text-anchor="end" style="fill:var(--ok)">lower bound → take frames AWAY</text>
+</svg>
+<figcaption>Figure 10.4: Page-fault frequency (PFF) control</figcaption>
+</figure>
+<p><b>Page-Fault Frequency (PFF)</b> is a more direct approach: measure each process's fault rate. If it is <b>above an upper bound</b>, give the process more frames. If it is <b>below a lower bound</b>, take frames away. If no free frames are available, suspend a process.</p>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>Thrashing means <b>high paging activity with low CPU utilisation</b>. It is caused by too high a degree of multiprogramming, or too few frames per process.</li>
+<li>Remedy: <b>decrease</b> the degree of multiprogramming, using the working-set model or page-fault frequency.</li>
+<li>The working-set model is based on the <b>locality of reference</b>.</li>
+</ul></div>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 10</h3>
+<ul>
+<li><b>Virtual memory</b>: run a process that is only partly in RAM, giving the illusion of large memory. Like eating an 80 kg feast a little at a time. Pages 0, 3, 6, 9 in frames 1–4 have present = 1; the rest are on disk.</li>
+<li>VM increases the <b>degree of multiprogramming</b>: 100 processes × 10 pages with 100 frames, so one page each lets all 100 be in memory.</li>
+<li><b>Page fault</b> → OS fetches the page → if no free frame, pick a <b>victim</b>. Dirty = 1 → write back first; dirty = 0 → just discard.</li>
+<li><b>Frame allocation</b>: the minimum is set by an instruction's needs; the maximum is all pages. <b>Equal</b>: m/n (60/3 = 20 each, unfair to big processes). <b>Proportional</b>: sᵢ/S × m (30, 40, 30 of 100 with 10 frames → 3, 4, 3). Also priority allocation, and global vs local replacement.</li>
+<li><b>FIFO</b>: evict the oldest. Lecture string 4 7 6 1 7 6 1 2 7 2 with 3 frames → <b>6 faults</b>. It evicted 7 just before 7 was needed.</li>
+<li><b>Belady's anomaly</b>: more frames give more faults, <b>FIFO only</b>. 1 2 3 4 1 2 5 1 2 3 4 5 gives 9 faults with 3 frames and <b>10 with 4</b>. LRU and OPT (stack algorithms) are immune.</li>
+<li><b>Optimal</b>: evict the page used farthest in the <b>future</b>. Lecture → <b>5 faults</b>. Best possible, not implementable, a benchmark.</li>
+<li><b>LRU</b>: evict the page least recently used in the <b>past</b>. Lecture → <b>6 faults</b>. Galvin's string: FIFO 15, LRU 12, OPT 9. Implemented with counters or a stack; approximated by Second-Chance (clock) using the reference bit.</li>
+<li><b>Thrashing</b>: too high a degree of multiprogramming means fault after fault and CPU utilisation collapses (4 processes, 4 frames, one page each). Fix: lower the degree of multiprogramming, working set (D = ΣWSS &gt; m → suspend), or PFF bounds.</li>
+</ul>
+</div>
+<div class="end">End of Volume 01 — Part 10 · Next: Chapter 11 — Disk Management and Disk Scheduling</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="09-Memory-Management.html">← Ch 9: Memory Management</a><a href="index.html">☰ All topics</a><a href="11-Disk-Scheduling.html">Ch 11: Disk Scheduling →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('os-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

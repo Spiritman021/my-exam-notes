@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Types of Networks Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="04-Network-Topologies.html">← Ch 4: Network Topologies</a><a href="index.html">☰ All topics</a><a href="06-OSI-Model.html">Ch 6: OSI Model →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 5: Types of Networks</h1>
+  <p class="sub">Volume 02 · Part 5 · Built from the one-shot CN lecture transcript (section 5), plus the exam points the lecture skipped.</p>
+  <ul class="tags"><li>PAN</li><li>LAN</li><li>CAN</li><li>MAN</li><li>WAN</li><li>WLAN / WPAN</li><li>SAN</li><li>VPN</li><li>Technologies &amp; IEEE Standards</li><li>Speed vs Distance</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">5.0</span>Classification by Area</a></li>
+<li><a href="#s1"><span class="n">5.1</span>PAN (Personal Area Network)</a></li>
+<li><a href="#s2"><span class="n">5.2</span>LAN (Local Area Network)</a></li>
+<li><a href="#s3"><span class="n">5.3</span>CAN (Campus Area Network)</a></li>
+<li><a href="#s4"><span class="n">5.4</span>MAN (Metropolitan Area Network)</a></li>
+<li><a href="#s5"><span class="n">5.5</span>WAN (Wide Area Network)</a></li>
+<li><a href="#s6"><span class="n">5.6</span>Master Comparison<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">5.7</span>Other Network Types: WLAN, SAN, VPN, HAN…<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 5</div>
+<h2 class="ch">Types of Networks</h2>
+<p>Chapter 4 classified networks by <b>shape</b> (topology). This chapter classifies them by <b>size</b>, the geographical area they cover. The lecture's one rule ties it all together: <b>as the distance grows, the speed falls, and ownership moves from private to public</b>.</p>
+
+<section id="s0">
+<h3><span class="n">5.0</span>Classification by Area</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+PAN, LAN, CAN, MAN, WAN: the "<b>AN</b>" is common and means "<b>Area Network</b>". The first letter tells you how big the area is: <b>P</b>ersonal, <b>L</b>ocal, <b>C</b>ampus, <b>M</b>etropolitan, and the biggest, <b>W</b>ide. "Jaisa naam, vaisa kaam."</div>
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-label="Nested scale of networks from PAN to WAN with distance and speed trend">
+  <defs><marker id="w1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <ellipse cx="260" cy="150" rx="250" ry="140" class="gr" style="fill-opacity:.35"/>
+  <ellipse cx="240" cy="160" rx="190" ry="110" class="ac" style="fill-opacity:.35"/>
+  <ellipse cx="220" cy="170" rx="135" ry="82" class="pu" style="fill-opacity:.45"/>
+  <ellipse cx="200" cy="180" rx="85" ry="55" class="or" style="fill-opacity:.5"/>
+  <ellipse cx="185" cy="190" rx="38" ry="25" class="bx"/>
+  <text x="185" y="195" text-anchor="middle" class="b">PAN</text>
+  <text x="250" y="190" class="b">LAN</text>
+  <text x="300" y="150" class="b">CAN</text>
+  <text x="360" y="110" class="b">MAN</text>
+  <text x="420" y="65" class="b">WAN</text>
+  <path d="M530 270 V30" class="lna" marker-end="url(#w1)"/><text x="540" y="40" class="mut">distance ↑</text><text x="540" y="56" class="mut">speed ↓</text><text x="540" y="72" class="mut">cost ↑</text>
+  <text x="540" y="250" class="mut">private</text><text x="540" y="90" class="mut">public / private</text>
+</svg>
+<figcaption>Figure 5.1: Networks by geographical area, each nested inside the next</figcaption>
+</figure>
+</section>
+
+<section id="s1">
+<h3><span class="n">5.1</span>PAN (Personal Area Network)</h3>
+<div class="def"><b>PAN:</b> a network of devices around <b>one person</b>: phone, earbuds, smartwatch, laptop, wireless mouse.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Effective range: <b>about 100 m</b>, limited to a <b>home or a particular room</b>. It provides <b>extremely high speed</b>. It is used <b>privately</b>: personal use, so obviously not public.</div>
+<div class="box add"><span class="t">➕ Technologies</span>
+<b>Wireless PAN (WPAN)</b>: <b>Bluetooth</b> (IEEE <b>802.15.1</b>), <b>Zigbee</b> (802.15.4, IoT), <b>infrared (IrDA)</b>, NFC (≈ 4 cm, used for tap-to-pay cards and UPI Lite), UWB. <b>Wired PAN</b>: USB, Thunderbolt.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Range)</span>
+The lecture uses 100 m as the outer limit. Most textbooks and MCQs quote a PAN range of <b>about 10 metres</b> (typical Bluetooth range). In the exam, choose <b>~10 m</b> unless the options suggest otherwise.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">5.2</span>LAN (Local Area Network)</h3>
+<div class="def"><b>LAN:</b> a network covering a <b>small area</b>, such as one office, building, home or computer lab, usually owned by one organisation.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Its reach grows to <b>about 2 km</b>. It is used in big offices, and we use it in colleges too. Speed is <b>very high</b> (slightly less than PAN's extremely high). It is generally <b>private</b>.</div>
+<div class="box add"><span class="t">➕ Key facts</span>
+<ul>
+<li>Technologies: <b>Ethernet (IEEE 802.3)</b> and <b>Wi-Fi (IEEE 802.11)</b>, which is a WLAN. Older: Token Ring (802.5).</li>
+<li>Speeds: 10 Mbps → 100 Mbps (Fast Ethernet) → 1 Gbps (Gigabit) → 10 Gbps and above.</li>
+<li>Topologies: star (switched, the most common), bus and ring (old).</li>
+<li>Devices: switches, hubs, access points, NICs. <b>Low error rate, low delay, low cost</b>.</li>
+<li>Example: a <b>bank branch</b> network connecting its teller PCs, passbook printers and servers.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">5.3</span>CAN (Campus Area Network)</h3>
+<div class="def"><b>CAN:</b> a network connecting <b>several LANs across a group of buildings</b> in a limited area: a university, a large institute or a corporate campus.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"It's not just one building, it's a <b>collection of buildings</b>": big campuses, universities, large organisations. The range grows to <b>about 5 km</b>. Speed is <b>high</b> but lower than LAN, because <b>as distance grows, speed falls</b>. It is generally <b>private</b>, since the organisation wants its work to stay within itself.</div>
+<div class="box add"><span class="t">➕ Notes</span>
+The buildings' LANs are joined by a high-speed <b>fibre backbone</b> through switches and routers. Examples: an IIT or university campus, Infosys Mysuru, a bank's head-office complex. Some books treat CAN as a large LAN, or as a type of MAN.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">5.4</span>MAN (Metropolitan Area Network)</h3>
+<div class="def"><b>MAN:</b> a network spanning a <b>city or a large town</b>, connecting LANs and CANs across the city.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Range: <b>5 to 50 km</b>; think of a whole <b>city</b>, as with metropolitan cities. Speed must be compromised to an <b>average</b> level. Ownership: <b>private or public</b>. At such a scale things are generally <b>public</b>, but they can be kept private.</div>
+<div class="box add"><span class="t">➕ Technologies and examples</span>
+<b>Cable-TV networks</b>, a city's <b>Wi-Fi / WiMAX (IEEE 802.16)</b>, <b>DQDB (Distributed Queue Dual Bus, IEEE 802.6)</b>, the classic MAN standard, metro Ethernet and fibre rings. Examples: a city-wide network linking all branches of a bank in Mumbai, a city police network, smart-city networks.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">5.5</span>WAN (Wide Area Network)</h3>
+<div class="def"><b>WAN:</b> a network spanning a <b>very large area</b> (states, countries, continents), connecting many LANs and MANs. The <b>Internet is the largest WAN</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+It spans <b>countries and states</b>. Distance: <b>more than 50 km</b>, with no upper limit stated. Speed is <b>lower</b> because the distance is so large. It can be <b>private or public</b>.</div>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="WAN connecting LANs in different cities through routers and leased lines / MPLS / satellite">
+  <ellipse cx="320" cy="115" rx="120" ry="55" class="bx"/><text x="320" y="110" text-anchor="middle" class="b">WAN cloud</text><text x="320" y="128" text-anchor="middle" class="mut">leased line · MPLS · satellite · Internet</text>
+  <rect x="20" y="30" width="130" height="50" rx="6" class="ac"/><text x="85" y="52" text-anchor="middle" class="b">Mumbai HQ LAN</text><text x="85" y="70" text-anchor="middle" class="mut">data centre</text>
+  <rect x="490" y="30" width="130" height="50" rx="6" class="ac"/><text x="555" y="52" text-anchor="middle" class="b">Delhi branch LAN</text>
+  <rect x="20" y="150" width="130" height="50" rx="6" class="ac"/><text x="85" y="172" text-anchor="middle" class="b">Chennai branch</text>
+  <rect x="490" y="150" width="130" height="50" rx="6" class="ac"/><text x="555" y="172" text-anchor="middle" class="b">Rural ATM (VSAT)</text>
+  <circle cx="175" cy="70" r="10" class="or"/><circle cx="465" cy="70" r="10" class="or"/><circle cx="175" cy="170" r="10" class="or"/><circle cx="465" cy="170" r="10" class="or"/>
+  <path d="M150 60 H165 M185 75 L210 95 M490 60 H475 M455 75 L430 95 M150 175 H165 M185 165 L210 140 M490 175 H475 M455 165 L430 140" class="ln"/>
+  <text x="320" y="220" text-anchor="middle" class="mut">orange = routers at the edge of each LAN</text>
+</svg>
+<figcaption>Figure 5.2: A bank WAN joining branch LANs across the country</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ WAN technologies</span>
+<b>Leased lines</b> (T1 = 1.544 Mbps, E1 = 2.048 Mbps), <b>MPLS</b> (most bank networks), Frame Relay and ATM (older), ISDN, DSL, <b>VSAT / satellite</b> (remote branches and ATMs), 4G/5G, and the Internet with <b>VPN</b> overlays. A WAN is often owned by a <b>telecom provider</b> and leased by organisations. It has a higher error rate and delay than a LAN, and routers are its key devices.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">5.6</span>Master Comparison <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Network</th><th>Area (lecture)</th><th>Typical textbook range</th><th>Speed</th><th>Ownership</th><th>Technology / example</th></tr>
+<tr><td><b>PAN</b></td><td>≈ 100 m (room / home)</td><td><b>≈ 10 m</b></td><td>Extremely high</td><td>Private</td><td>Bluetooth, USB; phone ↔ earbuds</td></tr>
+<tr><td><b>LAN</b></td><td>≈ 2 km (office / building)</td><td>up to ≈ 1–2 km</td><td>Very high (100 Mbps – 10 Gbps)</td><td>Private</td><td>Ethernet, Wi-Fi; bank branch</td></tr>
+<tr><td><b>CAN</b></td><td>≈ 5 km (group of buildings)</td><td>1 – 5 km</td><td>High</td><td>Private</td><td>University or corporate campus</td></tr>
+<tr><td><b>MAN</b></td><td>5 – 50 km (city)</td><td>up to ≈ 50–100 km</td><td>Average</td><td>Public or private</td><td>Cable TV, WiMAX, DQDB (802.6)</td></tr>
+<tr><td><b>WAN</b></td><td>&gt; 50 km (states / countries)</td><td>Unlimited (global)</td><td>Lower</td><td>Public or private</td><td>Internet, MPLS, leased lines, VSAT</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Property</th><th>LAN</th><th>MAN</th><th>WAN</th></tr>
+<tr><td>Propagation delay</td><td>Short</td><td>Moderate</td><td>Long</td></tr>
+<tr><td>Fault tolerance</td><td>High</td><td>Lower</td><td>Lower</td></tr>
+<tr><td>Congestion</td><td>Low</td><td>More</td><td>Most</td></tr>
+<tr><td>Design and maintenance</td><td>Easy</td><td>Difficult</td><td>Most difficult</td></tr>
+<tr><td>Cost</td><td>Low</td><td>Higher</td><td>Highest</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Size order: <b>PAN &lt; LAN &lt; CAN &lt; MAN &lt; WAN</b>. "Largest WAN" → <b>the Internet</b>. "Network in a single building" → <b>LAN</b>. "Network spanning a city" → <b>MAN</b>. "Bluetooth is a" → <b>PAN / WPAN</b>. IEEE: 802.3 Ethernet (LAN), 802.11 Wi-Fi (WLAN), 802.15 Bluetooth (WPAN), 802.16 WiMAX (WMAN), 802.6 DQDB (MAN).</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">5.7</span>Other Network Types: WLAN, SAN, VPN, HAN… <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Type</th><th>Meaning</th></tr>
+<tr><td><b>WLAN</b></td><td>Wireless LAN: Wi-Fi (802.11 a/b/g/n/ac/ax) through access points</td></tr>
+<tr><td><b>WPAN / WMAN / WWAN</b></td><td>Wireless versions: Bluetooth / WiMAX / cellular 4G-5G</td></tr>
+<tr><td><b>SAN</b> (Storage Area Network)</td><td>A high-speed dedicated network connecting <b>servers to shared storage</b> (Fibre Channel, iSCSI); used in bank data centres. Not to be confused with NAS (network-attached storage, a file server on the LAN).</td></tr>
+<tr><td><b>VPN</b> (Virtual Private Network)</td><td>A <b>secure encrypted tunnel over a public network</b> (the Internet) that makes remote users or branches appear to be on the private network (IPsec, SSL VPN)</td></tr>
+<tr><td><b>EPN</b> (Enterprise Private Network)</td><td>A company's own network connecting its sites</td></tr>
+<tr><td><b>HAN</b> (Home Area Network)</td><td>Home devices: router, smart TV, IoT</td></tr>
+<tr><td><b>Internetwork</b></td><td>Two or more networks connected by routers; the Internet is the global internetwork</td></tr>
+</table></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 5</h3>
+<ul>
+<li>AN = Area Network; the first letter gives the size. Rule: <b>distance ↑ → speed ↓, cost ↑, private → public</b>.</li>
+<li><b>PAN</b>: personal (room/home); lecture ≈ 100 m, textbook ≈ <b>10 m</b>; extremely high speed; private. Bluetooth 802.15.</li>
+<li><b>LAN</b>: office or building, ≈ 2 km; very high speed; private. Ethernet 802.3, Wi-Fi 802.11; bank branch.</li>
+<li><b>CAN</b>: a collection of buildings (university), ≈ 5 km; high speed; private.</li>
+<li><b>MAN</b>: a city, 5–50 km; average speed; public or private. Cable TV, WiMAX 802.16, DQDB 802.6.</li>
+<li><b>WAN</b>: across states and countries, &gt; 50 km; lower speed; public or private. Internet (the largest), MPLS, leased lines, VSAT.</li>
+<li>Others: WLAN, SAN (storage), VPN (secure tunnel over the Internet), HAN.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 5 · Next: Chapter 6 — OSI Model</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="04-Network-Topologies.html">← Ch 4: Network Topologies</a><a href="index.html">☰ All topics</a><a href="06-OSI-Model.html">Ch 6: OSI Model →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

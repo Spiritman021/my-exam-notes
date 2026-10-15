@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Line Coding Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="07-Transmission-Media.html">← Ch 7: Transmission Media</a><a href="index.html">☰ All topics</a><a href="09-Network-Devices.html">Ch 9: Network Devices →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 8: Line Coding</h1>
+  <p class="sub">Volume 02 · Part 8 · Built from the one-shot CN lecture transcript (section 8), plus the exam points the lecture skipped. All waveforms are generated from the bit sequences.</p>
+  <ul class="tags"><li>Why Encode</li><li>Manchester</li><li>Differential Manchester</li><li>IEEE vs Thomas Convention</li><li>NRZ-L / NRZ-I</li><li>RZ</li><li>AMI</li><li>Baud vs Bit Rate</li><li>4B/5B, 8B/10B</li><li>ASK / FSK / PSK</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">8.0</span>What is Line Coding, and Why?</a></li>
+<li><a href="#s1"><span class="n">8.1</span>Manchester Encoding</a></li>
+<li><a href="#s2"><span class="n">8.2</span>Differential Manchester Encoding</a></li>
+<li><a href="#s3"><span class="n">8.3</span>Example: Differential Manchester</a></li>
+<li><a href="#s4"><span class="n">8.4</span>Other Line Codes: NRZ, RZ, AMI<span class="x">ADDED</span></a></li>
+<li><a href="#s5"><span class="n">8.5</span>Bit Rate vs Baud Rate, Block Coding, Digital-to-Analog<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 8</div>
+<h2 class="ch">Line Coding</h2>
+<p>Chapter 7's media carry <b>signals</b>, but the physical layer receives <b>bits</b> (Chapter 6.4). <b>Line coding</b> is the rule that converts a sequence of 1s and 0s into a digital signal (voltage levels and transitions) that can go onto the wire.</p>
+
+<section id="s0">
+<h3><span class="n">8.0</span>What is Line Coding, and Why?</h3>
+<div class="def"><b>Line coding:</b> the process of converting <b>digital data (bits)</b> into a <b>digital signal</b>. Each bit pattern is represented by voltage levels and/or <b>transitions</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+At the physical layer we finally have a sequence of 1s and 0s that must be <b>encoded</b>. Digital signals have <b>two levels</b>: <b>1 = high</b> and <b>0 = low</b>. Line coding is simply the rule for "what to draw when I see a 1, and what to draw when I see a 0". (Real signals aren't perfect square waves, but we draw them that way.)</div>
+<div class="box add"><span class="t">➕ What a good line code must provide</span>
+<ul>
+<li><b>Self-synchronisation (clock recovery)</b>: a long run of identical bits (0000…) gives no transitions, so the receiver's clock drifts. Codes with a <b>transition in every bit</b> (Manchester) carry their own clock.</li>
+<li><b>No DC component / no baseline wandering</b>: a long run at one level shifts the receiver's average and causes errors.</li>
+<li><b>Built-in error detection</b>: some codes make certain patterns illegal.</li>
+<li><b>Low bandwidth and noise immunity</b>.</li>
+</ul>
+Types: <b>unipolar</b> (0 and +V), <b>polar</b> (+V and −V: NRZ, RZ, Manchester), <b>bipolar</b> (+V, 0, −V: AMI).</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">8.1</span>Manchester Encoding</h3>
+<div class="def"><b>Manchester encoding:</b> each bit is split into two halves, with a <b>transition in the middle of every bit</b>. The <b>direction</b> of the mid-bit transition tells the bit value. Because every bit has a transition, the signal is <b>self-clocking</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — "Z" and "reverse Z"</span>
+<ul>
+<li><b>Bit 1 = high → low</b>: start high, drop to low mid-way. Draw it like a "<b>Z</b>". The first state is the bit itself (1 = high).</li>
+<li><b>Bit 0 = low → high</b>: start low, rise mid-way, a "<b>reverse Z</b>".</li>
+<li>Logic, not rote memory: "seeing a 1, the starting state is 1 (high), then go to 0. Seeing a 0, start at 0 (low), then go up."</li>
+<li>If <b>two identical bits</b> come together (1 1 or 0 0), there is a <b>gap</b> at the bit boundary; just <b>connect it</b> with a vertical line. Whenever you must add a connecting line, the two bits are the <b>same</b>. When the bits change (1→0 or 0→1), the waveform is <b>continuous</b> with no extra line. This rule catches drawing mistakes.</li>
+</ul></div>
+<figure><svg viewBox="0 0 640 150" role="img" aria-label="Manchester (lecture convention: 1 = high→low, 0 = low→high) waveform for bits 110010"><text x="8" y="44" class="mut">high</text><text x="8" y="114" class="mut">low</text><path d="M60.0 22 V128" class="ln dash" style="opacity:.5"/><text x="106.7" y="18" text-anchor="middle" class="b">1</text><path d="M106.7 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M153.3 22 V128" class="ln dash" style="opacity:.5"/><text x="200.0" y="18" text-anchor="middle" class="b">1</text><path d="M200.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M246.7 22 V128" class="ln dash" style="opacity:.5"/><text x="293.3" y="18" text-anchor="middle" class="b">0</text><path d="M293.3 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M340.0 22 V128" class="ln dash" style="opacity:.5"/><text x="386.7" y="18" text-anchor="middle" class="b">0</text><path d="M386.7 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M433.3 22 V128" class="ln dash" style="opacity:.5"/><text x="480.0" y="18" text-anchor="middle" class="b">1</text><path d="M480.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M526.7 22 V128" class="ln dash" style="opacity:.5"/><text x="573.3" y="18" text-anchor="middle" class="b">0</text><path d="M573.3 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M60 40 V40 H106.7 V110 H153.3 V40 H200.0 V110 H246.7 V110 H293.3 V40 H340.0 V110 H386.7 V40 H433.3 V40 H480.0 V110 H526.7 V110 H573.3 V40 H620.0" style="stroke:var(--accent);stroke-width:2.5;fill:none"/></svg><figcaption>Manchester (lecture convention: 1 = high→low, 0 = low→high) — bits 1 1 0 0 1 0</figcaption></figure>
+<div class="box trap"><span class="t">⚠️ Exam trap (Which convention?)</span>
+There are <b>two conventions</b>. The lecture uses <b>G.E. Thomas</b> (1 = high→low). <b>IEEE 802.3 (Ethernet)</b> uses the <b>opposite</b>: <b>0 = high→low, 1 = low→high</b>. Forouzan's textbook also uses the IEEE form. In an MCQ, read the convention stated; if none is given, mention which you assume. The key fact holds either way: there is <b>always a transition in the middle of each bit</b>.</div>
+<figure><svg viewBox="0 0 640 150" role="img" aria-label="Manchester (IEEE 802.3 convention: 0 = high→low, 1 = low→high) waveform for bits 110010"><text x="8" y="44" class="mut">high</text><text x="8" y="114" class="mut">low</text><path d="M60.0 22 V128" class="ln dash" style="opacity:.5"/><text x="106.7" y="18" text-anchor="middle" class="b">1</text><path d="M106.7 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M153.3 22 V128" class="ln dash" style="opacity:.5"/><text x="200.0" y="18" text-anchor="middle" class="b">1</text><path d="M200.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M246.7 22 V128" class="ln dash" style="opacity:.5"/><text x="293.3" y="18" text-anchor="middle" class="b">0</text><path d="M293.3 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M340.0 22 V128" class="ln dash" style="opacity:.5"/><text x="386.7" y="18" text-anchor="middle" class="b">0</text><path d="M386.7 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M433.3 22 V128" class="ln dash" style="opacity:.5"/><text x="480.0" y="18" text-anchor="middle" class="b">1</text><path d="M480.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M526.7 22 V128" class="ln dash" style="opacity:.5"/><text x="573.3" y="18" text-anchor="middle" class="b">0</text><path d="M573.3 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M60 110 V110 H106.7 V40 H153.3 V110 H200.0 V40 H246.7 V40 H293.3 V110 H340.0 V40 H386.7 V110 H433.3 V110 H480.0 V40 H526.7 V40 H573.3 V110 H620.0" style="stroke:var(--accent);stroke-width:2.5;fill:none"/></svg><figcaption>Manchester (IEEE 802.3 convention: 0 = high→low, 1 = low→high) — bits 1 1 0 0 1 0</figcaption></figure>
+<div class="box add"><span class="t">➕ Properties</span>
+Self-synchronising; no DC component. But it needs <b>twice the bandwidth</b> (baud rate = 2 × bit rate). Used in <b>10 Mbps Ethernet (10Base-T)</b>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">8.2</span>Differential Manchester Encoding</h3>
+<div class="def"><b>Differential Manchester:</b> there is <b>always a transition in the middle</b> of every bit (used for the clock). The bit value is shown by the <b>presence or absence of a transition at the <u>start</u> of the bit</b>: <b>0 → transition at the start</b> and <b>1 → no transition at the start</b> (standard convention). So a bit is encoded <b>relative to the previous bit</b>, not by an absolute level.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — four "options"</span>
+<ul>
+<li>For <b>1</b>, both shapes are allowed: <b>Z (option 1)</b> and <b>reverse Z (option 2)</b>.</li>
+<li>For <b>0</b>, take the same two shapes and add a <b>connecting line on the LEFT</b> (at the start of the bit): <b>option 3</b> (Z with a left bar) and <b>option 4</b> (reverse Z with a left bar). "Always the left. Never get confused about this in your life."</li>
+<li>The left bar is exactly the <b>transition at the start of a 0</b>.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 640 160" role="img" aria-label="Four options: two shapes for 1 without start transition, two shapes for 0 with start transition">
+  <g style="stroke:var(--accent);stroke-width:2.5;fill:none">
+  <path d="M40 45 H80 V105 H120"/>
+  <path d="M190 105 H230 V45 H270"/>
+  <path d="M340 105 V45 H380 V105 H420"/>
+  <path d="M490 45 V105 H530 V45 H570"/>
+  </g>
+  <text x="80" y="130" text-anchor="middle" class="b">Option 1: "1"</text><text x="80" y="148" text-anchor="middle" class="mut">Z, no start transition</text>
+  <text x="230" y="130" text-anchor="middle" class="b">Option 2: "1"</text><text x="230" y="148" text-anchor="middle" class="mut">reverse Z, no start transition</text>
+  <text x="380" y="130" text-anchor="middle" class="b">Option 3: "0"</text><text x="380" y="148" text-anchor="middle" class="mut">left bar + Z</text>
+  <text x="530" y="130" text-anchor="middle" class="b">Option 4: "0"</text><text x="530" y="148" text-anchor="middle" class="mut">left bar + reverse Z</text>
+  <path d="M30 30 V120 M160 30 V120 M330 30 V120 M480 30 V120" class="ln dash" style="opacity:.4"/>
+</svg>
+<figcaption>Figure 8.1: The lecture's four shapes for differential Manchester</figcaption>
+</figure>
+</section>
+
+<section id="s3">
+<h3><span class="n">8.3</span>Example: Differential Manchester Encoding</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — rules for choosing the option</span>
+<ol>
+<li><b>First bit</b>: free choice (the lecture takes option 1 for the first 1).</li>
+<li><b>1 → 0</b>: use the 0-option that <b>extends</b> the previous shape. After option 1 comes option 3; after option 2 comes option 4. "Whatever it's the extension of, use that one."</li>
+<li><b>0 → 0</b>: <b>repeat the same 0-option</b> (option 3 → option 3). It joins continuously, with no extra connecting line needed; this is an advantage of differential Manchester.</li>
+<li><b>0 → 1</b>: "the twist": go <b>crosswise</b>, using the opposite shape. After option 3 comes option 2 (reverse Z); after option 4 comes option 1.</li>
+</ol>
+The lecture's worked sequence covers all four options. Simply put, every rule above is "<b>make the waveform continuous at the boundary when the next bit is 1, and jump at the boundary when the next bit is 0</b>".</div>
+<div class="num"><span class="t">Worked example (generated): bits 1 0 0 0 1 0 1, assuming the line was HIGH before the first bit</span>
+<figure><svg viewBox="0 0 640 150" role="img" aria-label="Differential Manchester waveform for bits 1000101"><text x="8" y="44" class="mut">high</text><text x="8" y="114" class="mut">low</text><path d="M60.0 22 V128" class="ln dash" style="opacity:.5"/><text x="100.0" y="18" text-anchor="middle" class="b">1</text><path d="M100.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M140.0 22 V128" class="ln dash" style="opacity:.5"/><text x="180.0" y="18" text-anchor="middle" class="b">0</text><path d="M180.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M220.0 22 V128" class="ln dash" style="opacity:.5"/><text x="260.0" y="18" text-anchor="middle" class="b">0</text><path d="M260.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M300.0 22 V128" class="ln dash" style="opacity:.5"/><text x="340.0" y="18" text-anchor="middle" class="b">0</text><path d="M340.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M380.0 22 V128" class="ln dash" style="opacity:.5"/><text x="420.0" y="18" text-anchor="middle" class="b">1</text><path d="M420.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M460.0 22 V128" class="ln dash" style="opacity:.5"/><text x="500.0" y="18" text-anchor="middle" class="b">0</text><path d="M500.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M540.0 22 V128" class="ln dash" style="opacity:.5"/><text x="580.0" y="18" text-anchor="middle" class="b">1</text><path d="M580.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M60 40 V40 H100.0 V110 H140.0 V40 H180.0 V110 H220.0 V40 H260.0 V110 H300.0 V40 H340.0 V110 H380.0 V110 H420.0 V40 H460.0 V110 H500.0 V40 H540.0 V40 H580.0 V110 H620.0" style="stroke:var(--accent);stroke-width:2.5;fill:none"/></svg><figcaption>Differential Manchester — bits 1 0 0 0 1 0 1</figcaption></figure>
+<b>Check each bit:</b> the first <b>1</b> has no jump at its start (it stays high, then falls mid-bit, option 1). Each <b>0</b> has a <b>jump at its start</b>. Each <b>1</b> has <b>no jump at its start</b>. Every bit has a <b>mid-bit transition</b>.<br>
+<b>Decoding rule:</b> look only at the <b>bit boundaries</b>. A transition means 0; no transition means 1.</div>
+<div class="box add"><span class="t">➕ Why use differential Manchester?</span>
+Since it encodes <b>changes</b>, not absolute levels, it still works if the two wires are <b>swapped</b> (polarity inversion), and it is more noise-tolerant. Used in <b>IEEE 802.5 Token Ring</b>. Like Manchester, it needs 2× bandwidth.</div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Manchester</th><th>Differential Manchester</th></tr>
+<tr><td>Mid-bit transition</td><td>Always; its <b>direction</b> gives the bit</td><td>Always; used only for the clock</td></tr>
+<tr><td>Bit value shown by</td><td>Direction of the mid transition</td><td><b>Presence/absence of a transition at the start</b> (0 = yes, 1 = no)</td></tr>
+<tr><td>Reference</td><td>Absolute</td><td>Relative to the previous bit</td></tr>
+<tr><td>Polarity swap</td><td>All bits inverted</td><td><b>Unaffected</b></td></tr>
+<tr><td>Used in</td><td><b>Ethernet</b> (10 Mbps)</td><td><b>Token Ring</b> (802.5)</td></tr>
+</table></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">8.4</span>Other Line Codes: NRZ, RZ, AMI <span class="badge">ADDED</span></h3>
+<p>The same bits <b>1 0 1 1 0 0 1</b> under different schemes:</p>
+<figure><svg viewBox="0 0 640 150" role="img" aria-label="NRZ-L (Non-Return-to-Zero Level): 1 = high, 0 = low; the level stays for the whole bit waveform for bits 1011001"><text x="8" y="44" class="mut">high</text><text x="8" y="114" class="mut">low</text><path d="M60.0 22 V128" class="ln dash" style="opacity:.5"/><text x="100.0" y="18" text-anchor="middle" class="b">1</text><path d="M100.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M140.0 22 V128" class="ln dash" style="opacity:.5"/><text x="180.0" y="18" text-anchor="middle" class="b">0</text><path d="M180.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M220.0 22 V128" class="ln dash" style="opacity:.5"/><text x="260.0" y="18" text-anchor="middle" class="b">1</text><path d="M260.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M300.0 22 V128" class="ln dash" style="opacity:.5"/><text x="340.0" y="18" text-anchor="middle" class="b">1</text><path d="M340.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M380.0 22 V128" class="ln dash" style="opacity:.5"/><text x="420.0" y="18" text-anchor="middle" class="b">0</text><path d="M420.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M460.0 22 V128" class="ln dash" style="opacity:.5"/><text x="500.0" y="18" text-anchor="middle" class="b">0</text><path d="M500.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M540.0 22 V128" class="ln dash" style="opacity:.5"/><text x="580.0" y="18" text-anchor="middle" class="b">1</text><path d="M580.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M60 40 V40 H100.0 V40 H140.0 V110 H180.0 V110 H220.0 V40 H260.0 V40 H300.0 V40 H340.0 V40 H380.0 V110 H420.0 V110 H460.0 V110 H500.0 V110 H540.0 V40 H580.0 V40 H620.0" style="stroke:var(--accent);stroke-width:2.5;fill:none"/></svg><figcaption>NRZ-L (Non-Return-to-Zero Level): 1 = high, 0 = low; the level stays for the whole bit — bits 1 0 1 1 0 0 1</figcaption></figure>
+<figure><svg viewBox="0 0 640 150" role="img" aria-label="NRZ-I (Inverted): 1 = invert the level at the bit, 0 = no change waveform for bits 1011001"><text x="8" y="44" class="mut">high</text><text x="8" y="114" class="mut">low</text><path d="M60.0 22 V128" class="ln dash" style="opacity:.5"/><text x="100.0" y="18" text-anchor="middle" class="b">1</text><path d="M100.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M140.0 22 V128" class="ln dash" style="opacity:.5"/><text x="180.0" y="18" text-anchor="middle" class="b">0</text><path d="M180.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M220.0 22 V128" class="ln dash" style="opacity:.5"/><text x="260.0" y="18" text-anchor="middle" class="b">1</text><path d="M260.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M300.0 22 V128" class="ln dash" style="opacity:.5"/><text x="340.0" y="18" text-anchor="middle" class="b">1</text><path d="M340.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M380.0 22 V128" class="ln dash" style="opacity:.5"/><text x="420.0" y="18" text-anchor="middle" class="b">0</text><path d="M420.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M460.0 22 V128" class="ln dash" style="opacity:.5"/><text x="500.0" y="18" text-anchor="middle" class="b">0</text><path d="M500.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M540.0 22 V128" class="ln dash" style="opacity:.5"/><text x="580.0" y="18" text-anchor="middle" class="b">1</text><path d="M580.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M60 40 V40 H100.0 V40 H140.0 V40 H180.0 V40 H220.0 V110 H260.0 V110 H300.0 V40 H340.0 V40 H380.0 V40 H420.0 V40 H460.0 V40 H500.0 V40 H540.0 V110 H580.0 V110 H620.0" style="stroke:var(--accent);stroke-width:2.5;fill:none"/></svg><figcaption>NRZ-I (Inverted): 1 = invert the level at the bit, 0 = no change — bits 1 0 1 1 0 0 1</figcaption></figure>
+<figure><svg viewBox="0 0 640 150" role="img" aria-label="RZ (Return-to-Zero): +V for 1, −V for 0 in the first half, back to 0 in the second half waveform for bits 1011001"><text x="8" y="44" class="mut">+V</text><text x="8" y="114" class="mut">−V</text><text x="8" y="79" class="mut">0</text><path d="M60 75 H620" class="ln dash"/><path d="M60.0 22 V128" class="ln dash" style="opacity:.5"/><text x="100.0" y="18" text-anchor="middle" class="b">1</text><path d="M100.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M140.0 22 V128" class="ln dash" style="opacity:.5"/><text x="180.0" y="18" text-anchor="middle" class="b">0</text><path d="M180.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M220.0 22 V128" class="ln dash" style="opacity:.5"/><text x="260.0" y="18" text-anchor="middle" class="b">1</text><path d="M260.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M300.0 22 V128" class="ln dash" style="opacity:.5"/><text x="340.0" y="18" text-anchor="middle" class="b">1</text><path d="M340.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M380.0 22 V128" class="ln dash" style="opacity:.5"/><text x="420.0" y="18" text-anchor="middle" class="b">0</text><path d="M420.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M460.0 22 V128" class="ln dash" style="opacity:.5"/><text x="500.0" y="18" text-anchor="middle" class="b">0</text><path d="M500.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M540.0 22 V128" class="ln dash" style="opacity:.5"/><text x="580.0" y="18" text-anchor="middle" class="b">1</text><path d="M580.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M60 40 V40 H100.0 V75 H140.0 V110 H180.0 V75 H220.0 V40 H260.0 V75 H300.0 V40 H340.0 V75 H380.0 V110 H420.0 V75 H460.0 V110 H500.0 V75 H540.0 V40 H580.0 V75 H620.0" style="stroke:var(--accent);stroke-width:2.5;fill:none"/></svg><figcaption>RZ (Return-to-Zero): +V for 1, −V for 0 in the first half, back to 0 in the second half — bits 1 0 1 1 0 0 1</figcaption></figure>
+<figure><svg viewBox="0 0 640 150" role="img" aria-label="AMI (Alternate Mark Inversion, bipolar): 0 = zero volts, each 1 alternates +V / −V waveform for bits 1011001"><text x="8" y="44" class="mut">+V</text><text x="8" y="114" class="mut">−V</text><text x="8" y="79" class="mut">0</text><path d="M60 75 H620" class="ln dash"/><path d="M60.0 22 V128" class="ln dash" style="opacity:.5"/><text x="100.0" y="18" text-anchor="middle" class="b">1</text><path d="M100.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M140.0 22 V128" class="ln dash" style="opacity:.5"/><text x="180.0" y="18" text-anchor="middle" class="b">0</text><path d="M180.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M220.0 22 V128" class="ln dash" style="opacity:.5"/><text x="260.0" y="18" text-anchor="middle" class="b">1</text><path d="M260.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M300.0 22 V128" class="ln dash" style="opacity:.5"/><text x="340.0" y="18" text-anchor="middle" class="b">1</text><path d="M340.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M380.0 22 V128" class="ln dash" style="opacity:.5"/><text x="420.0" y="18" text-anchor="middle" class="b">0</text><path d="M420.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M460.0 22 V128" class="ln dash" style="opacity:.5"/><text x="500.0" y="18" text-anchor="middle" class="b">0</text><path d="M500.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M540.0 22 V128" class="ln dash" style="opacity:.5"/><text x="580.0" y="18" text-anchor="middle" class="b">1</text><path d="M580.0 30 V120" style="stroke:var(--muted);stroke-width:.6;stroke-dasharray:2 3"/><path d="M60 40 V40 H100.0 V40 H140.0 V75 H180.0 V75 H220.0 V110 H260.0 V110 H300.0 V40 H340.0 V40 H380.0 V75 H420.0 V75 H460.0 V75 H500.0 V75 H540.0 V110 H580.0 V110 H620.0" style="stroke:var(--accent);stroke-width:2.5;fill:none"/></svg><figcaption>AMI (Alternate Mark Inversion, bipolar): 0 = zero volts, each 1 alternates +V / −V — bits 1 0 1 1 0 0 1</figcaption></figure>
+<div class="tw"><table>
+<tr><th>Scheme</th><th>Type</th><th>Rule</th><th>Self-sync?</th><th>Note</th></tr>
+<tr><td>Unipolar NRZ</td><td>Unipolar</td><td>1 = +V, 0 = 0 V</td><td>No</td><td>DC component; obsolete</td></tr>
+<tr><td>NRZ-L</td><td>Polar</td><td>Level by bit</td><td>No: long runs of 0 or 1 lose sync</td><td>Simple</td></tr>
+<tr><td>NRZ-I</td><td>Polar</td><td>1 = transition</td><td>Only for runs of 1s</td><td>Used with 4B/5B (100Base-FX)</td></tr>
+<tr><td>RZ</td><td>Polar</td><td>Returns to 0 mid-bit</td><td>Yes</td><td>3 levels, 2× bandwidth</td></tr>
+<tr><td><b>Manchester</b></td><td>Polar (biphase)</td><td>Mid-bit transition direction</td><td><b>Yes</b></td><td>Ethernet</td></tr>
+<tr><td><b>Diff Manchester</b></td><td>Polar (biphase)</td><td>Start transition = 0</td><td><b>Yes</b></td><td>Token Ring</td></tr>
+<tr><td>AMI</td><td>Bipolar</td><td>1 alternates ±V; 0 = 0</td><td>For 1s only</td><td>No DC; telephone T1 lines (with B8ZS/HDB3)</td></tr>
+</table></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">8.5</span>Bit Rate vs Baud Rate, Block Coding, Digital-to-Analog <span class="badge">ADDED</span></h3>
+<div class="def"><b>Bit rate</b> = bits sent per second (bps). <b>Baud rate (signal / modulation rate)</b> = signal elements (symbol changes) per second. <b>Baud ≤ bit rate</b> for multilevel schemes, but <b>baud = 2 × bit rate</b> for Manchester and differential Manchester.</div>
+<div class="num"><span class="t">Numericals</span>
+<b>Q1.</b> 10 Mbps Ethernet uses Manchester. Baud rate? Two signal changes per bit, so <b>20 Mbaud</b> (and about 20 MHz bandwidth is needed).<br>
+<b>Q2.</b> A signal with <b>4 levels</b> (2 bits per symbol) at 1000 baud. Bit rate = 1000 × log₂4 = <b>2000 bps</b>.<br>
+<b>Q3.</b> Bit rate 9600 bps with 16-QAM (log₂16 = 4 bits per symbol). Baud = 9600 / 4 = <b>2400 baud</b>.</div>
+<ul>
+<li><b>Block coding</b> adds redundancy for synchronisation and error detection. <b>4B/5B</b>: every 4 data bits become a 5-bit code with no long runs of 0s (100 Mbps Fast Ethernet; 80% efficiency). <b>8B/10B</b>: Gigabit Ethernet, USB 3.0.</li>
+<li><b>Digital-to-analog (modulation)</b> for telephone lines and radio: <b>ASK</b> (Amplitude Shift Keying: vary amplitude), <b>FSK</b> (Frequency Shift Keying), <b>PSK</b> (Phase Shift Keying), and <b>QAM</b> (amplitude + phase; used in modems and Wi-Fi). A <b>modem</b> = <b>mo</b>dulator–<b>dem</b>odulator.</li>
+<li><b>Analog-to-digital</b>: <b>PCM</b> (Pulse Code Modulation: sampling, quantising, encoding). Nyquist sampling rate ≥ 2 × the highest frequency (voice at 4 kHz → 8000 samples per second × 8 bits = 64 kbps).</li>
+</ul>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"Encoding used in Ethernet?" → <b>Manchester</b>. "In Token Ring?" → <b>Differential Manchester</b>. "Which encoding has a transition in the middle of every bit?" → Manchester and differential Manchester. "A modem converts?" → digital ↔ analog. Baud rate for Manchester = <b>2 × bit rate</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 8</h3>
+<ul>
+<li>Line coding = bits → digital signal. Goals: self-clocking, no DC, error detection. Types: unipolar, polar, bipolar.</li>
+<li><b>Manchester</b> (lecture): <b>1 = high→low ("Z")</b>, <b>0 = low→high (reverse Z)</b>; always a <b>mid-bit transition</b>. Same consecutive bits need a <b>connecting line</b>; different bits flow continuously. IEEE 802.3 uses the opposite convention. Ethernet.</li>
+<li><b>Differential Manchester</b>: mid-bit transition always (clock). <b>0 = transition at the START</b> (the lecture's "left bar"), <b>1 = no start transition</b>. Lecture options: 1 → opt 1/2, 0 → opt 3/4; 1→0 extends, 0→0 repeats, 0→1 crosses. Relative coding; polarity-proof. Token Ring.</li>
+<li>Others: NRZ-L (level), NRZ-I (1 = invert), RZ (return to 0), AMI (1s alternate ±V).</li>
+<li>Manchester baud = <b>2 × bit rate</b> (10 Mbps → 20 Mbaud). 4B/5B, 8B/10B. ASK/FSK/PSK/QAM; PCM = 64 kbps voice.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 8 · Next: Chapter 9 — Network Devices</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="07-Transmission-Media.html">← Ch 7: Transmission Media</a><a href="index.html">☰ All topics</a><a href="09-Network-Devices.html">Ch 9: Network Devices →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

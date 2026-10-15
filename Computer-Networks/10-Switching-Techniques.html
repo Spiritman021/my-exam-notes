@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Switching Techniques Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="09-Network-Devices.html">← Ch 9: Network Devices</a><a href="index.html">☰ All topics</a><a href="11-Data-Link-Layer.html">Ch 11: Data Link Layer →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 10: Switching Techniques</h1>
+  <p class="sub">Volume 02 · Part 10 · Built from the one-shot CN lecture transcript (section 10), plus the exam points the lecture skipped.</p>
+  <ul class="tags"><li>Circuit Switching</li><li>Setup / Data / Teardown</li><li>Transmission Time L/B</li><li>Propagation Delay d/v</li><li>Message Switching</li><li>Store-and-Forward</li><li>Packet Switching</li><li>Pipelining Formula</li><li>Virtual Circuit</li><li>Datagram</li><li>Delay Numericals</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">10.0</span>What is Switching?</a></li>
+<li><a href="#s1"><span class="n">10.1</span>Circuit Switching</a></li>
+<li><a href="#s2"><span class="n">10.2</span>Transmission Time and Propagation Delay</a></li>
+<li><a href="#s3"><span class="n">10.3</span>Message Switching</a></li>
+<li><a href="#s4"><span class="n">10.4</span>Packet Switching</a></li>
+<li><a href="#s5"><span class="n">10.5</span>Virtual Circuit vs Datagram</a></li>
+<li><a href="#s6"><span class="n">10.6</span>Delay Numericals &amp; Master Comparison<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 10</div>
+<h2 class="ch">Switching Techniques</h2>
+<p>Chapter 9 introduced switches and routers, the intermediate nodes. This chapter covers <b>how</b> data travels through a chain of them from source to destination. There are three strategies: <b>reserve a whole path</b> first (circuit), <b>hop the whole message</b> node to node (message), or <b>chop it into packets</b> (packet switching, with two flavours, virtual circuit and datagram).</p>
+
+<section id="s0">
+<h3><span class="n">10.0</span>What is Switching?</h3>
+<div class="def"><b>Switching:</b> the technique of moving data from source to destination through a series of <b>intermediate nodes (switches)</b>, deciding at each node which outgoing link to use.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — Changing taxis</span>
+You are a <b>data packet</b> going from source to destination. You take a <b>taxi</b> to one point, <b>switch</b> to another taxi there, and switch again until you reach the destination. A packet likewise "<b>switches</b>" from node to node across the network. Types: <b>circuit switching</b>, <b>message switching</b> and <b>packet switching</b> (with the variants <b>datagram</b> and <b>virtual circuit</b>).</div>
+<figure>
+<svg viewBox="0 0 640 140" role="img" aria-label="Classification of switching techniques">
+  <rect x="250" y="10" width="140" height="32" rx="6" class="ac"/><text x="320" y="31" text-anchor="middle" class="b">Switching</text>
+  <rect x="40" y="62" width="150" height="32" rx="6" class="gr"/><text x="115" y="83" text-anchor="middle" class="b">Circuit</text>
+  <rect x="245" y="62" width="150" height="32" rx="6" class="or"/><text x="320" y="83" text-anchor="middle" class="b">Message</text>
+  <rect x="450" y="62" width="150" height="32" rx="6" class="pu"/><text x="525" y="83" text-anchor="middle" class="b">Packet</text>
+  <rect x="400" y="110" width="110" height="28" rx="5" class="bx"/><text x="455" y="129" text-anchor="middle">Virtual circuit</text>
+  <rect x="540" y="110" width="90" height="28" rx="5" class="bx"/><text x="585" y="129" text-anchor="middle">Datagram</text>
+  <path d="M320 42 V52 H115 V62 M320 52 V62 M320 52 H525 V62 M525 94 V102 H455 V110 M525 102 H585 V110" class="ln"/>
+</svg>
+<figcaption>Figure 10.1: Types of switching</figcaption>
+</figure>
+</section>
+
+<section id="s1">
+<h3><span class="n">10.1</span>Circuit Switching</h3>
+<div class="def"><b>Circuit switching:</b> a <b>dedicated physical path</b> between sender and receiver is <b>set up before</b> communication, <b>reserved</b> for the whole conversation, and <b>torn down</b> afterwards. It works at the <b>physical layer</b>. Example: the traditional telephone network (PSTN).</div>
+<div class="box lec"><span class="t">🎓 From the lecture — The cup-and-string telephone</span>
+Remember the childhood game of <b>two cups joined by a thread</b>? One person speaks into a cup, the other listens at the other cup.
+<ol>
+<li><b>Connection setup first</b>: before anyone talks, the thread (a <b>dedicated link / path</b>) is connected. Many other paths may exist, but this one is reserved for us. That takes the <b>setup time</b>.</li>
+<li><b>Data transfer</b>: transmission time + propagation delay (10.2).</li>
+<li><b>Teardown</b>: when the game is over, break the thread so others can use it. That takes the <b>teardown time</b>.</li>
+</ol>
+<b>Other properties</b>:
+<ul>
+<li><b>Guaranteed in-order delivery</b>: if I say A, B, C, the receiver hears A, B, C, never B, A, C.</li>
+<li><b>Resources are reserved</b> and can't be used by others: "Mummy needed the thread for sewing, but my brother and I were playing, so she couldn't use it."</li>
+<li><b>No store-and-forward</b>, so delay is low and it is fast; no obstacle stops and checks the data midway.</li>
+</ul>
+<b>Total time</b> = setup time + transmission time + propagation delay + teardown time.</div>
+<figure>
+<svg viewBox="0 0 640 240" role="img" aria-label="Circuit switching time diagram with setup, data transfer and teardown phases">
+  <defs><marker id="s1m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="80" y="18" text-anchor="middle" class="b">Source</text><text x="250" y="18" text-anchor="middle" class="b">Switch 1</text><text x="420" y="18" text-anchor="middle" class="b">Switch 2</text><text x="580" y="18" text-anchor="middle" class="b">Destination</text>
+  <path d="M80 25 V230 M250 25 V230 M420 25 V230 M580 25 V230" class="ln"/>
+  <path d="M80 35 L250 50 L420 65 L580 80" class="lna" marker-end="url(#s1m)"/><text x="30" y="55" class="mut">setup</text>
+  <path d="M580 85 L80 110" class="ln dash" marker-end="url(#s1m)"/><text x="330" y="92" text-anchor="middle" class="mut">connection confirmed</text>
+  <rect x="80" y="115" width="10" height="50" class="gr"/><path d="M90 115 L580 140 M90 165 L580 190" style="stroke:var(--ok);stroke-width:2"/>
+  <text x="30" y="145" class="mut">data</text><text x="330" y="170" text-anchor="middle" class="mut">whole data flows continuously, no waiting at switches</text>
+  <path d="M80 200 L580 220" class="ln dash" marker-end="url(#s1m)"/><text x="30" y="215" class="mut">teardown</text>
+</svg>
+<figcaption>Figure 10.2: Circuit switching: three phases</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Pros, cons and types</span>
+<b>Pros</b>: a guaranteed, constant data rate; in-order delivery; no congestion once the circuit is set up; ideal for <b>real-time voice</b>. <b>Cons</b>: setup delay; <b>bandwidth is wasted</b> when nobody speaks (silences); inefficient for bursty data; if a link fails, the call drops. Implemented with <b>space-division</b> (crossbar) and <b>time-division</b> switching (TDM, TSI).</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">10.2</span>Transmission Time and Propagation Delay</h3>
+<figure>
+<svg viewBox="0 0 640 170" role="img" aria-label="Transmission time is putting bits onto the link; propagation delay is travel along the link">
+  <defs><marker id="s2m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="50" width="90" height="50" rx="6" class="ac"/><text x="65" y="80" text-anchor="middle" class="b">Sender</text>
+  <rect x="530" y="50" width="90" height="50" rx="6" class="gr"/><text x="575" y="80" text-anchor="middle" class="b">Receiver</text>
+  <path d="M110 75 H530" style="stroke:var(--ink);stroke-width:3"/>
+  <rect x="110" y="62" width="90" height="26" class="or"/><text x="155" y="80" text-anchor="middle" style="font-size:11px">packet (L bits)</text>
+  <path d="M110 115 H200" class="lna" marker-start="url(#s2m)" marker-end="url(#s2m)"/><text x="155" y="132" text-anchor="middle" class="b">Tt = L / B</text><text x="155" y="148" text-anchor="middle" class="mut">putting all bits ON the link</text>
+  <path d="M110 35 H530" class="lna" marker-start="url(#s2m)" marker-end="url(#s2m)"/><text x="320" y="28" text-anchor="middle" class="b">Tp = d / v</text><text x="420" y="132" text-anchor="middle" class="mut">a bit travelling d metres at speed v</text>
+</svg>
+<figcaption>Figure 10.3: Transmission time vs propagation delay</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Transmission time (Tt)</b>: the time to <b>completely place the whole packet onto the link</b> at the sender. It is <b>directly proportional to the packet length</b> (bigger packet, more time) and <b>inversely proportional to bandwidth</b> (100 Mbps puts it on faster than 1 Mbps). So we want a smaller length and a higher bandwidth.</li>
+<li><b>Propagation delay (Tp)</b>: once on the link, the time for it to <b>travel to the receiver</b>. It is <b>directly proportional to the distance (d)</b> and <b>inversely proportional to the speed</b>.</li>
+<li>These come back in the DLL chapters (CSMA, flow control).</li>
+</ul></div>
+<div class="num"><span class="t">Essential formulas</span>
+<div class="formula">Transmission time   Tt = L / B      (L = packet length in bits, B = bandwidth in bps)
+Propagation delay   Tp = d / v      (d = distance, v = propagation speed; ≈ 2×10⁸ m/s in cable/fibre, 3×10⁸ in air)
+Total delay (one link)  = Tt + Tp  (+ queuing + processing delay)
+a = Tp / Tt        (used later in efficiency formulas)</div></div>
+<div class="num"><span class="t">Numericals (added)</span>
+<b>Q1.</b> A 1500-byte frame on a 100 Mbps link: Tt = 1500×8 / 10⁸ = 12000 / 10⁸ = <b>120 µs</b>.<br>
+<b>Q2.</b> A 2000 km fibre at v = 2×10⁸ m/s: Tp = 2×10⁶ / 2×10⁸ = <b>10 ms</b>.<br>
+<b>Q3.</b> 1 MB sent over 10 Mbps across 3000 km (v = 3×10⁸): Tt = 8×10⁶ / 10⁷ = 0.8 s; Tp = 3×10⁶/3×10⁸ = 0.01 s. Total ≈ <b>0.81 s</b>. Here transmission dominates.<br>
+<b>Trap:</b> 1 KB = 1024 bytes in storage, but bandwidth uses decimal units (1 Mbps = 10⁶ bps). Many exams use 1 KB = 1000 bytes for simplicity, so read the question.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">10.3</span>Message Switching</h3>
+<div class="def"><b>Message switching:</b> <b>no dedicated path</b> is set up. The <b>whole message</b> (a block of data) is sent hop by hop; each intermediate node <b>stores the entire message</b>, then <b>forwards</b> it to the next node (<b>store-and-forward</b>).</div>
+<div class="box lec"><span class="t">🎓 From the lecture — Passing the message along</span>
+"Why do all that setup? Just call out: 'Hey, listen, pass this on to him!'" The receiver is far away, so you hand the message to <b>someone in between</b>. They too find the receiver too far, so they catch another person and hand it on, until it reaches the receiver.
+<ul>
+<li>No setup and no teardown; <b>no resources reserved</b> in advance. That is its <b>big advantage</b>.</li>
+<li><b>Hop-by-hop delivery</b>: the message or data block is forwarded node by node, so there is <b>delay</b>.</li>
+<li>The whole message is forwarded across the network, so <b>traffic increases</b>.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ More facts</span>
+Every node needs <b>large storage</b> (messages can be big). Long delays make it unsuitable for real-time or interactive use. Examples: <b>telegram</b> networks, early e-mail. It is the ancestor of packet switching. Messages may arrive out of order (in a multi-path network).</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">10.4</span>Packet Switching</h3>
+<div class="def"><b>Packet switching:</b> the message is <b>divided into small packets</b>, each with a header. Packets are sent <b>individually, store-and-forward</b>, through switches or routers. It works at the <b>network layer</b> (and data link layer). This is how the Internet works.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+It is a <b>mixed flavour</b> of message and circuit switching. The sender doesn't send the whole big message; it <b>divides it into packets</b> and sends <b>packet by packet</b>, hence the name. Each packet is placed on the link (transmission), propagates, then at each switch is <b>stored, then forwarded</b>: store → forward → store → forward → receiver. So there is delay: <b>total time = transmission times at the sender and switches + propagation times on all links</b>. Two variants: <b>virtual circuit</b> (resources reserved) and <b>datagram</b> (no reservation).</div>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="Time diagram comparing message switching and packet switching pipelining over two hops">
+  <text x="160" y="18" text-anchor="middle" class="b">Message switching</text>
+  <text x="480" y="18" text-anchor="middle" class="b">Packet switching (3 packets)</text>
+  <text x="40" y="38" class="mut" style="font-size:11px">A</text><text x="155" y="38" class="mut" style="font-size:11px">S</text><text x="270" y="38" class="mut" style="font-size:11px">B</text>
+  <path d="M45 42 V220 M160 42 V220 M275 42 V220" class="ln"/>
+  <path d="M45 50 L160 80 L160 140 L275 170" style="stroke:var(--alert);stroke-width:2;fill:none"/>
+  <rect x="45" y="50" width="6" height="60" class="or"/><rect x="160" y="110" width="6" height="60" class="or"/>
+  <text x="160" y="200" text-anchor="middle" class="mut">whole message stored at S before forwarding</text>
+  <text x="360" y="38" class="mut" style="font-size:11px">A</text><text x="475" y="38" class="mut" style="font-size:11px">S</text><text x="590" y="38" class="mut" style="font-size:11px">B</text>
+  <path d="M365 42 V220 M480 42 V220 M595 42 V220" class="ln"/>
+  <rect x="365" y="50" width="6" height="20" class="ac"/><rect x="365" y="70" width="6" height="20" class="gr"/><rect x="365" y="90" width="6" height="20" class="pu"/>
+  <rect x="480" y="70" width="6" height="20" class="ac"/><rect x="480" y="90" width="6" height="20" class="gr"/><rect x="480" y="110" width="6" height="20" class="pu"/>
+  <path d="M371 60 L480 75 M371 80 L480 95 M371 100 L480 115 M486 80 L595 95 M486 100 L595 115 M486 120 L595 135" class="ln"/>
+  <text x="480" y="160" text-anchor="middle" class="mut">S forwards packet 1 while packet 2 arrives</text>
+  <text x="480" y="178" text-anchor="middle" class="mut">→ PIPELINING → finishes earlier</text>
+</svg>
+<figcaption>Figure 10.4: Why packet switching beats message switching (pipelining)</figcaption>
+</figure>
+</section>
+
+<section id="s5">
+<h3><span class="n">10.5</span>Virtual Circuit vs Datagram</h3>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Virtual circuit: all packets follow same path in order; datagram: packets take different paths and may arrive out of order">
+  <defs><marker id="s5m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="160" y="18" text-anchor="middle" class="b">Virtual circuit</text>
+  <circle cx="30" cy="110" r="16" class="ac"/><text x="30" y="115" text-anchor="middle" style="font-size:11px">S</text>
+  <circle cx="290" cy="110" r="16" class="gr"/><text x="290" y="115" text-anchor="middle" style="font-size:11px">D</text>
+  <circle cx="100" cy="60" r="12" class="bx"/><circle cx="160" cy="110" r="12" class="bx"/><circle cx="100" cy="160" r="12" class="bx"/><circle cx="220" cy="60" r="12" class="bx"/><circle cx="220" cy="160" r="12" class="bx"/>
+  <path d="M46 110 H148 M172 110 H274" style="stroke:var(--accent);stroke-width:4"/>
+  <path d="M42 100 L90 66 M112 60 H208 M232 66 L278 100 M42 120 L90 154 M112 160 H208 M232 154 L278 120" class="ln dash"/>
+  <text x="160" y="95" text-anchor="middle" class="mut">C B A → arrive A B C</text>
+  <text x="160" y="205" text-anchor="middle" class="mut">reserved path · same route · in order</text>
+  <path d="M340 20 V220" class="ln dash"/>
+  <text x="510" y="18" text-anchor="middle" class="b">Datagram</text>
+  <circle cx="380" cy="110" r="16" class="ac"/><text x="380" y="115" text-anchor="middle" style="font-size:11px">S</text>
+  <circle cx="640" cy="110" r="16" class="gr"/><text x="640" y="115" text-anchor="middle" style="font-size:11px">D</text>
+  <circle cx="450" cy="60" r="12" class="bx"/><circle cx="510" cy="110" r="12" class="bx"/><circle cx="450" cy="160" r="12" class="bx"/><circle cx="570" cy="60" r="12" class="bx"/><circle cx="570" cy="160" r="12" class="bx"/>
+  <path d="M392 100 L440 66 M462 60 H558 M582 66 L628 100" style="stroke:var(--accent);stroke-width:2.5" marker-end="url(#s5m)"/>
+  <path d="M396 110 H498 M522 110 H624" style="stroke:var(--ok);stroke-width:2.5" marker-end="url(#s5m)"/>
+  <path d="M392 120 L440 154 M462 160 H558 M582 154 L628 120" style="stroke:var(--alert);stroke-width:2.5" marker-end="url(#s5m)"/>
+  <text x="510" y="48" text-anchor="middle" class="mut" style="font-size:11px">A</text><text x="510" y="98" text-anchor="middle" class="mut" style="font-size:11px">B (shortest)</text><text x="510" y="182" text-anchor="middle" class="mut" style="font-size:11px">C</text>
+  <text x="510" y="205" text-anchor="middle" class="mut">independent routes · may arrive B A C</text>
+</svg>
+<figcaption>Figure 10.5: Virtual circuit vs datagram</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture — Planned trip vs spontaneous trip</span>
+<ul>
+<li><b>Virtual circuit</b> is like a fully <b>planned trip</b>: where to stop, where to eat, the budget, who comes, the vehicle number, all reserved in advance. Resources (bandwidth, CPU, buffers) are <b>reserved first</b>, so <b>all packets follow the same path</b> and arrive <b>in order</b> (A then B), a benefit of circuit switching.</li>
+<li><b>Datagram</b> is like "<b>man aa gaya, chalo ghoomne</b>": no planning, no idea of cost, transport or food. There is no reservation, so packets <b>may or may not</b> take the same path. Packet B may take a shorter path and arrive before A, giving <b>out-of-order delivery</b> (message switching's disadvantage).</li>
+<li>Virtual circuit is <b>connection-oriented</b>, with <b>setup and teardown overhead</b>; it is <b>costlier</b> but <b>reliable and efficient</b> ("tikau"). Datagram is <b>connectionless</b>, has no such phases, is <b>less costly</b> and <b>less reliable</b>.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Virtual circuit</th><th>Datagram</th></tr>
+<tr><td>Connection</td><td><b>Connection-oriented</b> (setup, data, teardown)</td><td><b>Connectionless</b></td></tr>
+<tr><td>Path</td><td><b>Same path</b> for all packets (decided at setup)</td><td>Each packet routed <b>independently</b></td></tr>
+<tr><td>Order</td><td><b>In order</b></td><td>May arrive <b>out of order</b> (receiver reorders)</td></tr>
+<tr><td>Resource reservation</td><td>Yes (bandwidth, buffers)</td><td>No</td></tr>
+<tr><td>Header / addressing <span class="badge">ADDED</span></td><td>A small <b>VCI</b> (Virtual Circuit Identifier) in each packet</td><td><b>Full destination address</b> in every packet</td></tr>
+<tr><td>Router state <span class="badge">ADDED</span></td><td>Switches keep per-connection tables</td><td>Stateless routers</td></tr>
+<tr><td>Link / node failure <span class="badge">ADDED</span></td><td>All its virtual circuits break</td><td>Packets are rerouted around it: <b>robust</b></td></tr>
+<tr><td>Cost / reliability</td><td>Costlier; more reliable</td><td>Cheaper; less reliable</td></tr>
+<tr><td>Examples <span class="badge">ADDED</span></td><td><b>X.25, Frame Relay, ATM</b>, MPLS</td><td><b>IP (the Internet)</b>, UDP</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A virtual circuit is a <b>logical</b> path. The physical links are <b>still shared</b> with other circuits (unlike circuit switching's dedicated physical path). <b>IP is a datagram service</b>; TCP makes the communication reliable and ordered <b>end to end</b> on top of it.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">10.6</span>Delay Numericals &amp; Master Comparison <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Essential formulas: k links (k − 1 intermediate switches), ignoring processing and queuing</span>
+<div class="formula">Circuit switching:   Total = setup + M/B + k·Tp + teardown           (no store-and-forward)
+Message switching:   Total = k × (M/B + Tp)                            (whole message stored at each node)
+Packet switching:    Total = (k + n − 1) × (P/B) + k·Tp                (n packets of size P, pipelined)</div></div>
+<div class="num"><span class="t">Numerical: message vs packet switching</span>
+A message of <b>3000 bits</b> goes over <b>3 links</b> (2 switches). Each link is <b>1 Mbps</b> with Tp = <b>1 ms</b>. Ignore headers.<br>
+<b>Message switching:</b> Tt = 3000 / 10⁶ = 3 ms per link. Total = 3 × (3 + 1) = <b>12 ms</b>.<br>
+<b>Packet switching</b> (3 packets × 1000 bits): Tt per packet = 1 ms. Total = (3 + 3 − 1) × 1 + 3 × 1 = 5 + 3 = <b>8 ms</b>.<br>
+<b>Conclusion:</b> pipelining makes packet switching <b>faster</b> (8 ms vs 12 ms). With 1 link (k = 1), both give the same 4 ms; the gain comes from intermediate nodes. (Real packets add header overhead, so very small packets aren't always better.)</div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Circuit</th><th>Message</th><th>Packet (datagram)</th></tr>
+<tr><td>Dedicated path</td><td><b>Yes</b> (physical)</td><td>No</td><td>No</td></tr>
+<tr><td>Setup / teardown</td><td>Yes</td><td>No</td><td>No (VC: yes, logical)</td></tr>
+<tr><td>Store-and-forward</td><td><b>No</b></td><td>Yes, the whole message</td><td>Yes, per packet</td></tr>
+<tr><td>Unit</td><td>Continuous bit stream</td><td>Whole message</td><td>Packets</td></tr>
+<tr><td>Delay</td><td>Setup delay, then low and constant</td><td><b>Highest</b></td><td>Low and variable</td></tr>
+<tr><td>Bandwidth use</td><td>Wasteful (reserved)</td><td>Efficient</td><td><b>Most efficient</b> (shared)</td></tr>
+<tr><td>Order</td><td>In order</td><td>May vary</td><td>May vary (datagram)</td></tr>
+<tr><td>Layer</td><td>Physical</td><td>Application (historically)</td><td>Network</td></tr>
+<tr><td>Example</td><td>Telephone (PSTN)</td><td>Telegram, early e-mail</td><td>Internet</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"Telephone network uses?" → <b>circuit switching</b>. "Internet uses?" → <b>packet switching (datagram)</b>. "Store-and-forward of the entire message?" → <b>message switching</b>. "Dedicated path reserved for the duration?" → <b>circuit switching</b>. "ATM / X.25 / Frame Relay?" → <b>virtual circuit</b>. Transmission time depends on <b>length and bandwidth</b>; propagation delay on <b>distance and speed</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 10</h3>
+<ul>
+<li>Switching = moving data through intermediate nodes (like changing taxis). Circuit, message, packet (virtual circuit or datagram).</li>
+<li><b>Circuit</b> (cup-and-string phone): <b>setup → data → teardown</b>; a dedicated reserved path; in order; no store-and-forward, so fast; resources wasted when idle. Total = setup + Tt + Tp + teardown. PSTN.</li>
+<li><b>Tt = L/B</b> (∝ length, ∝ 1/bandwidth): putting the packet on the link. <b>Tp = d/v</b> (∝ distance, ∝ 1/speed): travel time. 1500 B at 100 Mbps = 120 µs; 2000 km fibre = 10 ms.</li>
+<li><b>Message</b> ("pass the message along"): no setup; the whole message is stored and forwarded hop by hop; more delay and traffic; needs storage. Telegram.</li>
+<li><b>Packet</b>: chop into packets, store-and-forward per packet, <b>pipelining</b>, so it is faster than message switching (3 links: 8 ms vs 12 ms). Total = (k + n − 1)·Tt + k·Tp.</li>
+<li><b>Virtual circuit</b> (planned trip): connection-oriented, reserved, <b>same path, in order</b>, VCI, costlier and reliable. X.25, Frame Relay, ATM.</li>
+<li><b>Datagram</b> ("man aa gaya"): connectionless, independent paths, <b>out of order possible</b>, cheaper, robust. IP / the Internet.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 10 · Next: Chapter 11 — Data Link Layer</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="09-Network-Devices.html">← Ch 9: Network Devices</a><a href="index.html">☰ All topics</a><a href="11-Data-Link-Layer.html">Ch 11: Data Link Layer →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

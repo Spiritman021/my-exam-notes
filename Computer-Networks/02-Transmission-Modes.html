@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Transmission Modes Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="01-Introduction-to-CN.html">← Ch 1: Introduction to Computer Networks</a><a href="index.html">☰ All topics</a><a href="03-Connection-Types.html">Ch 3: Connection Types →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 2: Transmission Modes</h1>
+  <p class="sub">Volume 02 · Part 2 · Built from the one-shot CN lecture transcript (section 2), plus the exam points the lecture skipped.</p>
+  <ul class="tags">
+    <li>Simplex</li><li>Half-Duplex</li><li>Full-Duplex</li><li>Channel Capacity</li>
+    <li>Serial vs Parallel</li><li>Synchronous / Asynchronous / Isochronous</li><li>Unicast / Multicast / Broadcast</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s0"><span class="n">2.0</span>What is a Transmission Mode?</a></li>
+    <li><a href="#s1"><span class="n">2.1</span>Simplex Mode</a></li>
+    <li><a href="#s2"><span class="n">2.2</span>Half-Duplex Mode</a></li>
+    <li><a href="#s3"><span class="n">2.3</span>Full-Duplex Mode</a></li>
+    <li><a href="#s3a"><span class="n">2.3A</span>Comparison of the Three Modes<span class="x">ADDED</span></a></li>
+    <li><a href="#s4"><span class="n">2.4</span>Serial, Parallel, Synchronous &amp; Asynchronous Transmission<span class="x">ADDED</span></a></li>
+    <li><a href="#s5"><span class="n">2.5</span>Unicast, Multicast &amp; Broadcast<span class="x">ADDED</span></a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 2</div>
+<h2 class="ch">Transmission Modes</h2>
+<p>Chapter 1 named the five components of data communication. This chapter answers a basic question about the <b>direction of data flow</b> between two devices: can data go one way only, both ways taking turns, or both ways at once?</p>
+
+<!-- 2.0 -->
+<section id="s0">
+<h3><span class="n">2.0</span>What is a Transmission Mode?</h3>
+<div class="def"><b>Transmission mode</b> (also called <b>data-flow direction</b> or <b>communication mode</b>): the way data flows between two connected devices. There are three: <b>simplex</b>, <b>half-duplex</b> and <b>full-duplex</b>. It is a concern of the <b>physical layer</b>.</div>
+<figure>
+<svg viewBox="0 0 640 250" role="img" aria-label="Three transmission modes: simplex one arrow, half-duplex two arrows one at a time, full-duplex two simultaneous arrows">
+  <defs><marker id="t1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker>
+  <marker id="t2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--alert)"/></marker></defs>
+  <text x="20" y="45" class="b">Simplex</text>
+  <rect x="140" y="25" width="90" height="36" rx="5" class="ac"/><text x="185" y="48" text-anchor="middle">Sender</text>
+  <rect x="440" y="25" width="90" height="36" rx="5" class="gr"/><text x="485" y="48" text-anchor="middle">Receiver</text>
+  <path d="M230 43 H438" class="lna" marker-end="url(#t1)"/><text x="335" y="35" text-anchor="middle" class="mut">one direction only, always</text>
+  <text x="20" y="125" class="b">Half-duplex</text>
+  <rect x="140" y="105" width="90" height="36" rx="5" class="ac"/><text x="185" y="128" text-anchor="middle">Station 1</text>
+  <rect x="440" y="105" width="90" height="36" rx="5" class="ac"/><text x="485" y="128" text-anchor="middle">Station 2</text>
+  <path d="M230 115 H438" class="lna" marker-end="url(#t1)"/><text x="335" y="108" text-anchor="middle" class="mut">time 1</text>
+  <path d="M438 133 H232" style="stroke:var(--alert);stroke-width:2;fill:none;stroke-dasharray:6 4" marker-end="url(#t2)"/><text x="335" y="152" text-anchor="middle" class="mut">time 2 (one at a time, "over")</text>
+  <text x="20" y="205" class="b">Full-duplex</text>
+  <rect x="140" y="185" width="90" height="36" rx="5" class="ac"/><text x="185" y="208" text-anchor="middle">Station 1</text>
+  <rect x="440" y="185" width="90" height="36" rx="5" class="ac"/><text x="485" y="208" text-anchor="middle">Station 2</text>
+  <path d="M230 195 H438" class="lna" marker-end="url(#t1)"/>
+  <path d="M438 213 H232" style="stroke:var(--alert);stroke-width:2;fill:none" marker-end="url(#t2)"/><text x="335" y="240" text-anchor="middle" class="mut">both directions at the SAME time</text>
+</svg>
+<figcaption>Figure 2.1: The three transmission modes</figcaption>
+</figure>
+</section>
+
+<!-- 2.1 -->
+<section id="s1">
+<h3><span class="n">2.1</span>Simplex Mode</h3>
+<div class="def"><b>Simplex:</b> communication is <b>unidirectional</b>. One device can <b>only send</b> and the other can <b>only receive</b>; the roles never change. The <b>entire channel capacity</b> is used in one direction.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — The husband-wife quarrel</span>
+Data goes <b>only one way</b>, sender → receiver ("ek hi direction mein bhaagega"). When husband and wife quarrel, <b>only the wife speaks</b> and the husband sits quietly, always on the <b>receiving end</b>. "That's why life stays simple and durable." Trouble starts when it becomes half-duplex!</div>
+<div class="box add"><span class="t">➕ Real examples</span>
+<b>Keyboard → CPU</b>, CPU → <b>monitor</b>, <b>TV and radio broadcasting</b>, loudspeakers / public address systems, a traditional one-way <b>pager</b>, sensor → controller.</div>
+</section>
+
+<!-- 2.2 -->
+<section id="s2">
+<h3><span class="n">2.2</span>Half-Duplex Mode</h3>
+<div class="def"><b>Half-duplex:</b> communication is <b>bidirectional, but one direction at a time</b>. Each station can send and receive, but <b>not simultaneously</b>. While one sends, the other must only receive, and the <b>entire channel capacity</b> goes to the station transmitting at that moment.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>Data can flow <b>both ways</b>: station S1 sends and S2 receives; later S2 sends and S1 receives. Each station can be <b>sender or receiver</b>.</li>
+<li>But it is "<b>one at a time</b>": both can't send at the same moment.</li>
+<li>The quarrel again: now both argue, with "teeron pe teer" (arrows after arrows), but in turns.</li>
+<li><b>Walkie-talkie / radio jockey</b> example from the movies: "Situation under control, <b>over</b>." Saying "over" hands the turn to the other side. Then you wait for their message.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ More examples</span>
+<b>Walkie-talkies</b>, CB radio, police and army radios, <b>hub-based Ethernet</b> (shared medium; CSMA/CD handles collisions), and classic Wi-Fi channels (half-duplex on air).</div>
+</section>
+
+<!-- 2.3 -->
+<section id="s3">
+<h3><span class="n">2.3</span>Full-Duplex Mode</h3>
+<div class="def"><b>Full-duplex</b> (or simply <b>duplex</b>): communication is <b>bidirectional and simultaneous</b>. Both stations can <b>send and receive at the same time</b>. The channel capacity is <b>shared</b> between the two directions, either with separate paths or by dividing the capacity.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — The road analogy</span>
+<ul>
+<li><b>Half-duplex</b> is like a <b>narrow one-lane road</b>: a vehicle can go this way <i>or</i> that way at one time. Driving both together isn't possible, so traffic and collisions build up.</li>
+<li><b>Full-duplex</b> has <b>separate roads for coming and going</b> ("aavan ke liye ek road, jaavan ke liye ek road"). Both stations send and receive <b>at the same time</b>, without any trouble, and there are very few <b>traffic and collision</b> problems.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 640 170" role="img" aria-label="Half-duplex single-lane road versus full-duplex two-lane divided road">
+  <text x="160" y="20" text-anchor="middle" class="b">Half-duplex: single-lane road</text>
+  <rect x="20" y="40" width="280" height="40" class="bx"/>
+  <rect x="40" y="48" width="44" height="24" rx="5" class="ac"/><text x="62" y="65" text-anchor="middle">→</text>
+  <rect x="236" y="48" width="44" height="24" rx="5" class="or"/><text x="258" y="65" text-anchor="middle">←</text>
+  <text x="160" y="110" text-anchor="middle" style="fill:var(--bad)">both at once → collision ✗</text>
+  <text x="480" y="20" text-anchor="middle" class="b">Full-duplex: divided road</text>
+  <rect x="340" y="35" width="280" height="30" class="bx"/><rect x="340" y="69" width="280" height="30" class="bx"/>
+  <path d="M340 67 H620" style="stroke:var(--warn);stroke-width:3;stroke-dasharray:10 6"/>
+  <rect x="360" y="40" width="44" height="20" rx="5" class="ac"/><text x="382" y="55" text-anchor="middle">→</text>
+  <rect x="556" y="74" width="44" height="20" rx="5" class="or"/><text x="578" y="89" text-anchor="middle">←</text>
+  <text x="480" y="125" text-anchor="middle" style="fill:var(--ok)">both at the same time ✔</text>
+  <text x="320" y="160" text-anchor="middle" class="mut">lecture analogy: one path for both directions vs separate paths for each</text>
+</svg>
+<figcaption>Figure 2.2: Half-duplex vs full-duplex as roads</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Examples and how it's done</span>
+<b>Telephone and mobile calls</b>, video calls, <b>switched Ethernet</b> (full-duplex 100/1000 Mbps over separate wire pairs), fibre links, and the TCP connection itself (data flows both ways). It is implemented with <b>two physically separate paths</b> (e.g. separate wire pairs or fibres), or with <b>one path whose capacity is divided</b> (FDD or TDD in mobile networks).</div>
+</section>
+
+<!-- 2.3A -->
+<section id="s3a">
+<h3><span class="n">2.3A</span>Comparison of the Three Modes <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Simplex</th><th>Half-duplex</th><th>Full-duplex</th></tr>
+<tr><td>Direction</td><td>One way only</td><td>Both ways, <b>one at a time</b></td><td>Both ways, <b>simultaneously</b></td></tr>
+<tr><td>Sender / receiver</td><td>Fixed roles</td><td>Roles alternate</td><td>Both send and receive together</td></tr>
+<tr><td>Channel capacity</td><td>Full capacity, one direction</td><td>Full capacity to whichever is sending</td><td>Shared between the two directions (or two channels)</td></tr>
+<tr><td>Performance</td><td>Lowest (no feedback)</td><td>Medium</td><td><b>Best</b></td></tr>
+<tr><td>Collisions</td><td>None</td><td>Possible (shared medium)</td><td>None (separate paths)</td></tr>
+<tr><td>Lecture analogy</td><td>Only the wife speaks</td><td>Radio "over" / single-lane road</td><td>Two-lane divided road</td></tr>
+<tr><td>Examples</td><td>Keyboard, TV, radio, monitor</td><td>Walkie-talkie, hub Ethernet</td><td>Telephone, mobile, switched Ethernet</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"<b>Walkie-talkie</b> uses?" → <b>half-duplex</b>. "<b>Telephone</b>?" → <b>full-duplex</b>. "<b>Keyboard to computer / TV broadcast</b>?" → <b>simplex</b>. "Communication in both directions but not at the same time" → half-duplex.</div>
+</section>
+
+<!-- 2.4 -->
+<section id="s4">
+<h3><span class="n">2.4</span>Serial, Parallel, Synchronous &amp; Asynchronous Transmission <span class="badge">ADDED</span></h3>
+<p>Some syllabi also list these under "transmission modes". They describe <b>how bits are sent</b>, not the direction.</p>
+<figure>
+<svg viewBox="0 0 640 170" role="img" aria-label="Parallel transmission with 8 wires versus serial with one wire">
+  <defs><marker id="t3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="160" y="18" text-anchor="middle" class="b">Parallel: 8 bits at once, 8 wires</text>
+  <rect x="20" y="30" width="60" height="120" rx="5" class="ac"/><text x="50" y="95" text-anchor="middle">TX</text>
+  <rect x="240" y="30" width="60" height="120" rx="5" class="gr"/><text x="270" y="95" text-anchor="middle">RX</text>
+  <path d="M80 40 H238 M80 54 H238 M80 68 H238 M80 82 H238 M80 96 H238 M80 110 H238 M80 124 H238 M80 138 H238" class="ln" marker-end="url(#t3)"/>
+  <text x="480" y="18" text-anchor="middle" class="b">Serial: 1 bit at a time, 1 wire</text>
+  <rect x="340" y="60" width="60" height="60" rx="5" class="ac"/><text x="370" y="95" text-anchor="middle">TX</text>
+  <rect x="560" y="60" width="60" height="60" rx="5" class="gr"/><text x="590" y="95" text-anchor="middle">RX</text>
+  <path d="M400 90 H558" class="lna" marker-end="url(#t3)"/>
+  <text x="480" y="80" text-anchor="middle" class="mut" style="font-family:var(--code)">1 0 1 1 0 0 1 0</text>
+  <text x="480" y="150" text-anchor="middle" class="mut">USB, Ethernet, SATA, PCIe</text>
+</svg>
+<figcaption>Figure 2.3: Parallel vs serial transmission</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Type</th><th>How</th><th>Notes / examples</th></tr>
+<tr><td><b>Parallel</b></td><td>n bits sent together over n wires</td><td>Fast over short distances; costly; skew and crosstalk. Old printer (LPT) port, internal buses.</td></tr>
+<tr><td><b>Serial</b></td><td>One bit at a time over one line</td><td>Cheap, long distance; all modern links (USB, Ethernet, SATA)</td></tr>
+<tr><td>↳ <b>Asynchronous</b></td><td>Each byte is framed with a <b>start bit (0)</b> and <b>stop bit(s) (1)</b>; there may be gaps between bytes</td><td>No shared clock; cheap; 2–3 bits of overhead per byte. Keyboard, RS-232. "Asynchronous at the byte level, synchronous at the bit level."</td></tr>
+<tr><td>↳ <b>Synchronous</b></td><td>A continuous bit stream in frames, with <b>no start/stop bits and no gaps</b>; sender and receiver share timing</td><td>Fast, efficient; needs clock synchronisation. Used in LAN/WAN links and leased lines.</td></tr>
+<tr><td>↳ <b>Isochronous</b></td><td>Guaranteed fixed-rate delivery; no delay between frames</td><td>Real-time audio and video (USB audio, VoIP)</td></tr>
+</table></div>
+<div class="num"><span class="t">Numerical: asynchronous overhead</span>
+8 data bits + 1 start + 1 stop = 10 bits per character.<br>
+Efficiency = 8 / 10 = <b>80%</b>. At 9600 bps the effective throughput = 9600 × 0.8 = <b>7680 bps</b>, i.e. <b>960 characters per second</b>.</div>
+</section>
+
+<!-- 2.5 -->
+<section id="s5">
+<h3><span class="n">2.5</span>Unicast, Multicast &amp; Broadcast <span class="badge">ADDED</span></h3>
+<figure>
+<svg viewBox="0 0 640 170" role="img" aria-label="Unicast one to one, multicast one to group, broadcast one to all">
+  <defs><marker id="t4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <g><text x="105" y="18" text-anchor="middle" class="b">Unicast (1 → 1)</text>
+  <circle cx="40" cy="90" r="16" class="or"/><circle cx="170" cy="50" r="13" class="ac"/><circle cx="170" cy="90" r="13" class="bx"/><circle cx="170" cy="130" r="13" class="bx"/>
+  <path d="M56 86 L155 54" class="lna" marker-end="url(#t4)"/></g>
+  <g><text x="320" y="18" text-anchor="middle" class="b">Multicast (1 → group)</text>
+  <circle cx="255" cy="90" r="16" class="or"/><circle cx="385" cy="50" r="13" class="ac"/><circle cx="385" cy="90" r="13" class="ac"/><circle cx="385" cy="130" r="13" class="bx"/>
+  <path d="M271 86 L370 54 M271 90 H370" class="lna" marker-end="url(#t4)"/></g>
+  <g><text x="535" y="18" text-anchor="middle" class="b">Broadcast (1 → all)</text>
+  <circle cx="470" cy="90" r="16" class="or"/><circle cx="600" cy="50" r="13" class="ac"/><circle cx="600" cy="90" r="13" class="ac"/><circle cx="600" cy="130" r="13" class="ac"/>
+  <path d="M486 86 L585 54 M486 90 H585 M486 94 L585 126" class="lna" marker-end="url(#t4)"/></g>
+  <text x="320" y="165" text-anchor="middle" class="mut">e.g. web page · IPTV / video conference group · ARP request, DHCP discover</text>
+</svg>
+<figcaption>Figure 2.4: Unicast, multicast and broadcast</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Type</th><th>Delivery</th><th>Examples / addresses</th></tr>
+<tr><td><b>Unicast</b></td><td>One sender → one specific receiver</td><td>Browsing a website, e-mail. A normal IP address.</td></tr>
+<tr><td><b>Multicast</b></td><td>One sender → a selected <b>group</b></td><td>IPTV, stock tickers, video conferencing. IPv4 <b>Class D (224.0.0.0 – 239.255.255.255)</b>; managed by <b>IGMP</b>.</td></tr>
+<tr><td><b>Broadcast</b></td><td>One sender → <b>all</b> nodes in the network</td><td>ARP request, DHCP discover. <b>255.255.255.255</b>; MAC <b>FF:FF:FF:FF:FF:FF</b>.</td></tr>
+<tr><td><b>Anycast</b></td><td>One sender → the <b>nearest</b> member of a group</td><td>DNS root servers, CDNs (IPv6 supports it natively)</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>IPv6 has no broadcast.</b> It uses multicast and anycast instead. Do not confuse the direction modes (simplex, half- and full-duplex) with the delivery types (unicast, multicast, broadcast).</div>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 2</h3>
+<ul>
+<li><b>Simplex</b>: one way only, fixed sender and receiver (only the wife speaks). Keyboard, TV, radio, monitor.</li>
+<li><b>Half-duplex</b>: both ways, <b>one at a time</b>; roles alternate ("over" on a walkie-talkie); single-lane road, so collisions are possible. Hub Ethernet.</li>
+<li><b>Full-duplex</b>: both ways <b>simultaneously</b>; separate paths ("aavan-jaavan" roads); best performance, no collisions. Telephone, mobile, switched Ethernet.</li>
+<li>Channel capacity: simplex and half-duplex give the full capacity to one direction at a time; full-duplex shares it.</li>
+<li><b>Parallel</b> (n wires, short distance) vs <b>serial</b> (one wire). Serial is <b>asynchronous</b> (start/stop bits, 8/10 = 80% efficiency), <b>synchronous</b> (continuous frames, clocked) or <b>isochronous</b> (fixed rate, real-time).</li>
+<li><b>Unicast</b> 1→1 · <b>multicast</b> 1→group (Class D, IGMP) · <b>broadcast</b> 1→all (255.255.255.255, FF:FF…) · <b>anycast</b> 1→nearest. IPv6 has no broadcast.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 2 · Next: Chapter 3 — Connection Types (Line Configuration)</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="01-Introduction-to-CN.html">← Ch 1: Introduction to Computer Networks</a><a href="index.html">☰ All topics</a><a href="03-Connection-Types.html">Ch 3: Connection Types →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

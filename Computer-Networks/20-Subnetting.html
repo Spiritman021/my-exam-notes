@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Subnetting Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="19-Network-Layer.html">← Ch 19: Network Layer</a><a href="index.html">☰ All topics</a><a href="21-CIDR.html">Ch 21: Classless Addressing (CIDR) →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 20: Subnetting</h1>
+  <p class="sub">Volume 02 · Part 20 · Built from the one-shot CN lecture transcript (section 20), plus the exam points the lecture skipped. Breaking one big network into smaller subnets by borrowing host bits: subnet IDs, broadcast addresses, subnet masks, the AND test, and variable-length subnetting.</p>
+  <ul class="tags"><li>Subnet</li><li>FLSM</li><li>VLSM</li><li>Borrow Host Bits</li><li>Subnet ID</li><li>Broadcast Address</li><li>2ʰ − 2 Hosts</li><li>Subnet Mask</li><li>255.255.255.128</li><li>Bitwise AND</li><li>Block Size = 256 − Mask</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">20.0</span>What is Subnetting?</a></li>
+<li><a href="#s1"><span class="n">20.1</span>Types of Subnetting: FLSM vs VLSM</a></li>
+<li><a href="#s2"><span class="n">20.2</span>Fixed Length Subnetting: Class C Example</a></li>
+<li><a href="#s3"><span class="n">20.3</span>Subnet ID, Broadcast Address and Hosts per Subnet</a></li>
+<li><a href="#s4"><span class="n">20.4</span>Subnet Mask</a></li>
+<li><a href="#s5"><span class="n">20.5</span>Using the Subnet Mask to Find the Destination Subnet (Bitwise AND)</a></li>
+<li><a href="#s6"><span class="n">20.6</span>Variable Length Subnetting (VLSM)</a></li>
+<li><a href="#s7"><span class="n">20.7</span>Subnet Masks in VLSM</a></li>
+<li><a href="#s8"><span class="n">20.8</span>Routing a Packet Through VLSM Subnets</a></li>
+<li><a href="#s9"><span class="n">20.9</span>The Subnetting Toolkit: Formulas &amp; the Block-Size Shortcut<span class="x">ADDED</span></a></li>
+<li><a href="#s10"><span class="n">20.10</span>Solved Numericals<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 20</div>
+<h2 class="ch">Subnetting</h2>
+<p>Chapter 19 ended with a problem: one class A network holds 16 million hosts and one class B 65 534, far more than any single LAN can use. Subnetting fixes this inside an organisation. Keep the network ID untouched, <b>borrow</b> the leftmost bits of the host ID, and use them to number smaller <b>subnets</b>. A <b>subnet mask</b> records how many bits are now "network", and a bitwise <b>AND</b> with that mask tells a router which subnet a packet belongs to.</p>
+
+<section id="s0">
+<h3><span class="n">20.0</span>What is Subnetting?</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Subnetting is just <b>dividing huge networks into smaller networks</b>. "Huge" usually means <b>class A and class B</b>. The input is the huge network; the output, the smaller pieces you get after dividing, are called <b>subnets</b>.</div>
+<div class="def"><b>Subnetting:</b> splitting one IP network into several smaller networks (subnets) by moving the boundary between network and host bits to the right. Address = <b>network ID + subnet ID + host ID</b>.</div>
+<div class="box add"><span class="t">➕ Why subnet?</span>
+<b>Smaller broadcast domains</b> (less broadcast traffic), better <b>security and management</b> (one subnet per department), <b>less address waste</b>, and simpler routing inside the organisation. Outside routers still see only the original network; the subnet structure is visible only inside.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">20.1</span>Types of Subnetting: FLSM vs VLSM</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Two types. <b>Fixed Length Subnetting (FLSM):</b> divide <b>equally</b>; if one subnet gets this much, every other subnet gets the same. <b>Variable Length Subnetting (VLSM):</b> as the name says, the chunks are <b>unequal</b>; one subnet's size need not match another's.</div>
+<div class="tw"><table>
+<tr><th></th><th>FLSM</th><th>VLSM</th></tr>
+<tr><td>Subnet sizes</td><td>all equal</td><td>different</td></tr>
+<tr><td>Subnet mask</td><td>one mask for every subnet</td><td>a different mask per subnet</td></tr>
+<tr><td>Waste</td><td>more (every subnet sized for the largest need)</td><td>less (each subnet sized to fit)</td></tr>
+<tr><td>Routing protocols <span class="badge">ADDED</span></td><td>works with classful ones (RIPv1)</td><td>needs classless ones that carry the mask (RIPv2, OSPF, EIGRP)</td></tr>
+</table></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">20.2</span>Fixed Length Subnetting: Class C Example</h3>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Network 201.1.10.0 slash 24: the first host bit is borrowed; 0 gives subnet A 201.1.10.0 to .127, 1 gives subnet B 201.1.10.128 to .255">
+  <text x="340" y="20" text-anchor="middle" class="b">201.1.10.0 (class C) → 2 equal subnets</text>
+  <g font-family="monospace">
+  <rect x="40" y="36" width="330" height="34" class="ac"/><text x="205" y="58" text-anchor="middle" class="b">201 . 1 . 10  (network ID: don't touch)</text>
+  <rect x="370" y="36" width="34" height="34" class="or"/><text x="387" y="58" text-anchor="middle" class="b">s</text>
+  <rect x="404" y="36" width="236" height="34" class="gr"/><text x="522" y="58" text-anchor="middle">h h h h h h h</text>
+  </g>
+  <text x="387" y="88" text-anchor="middle" style="fill:var(--alert)" class="mut">borrowed bit</text>
+  <text x="522" y="88" text-anchor="middle" class="mut">7 host bits left</text>
+  <rect x="40" y="110" width="295" height="80" rx="6" class="ac"/>
+  <text x="187" y="132" text-anchor="middle" class="b">Subnet A (s = 0)</text>
+  <text x="187" y="152" text-anchor="middle" font-family="monospace">0 0000000 → 0 1111111</text>
+  <text x="187" y="174" text-anchor="middle">201.1.10.0 – 201.1.10.127</text>
+  <rect x="345" y="110" width="295" height="80" rx="6" class="pu"/>
+  <text x="492" y="132" text-anchor="middle" class="b">Subnet B (s = 1)</text>
+  <text x="492" y="152" text-anchor="middle" font-family="monospace">1 0000000 → 1 1111111</text>
+  <text x="492" y="174" text-anchor="middle">201.1.10.128 – 201.1.10.255</text>
+</svg>
+<figcaption>Figure 20.1: FLSM by borrowing one host bit</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+FLSM means every subnet gets an <b>equal number of addresses</b>. Example network: <b>201.1.10.0</b>. Check the first byte: 201 is in the <b>class C</b> range, so the first <b>3 bytes are the network ID</b> and the last byte (8 bits) is the host ID.<br>
+To divide equally into two, look at the <b>MSB of the host byte</b>: it can be 0 or 1. If 0, the address belongs to one subnet; if 1, to the other.<br>
+Golden rule: when subnetting, <b>never touch the network ID</b> ("iska baal bhi baanka nahi hona chahiye"). Only the host part changes, starting with the host bit <b>right next to the network ID</b>.<br>
+With that bit fixed, the remaining <b>7 bits</b> run from all 0s to all 1s: subnet A = <b>0–127</b>, subnet B = <b>128–255</b> in the last byte.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">20.3</span>Subnet ID, Broadcast Address and Hosts per Subnet</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Just as a network has an ID, each subnet needs an ID. The <b>first address</b> of a subnet's range is its <b>subnet ID</b>; the <b>last address</b> is its <b>broadcast address</b>.<br>
+• Subnet A: ID <b>201.1.10.0</b>, broadcast <b>201.1.10.127</b><br>
+• Subnet B: ID <b>201.1.10.128</b>, broadcast <b>201.1.10.255</b><br>
+Each subnet has 128 addresses, but the two extremes (ID and broadcast) are not given to hosts, so <b>126 host IDs per subnet</b>.</div>
+<div class="tw"><table>
+<tr><th>Subnet</th><th>Subnet ID</th><th>First host</th><th>Last host</th><th>Broadcast</th><th>Hosts</th></tr>
+<tr><td>A</td><td>201.1.10.0</td><td>201.1.10.1</td><td>201.1.10.126</td><td>201.1.10.127</td><td>126</td></tr>
+<tr><td>B</td><td>201.1.10.128</td><td>201.1.10.129</td><td>201.1.10.254</td><td>201.1.10.255</td><td>126</td></tr>
+</table></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">20.4</span>Subnet Mask</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Class C's default mask is <b>255.255.255.0</b>: all 1s in the 3 network bytes. In subnetting, we used <b>one host bit</b> to split the network, so that bit must also become <b>1</b> in the mask. The last byte becomes <code>1 0000000</code> = <b>128</b>.<br>
+Subnet mask = <b>255.255.255.128</b>. Rule: <b>every host bit you borrow for subnetting is turned into a 1</b> in the mask; the bits you didn't use stay 0.</div>
+<div class="formula">default class C mask :  11111111.11111111.11111111.00000000  = 255.255.255.0   (/24)
+after borrowing 1 bit:  11111111.11111111.11111111.10000000  = 255.255.255.128 (/25)</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+An octet value of 255 means all eight bits are 1s (the transcript once says "258", which cannot exist in a byte). The only valid values inside a mask octet are <b>0, 128, 192, 224, 240, 248, 252, 254, 255</b>, because a mask's 1s must be <b>contiguous</b> from the left.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">20.5</span>Using the Subnet Mask to Find the Destination Subnet (Bitwise AND)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+What is the mask for? A packet arrives addressed to <b>201.1.10.10</b>. Where should it go?<br>
+<b>Step 1: which network?</b> AND the address with the <b>class mask</b> (255.255.255.0). The last byte: 10 AND 0 = 0, giving <b>201.1.10.0</b>, so the packet belongs to this network.<br>
+<b>Step 2: which subnet?</b> The network is split, so AND with the <b>subnet mask</b> (last byte 128): <code>00001010 AND 10000000 = 00000000</code> → <b>0</b> → result 201.1.10.0 = <b>subnet A's ID</b>. So the packet goes to subnet A, not B. Check with the ranges: 10 lies in 0–127.<br>
+The network's broadcast address is 201.1.10.255 (all host bits 1).</div>
+<div class="num"><span class="t">The AND test, worked</span>
+<div class="formula">IP      201.1.10.10   →  last byte 0000 1010
+mask    255.255.255.128 → last byte 1000 0000
+AND                       last byte 0000 0000 = 0  → 201.1.10.0   = Subnet A ✔
+
+IP      201.1.10.200  →  last byte 1100 1000
+AND with 1000 0000    →  last byte 1000 0000 = 128 → 201.1.10.128 = Subnet B</div>
+AND rule: 1 AND 1 = 1, anything AND 0 = 0. So the mask <b>keeps</b> the network + subnet bits and <b>wipes</b> the host bits; what remains is the subnet ID.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">20.6</span>Variable Length Subnetting (VLSM)</h3>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="VLSM of 201.1.10.0: first bit 0 gives subnet A 0 to 127 with 126 hosts; first bits 10 give subnet B 128 to 191 with 62 hosts; first bits 11 give subnet C 192 to 255 with 62 hosts">
+  <text x="340" y="20" text-anchor="middle" class="b">201.1.10.0 → 3 unequal subnets (last byte shown)</text>
+  <rect x="20" y="40" width="320" height="70" class="ac"/><text x="180" y="62" text-anchor="middle" class="b">Subnet A · first bit 0</text><text x="180" y="82" text-anchor="middle">.0 – .127 · mask /25 (.128)</text><text x="180" y="100" text-anchor="middle" class="mut">128 addresses → 126 hosts</text>
+  <rect x="340" y="40" width="160" height="70" class="gr"/><text x="420" y="62" text-anchor="middle" class="b">B · bits 10</text><text x="420" y="82" text-anchor="middle">.128 – .191</text><text x="420" y="100" text-anchor="middle" class="mut">/26 (.192) · 62 hosts</text>
+  <rect x="500" y="40" width="160" height="70" class="pu"/><text x="580" y="62" text-anchor="middle" class="b">C · bits 11</text><text x="580" y="82" text-anchor="middle">.192 – .255</text><text x="580" y="100" text-anchor="middle" class="mut">/26 (.192) · 62 hosts</text>
+  <path d="M340 125 V135 H660 V125" class="lna"/><text x="500" y="152" text-anchor="middle" style="fill:var(--accent)" class="mut">"not A" half, split again with a 2nd bit</text>
+  <text x="340" y="185" text-anchor="middle" class="mut">same idea as classes A/B/C: a 0 stops, a 1 means "split further with the next bit"</text>
+</svg>
+<figcaption>Figure 20.2: VLSM: split, then split one half again</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Now the addresses are <b>not equally distributed</b>. Same network, 201.1.10.0 (class C), divided into <b>three</b> subnets of different sizes.<br>
+"First divide into two, then go further," exactly like the class-division trick of ch 19. Again, don't touch the network ID.<br>
+• Fix the <b>MSB</b> of the host byte. <b>0 → subnet A</b>: range 0 to 127; 128 addresses minus subnet ID and broadcast = <b>126 hosts</b>.<br>
+• The <b>1</b> half needs dividing further; one bit isn't enough, so take the <b>next bit</b> too. <b>10 → subnet B</b> (128–191), <b>11 → subnet C</b> (192–255). Each has 64 addresses, so <b>62 hosts</b> after removing ID and broadcast.<br>
+Final sizes: <b>126, 62, 62</b>. Unequal, which is the point of VLSM.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">20.7</span>Subnet Masks in VLSM</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Each part gets its own mask, based on <b>how many host bits it used</b>.<br>
+• Subnet A used <b>1</b> bit → <code>1 0000000</code> = <b>128</b> → mask <b>255.255.255.128</b>. This mask answers "A side or not-A side?"<br>
+• The not-A side was split with <b>2</b> bits → <code>11 000000</code> = <b>192</b> → mask <b>255.255.255.192</b>. This answers "inside not-A, B or C?" (the lecture also calls these b1 and b2).</div>
+<div class="tw"><table>
+<tr><th>Subnet</th><th>Range (last byte)</th><th>Subnet ID</th><th>Broadcast</th><th>Mask</th><th>Prefix</th><th>Hosts</th></tr>
+<tr><td>A</td><td>0 – 127</td><td>201.1.10.0</td><td>201.1.10.127</td><td>255.255.255.128</td><td>/25</td><td>126</td></tr>
+<tr><td>B</td><td>128 – 191</td><td>201.1.10.128</td><td>201.1.10.191</td><td>255.255.255.192</td><td>/26</td><td>62</td></tr>
+<tr><td>C</td><td>192 – 255</td><td>201.1.10.192</td><td>201.1.10.255</td><td>255.255.255.192</td><td>/26</td><td>62</td></tr>
+</table></div>
+</section>
+
+<section id="s8">
+<h3><span class="n">20.8</span>Routing a Packet Through VLSM Subnets</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A packet arrives for <b>201.1.10.10</b>.<br>
+1. AND with the class C mask 255.255.255.0 → 201.1.10.0: the right <b>network</b>.<br>
+2. AND the last byte with <b>128</b> (A or not-A?) → 10 AND 128 = 0 → 201.1.10.0 = <b>subnet A</b>. Done.<br>
+Twist it: the packet is for <b>201.1.10.129</b>.<br>
+1. Class mask → 201.1.10.0: the right network.<br>
+2. AND with 128 → 129 AND 128 = <b>128</b> → 201.1.10.128: not A; it is in the second half.<br>
+3. That half is split again, so AND with <b>192</b> → 129 AND 192 = <b>128</b> → 201.1.10.128 = the ID of <b>subnet B</b> (b1). Deliver it there.<br>
+Whatever the AND produces is some subnet's ID; the packet is routed to that subnet.</div>
+<div class="num"><span class="t">The AND chain for .129 and .200</span>
+<div class="formula">129 = 1000 0001
+  AND 1000 0000 (128) → 1000 0000 = 128  → not A
+  AND 1100 0000 (192) → 1000 0000 = 128  → Subnet B (201.1.10.128) ✔
+
+200 = 1100 1000
+  AND 1000 0000 (128) → 1000 0000 = 128  → not A
+  AND 1100 0000 (192) → 1100 0000 = 192  → Subnet C (201.1.10.192)</div></div>
+<div class="box add"><span class="t">➕ How real routers do it: longest prefix match</span>
+A router's table holds every subnet with its prefix (201.1.10.0/25, 201.1.10.128/26, 201.1.10.192/26). For each packet it ANDs the address with each entry's mask, and if several entries match it picks the one with the <b>longest prefix</b> (most 1s in the mask), the most specific route. More in ch 21 and ch 27.</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">20.9</span>The Subnetting Toolkit: Formulas &amp; the Block-Size Shortcut <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Formulas</span>
+<div class="formula">n = borrowed (subnet) bits      h = remaining host bits
+number of subnets        = 2ⁿ
+addresses per subnet     = 2ʰ
+usable hosts per subnet  = 2ʰ − 2
+prefix (CIDR) length     = default prefix + n         (/8, /16, /24 + n)
+block size (magic number)= 256 − (interesting mask octet)
+subnet IDs               = 0, block, 2·block, 3·block …  (in the interesting octet)
+broadcast                = next subnet ID − 1</div></div>
+<div class="tw"><table>
+<tr><th>Mask octet</th><th>Bits set</th><th>Block size</th><th>Prefix (in 4th octet)</th><th>Hosts (/24 base)</th></tr>
+<tr><td>128</td><td>1</td><td>128</td><td>/25</td><td>126</td></tr>
+<tr><td>192</td><td>2</td><td>64</td><td>/26</td><td>62</td></tr>
+<tr><td>224</td><td>3</td><td>32</td><td>/27</td><td>30</td></tr>
+<tr><td>240</td><td>4</td><td>16</td><td>/28</td><td>14</td></tr>
+<tr><td>248</td><td>5</td><td>8</td><td>/29</td><td>6</td></tr>
+<tr><td>252</td><td>6</td><td>4</td><td>/30</td><td>2 (point-to-point links)</td></tr>
+<tr><td>254</td><td>7</td><td>2</td><td>/31</td><td>2 (special RFC 3021 links)</td></tr>
+<tr><td>255</td><td>8</td><td>1</td><td>/32</td><td>single host route</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam traps</span>
+<b>Subnets: 2ⁿ or 2ⁿ − 2?</b> Old textbooks (and some exam keys) subtract 2 for the all-0s and all-1s <b>subnets</b> ("subnet zero" rule). Modern practice (RFC 1878, CIDR) uses all <b>2ⁿ</b>. Use 2ⁿ unless the question says subnet zero/all-ones subnets are not allowed. <b>Hosts are always 2ʰ − 2.</b><br>
+<b>Count h correctly</b>: h = 32 − prefix, not "8 − n" when the mask spans more than the last octet (e.g. /20 → h = 12).</div>
+<div class="box add"><span class="t">➕ VLSM design method</span>
+1. Sort the requirements from <b>largest to smallest</b>. 2. For each, pick the smallest block with 2ʰ − 2 ≥ hosts needed. 3. Allocate blocks one after another from the start of the space, each on its own block boundary. 4. Use /30 (or /31) for router-to-router links.</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">20.10</span>Solved Numericals <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Solved numericals</span>
+<b>Q1.</b> Divide 192.168.1.0/24 into 4 equal subnets.<br>
+2ⁿ = 4 → n = 2 → <b>/26</b>, mask <b>255.255.255.192</b>, block 64. Subnets: <b>.0, .64, .128, .192</b>; broadcasts .63, .127, .191, .255; <b>62</b> hosts each.<br><br>
+<b>Q2.</b> For host 172.16.45.200/20, find the mask, subnet ID, broadcast and host count.<br>
+/20 → 255.255.<b>240</b>.0; block = 256 − 240 = 16 in the 3rd octet. 45 lies in 32–47 → subnet <b>172.16.32.0</b>, broadcast <b>172.16.47.255</b>, hosts 2¹² − 2 = <b>4094</b>.<br><br>
+<b>Q3.</b> A class C network needs subnets of at least 50 hosts. Mask and number of subnets?<br>
+2ʰ − 2 ≥ 50 → h = 6 (62 hosts) → n = 2 → <b>/26 (255.255.255.192)</b>, <b>4</b> subnets.<br><br>
+<b>Q4.</b> A class B network needs 500 subnets. Mask and hosts per subnet?<br>
+2ⁿ ≥ 500 → n = 9 (512) → /16 + 9 = <b>/25 (255.255.255.128)</b>; h = 7 → <b>126</b> hosts.<br><br>
+<b>Q5.</b> 10.0.0.0 with mask 255.255.255.0. How many subnets and hosts?<br>
+Class A default /8 → n = 16 → <b>65 536</b> subnets; h = 8 → <b>254</b> hosts each.<br><br>
+<b>Q6.</b> Are 192.168.1.70 and 192.168.1.130 on the same subnet with /26?<br>
+Block 64: 70 → subnet .64; 130 → subnet .128 → <b>different subnets</b> (they need a router).<br><br>
+<b>Q7.</b> VLSM: from 192.168.10.0/24, give LANs of 100, 50 and 20 hosts plus one point-to-point link.<br>
+100 → /25 (126): <b>.0 – .127</b> · 50 → /26 (62): <b>.128 – .191</b> · 20 → /27 (30): <b>.192 – .223</b> · link → /30 (2): <b>.224 – .227</b>. Left over: .228 – .255.<br><br>
+<b>Q8.</b> Which mask gives exactly 30 hosts per subnet? 2ʰ − 2 = 30 → h = 5 → <b>255.255.255.224 (/27)</b>.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Most-asked: "how many hosts with mask X" (2ʰ − 2), "how many subnets" (2ⁿ), "find the network/broadcast address of host Y/Z" (block-size method), "which mask for N hosts", and "valid host range". Do the block-size shortcut in your head; only write binary when the interesting octet is awkward.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 20</h3>
+<ul>
+<li>Subnetting = divide a huge network (class A/B) into smaller <b>subnets</b>; never touch the network ID; borrow host bits from the left.</li>
+<li><b>FLSM</b>: equal sizes, one mask. <b>VLSM</b>: unequal sizes, a mask per subnet, less waste.</li>
+<li>Lecture FLSM: 201.1.10.0 → borrow 1 bit → <b>.0–.127</b> and <b>.128–.255</b>; first address = subnet ID, last = broadcast; <b>126</b> hosts each; mask <b>255.255.255.128</b>.</li>
+<li>Mask = default mask + a 1 for every borrowed bit (1 bit = 128, 2 = 192, 3 = 224 …).</li>
+<li>To route: IP <b>AND</b> mask → subnet ID. 201.1.10.10 AND .128 → .0 → subnet A.</li>
+<li>Lecture VLSM: A .0/25 (126 hosts), B .128/26 (62), C .192/26 (62). 201.1.10.129: AND 128 → 128 (not A), AND 192 → 128 → subnet B.</li>
+<li>Formulas: subnets 2ⁿ; hosts <b>2ʰ − 2</b>; block = <b>256 − mask octet</b>; broadcast = next subnet − 1.</li>
+<li>/25 126 · /26 62 · /27 30 · /28 14 · /29 6 · /30 2 hosts.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 20 · Next: Chapter 21 — Classless Addressing (CIDR)</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="19-Network-Layer.html">← Ch 19: Network Layer</a><a href="index.html">☰ All topics</a><a href="21-CIDR.html">Ch 21: Classless Addressing (CIDR) →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CA July 2026 · Class 5</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+
+.item{border-top:1px solid var(--line);padding:12px 0 4px}
+.item:first-of-type{border-top:0;padding-top:0}
+.item h4{margin:0 0 4px;font-size:16.5px}
+.item ul{margin:4px 0}
+.gk{font-size:13.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:6px 10px;margin:6px 0 4px}
+.gk b{color:var(--ink)}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+.tag.bank{color:var(--lec);border:1px solid var(--lec)}
+.tag.hot{color:var(--alert);border:1px solid var(--alert)}
+.recallbar{position:sticky;top:0;z-index:4;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--alert);border-radius:6px;padding:10px 14px;margin:16px 0;font-size:14px}
+.recallbar button{font:inherit;font-size:13px;background:var(--accent);color:#fff;border:0;border-radius:4px;padding:5px 12px;cursor:pointer}
+.recallbar button.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+.recallbar .hint{color:var(--muted);flex:1;min-width:200px}
+html.recall .item b.k{background:var(--surface-2);color:transparent;border-radius:3px;outline:1px dashed var(--muted);cursor:pointer;user-select:none}
+html.recall .item b.k.shown{color:inherit;background:var(--accent-soft);outline:0}
+.quiz details{border:1px solid var(--line);border-radius:5px;margin:6px 0;background:var(--surface)}
+.quiz summary{cursor:pointer;padding:8px 12px;font-weight:550}
+.quiz details p{margin:0;padding:0 12px 10px 32px;color:var(--accent);font-weight:600}
+.howto ol{margin:6px 0 0}
+.item::after{content:"";display:block;clear:both}
+.item figure.pic{float:right;width:150px;margin:2px 0 8px 16px;text-align:center}
+.item figure.pic img{width:150px;height:110px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px;display:block}
+.item figure.pic figcaption{font-size:11px;letter-spacing:0;text-transform:none;font-weight:500;margin-top:3px;line-height:1.3}
+.item figure.pic figcaption a{color:var(--muted);text-decoration:none}
+@media (max-width:600px){.item figure.pic{width:110px;margin-left:10px}.item figure.pic img{width:110px;height:84px}}
+@media print{.item figure.pic{break-inside:avoid}}
+.gt{position:relative;border-bottom:1.5px dotted var(--accent);cursor:help;outline:0}
+.gt .pop{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:270px;max-width:80vw;padding:10px 12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13px;font-weight:400;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal}
+.gt .pop::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.gt:hover .pop,.gt:focus .pop,.gt:focus-within .pop{display:block}
+.gt .pop img{float:right;width:64px;height:48px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:4px;padding:2px;margin:0 0 4px 8px}
+.gt .pop .pt{display:block;color:var(--accent);font-size:13.5px;margin-bottom:2px}
+.gt .pop .ps{display:block;color:var(--muted);font-size:12.5px;margin-bottom:4px}
+.gt .pop .pl{display:block;clear:both;margin:0;padding:0}
+.gt .pop .pi{display:block;position:relative;padding-left:14px;margin:2px 0}
+.gt .pop .pi::before{content:"";position:absolute;left:3px;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+html.recall .gt .pop{color:var(--ink)}
+html.recall b.k:not(.shown) .gt{border-bottom:0}
+html.recall b.k:not(.shown) .gt .pop{display:none!important}
+@media print{.gt .pop{display:none!important}}
+</style>
+<script src="../assets/embed.js"></script>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Class navigation"><a href="2026-07-July-Class-4.html">← Class 4</a><a href="index.html">☰ All classes</a><a href="2026-07-July-Class-6.html">Class 6 →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT · Current Affairs · July 2026</div>
+  <h1>Current Affairs — July 2026 · Class 5</h1>
+  <p class="sub">Class 5 of the July 2026 monthly series (Ashish Gautam, Adda247) · 33 topics, grouped by exam category.</p>
+  <div class="legend"><span class="l1">🏦 Banking focus</span><span class="l2">➕ Static GK link</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 Likely question</span></div>
+</header>
+<div class="box lec howto"><span class="t">🎓 How to study this page</span>
+<ol>
+<li><b>Read once</b> with Recall mode off. Hover over (or tap) any <span style="border-bottom:1.5px dotted var(--accent)">dotted name</span> to see its static GK.</li>
+<li><b>Turn Recall mode on</b>: the key facts are hidden. Say each one before you click to reveal it.</li>
+<li><b>Take the self-test</b> at the end. Revise again tomorrow, in a week and in a month, using only the Rapid Revision box after that.</li>
+</ol></div>
+<div class="recallbar"><button id="recall" type="button">Recall mode: off</button><button id="revealall" class="ghost" type="button">Reveal all</button><span class="hint">Hides the key facts. Click any blank to reveal it.</span></div>
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#c1"><span class="n">1</span>PM Modi in Indonesia</a></li><li><a href="#c2"><span class="n">2</span>Defence &amp; Security</a></li><li><a href="#c3"><span class="n">3</span>Science, Space &amp; Health</a></li><li><a href="#c4"><span class="n">4</span>Economy, Committees &amp; Reports</a></li><li><a href="#c5"><span class="n">5</span>Culture &amp; Awards</a></li><li><a href="#c6"><span class="n">6</span>Sports</a></li><li><a href="#c7"><span class="n">7</span>Important Days &amp; Obituaries</a></li><li><a href="#quiz"><span class="n">8</span>Self-test (20 questions)</a></li><li><a href="#rapid"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+<section id="c1"><h3><span class="n">1</span>PM Modi in Indonesia</h3><p class="cs">Six news items from one visit — remember them as one trip with President Prabowo Subianto.</p><div class="item"><figure class="pic"><img src="img/prabowo-subianto-229962.jpg" alt="Prabowo Subianto" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Prabowo_Subianto_2024_official_portrait.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Prabowo Subianto</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Modi receives Indonesia's highest civilian honour</h4><ul><li>Award: <b class="k">Bintang Adipurna</b> of the Republic of Indonesia; presented by President <b class="k">Prabowo Subianto</b>.</li><li>Instituted in <b class="k">1959</b>.</li><li>Modi also became the <b class="k">first Indian PM to address Indonesia&#39;s Parliament</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/prambanan-fd0e57.jpg" alt="Prambanan" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Prambanan_Temple_Yogyakarta_Indonesia.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Prambanan</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Prambanan Temple — joint conservation project</h4><ul><li>UNESCO World Heritage Site in <b class="k">Yogyakarta</b>; Indonesia's largest Hindu temple complex, <b class="k">9th century</b>.</li><li>India's lead implementing agency: <b class="k">Archaeological Survey of India (<span class="gt" tabindex="0">ASI<span class="pop" role="tooltip"><b class="pt">ASI</b><span class="ps">Archaeological Survey of India</span><span class="pl"><span class="pi">Est. <b>1861</b></span><span class="pi">HQ <b>New Delhi</b></span><span class="pi">Ministry of Culture</span></span></span></span>)</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/brahmos-1d793c.jpg" alt="BrahMos" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:The_Brahmos_Missile_system_passes_through_the_Rajpath_during_the_full_dress_rehearsal_for_the_Republic_Day_Parade_in_New_Delhi_on_January_23,2006.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · GODL-India">BrahMos</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Indonesia signs to buy BrahMos and Astra missiles</h4><ul><li><b class="k">BrahMos</b> supersonic cruise missile + <b class="k">Astra</b> Beyond Visual Range Air-to-Air Missile (BVRAAM).</li><li>Astra deal: <b class="k">Bharat Dynamics Ltd (BDL)</b> with <b class="k">Republikorp</b>, Indonesia.</li><li>Indonesia = <b class="k">3rd</b> foreign BrahMos buyer (after <b class="k">Philippines</b> and <b class="k">Vietnam</b>) and the <b class="k">first</b> foreign buyer of Astra.</li></ul><div class="gk">➕ <b>Static GK:</b> BrahMos Aerospace — Indo-Russian JV · Indian partner <b class="k">DRDO</b> · Russian partner <b class="k">NPO Mashinostroyeniya</b> · HQ <b class="k">New Delhi</b> · Name from <b class="k">Brahmaputra + Moskva</b> rivers</div><div class="box trap"><span class="t">⚠️ Exam trap</span>BrahMos buyers in order: <b>Philippines → Vietnam → Indonesia</b>.</div></div><div class="item"><figure class="pic"><img src="img/indian-institute-of-management-bangalore-d1d6ba.png" alt="Indian Institute of Management Bangalore" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:IIMB-wordmarklogo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Indian Institute of Management Bangalore</a></figcaption></figure><h4>IIM Bangalore to open a campus in Indonesia</h4><ul><li>At <b class="k">Singhasari SEZ, East Java</b>.</li><li>First IIM abroad: <b class="k">IIM Ahmedabad</b>, in <b class="k">Dubai</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>IIM <b>Bangalore</b> → Indonesia (new). IIM <b>Ahmedabad</b> → Dubai (first).</div></div><div class="item"><figure class="pic"><img src="img/central-drugs-standard-control-organisation-9a0651.jpg" alt="Central Drugs Standard Control Organisation" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Central_Drugs_Standard_Control_Organization.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Central Drugs Standard Control Organisation</a></figcaption></figure><h4>India–Indonesia MoU on medical products regulation</h4><ul><li>Between <b class="k"><span class="gt" tabindex="0">CDSCO<span class="pop" role="tooltip"><b class="pt">CDSCO</b><span class="ps">Central Drugs Standard Control Organisation</span><span class="pl"><span class="pi">Regulates drugs, cosmetics and medical devices</span><span class="pi">Under DGHS, Ministry of Health</span><span class="pi">HQ <b>New Delhi</b></span><span class="pi">Headed by the Drugs Controller General of India</span></span></span></span></b> (India) and Indonesia's <b class="k">National Agency of Drug and Food Control</b>.</li></ul></div></section>
+<section id="c2"><h3><span class="n">2</span>Defence &amp; Security</h3><div class="item"><figure class="pic"><img src="img/mazagon-dock-shipbuilders-a90e2f.png" alt="Mazagon Dock Shipbuilders" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Mazagon_Dock_Shipbuilders.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Mazagon Dock Shipbuilders</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>INS Mahendragiri commissioned</h4><ul><li>Indigenous stealth frigate, commissioned at <b class="k">Visakhapatnam</b>; <b class="k">6th</b> frigate under <b class="k">Project 17A</b>.</li><li>Designed by the Navy's <b class="k">Warship Design Bureau</b>; built by <b class="k">Mazagon Dock Shipbuilders, Mumbai</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/bharat-electronics-2e7503.png" alt="Bharat Electronics" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Bharat_Electronics_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Bharat Electronics</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>India–Japan sign first defence co-development agreement — UNICORN</h4><ul><li>Signed during Japanese PM <b class="k">Sanae Takaichi</b>'s visit to India.</li><li>First project: <b class="k">UNICORN</b> (Unified Complex Radio Antenna) — shipborne integrated communication mast by <b class="k">NEC Corporation</b>, Japan.</li><li>Made in India by <b class="k">Bharat Electronics Ltd (BEL)</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/pinaka-multi-barrel-rocket-launcher-b4ac89.jpg" alt="Pinaka multi-barrel rocket launcher" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:DRDO_successfully_test_fired_the_Guided_PINAKA_on_March_11,_2019.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · GODL-India">Pinaka multi-barrel rocket launcher</a></figcaption></figure><h4><span class="gt" tabindex="0">DRDO<span class="pop" role="tooltip"><b class="pt">DRDO</b><span class="ps">Defence Research and Development Organisation</span><span class="pl"><span class="pi">Est. <b>1 January 1958</b></span><span class="pi">HQ <b>New Delhi</b></span><span class="pi">Ministry of Defence</span></span></span></span> tests Pinaka Long Range Guided Rocket — 60 km</h4><ul><li>At <b class="k">Integrated Test Range, Chandipur</b>, Odisha; hit target at a minimum range of <b class="k">60 km</b>.</li><li>Upgrade of the <b class="k">Pinaka Multi-Barrel Rocket Launcher</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/nato-bffcc9.png" alt="NATO" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:NATO_OTAN_landscape_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">NATO</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>36th <span class="gt" tabindex="0">NATO<span class="pop" role="tooltip"><img src="img/nato-bffcc9.png" alt=""><b class="pt">NATO</b><span class="pl"><span class="pi">Est. <b class="k">4 April 1949</b> (Washington Treaty)</span><span class="pi">HQ <b class="k">Brussels</b></span><span class="pi"><b class="k">32</b> members (32nd: <b class="k">Sweden</b>)</span><span class="pi">Secretary General Mark Rutte</span><span class="pi"><b class="k">Article 5</b>: attack on one = attack on all</span></span></span></span> Summit — Ankara, Türkiye</h4><ul><li><b class="k">36th</b> summit; Türkiye's <b class="k">2nd</b> as host (first: <b class="k">Istanbul 2004</b>).</li></ul></div></section>
+<section id="c3"><h3><span class="n">3</span>Science, Space &amp; Health</h3><div class="item"><figure class="pic"><img src="img/falcon-9-bd7b9a.png" alt="Falcon 9" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Falcon_9_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Falcon 9</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Contact lost with Mission Drishti — world's first OptoSAR satellite</h4><ul><li>By Bengaluru startup <b class="k">GalaxEye</b>; lost after a <b class="k">geomagnetic solar storm</b>.</li><li>First to combine <b class="k">Electro-Optical</b> imaging and <b class="k">Synthetic Aperture Radar</b> on one platform; India's largest privately built Earth-observation satellite.</li><li>Launched <b class="k">3 May 2026</b> on SpaceX <b class="k">Falcon 9</b> from Vandenberg, California.</li></ul></div><div class="item"><figure class="pic"><img src="img/sriharikota-c7e8dd.webp" alt="Sriharikota" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:PSLV-C55,_TeLEOS-2_-_Panaromic_view_of_SDSC-SHAR,_Sriharikota._Partial_stack_of_first_and_second_stage_being_transferred_from_PIF_to_MST-FLP.webp" target="_blank" rel="noopener" title="Wikimedia Commons · GODL-India">Sriharikota</a></figcaption></figure><h4>Cosmoserve Space demonstrates space-debris removal — Mission Embrace</h4><ul><li>First demonstration of <b class="k">Active Debris Removal (ADR)</b> by the startup.</li><li>Piggyback payload on Skyroot's <b class="k">Vikram-1</b> (Mission <b class="k">Aagaman</b>) from <b class="k">Sriharikota</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Vikram-1 was unveiled in Class 3 — here it has <b>flown</b>, as Mission Aagaman.</div></div><div class="item"><figure class="pic"><img src="img/novo-nordisk-6f74b7.png" alt="Novo (company)" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Novo_-_Logo.png" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Novo (company)</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Novo Nordisk launches Awiqli — first once-weekly basal insulin</h4><ul><li><b class="k">Awiqli</b> (Insulin Icodec) for Type 1 and Type 2 diabetes: <b class="k">52</b> injections a year instead of 365.</li><li>India: over <b class="k">101 million</b> with diabetes, ~136 million with prediabetes.</li><li>NFHS-6 (2023–24): high blood sugar in <b class="k">20.9%</b> of men and <b class="k">17.8%</b> of women (15+).</li></ul></div><div class="item"><figure class="pic"><img src="img/indian-council-of-medical-research-ad15fe.png" alt="Indian Council of Medical Research" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Indian_Council_of_Medical_Research_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Indian Council of Medical Research</a></figcaption></figure><h4>ICMR-MINDS wins gold at National e-Governance Awards 2026</h4><ul><li><b class="k"><span class="gt" tabindex="0">ICMR<span class="pop" role="tooltip"><img src="img/indian-council-of-medical-research-ad15fe.png" alt=""><b class="pt">ICMR</b><span class="ps">Indian Council of Medical Research</span><span class="pl"><span class="pi">Est. <b>1911</b></span><span class="pi">HQ <b>New Delhi</b></span><span class="pi">Ministry of Health &amp; Family Welfare</span></span></span></span></b>'s AI platform for mental health and substance-use disorders.</li><li>Given by <b class="k"><span class="gt" tabindex="0">DARPG<span class="pop" role="tooltip"><b class="pt">DARPG</b><span class="ps">Department of Administrative Reforms and Public Grievances</span><span class="pl"><span class="pi">Ministry of Personnel, Public Grievances and Pensions</span><span class="pi">Gives the National e-Governance Awards</span></span></span></span></b>; presented by Dr. Jitendra Singh at the <b class="k">29th</b> National Conference on e-Governance, <b class="k">Jaipur</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/indian-institute-of-technology-gandhinagar-07d3ba.png" alt="IIT Gandhinagar" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Indian_Institute_of_Technology_Gandhinagar_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">IIT Gandhinagar</a></figcaption></figure><h4>SAMARTH semiconductor hub at IIT Gandhinagar — ₹190 crore</h4><ul><li><b class="k">SAMARTH</b> = Silicon and Advanced Semiconductor Manufacturing Research and Training Hub.</li><li>Funded by <span class="gt" tabindex="0">MeitY<span class="pop" role="tooltip"><b class="pt">MeitY</b><span class="ps">Ministry of Electronics and Information Technology</span><span class="pl"><span class="pi">Runs Digital India</span></span></span></span>, Gujarat Government and IIT Gandhinagar; to train <b class="k">10,000+</b> people in five years.</li></ul></div><div class="item"><figure class="pic"><img src="img/embraer-c08733.png" alt="Embraer" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Embraer_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Embraer</a></figcaption></figure><h4><span class="gt" tabindex="0">DGCA<span class="pop" role="tooltip"><b class="pt">DGCA</b><span class="ps">Directorate General of Civil Aviation</span><span class="pl"><span class="pi">India's aviation regulator</span><span class="pi">Under <b>Ministry of Civil Aviation</b></span><span class="pi">HQ <b>New Delhi</b></span></span></span></span> certifies larger Embraer E-Jets for India</h4><ul><li><b class="k">Embraer</b> is <b class="k">Brazilian</b>; <b class="k">Star Air</b> is the only Indian airline flying Embraer.</li></ul></div></section>
+<section id="c4"><h3><span class="n">4</span>Economy, Committees &amp; Reports</h3><div class="item"><figure class="pic"><img src="img/adani-group-9b9923.png" alt="Adani Group" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Adani_logo_2012.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Adani Group</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Adani–IRH ₹1.08 lakh crore aluminium project in Odisha</h4><ul><li><b class="k">Adani Enterprises</b> + <b class="k">International Resources Holding (UAE)</b>: <b class="k">50:50</b> JV; <b class="k">US$11.5 billion</b>.</li><li>Adani's entry into aluminium; India's <b class="k">largest FDI in metallurgy</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/da-nang-7908ec.jpg" alt="Da Nang" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Dragon_Bridge,_Da_Nang_during_day_-_20230819_(cropped).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Da Nang</a></figcaption></figure><h4><span class="gt" tabindex="0">GIFT City<span class="pop" role="tooltip"><img src="img/gift-city-4e4e29.png" alt=""><b class="pt">GIFT City</b><span class="ps">Gujarat International Finance Tec-City</span><span class="pl"><span class="pi">Near <b>Gandhinagar, Gujarat</b></span><span class="pi">India's first IFSC</span><span class="pi">Regulated by <b>IFSCA</b></span></span></span></span> MoU with Vietnam's Da Nang financial centre</h4><ul><li>With <b class="k">VIFC-DN</b> (Vietnam International Financial Center – Da Nang) for cross-border investment.</li></ul></div><div class="item"><figure class="pic"><img src="img/national-commission-for-women-a5024b.png" alt="National Commission for Women" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Logo_for_the_National_Commission_for_Women.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">National Commission for Women</a></figcaption></figure><h4><span class="gt" tabindex="0">NCW<span class="pop" role="tooltip"><img src="img/national-commission-for-women-a5024b.png" alt=""><b class="pt">NCW</b><span class="ps">Statutory body</span><span class="pl"><span class="pi">Est. <b class="k">31 January 1992</b> under the <b class="k">NCW Act, 1990</b></span><span class="pi">HQ <b class="k">New Delhi</b></span><span class="pi">First chair <b class="k">Jayanti Patnaik</b></span></span></span></span> expert committee to review IVF clinic laws</h4><ul><li>Reviews rules for IVF clinics, ART centres and gamete banks; chaired by <b class="k">Justice Asha Menon</b>.</li></ul></div><div class="item"><h4>MoSPI Expert Committee on Energy Statistics</h4><ul><li>Headed by <b class="k">Dr Rangan Banerjee</b>.</li></ul></div></section>
+<section id="c5"><h3><span class="n">5</span>Culture &amp; Awards</h3><div class="item"><figure class="pic"><img src="img/nandi-hinduism-910451.jpg" alt="Nandi (Hinduism)" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Nandieshvara.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Nandi (Hinduism)</a></figcaption></figure><h4>Australia returns three ancient antiquities to India</h4><ul><li>Bronze <b class="k">Trishul</b> of Goddess Bhadrakali · granite <b class="k">Nandi</b> · basalt six-headed <b class="k">Karttikeya</b> (Murugan).</li><li><b class="k">11th–12th century</b>; all from temples in <b class="k">Tamil Nadu</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/unesco-24a0ef.png" alt="UNESCO" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Logo_UNESCO_2021.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">UNESCO</a></figcaption></figure><h4>Nepal's Jestha Varna Mahavihar wins <span class="gt" tabindex="0">UNESCO<span class="pop" role="tooltip"><img src="img/unesco-24a0ef.png" alt=""><b class="pt">UNESCO</b><span class="pl"><span class="pi">Est. <b class="k">16 November 1945</b></span><span class="pi">HQ <b class="k">Paris</b></span><span class="pi"><b class="k">194</b> members + 12 associate</span></span></span></span> Asia-Pacific Heritage Award 2025</h4><ul><li>17th-century Buddhist monastery in <b class="k">Lalitpur</b>; rebuilt after the 2015 earthquake with <b class="k">Indian</b> funding.</li></ul></div><div class="item"><figure class="pic"><img src="img/bismillah-khan-099c8b.jpg" alt="Bismillah Khan" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Bismillah_Khan.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Bismillah Khan</a></figcaption></figure><h4>Ustad Bismillah Khan Yuva Puraskar 2025 — Haveli Sangeet honoured</h4><ul><li><b class="k">Acharya Shri Ranchhodlalji Goswami</b> (Ahmedabad) — first Haveli Sangeet practitioner to win it.</li><li>By <b class="k"><span class="gt" tabindex="0">Sangeet Natak Akademi<span class="pop" role="tooltip"><b class="pt">Sangeet Natak Akademi</b><span class="ps">National academy for music, dance and drama</span><span class="pl"><span class="pi">Est. <b>1952</b></span><span class="pi">HQ <b>New Delhi</b></span><span class="pi">Ministry of Culture</span></span></span></span></b>; instituted <b class="k">2006</b>; for artists <b class="k">under 40</b>; ₹25,000; 106 artists for 2024–25.</li></ul></div></section>
+<section id="c6"><h3><span class="n">6</span>Sports</h3><p class="cs">Cricket records first — they are the most-asked.</p><div class="item"><figure class="pic"><img src="img/vaibhav-sooryavanshi-fd56a9.jpg" alt="Vaibhav Sooryavanshi" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Vaibhav_Suryavanshi_meets_PM_Modi.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · GODL-India">Vaibhav Sooryavanshi</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Vaibhav Sooryavanshi — India's youngest international cricketer</h4><ul><li>T20I debut vs England at <b class="k">Old Trafford</b>, aged <b class="k">15 years 99 days</b>.</li><li>Breaks <b class="k">Sachin Tendulkar</b>'s record (16 y 205 d, vs Pakistan, 1989); also beats Washington Sundar as youngest India T20I player.</li><li>Overall records: youngest T20I — <b class="k">Marian Gherasim</b> (Romania, 14 y 16 d); youngest international — <b class="k">Hasan Raza</b> (Pakistan, 14 y 227 d, Test 1996).</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Youngest for <b>India</b> = Sooryavanshi; youngest in <b>men's T20I</b> = Gherasim; youngest in <b>men's international cricket</b> = Hasan Raza.</div></div><div class="item"><figure class="pic"><img src="img/tammy-beaumont-d3fda7.jpg" alt="Tammy Beaumont" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:2017%E2%80%9318_W_Ashes_A_v_E_Test_17-11-09_Beaumont_(02).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Tammy Beaumont</a></figcaption></figure><h4>Tammy Beaumont retires</h4><ul><li>England; last match the one-off Test vs India at <b class="k">Lord&#39;s</b> — first women's Test at Lord's.</li><li>Only the <b class="k">2nd</b> woman with centuries in all three formats.</li></ul></div><div class="item"><h4>Aswath S. — India's 98th Grandmaster</h4><ul><li>17, from <b class="k">Chennai</b>; final wins at the <b class="k">Pune</b> International Round-Robin.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Class 2: Harshavardhan G.B. = <b>97th</b>. Class 5: Aswath S. = <b>98th</b>.</div></div><div class="item"><figure class="pic"><img src="img/khelo-india-youth-games-279606.png" alt="Khelo India Youth Games" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Khelo_India_Logo_English.png" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Khelo India Youth Games</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Telangana to host 8th Khelo India Youth Games 2026</h4><ul><li>Announced by <b class="k">Dr. Mansukh Mandaviya</b>. First edition: <b class="k">Delhi</b>; previous: <b class="k">Bihar</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/international-olympic-committee-4305d7.png" alt="International Olympic Committee" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:International_Olympic_Committee_logo_2021.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">International Olympic Committee</a></figcaption></figure><h4><span class="gt" tabindex="0">IOC<span class="pop" role="tooltip"><img src="img/international-olympic-committee-4305d7.png" alt=""><b class="pt">IOC</b><span class="pl"><span class="pi">Est. <b class="k">23 June 1894</b></span><span class="pi">HQ <b class="k">Lausanne</b></span><span class="pi">President Kirsty Coventry</span></span></span></span> provisionally lifts Russia's suspension</h4><ul><li>Russian athletes can enter more events, including <b class="k">LA 2028</b> qualifiers.</li></ul></div><div class="item"><figure class="pic"><img src="img/neymar-0b4b53.jpg" alt="Neymar" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Neymar_Junior_Brazil_V_Morocco_13_June_2026-40.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Neymar</a></figcaption></figure><h4>Neymar Jr retires from international football</h4><ul><li>After Brazil lost <b class="k">2-1 to Norway</b> in the Round of 16, FIFA World Cup 2026.</li><li>Brazil's all-time top scorer: <b class="k">80</b> goals in <b class="k">130</b> matches.</li></ul></div><div class="item"><figure class="pic"><img src="img/mount-elbrus-94023d.jpg" alt="Mount Elbrus" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Mount_Elbrus_(cropped).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 2.0">Mount Elbrus</a></figcaption></figure><h4>Tshering Choden (Sikkim) climbs Mount Elbrus</h4><ul><li><b class="k">Mount Elbrus</b> (<b class="k">5,642 m</b>), Europe's highest, in the Caucasus, Russia.</li><li>Her 2nd of the Seven Summits, after <b class="k">Kilimanjaro</b> (5,895 m, Africa) in Aug 2025.</li></ul></div></section>
+<section id="c7"><h3><span class="n">7</span>Important Days &amp; Obituaries</h3><div class="item"><h4>6 July — World Zoonoses Day</h4><ul><li>Awareness of diseases that pass between animals and humans.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span><b>6 July</b> is also World Rural Development Day (Class 3).</div></div><div class="item"><figure class="pic"><img src="img/swahili-language-d0fabc.png" alt="Swahili" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Maeneo_penye_wasemaji_wa_Kiswahili.png" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 3.0">Swahili</a></figcaption></figure><h4>7 July — World Kiswahili Language Day</h4><ul><li>Kiswahili: one of Africa's most spoken languages, <b class="k">200 million+</b> speakers.</li></ul></div><div class="item"><figure class="pic"><img src="img/girish-bharadwaj-c7c4ca.jpg" alt="Girish Bharadwaj" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Girish_Bharadwaj_(80517).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Girish Bharadwaj</a></figcaption></figure><h4>Girish Bharadwaj — "Bridge Man of India"</h4><ul><li>Built <b class="k">140+</b> hanging footbridges; <b class="k">Padma Shri 2017</b>.</li></ul></div><div class="item"><h4>Shapoor Zadran (38) — former Afghanistan pacer</h4><ul><li>44 ODIs and 36 T20Is.</li></ul></div></section>
+<section id="quiz" class="quiz"><h3><span class="n">8</span>Self-test</h3><p class="cs">Answer out loud first, then click to check. Re-test the ones you missed tomorrow.</p><details><summary>Indonesia's highest civilian honour given to PM Modi?</summary><p>Bintang Adipurna (instituted 1959)</p></details><details><summary>Where is Prambanan Temple, and who leads India's conservation work?</summary><p>Yogyakarta, Indonesia — ASI</p></details><details><summary>Indonesia is which number foreign buyer of BrahMos?</summary><p>3rd (after Philippines and Vietnam); 1st for Astra</p></details><details><summary>Where will IIM Bangalore's overseas campus be?</summary><p>Singhasari SEZ, East Java, Indonesia</p></details><details><summary>INS Mahendragiri: which project, and who built it?</summary><p>Project 17A (6th frigate), Mazagon Dock Shipbuilders</p></details><details><summary>What is UNICORN, and who will make it in India?</summary><p>Unified Complex Radio Antenna (NEC, Japan) — BEL</p></details><details><summary>Range shown in the Pinaka LRGR test?</summary><p>60 km (Chandipur, Odisha)</p></details><details><summary>Where was the 36th NATO Summit?</summary><p>Ankara, Türkiye</p></details><details><summary>What is Mission Drishti, and which startup built it?</summary><p>World's first OptoSAR satellite — GalaxEye</p></details><details><summary>Which mission demonstrated Active Debris Removal?</summary><p>Mission Embrace (Cosmoserve), on Vikram-1</p></details><details><summary>Name of the first once-weekly basal insulin?</summary><p>Awiqli (Insulin Icodec), Novo Nordisk</p></details><details><summary>SAMARTH semiconductor hub: where and how much?</summary><p>IIT Gandhinagar, ₹190 crore</p></details><details><summary>Adani–IRH aluminium project: value and JV split?</summary><p>US$11.5 bn (₹1.08 lakh crore), 50:50, Odisha</p></details><details><summary>Who chairs NCW's IVF-law committee?</summary><p>Justice Asha Menon</p></details><details><summary>Which Nepal monastery won the UNESCO Asia-Pacific award?</summary><p>Jestha Varna Mahavihar, Lalitpur</p></details><details><summary>India's youngest international cricketer and his age?</summary><p>Vaibhav Sooryavanshi — 15 years 99 days</p></details><details><summary>India's 98th Grandmaster?</summary><p>Aswath S. (Chennai)</p></details><details><summary>Host of the 8th Khelo India Youth Games?</summary><p>Telangana</p></details><details><summary>Height of Mount Elbrus, and who climbed it?</summary><p>5,642 m — Tshering Choden (Sikkim)</p></details><details><summary>Who is called the "Bridge Man of India"?</summary><p>Girish Bharadwaj</p></details></section><div class="rapid" id="rapid"><h3>⚡ Rapid Revision</h3><ul><li>Indonesia trip: Bintang Adipurna · Prambanan (ASI) · BrahMos (3rd buyer) + Astra (1st) · IIM-B campus · CDSCO MoU · first PM to address Parliament.</li><li>INS Mahendragiri: P-17A #6, MDL, Vizag. India–Japan UNICORN (NEC → BEL). Pinaka LRGR 60 km.</li><li>NATO: 36th summit Ankara; HQ Brussels, 32 members, Article 5.</li><li>Space: Drishti (GalaxEye, first OptoSAR) lost to solar storm · Mission Embrace (ADR) on Vikram-1.</li><li>Awiqli: weekly insulin. ICMR-MINDS: e-Gov gold. SAMARTH ₹190 cr at IIT Gandhinagar.</li><li>Adani + IRH ₹1.08 lakh cr aluminium, Odisha. GIFT City × Da Nang. NCW IVF panel: Asha Menon.</li><li>Antiquities from Australia: Trishul, Nandi, Karttikeya (TN). Jestha Varna Mahavihar: UNESCO award.</li><li>Sooryavanshi 15 y 99 d · Aswath 98th GM · KIYG 8th in Telangana · Neymar 80 goals · Elbrus 5,642 m.</li><li>Days: 6 July Zoonoses · 7 July Kiswahili. Obits: Girish Bharadwaj, Shapoor Zadran.</li></ul></div>
+<p class="end" id="fin">End of July 2026 · Class 5</p>
+<nav class="topnav" aria-label="Class navigation"><a href="2026-07-July-Class-4.html">← Class 4</a><a href="index.html">☰ All classes</a><a href="2026-07-July-Class-6.html">Class 6 →</a></nav>
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('ca-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('ca-notes-theme',nxt);}catch(e){}
+  });
+  var rb=document.getElementById('recall');
+  if(!rb) return;
+  // Recall mode: blank out key facts; click one to reveal it.
+  function setRecall(on){
+    root.classList.toggle('recall',on);
+    rb.textContent='Recall mode: '+(on?'on':'off');
+    document.querySelectorAll('b.k.shown').forEach(function(b){b.classList.remove('shown');});
+  }
+  rb.addEventListener('click',function(){ setRecall(!root.classList.contains('recall')); });
+  document.getElementById('revealall').addEventListener('click',function(){
+    document.querySelectorAll('b.k').forEach(function(b){b.classList.add('shown');});
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('b.k'); if(b && root.classList.contains('recall')) b.classList.toggle('shown');
+  });
+})();
+</script>
+</body>
+</html>

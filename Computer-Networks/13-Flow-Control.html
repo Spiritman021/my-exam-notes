@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Flow Control Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="12-Multiple-Access-Protocols.html">← Ch 12: Multiple Access Protocols</a><a href="index.html">☰ All topics</a><a href="14-Error-Detection-and-Correction.html">Ch 14: Error Detection and Correction →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 13: Flow Control</h1>
+  <p class="sub">Volume 02 · Part 13 · Built from the one-shot CN lecture transcript (section 13), plus the exam points the lecture skipped. Flow control and error control (ARQ) through sliding-window protocols.</p>
+  <ul class="tags"><li>Stop-and-Wait</li><li>Time-out Timer</li><li>Total Time Tt + 2Tp</li><li>η = 1/(1+2a)</li><li>Throughput = η × B</li><li>Stop-and-Wait ARQ</li><li>Sequence Numbers on Data &amp; ACK</li><li>Go-Back-N</li><li>Cumulative / Independent / NAK</li><li>N + 1 Rule</li><li>Ws + Wr ≤ Seq Nos</li><li>Selective Repeat</li><li>Piggybacking</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">13.0</span>What is Flow Control? (the bucket)</a></li>
+<li><a href="#s1"><span class="n">13.1</span>Stop-and-Wait Protocol</a></li>
+<li><a href="#s2"><span class="n">13.2</span>Timeout Timer for Lost Frames</a></li>
+<li><a href="#s3"><span class="n">13.3</span>Lost Acknowledgement and Corrupted Frames</a></li>
+<li><a href="#s4"><span class="n">13.4</span>Total Time in Stop-and-Wait</a></li>
+<li><a href="#s5"><span class="n">13.5</span>Piggybacking and Round Trip Time</a></li>
+<li><a href="#s6"><span class="n">13.6</span>Efficiency of Stop-and-Wait</a></li>
+<li><a href="#s7"><span class="n">13.7</span>Throughput of Stop-and-Wait</a></li>
+<li><a href="#s8"><span class="n">13.8</span>Numerical: Efficiency and RTT</a></li>
+<li><a href="#s9"><span class="n">13.9</span>Condition for 50% Efficiency and Packet Length</a></li>
+<li><a href="#s10"><span class="n">13.10</span>Factors Affecting Efficiency</a></li>
+<li><a href="#s11"><span class="n">13.11</span>Stop-and-Wait ARQ: Lost Data Problem</a></li>
+<li><a href="#s12"><span class="n">13.12</span>Duplicate Packet Problem and Sequence Numbers</a></li>
+<li><a href="#s13"><span class="n">13.13</span>Delayed Acknowledgement and Missed Packet Problem</a></li>
+<li><a href="#s14"><span class="n">13.14</span>Go-Back-N ARQ</a></li>
+<li><a href="#s15"><span class="n">13.15</span>Go-Back-N Efficiency and Throughput</a></li>
+<li><a href="#s16"><span class="n">13.16</span>Go-Back-N Working Example</a></li>
+<li><a href="#s17"><span class="n">13.17</span>Types of Acknowledgement: Cumulative</a></li>
+<li><a href="#s18"><span class="n">13.18</span>Independent (Individual) Acknowledgement</a></li>
+<li><a href="#s19"><span class="n">13.19</span>Acknowledgement Timer vs Timeout Timer</a></li>
+<li><a href="#s20"><span class="n">13.20</span>Go-Back-N: Timeout Timer Considerations</a></li>
+<li><a href="#s21"><span class="n">13.21</span>Sequence Numbers and the Duplicate Packet Problem (N+1)</a></li>
+<li><a href="#s22"><span class="n">13.22</span>Number of Bits Required for Sequence Numbers</a></li>
+<li><a href="#s23"><span class="n">13.23</span>General Rule: Available Sequence Numbers ≥ Ws + Wr</a></li>
+<li><a href="#s24"><span class="n">13.24</span>Numerical: Window Sizes from k Sequence Bits (Go-Back-N)</a></li>
+<li><a href="#s25"><span class="n">13.25</span>Selective Repeat ARQ: Window Sizes and Sequence Numbers</a></li>
+<li><a href="#s26"><span class="n">13.26</span>Selective Repeat Working and Negative Acknowledgement</a></li>
+<li><a href="#s27"><span class="n">13.27</span>Comparison: Stop-and-Wait vs Go-Back-N vs Selective Repeat</a></li>
+<li><a href="#s28"><span class="n">13.28</span>Piggybacking</a></li>
+<li><a href="#s29"><span class="n">13.29</span>Solved Numericals &amp; Formula Sheet<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 13</div>
+<h2 class="ch">Flow Control</h2>
+<p>A fast sender must not drown a slow receiver. This chapter starts with the simplest rule (<b>stop and wait</b> after every frame). It fixes its problems one by one (time-out, sequence numbers on data, sequence numbers on ACKs) to get <b>Stop-and-Wait ARQ</b>. Then it raises the window to N for <b>Go-Back-N</b>, and finally retransmits only what was lost in <b>Selective Repeat</b>. Every step comes with its efficiency formula and window and sequence-number rules, which are a favourite numerical area.</p>
+
+<section id="s0">
+<h3><span class="n">13.0</span>What is Flow Control? (the bucket)</h3>
+<div class="def"><b>Flow control:</b> a set of procedures that tells the sender <b>how much data it may send before it must wait</b> for an acknowledgement, so that a <b>fast sender does not overwhelm a slow receiver's buffer</b>. <b>Error control</b> (detecting lost or damaged frames and <b>retransmitting</b> them) is done in the DLL with <b>ARQ (Automatic Repeat reQuest)</b> <span class="badge">ADDED</span>.</div>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Tank feeding a bucket through a tap: if the tap is fully open and the bather uses water slowly, the bucket overflows">
+  <rect x="30" y="30" width="140" height="100" rx="6" class="ac"/><text x="100" y="75" text-anchor="middle" class="b">Water tank</text><text x="100" y="93" text-anchor="middle" class="mut">= SENDER (fast)</text>
+  <rect x="170" y="100" width="24" height="14" class="bx"/><text x="182" y="94" text-anchor="middle" class="mut">tap</text>
+  <path d="M194 107 H330 V130" style="stroke:var(--accent);stroke-width:6;fill:none"/><text x="262" y="98" text-anchor="middle" class="mut">pipe = link</text>
+  <path d="M290 140 L370 140 L360 196 L300 196 Z" class="gr"/><text x="330" y="175" text-anchor="middle" class="b">bucket</text><text x="330" y="190" text-anchor="middle" class="mut" style="font-size:10px">= buffer</text>
+  <path d="M290 140 q-10 20 -14 40 M370 140 q10 20 14 40" style="stroke:var(--alert);stroke-width:2;fill:none" class="dash"/>
+  <text x="250" y="200" text-anchor="end" style="fill:var(--alert)" class="b">overflow = lost frames</text>
+  <circle cx="470" cy="120" r="16" class="pu"/><path d="M470 136 V180 M470 150 L440 140 M470 180 L455 205 M470 180 L485 205" class="ln"/>
+  <rect x="425" y="128" width="16" height="14" class="bx"/><text x="520" y="110" class="mut">bathing slowly with a mug</text><text x="520" y="126" class="mut">= RECEIVER (slow)</text>
+  <text x="520" y="160" class="b" style="fill:var(--ok)">Fix: tighten the tap</text><text x="520" y="176" class="mut">= flow control</text>
+</svg>
+<figcaption>Figure 13.1: Flow control, the lecture's bathroom analogy</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A big <b>tank</b> feeds a <b>bucket</b> through a tap and pipe; you bathe slowly with a <b>mug</b> (soap first, then water). If the tap is opened at <b>full force</b>, the bucket fills faster than you empty it, and the water <b>overflows</b>. In networking, water = <b>data</b>, the bucket = the receiver's <b>buffer</b>, and overflow = <b>lost packets</b>. The receiver works at its own (slower) speed, so the sender's "tap" must be <b>tightened</b>; that is flow control. The strategies are <b>sliding window protocols</b>.</div>
+<div class="box add"><span class="t">➕ The family tree (Forouzan)</span>
+<b>Noiseless channel</b>: Simplest protocol (no flow control), Stop-and-Wait. <b>Noisy channel</b>: <b>Stop-and-Wait ARQ</b>, <b>Go-Back-N ARQ</b>, <b>Selective Repeat ARQ</b>. The last two are <b>sliding window</b> protocols. Flow control also exists end-to-end in the <b>transport layer</b> (TCP's sliding window with the receiver window rwnd); here it is <b>node-to-node</b> (DLL).</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">13.1</span>Stop-and-Wait Protocol</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The simplest, most primitive flow control. The sender sends <b>one frame</b>, then <b>stops and waits</b> for the <b>acknowledgement</b>. Until the ACK comes it will <b>not</b> send another frame ("ek aur bhej deta hoon na?" No!). Many add-ons will follow.<br>
+<b>Problem:</b> if the frame is <b>lost</b>, the receiver never got it, so it never sends an ACK, and the sender waits <b>forever</b> (an infinite wait or deadlock): "wait, wait, wait becomes its life story".</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">13.2</span>Timeout Timer for Lost Frames</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Add-on #1: a <b>time-out timer</b>. As soon as a frame is sent, start a timer (say 5 minutes). If no ACK arrives before it expires, <b>retransmit</b> the frame and restart the timer. When the ACK finally arrives, the frame was delivered successfully. This solves the lost-frame deadlock.</div>
+<figure>
+<svg viewBox="0 0 690 360" role="img" aria-label="Stop-and-wait ARQ problems: lost frame, lost acknowledgement, delayed acknowledgement"><defs><marker id="qd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker><marker id="qa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker><marker id="qx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--alert)"/></marker><marker id="qn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--add)"/></marker></defs><text x="140" y="16" text-anchor="middle" class="b">(a) Frame lost</text><text x="75" y="34" text-anchor="middle" class="b">Sender</text><text x="205" y="34" text-anchor="middle" class="b">Receiver</text><path d="M75 42 V340 M205 42 V340" class="ln"/><path d="M75 50 L205 85" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#qd)"/><text x="140.0" y="63.5" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F0</text><path d="M205 85 L75 120" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#qa)"/><text x="140.0" y="98.5" text-anchor="middle" style="fill:var(--ok);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">ACK 1</text><path d="M75 130 L150.4 150.3" style="stroke:var(--accent);stroke-width:2;fill:none"/><text x="150.4" y="155.3" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><text x="114.0" y="136.5" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F1</text><path d="M75 130 H69 V235 H75" style="stroke:var(--alert);stroke-width:1.5;fill:none"/><text x="66" y="186.5" text-anchor="end" style="fill:var(--alert);font-size:11px">time-out</text><path d="M75 235 L205 270" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#qd)"/><text x="140.0" y="248.5" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F1 (resend)</text><path d="M205 270 L75 305" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#qa)"/><text x="140.0" y="283.5" text-anchor="middle" style="fill:var(--ok);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">ACK 0</text><text x="140" y="330" text-anchor="middle" class="mut">timer ends the deadlock</text><path d="M240 10 V350" class="ln dash"/><text x="365" y="16" text-anchor="middle" class="b">(b) ACK lost → duplicate</text><text x="305" y="34" text-anchor="middle" class="b">Sender</text><text x="425" y="34" text-anchor="middle" class="b">Receiver</text><path d="M305 42 V340 M425 42 V340" class="ln"/><path d="M305 50 L425 85" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#qd)"/><text x="365.0" y="63.5" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F0</text><text x="429" y="82" text-anchor="start" class="mut">accept</text><path d="M425 90 L355.4 110.3" style="stroke:var(--ok);stroke-width:2;fill:none"/><text x="355.4" y="115.3" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><text x="389.0" y="96.5" text-anchor="middle" style="fill:var(--ok);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">ACK 1</text><path d="M305 50 H299 V175 H305" style="stroke:var(--alert);stroke-width:1.5;fill:none"/><text x="296" y="116.5" text-anchor="end" style="fill:var(--alert);font-size:11px">time-out</text><path d="M305 175 L425 210" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#qd)"/><text x="365.0" y="188.5" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F0 again</text><text x="429" y="205" text-anchor="start" class="mut" style="fill:var(--alert)">seq 0 again</text><text x="429" y="219" text-anchor="start" class="mut" style="fill:var(--alert)">→ discard,</text><text x="429" y="233" text-anchor="start" class="mut" style="fill:var(--alert)">re-ACK</text><path d="M425 215 L305 250" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#qa)"/><text x="365.0" y="228.5" text-anchor="middle" style="fill:var(--ok);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">ACK 1</text><text x="365" y="300" text-anchor="middle" class="b" style="font-size:12px">fix: sequence number</text><text x="365" y="316" text-anchor="middle" class="mut">on DATA frames</text><path d="M470 10 V350" class="ln dash"/><text x="597" y="16" text-anchor="middle" class="b">(c) ACK delayed</text><text x="535" y="34" text-anchor="middle" class="b">Sender</text><text x="660" y="34" text-anchor="middle" class="b">Receiver</text><path d="M535 42 V340 M660 42 V340" class="ln"/><path d="M535 50 L660 85" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#qd)"/><text x="597.5" y="63.5" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F0</text><path d="M660 88 L535 250" style="stroke:var(--ok);stroke-width:2;fill:none" stroke-dasharray="5 4" marker-end="url(#qa)"/><text x="626.5" y="123.6" text-anchor="end" style="fill:var(--ok);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">slow ACK 1</text><path d="M535 50 H529 V130 H535" style="stroke:var(--alert);stroke-width:1.5;fill:none"/><text x="526" y="94.0" text-anchor="end" style="fill:var(--alert);font-size:11px">time-out</text><path d="M535 130 L660 165" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#qd)"/><text x="566.2" y="134.8" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F0</text><path d="M660 168 L535 203" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#qa)"/><text x="566.2" y="206.2" text-anchor="middle" style="fill:var(--ok);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">ACK 1</text><path d="M535 210 L607.5 230.3" style="stroke:var(--accent);stroke-width:2;fill:none"/><text x="607.5" y="235.3" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><text x="572.5" y="232.5" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F1</text><text x="531" y="262" text-anchor="end" class="mut" style="fill:var(--alert)">old ACK 1</text><text x="597" y="300" text-anchor="middle" class="b" style="font-size:12px">fix: number on ACKs too</text><text x="597" y="316" text-anchor="middle" class="mut">→ sender sees it is old</text></svg>
+<figcaption>Figure 13.2: The three classic stop-and-wait problems and their fixes</figcaption>
+</figure>
+</section>
+
+<section id="s3">
+<h3><span class="n">13.3</span>Lost Acknowledgement and Corrupted Frames</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Lost ACK:</b> the frame <b>reached</b> the receiver and the ACK was sent, but the ACK got lost on the way back. The sender's timer expires, so it <b>retransmits the same frame</b>. The receiver had already accepted it, which causes a <b>duplicate packet problem</b>. Fix: <b>sequence numbers</b> (13.12).</li>
+<li><b>Corrupted frame:</b> neither the frame nor the ACK is lost, but the frame arrives <b>corrupted</b> (non-acceptable). The receiver's error detection finds it and <b>discards</b> it. Stop-and-wait does <b>not</b> send a <b>NAK</b> (negative ACK), so the sender only learns through the <b>time-out</b> and resends. The second, clean copy is acknowledged in time.</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">13.4</span>Total Time in Stop-and-Wait</h3>
+<figure>
+<svg viewBox="0 0 680 280" role="img" aria-label="Stop-and-wait timeline: transmission time Tt, propagation Tp each way, total Tt plus 2Tp">
+  <defs><marker id="w1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker></defs>
+  <text x="250" y="24" text-anchor="middle" class="b">Sender</text><text x="500" y="24" text-anchor="middle" class="b">Receiver</text>
+  <path d="M250 32 V270 M500 32 V270" class="ln"/>
+  <path d="M250 40 L250 90 L500 170 L500 120 Z" class="ac" style="fill-opacity:.6"/>
+  <text x="375" y="108" text-anchor="middle" class="b">DATA frame</text>
+  <path d="M500 172 L252 250" style="stroke:var(--ok);stroke-width:2" marker-end="url(#w1)"/><text x="385" y="225" text-anchor="middle" style="fill:var(--ok)" class="b">ACK (tiny)</text>
+  <path d="M240 40 H234 V90 H240" style="stroke:var(--accent);stroke-width:1.5;fill:none"/><text x="230" y="70" text-anchor="end" style="fill:var(--accent)" class="b">Tt (useful)</text>
+  <path d="M240 92 H234 V250 H240" style="stroke:var(--alert);stroke-width:1.5;fill:none"/><text x="230" y="168" text-anchor="end" style="fill:var(--alert)">2Tp: idle, waiting</text>
+  <path d="M120 40 H114 V250 H120" style="stroke:var(--ink);stroke-width:1.5;fill:none"/><text x="110" y="140" text-anchor="end" class="b">Total</text><text x="110" y="156" text-anchor="end" class="b">= Tt + 2Tp</text>
+  <path d="M510 40 H516 V120 H510" style="stroke:var(--muted);stroke-width:1.5;fill:none"/><text x="522" y="84" class="mut">Tp (first bit arrives)</text>
+  <path d="M510 172 H516 V250 H510" style="stroke:var(--muted);stroke-width:1.5;fill:none"/><text x="522" y="214" class="mut">Tp (ACK travels back)</text>
+</svg>
+<figcaption>Figure 13.3: Total time for one frame in stop-and-wait</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Full expression: <b>Total = Tt(data) + Tp(data) + Queuing delay + Processing delay + Tt(ACK) + Tp(ACK)</b>.
+<ul>
+<li><b>Queuing delay</b>: time a packet sits in a router's input/output <b>queue</b> ("lined up"). Taken as ≈ 0.</li>
+<li><b>Processing delay</b>: time to check the packet at the destination. Negligible, ≈ 0.</li>
+<li>Tp(data) = Tp(ACK) = Tp, so together they give <b>2Tp</b>.</li>
+<li><b>Tt(ACK)</b>: a <b>pure ACK</b> is tiny ("typing 'Hi' takes no time"), so it is negligible.</li>
+</ul>
+<b>Total time (pure ACK) = Tt + 2Tp</b>.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">13.5</span>Piggybacking and Round Trip Time</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — the WhatsApp reply</span>
+A <b>pure ACK</b> carries no data (someone texts you; you reply only "Hi"). With <b>piggybacking</b> the ACK travels <b>together with data</b>: "Hi, who are you? Where did you get my number? What work?" Now sending the ACK takes about as long as sending data, so <b>Tt(ACK) ≈ Tt(data) = Tt</b>.<br>
+<b>Total time (piggybacking) = 2Tt + 2Tp</b>.<br>
+<b>Round Trip Time (RTT) = 2 × Tp</b>: data goes sender → receiver (Tp), and the ACK comes back (Tp).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+RTT (the 2Tp part) ignores Tt. If a question says "RTT = 20 ms", then Tp = <b>10 ms</b>. "Total cycle time" in stop-and-wait = <b>Tt + RTT</b>.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">13.6</span>Efficiency of Stop-and-Wait</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The sender is "working" only while it <b>transmits</b>. So efficiency = <b>useful time ÷ total time</b> = Tt / (Tt + 2Tp). Dividing numerator and denominator by Tt gives <b>η = 1 / (1 + 2a)</b>, where <b>a = Tp / Tt</b>.</div>
+<div class="num"><span class="t">Essential formulas</span>
+<div class="formula">η (stop-and-wait, pure ACK) = Tt / (Tt + 2Tp) = 1 / (1 + 2a),   a = Tp / Tt
+η (with piggybacking)                 = 2Tt / (2Tt + 2Tp) = 1 / (1 + a)   [counting data both ways]</div></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">13.7</span>Throughput of Stop-and-Wait</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Throughput S = bits sent ÷ total time = L / (Tt + 2Tp)</b>. It is ∝ L and ∝ 1/time: the most bits in the least time means high throughput; few bits in a long time means low. Multiplying and dividing by B gives L/B = Tt, so S = <b>B × Tt/(Tt + 2Tp) = η × B</b>. Throughput rises with <b>efficiency</b> and with <b>bandwidth</b>. "Don't memorise; understand."</div>
+<div class="num"><span class="t">Essential formula</span>
+<div class="formula">Throughput (effective bandwidth)  S = L / (Tt + 2Tp) = η × B</div></div>
+</section>
+
+<section id="s8">
+<h3><span class="n">13.8</span>Numerical: Efficiency and RTT</h3>
+<div class="num"><span class="t">From the lecture</span>
+<b>Q.</b> Tt = 1 ms, Tp = 1 ms. Efficiency? RTT?<br>
+a = Tp / Tt = 1 / 1 = 1 → η = 1 / (1 + 2×1) = <b>1/3 ≈ 33.3%</b>. RTT = 2 × Tp = <b>2 ms</b>.<br>
+<i>The lecture notes a common confusion: a = <b>Tp / Tt</b> (propagation over transmission), not Tt/Tp.</i></div>
+</section>
+
+<section id="s9">
+<h3><span class="n">13.9</span>Condition for 50% Efficiency and Packet Length</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+For <b>η ≥ ½</b>: Tt / (Tt + 2Tp) ≥ ½ → 2Tt ≥ Tt + 2Tp → <b>Tt ≥ 2Tp</b>. Since Tt = L/B: <b>L ≥ 2 × Tp × B</b>.</div>
+<div class="num"><span class="t">Numerical (lecture)</span>
+<b>Q.</b> B = 4 Mbps, Tp = 1 ms, efficiency 50%. Find the frame length and throughput.<br>
+L = 2 × Tp × B = 2 × 10⁻³ × 4×10⁶ = <b>8 × 10³ bits = 8000 bits</b> (1000 bytes).<br>
+Throughput = η × B = 0.5 × 4 Mbps = <b>2 Mbps</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+This is the same <b>Tt ≥ 2Tp</b> as CSMA/CD's minimum frame (Chapter 12), but for a <b>different reason</b>: here it is for ≥ 50% efficiency in stop-and-wait; there it was for collision detection.</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">13.10</span>Factors Affecting Efficiency</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Substitute a = Tp/Tt = (d/v)/(L/B). The efficiency formula has <b>d</b> in its denominator, so <b>η ∝ 1/d</b>: <b>greater distance, lower efficiency</b>. <b>L</b> sits in the denominator of the denominator, so effectively <b>η ∝ L</b>: <b>bigger frames, higher efficiency</b>. The lecture treats bandwidth as almost constant (a property of the backbone link).</div>
+<div class="num"><span class="t">Expanded formula (added)</span>
+<div class="formula">η = 1 / (1 + 2·d·B / (v·L))
+↑ L → ↑ η      ↑ d → ↓ η      ↑ B → ↓ η      ↑ v → ↑ η</div></div>
+<div class="box trap"><span class="t">⚠️ Exam trap — bandwidth</span>
+<b>Higher bandwidth lowers stop-and-wait efficiency</b>: frames go out faster (smaller Tt), but the sender still sits idle for the same 2Tp. That is why stop-and-wait is terrible on long, fast links (satellite, fibre), and why <b>sliding windows</b> (N &gt; 1) exist.</div>
+</section>
+
+<section id="s11">
+<h3><span class="n">13.11</span>Stop-and-Wait ARQ: Lost Data Problem</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Problem #1, the <b>lost data packet</b>, was solved with the <b>time-out</b>. Adding a time-out to stop-and-wait turns it into <b>Stop-and-Wait ARQ (Automatic Repeat reQuest)</b>: wait a while, then <b>automatically resend</b> the frame whose ACK didn't arrive. The time-out pulls the sender out of the infinite-wait "deadlock".</div>
+</section>
+
+<section id="s12">
+<h3><span class="n">13.12</span>Duplicate Packet Problem and Sequence Numbers</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Problem #2, the <b>lost ACK</b>: the receiver had accepted the frame, the ACK vanished, the timer expired and the sender resent the <b>same frame</b>. Without numbering, the receiver can't tell it is the same, so it accepts it <b>twice</b>: a <b>duplicate packet</b>.<br>
+Fix: put a <b>sequence number on each data frame</b>. The sender sends "frame 0" and the receiver ACKs it. The ACK is lost, so the sender resends "frame 0". The receiver sees <b>the same number again</b>, so it <b>discards the duplicate</b> and <b>re-sends the ACK</b> (the earlier one must have been lost) so the sender can move on.</div>
+</section>
+
+<section id="s13">
+<h3><span class="n">13.13</span>Delayed Acknowledgement and Missed Packet Problem</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Problem #3: the ACK is not lost but <b>delayed</b> (a long route or traffic).
+<ol>
+<li>Frame 1 is received and the ACK is sent, but it is slow, so the sender's timer expires and it resends frame 1.</li>
+<li>The receiver discards the duplicate (thanks to the sequence number) and ACKs again. The sender gets this ACK and sends the <b>next frame</b>, which gets <b>lost</b>.</li>
+<li>Now the <b>old, delayed ACK</b> finally arrives. The sender thinks it is the ACK for the frame it just sent and eagerly sends the <b>next-to-next</b> frame. One frame is never delivered: the <b>missed packet problem</b>.</li>
+</ol>
+Cause: the <b>ACK carried no number</b>. Fix: <b>attach a sequence number to the ACK as well</b>; the ACK names the <b>next frame expected</b> ("ACK 2 = I got 1, send 2"). Now a late "ACK 2" is recognised as a <b>duplicate ACK</b> and ignored, and the lost frame is resent after its time-out.<br>
+<b>Final Stop-and-Wait ARQ</b> = pure stop-and-wait + <b>time-out</b> + <b>sequence number on data</b> + <b>sequence number on ACK</b>.</div>
+<div class="box add"><span class="t">➕ How many numbers does stop-and-wait need?</span>
+Only <b>two</b>: <b>0 and 1</b> (a 1-bit field), alternating 0, 1, 0, 1. Frame 0 gets ACK 1; frame 1 gets ACK 0. Hence the other name, the <b>Alternating Bit Protocol</b>. Ws = Wr = 1.</div>
+</section>
+
+<section id="s14">
+<h3><span class="n">13.14</span>Go-Back-N ARQ</h3>
+<div class="def"><b>Go-Back-N (GBN) ARQ:</b> a sliding-window protocol where the sender may have up to <b>N unacknowledged frames</b> outstanding (Ws = N &gt; 1). The receiver window is <b>1</b> (accepts only the next in-order frame). On a time-out or error, the sender <b>goes back</b> and resends <b>that frame and every frame after it</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+In stop-and-wait, Ws = 1 and Wr = 1; the numbers run 0, 1, 0, 1 (after frame 0 the ACK says "send 1"; after frame 1, "send 0"). In <b>Go-Back-N</b> the <b>sender window = N</b>, hence the name. N must be <b>strictly greater than 1</b>; with N = 1 it is just stop-and-wait. Window 10 → "Go-Back-10"; window 4 → "Go-Back-4".</div>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="Sender sliding window over sequence numbers">
+  <defs><marker id="sw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="40" y="40" width="44" height="34" class="gr"/><text x="62" y="62" text-anchor="middle">0</text>
+  <rect x="84" y="40" width="44" height="34" class="gr"/><text x="106" y="62" text-anchor="middle">1</text>
+  <rect x="128" y="40" width="44" height="34" class="or"/><text x="150" y="62" text-anchor="middle">2</text>
+  <rect x="172" y="40" width="44" height="34" class="or"/><text x="194" y="62" text-anchor="middle">3</text>
+  <rect x="216" y="40" width="44" height="34" class="ac"/><text x="238" y="62" text-anchor="middle">4</text>
+  <rect x="260" y="40" width="44" height="34" class="ac"/><text x="282" y="62" text-anchor="middle">5</text>
+  <rect x="304" y="40" width="44" height="34" class="bx"/><text x="326" y="62" text-anchor="middle">6</text>
+  <rect x="348" y="40" width="44" height="34" class="bx"/><text x="370" y="62" text-anchor="middle">7</text>
+  <rect x="392" y="40" width="44" height="34" class="bx"/><text x="414" y="62" text-anchor="middle">0</text>
+  <rect x="436" y="40" width="44" height="34" class="bx"/><text x="458" y="62" text-anchor="middle">1</text>
+  <rect x="124" y="34" width="184" height="46" rx="6" style="fill:none;stroke:var(--accent);stroke-width:3"/>
+  <text x="216" y="26" text-anchor="middle" class="b" style="fill:var(--accent)">sender window, N = 4</text>
+  <path d="M320 26 H380" class="lna" marker-end="url(#sw)"/><text x="390" y="30" class="mut">slides right when the oldest frame is ACKed</text>
+  <text x="84" y="98" text-anchor="middle" class="mut">sent &amp; ACKed</text>
+  <text x="172" y="98" text-anchor="middle" style="fill:var(--alert);font-size:11.5px">sent, not ACKed</text>
+  <text x="260" y="98" text-anchor="middle" style="fill:var(--accent);font-size:11.5px">may send now</text>
+  <text x="392" y="98" text-anchor="middle" class="mut">cannot send yet</text>
+  <text x="340" y="132" text-anchor="middle" class="mut">3-bit sequence numbers 0–7 wrap around (modulo 2ᵏ)</text>
+</svg>
+<figcaption>Figure 13.4: The sliding window at the sender</figcaption>
+</figure>
+</section>
+
+<section id="s15">
+<h3><span class="n">13.15</span>Go-Back-N Efficiency and Throughput</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Simply replace the <b>1</b> in the numerator with <b>N</b> (the sender window): <b>η = N / (1 + 2a)</b>, a = Tp/Tt. <b>Throughput = η × B = N × B / (1 + 2a)</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap — efficiency can't exceed 100%</span>
+η = <b>min(1, N / (1 + 2a))</b>. Once N ≥ 1 + 2a, the sender never idles (the pipe is full), so efficiency = 100%. The <b>optimal window</b> for full utilisation: <b>N = 1 + 2a</b>.</div>
+</section>
+
+<section id="s16">
+<h3><span class="n">13.16</span>Go-Back-N Working Example</h3>
+<figure>
+<svg viewBox="0 0 680 470" role="img" aria-label="Go-Back-4: frame 2 lost, frames 2 to 5 retransmitted"><defs><marker id="gd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker><marker id="ga" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker><marker id="gx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--alert)"/></marker><marker id="gn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--add)"/></marker></defs><text x="170" y="28" text-anchor="middle" class="b">Sender</text><text x="510" y="28" text-anchor="middle" class="b">Receiver</text><path d="M170 36 V460 M510 36 V460" class="ln"/><path d="M170 44 L510 124" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#gd)"/><text x="210.8" y="50.6" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F0</text><path d="M170 64 L510 144" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#gd)"/><text x="278.8" y="86.6" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F1</text><path d="M170 84 L367.2 130.4" style="stroke:var(--accent);stroke-width:2;fill:none"/><text x="367.2" y="135.4" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><text x="272.0" y="105.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F2</text><path d="M170 104 L510 184" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#gd)"/><text x="414.8" y="158.6" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F3</text><path d="M510 124 L170 204" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ga)"/><text x="370.0" y="162.0" text-anchor="middle" style="fill:var(--ok);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">ACK 1</text><path d="M510 144 L170 224" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ga)"/><text x="370.0" y="196.0" text-anchor="middle" style="fill:var(--ok);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">ACK 2</text><path d="M170 210 L510 290" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#gd)"/><text x="340.0" y="247.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F4</text><path d="M170 230 L510 310" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#gd)"/><text x="340.0" y="282.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F5</text><text x="516" y="188" text-anchor="start" class="mut" style="fill:var(--alert)">F3 out of order → discard</text><text x="516" y="294" text-anchor="start" class="mut" style="fill:var(--alert)">F4 → discard</text><text x="516" y="314" text-anchor="start" class="mut" style="fill:var(--alert)">F5 → discard</text><text x="516" y="168" text-anchor="start" class="mut">(Wr = 1, expects F2)</text><path d="M170 84 H164 V300 H170" style="stroke:var(--alert);stroke-width:1.5;fill:none"/><text x="161" y="196.0" text-anchor="end" style="fill:var(--alert);font-size:11px">F2 time-out</text><path d="M170 300 L510 380" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#gd)"/><text x="210.8" y="306.6" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F2</text><path d="M170 320 L510 400" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#gd)"/><text x="278.8" y="342.6" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F3</text><path d="M170 340 L510 420" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#gd)"/><text x="346.8" y="378.6" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F4</text><path d="M170 360 L510 440" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#gd)"/><text x="414.8" y="414.6" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F5</text><text x="160" y="352" text-anchor="end" class="b" style="fill:var(--alert)">GO BACK:</text><text x="160" y="366" text-anchor="end" class="mut" style="fill:var(--alert)">resend 2, 3, 4, 5</text><path d="M510 380 L170 450" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ga)"/><text x="408.0" y="397.0" text-anchor="middle" style="fill:var(--ok);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">ACK 3 … ACK 6</text><text x="340" y="20" text-anchor="middle" class="mut">N = 4 (window of 4 frames)</text></svg>
+<figcaption>Figure 13.5: Go-Back-4: frame 2 is lost, so 2, 3, 4 and 5 are all resent</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+GB4 (N = 4), frames 0–5 for simplicity.
+<ol>
+<li>Frames <b>0, 1, 2, 3</b> sit in the window; GBN sends <b>all of them</b> straight away, each with its own time-out timer.</li>
+<li>The receiver (window 1) gets 0 and ACKs it. When <b>ACK for 0</b> arrives, the window <b>slides</b> (a frame counts as done only once its ACK is received); now 1, 2, 3, 4 are in focus, so <b>frame 4</b> is sent immediately.</li>
+<li>The ACK for 1 arrives before its time-out, so the window slides again and <b>frame 5</b> is sent.</li>
+<li><b>Frame 2 is lost.</b> Its ACK never comes and its timer expires. Instead of going forward (6, 7), the sender <b>goes back</b> to the oldest un-ACKed frame, 2, and <b>retransmits everything in the window: 2, 3, 4, 5</b>.</li>
+</ol>
+Unlike stop-and-wait (resend 1 frame), GBN resends up to <b>N frames</b>. That extra <b>overhead</b> can create <b>traffic</b> in the network.</div>
+<div class="box add"><span class="t">➕ Why resend 3, 4, 5 if they arrived?</span>
+The receiver window is <b>1</b>: it accepts only the <b>next expected</b> frame (2). Frames 3, 4 and 5 arrived <b>out of order</b>, so they were <b>discarded</b>, not buffered. Hence the receiver needs only <b>one buffer</b> and stays simple; the cost is wasted bandwidth.</div>
+</section>
+
+<section id="s17">
+<h3><span class="n">13.17</span>Types of Acknowledgement: Cumulative</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — the talkative friend</span>
+<b>Cumulative ACK:</b> frames 1, 2, 3 and 4 arrive, and the receiver sends <b>one</b> ACK: "send <b>5</b> next", meaning 1–4 are all safely received.
+<ul>
+<li><b>Advantage:</b> fewer ACKs, so <b>less traffic</b>.</li>
+<li><b>Disadvantage:</b> <b>less reliable</b>. A chatty friend talks non-stop on the phone and you just say "achha, theek hai" at the end (low energy). But if he then asks "were you even listening?" and you say "didn't hear properly", he has to repeat <b>everything</b>. Likewise, if that single cumulative ACK is lost, it is as if <b>all</b> those frames are unacknowledged.</li>
+</ul></div>
+</section>
+
+<section id="s18">
+<h3><span class="n">13.18</span>Independent (Individual) Acknowledgement</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A friend who says <b>one sentence</b>, and you acknowledge it, then the next, and you acknowledge that. <b>Each frame gets its own ACK</b>: got 1, send 2; got 2, send 3; and so on. <b>More reliable</b>, but <b>more traffic</b> (many more ACK packets from receiver to sender).</div>
+<div class="tw"><table>
+<tr><th>Type</th><th>Meaning</th><th>Pros</th><th>Cons</th><th>Used in</th></tr>
+<tr><td>Cumulative</td><td>One ACK confirms all frames up to n − 1 ("send n")</td><td>Few ACKs; less traffic. A lost ACK is covered by a later one <span class="badge">ADDED</span></td><td>Less reliable (lecture view)</td><td>Go-Back-N, TCP</td></tr>
+<tr><td>Independent / individual</td><td>One ACK per frame</td><td>More reliable</td><td>More traffic</td><td>Stop-and-wait, Selective Repeat</td></tr>
+<tr><td>Negative (NAK) <span class="badge">ADDED</span></td><td>Names the frame that is missing or damaged</td><td>Fast, targeted resend</td><td>Extra control frames</td><td>Selective Repeat (HDLC: SREJ)</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Textbooks often state the <b>opposite strength</b> of cumulative ACKs: if ACK 3 is lost but ACK 5 arrives <b>before the time-out</b>, ACK 5 alone confirms frames 1–4, so nothing is resent. A lost cumulative ACK costs retransmission only if <b>no later ACK</b> arrives in time. Remember both views.</div>
+</section>
+
+<section id="s19">
+<h3><span class="n">13.19</span>Acknowledgement Timer vs Timeout Timer</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The <b>sender</b> has a <b>time-out timer</b>. The <b>receiver</b> has an <b>acknowledgement timer</b> (mainly with <b>cumulative</b> ACKs: it waits a little to collect frames, then sends one ACK). The rule: <b>time-out timer &gt; acknowledgement timer</b>.
+<ul>
+<li>Example: time-out 10 min, ACK timer 8 min. Fine: the ACK leaves at 8 and reaches the sender before 10.</li>
+<li>Reversed (time-out 8, ACK timer 10): the sender's timer <b>expires every time</b> before the ACK is even sent, so there are needless retransmissions again and again.</li>
+<li>The ACK timer must be <b>not too long, nor too short</b>. If it is too short, every frame is ACKed separately, so it behaves like <b>independent</b> ACKs and loses the cumulative advantage.</li>
+</ul></div>
+</section>
+
+<section id="s20">
+<h3><span class="n">13.20</span>Go-Back-N: Timeout Timer Considerations</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+With an ACK timer that is too long, the sender's time-out timer keeps <b>expiring repeatedly</b>. So always keep the <b>sender's timer greater than the receiver's timer</b>.</div>
+<div class="box add"><span class="t">➕ Choosing the time-out</span>
+The time-out must exceed the <b>RTT</b> (2Tp + Tt + any ACK delay). Too small causes <b>premature retransmissions</b> (duplicates and traffic); too large means slow recovery after a real loss. In GBN, a time-out triggers resending of <b>all outstanding frames</b>. Implementations often run <b>one timer for the oldest outstanding frame</b>.</div>
+</section>
+
+<section id="s21">
+<h3><span class="n">13.21</span>Sequence Numbers and the Duplicate Packet Problem (N+1)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A common student belief: "the number of sequence numbers needed = the window size N". That is wrong: you need <b>N + 1</b>, because of <b>duplicate packets</b>.
+<ul>
+<li>Take Ws = 4 with only 4 numbers <b>0, 1, 2, 3</b>. Send all 4; the receiver accepts all and ACKs each. After 3 it now expects <b>0</b> (the cycle 0 1 2 3 0 1 2 3 …).</li>
+<li>All 4 ACKs are <b>lost</b>. The sender's time-out expires, so it <b>resends the old 0, 1, 2, 3</b>.</li>
+<li>The receiver was expecting a <b>new</b> frame 0 and receives the <b>old</b> frame 0 with the same number. It <b>accepts the duplicates as new</b>: wrong.</li>
+<li>With <b>5</b> numbers (0–4): after 0–3 the receiver expects <b>4</b>. The resent old 0 doesn't match ("I wanted 4, you sent 0"), so it is <b>rejected as a duplicate</b>. Just <b>one extra</b> sequence number fixes it.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 690 330" role="img" aria-label="With only N sequence numbers a retransmitted old frame is accepted as new; with N+1 it is rejected"><defs><marker id="pd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker><marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker><marker id="px" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--alert)"/></marker><marker id="pn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--add)"/></marker></defs><text x="170.0" y="16" text-anchor="middle" class="b">(a) Ws = 4 with only 4 numbers (0–3)</text><text x="60" y="36" text-anchor="middle" class="b">Sender</text><text x="280" y="36" text-anchor="middle" class="b">Receiver</text><path d="M60 44 V320 M280 44 V320" class="ln"/><path d="M60 52 L280 102" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#pd)"/><text x="110.0" y="75.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">0</text><path d="M60 70 L280 120" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#pd)"/><text x="110.0" y="93.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">1</text><path d="M60 88 L280 138" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#pd)"/><text x="110.0" y="111.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">2</text><path d="M60 106 L280 156" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#pd)"/><text x="110.0" y="129.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">3</text><path d="M280 102 L152.4 131.0" style="stroke:var(--ok);stroke-width:2;fill:none"/><text x="152.4" y="136.0" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><path d="M280 120 L152.4 149.0" style="stroke:var(--ok);stroke-width:2;fill:none"/><text x="152.4" y="154.0" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><path d="M280 138 L152.4 167.0" style="stroke:var(--ok);stroke-width:2;fill:none"/><text x="152.4" y="172.0" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><path d="M280 156 L152.4 185.0" style="stroke:var(--ok);stroke-width:2;fill:none"/><text x="152.4" y="190.0" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><text x="276" y="175" text-anchor="end" class="mut">receiver now expects 0</text><path d="M60 52 H54 V230 H60" style="stroke:var(--alert);stroke-width:1.5;fill:none"/><text x="51" y="145.0" text-anchor="end" style="fill:var(--alert);font-size:11px">time-out</text><path d="M60 230 L280 280" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#pd)"/><text x="170.0" y="251.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">old frame 0 resent</text><text x="276" y="305" text-anchor="end" class="mut" style="fill:var(--alert);font-weight:700">expects 0, got 0 → accepted as NEW ✗</text><text x="510.0" y="16" text-anchor="middle" class="b">(b) Ws = 4 with 5 numbers (0–4)</text><text x="400" y="36" text-anchor="middle" class="b">Sender</text><text x="620" y="36" text-anchor="middle" class="b">Receiver</text><path d="M400 44 V320 M620 44 V320" class="ln"/><path d="M400 52 L620 102" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#pd)"/><text x="450.0" y="75.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">0</text><path d="M400 70 L620 120" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#pd)"/><text x="450.0" y="93.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">1</text><path d="M400 88 L620 138" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#pd)"/><text x="450.0" y="111.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">2</text><path d="M400 106 L620 156" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#pd)"/><text x="450.0" y="129.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">3</text><path d="M620 102 L492.4 131.0" style="stroke:var(--ok);stroke-width:2;fill:none"/><text x="492.4" y="136.0" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><path d="M620 120 L492.4 149.0" style="stroke:var(--ok);stroke-width:2;fill:none"/><text x="492.4" y="154.0" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><path d="M620 138 L492.4 167.0" style="stroke:var(--ok);stroke-width:2;fill:none"/><text x="492.4" y="172.0" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><path d="M620 156 L492.4 185.0" style="stroke:var(--ok);stroke-width:2;fill:none"/><text x="492.4" y="190.0" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><text x="616" y="175" text-anchor="end" class="mut">receiver now expects 4</text><path d="M400 52 H394 V230 H400" style="stroke:var(--alert);stroke-width:1.5;fill:none"/><text x="391" y="145.0" text-anchor="end" style="fill:var(--alert);font-size:11px">time-out</text><path d="M400 230 L620 280" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#pd)"/><text x="510.0" y="251.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">old frame 0 resent</text><text x="616" y="305" text-anchor="end" class="mut" style="fill:var(--ok);font-weight:700">expects 4, got 0 → duplicate, reject ✓</text><path d="M345 8 V325" class="ln dash"/></svg>
+<figcaption>Figure 13.6: Why Go-Back-N needs N + 1 sequence numbers</figcaption>
+</figure>
+</section>
+
+<section id="s22">
+<h3><span class="n">13.22</span>Number of Bits Required for Sequence Numbers</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+If <b>N + 1</b> sequence numbers are needed, the bits to represent them = <b>⌈log₂(N + 1)⌉</b> (ceil = take the higher integer; floor = the lower).</div>
+<div class="num"><span class="t">Quick examples (added)</span>
+GBN, N = 7 → 8 numbers → ⌈log₂ 8⌉ = <b>3 bits</b>. N = 8 → 9 numbers → ⌈log₂ 9⌉ = <b>4 bits</b>. N = 100 → ⌈log₂ 101⌉ = <b>7 bits</b>.</div>
+</section>
+
+<section id="s23">
+<h3><span class="n">13.23</span>General Rule: Available Sequence Numbers ≥ Ws + Wr</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The most general and important condition, valid for <b>every</b> sliding-window protocol:
+<div class="formula">Available sequence numbers  ≥  Ws + Wr</div>
+<ul>
+<li>GBN: Ws = N, Wr = 1, so at least <b>N + 1</b>. More (6, 7, 8 …) also works; 5 (for N = 4) is the <b>minimum</b>, and 4 fails.</li>
+<li>Stop-and-wait: 1 + 1 = <b>2</b> numbers (0 and 1).</li>
+<li>Selective repeat: N + N = <b>2N</b> (13.25).</li>
+</ul></div>
+</section>
+
+<section id="s24">
+<h3><span class="n">13.24</span>Numerical: Window Sizes from k Sequence Bits (Go-Back-N)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+With <b>k bits</b> for sequence numbers you get <b>2ᵏ</b> numbers. In Go-Back-N: <b>Ws = 2ᵏ − 1</b> (one less than the total) and <b>Wr = 1</b> (always).</div>
+<div class="num"><span class="t">Numericals (added)</span>
+<b>k = 3</b>: 8 numbers (0–7). GBN: Ws = <b>7</b>, Wr = 1. SR: Ws = Wr = <b>4</b>. Stop-and-wait: needs only 1 bit.<br>
+<b>k = 4</b>: 16 numbers. GBN Ws = <b>15</b>. SR Ws = Wr = <b>8</b>.<br>
+<b>k = 5</b>: GBN Ws max = <b>31</b>; SR Ws max = <b>16</b>.</div>
+</section>
+
+<section id="s25">
+<h3><span class="n">13.25</span>Selective Repeat ARQ: Window Sizes and Sequence Numbers</h3>
+<div class="def"><b>Selective Repeat (SR) ARQ:</b> both sender and receiver have windows of size <b>N</b> (Ws = Wr &gt; 1). The receiver <b>buffers out-of-order frames</b>, and only the specific <b>lost or damaged frame is retransmitted</b>, usually triggered by a <b>NAK</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>Condition 1: <b>Ws &gt; 1</b> (as in GBN).</li>
+<li>Condition 2 (very, very important): <b>Ws = Wr</b>, the same size.</li>
+<li>With k bits there are 2ᵏ numbers; divide them <b>equally</b> between the two windows: 2ᵏ/2 = <b>2ᵏ⁻¹</b> each. So <b>Ws = Wr = 2ᵏ⁻¹</b>.</li>
+<li>Minimum sequence numbers = Ws + Wr = N + N = <b>2N</b> (more is fine; fewer is not).</li>
+</ul></div>
+<div class="num"><span class="t">Essential formulas</span>
+<div class="formula">Selective repeat:  Ws = Wr = 2^(k−1)        Seq numbers ≥ 2N        bits = ⌈log₂(2N)⌉
+Go-Back-N:         Ws = 2^k − 1,  Wr = 1    Seq numbers ≥ N + 1     bits = ⌈log₂(N + 1)⌉
+Stop-and-wait:     Ws = Wr = 1              Seq numbers = 2         bits = 1</div></div>
+</section>
+
+<section id="s26">
+<h3><span class="n">13.26</span>Selective Repeat Working and Negative Acknowledgement</h3>
+<figure>
+<svg viewBox="0 0 680 360" role="img" aria-label="Selective repeat: only the lost frame 1 is resent after a NAK; receiver buffers 2 and 3"><defs><marker id="sd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker><marker id="sa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker><marker id="sx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--alert)"/></marker><marker id="sn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--add)"/></marker></defs><text x="170" y="28" text-anchor="middle" class="b">Sender</text><text x="510" y="28" text-anchor="middle" class="b">Receiver</text><path d="M170 36 V350 M510 36 V350" class="ln"/><path d="M170 44 L510 124" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#sd)"/><text x="210.8" y="50.6" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F0</text><path d="M170 64 L367.2 110.4" style="stroke:var(--accent);stroke-width:2;fill:none"/><text x="367.2" y="115.4" text-anchor="middle" style="fill:var(--alert);font-size:16px;font-weight:700">✗</text><text x="272.0" y="85.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F1</text><path d="M170 84 L510 164" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#sd)"/><text x="346.8" y="122.6" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F2</text><path d="M170 104 L510 184" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#sd)"/><text x="414.8" y="158.6" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F3</text><path d="M510 124 L170 204" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#sa)"/><text x="370.0" y="162.0" text-anchor="middle" style="fill:var(--ok);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">ACK 0</text><path d="M510 164 L170 244" style="stroke:var(--alert);stroke-width:2;fill:none" marker-end="url(#sx)"/><text x="370.0" y="202.0" text-anchor="middle" style="fill:var(--alert);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">NAK 1</text><text x="516" y="168" text-anchor="start" class="mut" style="fill:var(--alert)">F2 arrives → buffer, NAK 1</text><text x="516" y="188" text-anchor="start" class="mut">F3 arrives → buffer</text><path d="M170 244 L510 324" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#sd)"/><text x="340.0" y="281.0" text-anchor="middle" style="fill:var(--accent);font-size:11.5px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round">F1 only</text><text x="160" y="248" text-anchor="end" class="b" style="fill:var(--alert)">resend ONLY 1</text><text x="516" y="322" text-anchor="start" class="mut" style="fill:var(--ok);font-weight:700">F1 arrives → deliver</text><text x="516" y="338" text-anchor="start" class="mut" style="fill:var(--ok)">1, 2, 3 in order to layer 3</text><g><rect x="560" y="44" width="110" height="26" class="bx"/><text x="615" y="62" text-anchor="middle" style="font-size:11px">Ws = Wr = 4</text></g></svg>
+<figcaption>Figure 13.7: Selective repeat: only the lost frame is resent</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"As the name, so the work": <b>repeat selectively</b>. In GBN one frame's problem <b>punishes everyone</b>: the whole window is resent, and with a big N that floods the network. In SR, "what did the others do wrong? They reached safely." <b>Resend only the problem frame.</b><br>
+Example (Ws = Wr = 4): frames 0, 1, 2 and 3 are sent; <b>frame 1 is lost</b>. The receiver keeps 0 (and 2, 3) and sends a <b>negative acknowledgement (NAK)</b> for frame 1, the one that was lost or looked <b>corrupted / compromised</b>. As soon as the NAK reaches the sender, it <b>retransmits only frame 1</b>.</div>
+<div class="box add"><span class="t">➕ Details</span>
+The receiver delivers frames to the network layer <b>in order</b> only after the gap is filled (here 1, 2, 3 together). If a NAK itself is lost, the sender's <b>per-frame time-out</b> still recovers. Practical example: TCP with <b>SACK</b> (selective acknowledgement); HDLC's <b>SREJ</b> frame.</div>
+</section>
+
+<section id="s27">
+<h3><span class="n">13.27</span>Comparison: Stop-and-Wait vs Go-Back-N vs Selective Repeat</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+SR <b>inherits the best of both</b>:
+<ul>
+<li>From <b>stop-and-wait</b>: no <b>bulk retransmission</b> (only the lost frame is resent). GBN's practice of resending the whole window is "totally forbidden".</li>
+<li>From <b>GBN</b>: the <b>big window (N &gt; 1)</b> ("think bigger than 1"), so the same efficiency, <b>N/(1 + 2a)</b>, versus stop-and-wait's 1/(1 + 2a).</li>
+</ul>
+<b>Buffers / window total:</b> stop-and-wait 1 + 1 = 2; GBN N + 1; SR N + N = <b>2N</b>, which is also the minimum sequence numbers. <b>ACKs:</b> stop-and-wait uses independent; SR uses independent plus <b>NAK</b>; GBN generally uses <b>cumulative</b> (sometimes independent). <b>Implementation:</b> stop-and-wait very easy; GBN moderate (leaning easy); SR <b>complex</b>, because frames arrive <b>out of order</b> (e.g. 0, 2, 3, then 1) and must be <b>sorted / searched internally</b>. In stop-and-wait and GBN, frames are accepted only <b>in order</b>.</div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Stop-and-Wait ARQ</th><th>Go-Back-N ARQ</th><th>Selective Repeat ARQ</th></tr>
+<tr><td>Sender window Ws</td><td>1</td><td>N (max 2ᵏ − 1)</td><td>N (max 2ᵏ⁻¹)</td></tr>
+<tr><td>Receiver window Wr</td><td>1</td><td><b>1</b></td><td><b>N</b> (= Ws)</td></tr>
+<tr><td>Minimum seq numbers</td><td>2 (0, 1)</td><td><b>N + 1</b></td><td><b>2N</b></td></tr>
+<tr><td>Efficiency</td><td>1 / (1 + 2a)</td><td>N / (1 + 2a)</td><td>N / (1 + 2a)</td></tr>
+<tr><td>Frames resent on one loss</td><td>1</td><td><b>Up to N</b> (lost one and all after it)</td><td><b>1</b></td></tr>
+<tr><td>Total buffers</td><td>2</td><td>N + 1</td><td>2N</td></tr>
+<tr><td>ACK type</td><td>Independent</td><td>Cumulative (or independent)</td><td>Independent + <b>NAK</b></td></tr>
+<tr><td>Out-of-order frames at receiver</td><td>—</td><td><b>Discarded</b></td><td><b>Buffered</b>, then sorted</td></tr>
+<tr><td>Bandwidth use</td><td>Poor (idle sender)</td><td>Wasteful on errors</td><td><b>Best</b></td></tr>
+<tr><td>Complexity</td><td>Simplest</td><td>Moderate</td><td><b>Most complex</b></td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"Receiver window size in GBN?" → <b>1</b>. "Which ARQ retransmits only the erroneous frame?" → <b>Selective Repeat</b>. "Max sender window with 3-bit sequence numbers in GBN / SR?" → <b>7 / 4</b>. "Stop-and-wait uses how many sequence numbers?" → <b>2</b>. "ARQ stands for?" → <b>Automatic Repeat reQuest</b>. "Sliding window protocols are at which layers?" → <b>data link</b> (and transport, TCP).</div>
+</section>
+
+<section id="s28">
+<h3><span class="n">13.28</span>Piggybacking</h3>
+<div class="def"><b>Piggybacking:</b> in two-way (full-duplex) communication, the receiver <b>attaches the ACK to its own outgoing data frame</b> instead of sending a separate ACK frame.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A <b>pure ACK</b> is like someone says "Hello" and you only reply "Hi". <b>Piggybacking</b>: you reply "Hi" <b>plus</b> data ("who are you? how did you get my number? what work?") and send it back to the sender together.</div>
+<div class="box add"><span class="t">➕ Pros and cons</span>
+<b>Pros:</b> better use of bandwidth (fewer separate frames, less overhead); fewer frames to process. <b>Cons:</b> if the receiver has <b>no data to send</b>, the ACK is delayed. So an <b>ACK timer</b> is used: if no data is ready in time, a separate ACK is sent anyway. It slightly complicates implementation. Total time per cycle = <b>2Tt + 2Tp</b> (13.5).</div>
+</section>
+
+<section id="s29">
+<h3><span class="n">13.29</span>Solved Numericals &amp; Formula Sheet <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Numericals</span>
+<b>Q1.</b> A 1 Mbps link, 1000-bit frames, 2000 km of cable (v = 2×10⁸ m/s), stop-and-wait. η and throughput?<br>
+Tt = 1000/10⁶ = 1 ms; Tp = 2×10⁶/2×10⁸ = 10 ms; a = 10. η = 1/(1 + 20) = <b>1/21 ≈ 4.76%</b>. Throughput = 0.0476 × 1 Mbps ≈ <b>47.6 kbps</b>.<br><br>
+<b>Q2.</b> Tt = 1 ms, Tp = 49.5 ms. (a) Stop-and-wait η? (b) GBN with N = 10? (c) Window for 100%? (d) Sequence bits for (c) in GBN and in SR?<br>
+1 + 2a = 1 + 99 = 100. (a) η = 1/100 = <b>1%</b>. (b) η = 10/100 = <b>10%</b>. (c) N = 1 + 2a = <b>100</b>.<br>
+(d) GBN: N + 1 = 101 numbers → ⌈log₂ 101⌉ = <b>7 bits</b>. SR: 2N = 200 numbers → ⌈log₂ 200⌉ = <b>8 bits</b>.<br><br>
+<b>Q3.</b> GBN with a 4-bit sequence field and a = 7. Max efficiency?<br>
+Ws = 2⁴ − 1 = 15; 1 + 2a = 15 → η = 15/15 = <b>100%</b>. With SR (Ws = 8): η = 8/15 ≈ <b>53.3%</b>.<br><br>
+<b>Q4.</b> For stop-and-wait to reach ≥ 50% on a 10 Mbps link with Tp = 2 ms, the minimum frame length?<br>
+L ≥ 2 × 2×10⁻³ × 10⁷ = <b>40 000 bits = 5000 bytes</b>.</div>
+<div class="num"><span class="t">Formula sheet</span>
+<div class="formula">Tt = L/B      Tp = d/v      a = Tp/Tt      RTT = 2Tp
+Total time (pure ACK)  = Tt + 2Tp        (piggyback) = 2Tt + 2Tp
+η (S&amp;W)    = 1/(1 + 2a)                η (GBN, SR) = min(1, N/(1 + 2a))
+Throughput = η × B = L/(Tt + 2Tp)        Optimal N   = 1 + 2a
+η ≥ 50%  ⇔  Tt ≥ 2Tp  ⇔  L ≥ 2·Tp·B
+Seq numbers ≥ Ws + Wr     GBN: Ws = 2ᵏ − 1, Wr = 1     SR: Ws = Wr = 2ᵏ⁻¹</div></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 13</h3>
+<ul>
+<li>Flow control = don't overflow the receiver's buffer (tank → tap → bucket → mug). Error control = <b>ARQ</b> (Automatic Repeat reQuest).</li>
+<li><b>Stop-and-wait</b>: send 1, wait for the ACK. Lost frame → deadlock → fix with a <b>time-out</b> (giving S&amp;W ARQ). Lost ACK → duplicate → <b>seq number on data</b>. Delayed ACK → missed packet → <b>seq number on the ACK</b>. Corrupted frame → silently discarded, no NAK, time-out resend.</li>
+<li>Total = Tt + Tp + queuing (≈0) + processing (≈0) + Tt(ACK) (≈0) + Tp = <b>Tt + 2Tp</b>. Piggyback: <b>2Tt + 2Tp</b>. <b>RTT = 2Tp</b>.</li>
+<li><b>η = 1/(1 + 2a)</b>, a = Tp/Tt. Throughput = <b>η × B</b>. Tt = Tp = 1 ms gives η = 1/3, RTT = 2 ms.</li>
+<li><b>η ≥ 50% ⇔ Tt ≥ 2Tp ⇔ L ≥ 2·Tp·B</b>: 4 Mbps, Tp 1 ms → 8000 bits; throughput 2 Mbps.</li>
+<li>η rises with frame length L; falls with distance d and (trap) bandwidth B.</li>
+<li><b>GBN</b>: Ws = N &gt; 1, Wr = 1. η = N/(1 + 2a) (≤ 100%). A loss means resending it and everything after it (the whole window). Out-of-order frames are discarded.</li>
+<li>ACKs: <b>cumulative</b> (one for many, less traffic, less reliable per the lecture), <b>independent</b> (one each, reliable, more traffic), <b>NAK</b> (SR). <b>Time-out timer &gt; ACK timer</b>.</li>
+<li>Seq numbers ≥ <b>Ws + Wr</b>. GBN needs <b>N + 1</b> (else old frames are accepted as new); bits ⌈log₂(N + 1)⌉. k bits: GBN Ws = <b>2ᵏ − 1</b>; SR Ws = Wr = <b>2ᵏ⁻¹</b>; SR needs 2N numbers.</li>
+<li><b>SR</b>: resend only the lost frame (via NAK); the receiver buffers out-of-order frames, so it is the most complex but the best bandwidth use. It inherits S&amp;W's single retransmission and GBN's big window.</li>
+<li><b>Piggybacking</b>: the ACK rides on reply data; saves bandwidth, but the ACK may wait (ACK timer).</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 13 · Next: Chapter 14 — Error Detection and Correction</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="12-Multiple-Access-Protocols.html">← Ch 12: Multiple Access Protocols</a><a href="index.html">☰ All topics</a><a href="14-Error-Detection-and-Correction.html">Ch 14: Error Detection and Correction →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

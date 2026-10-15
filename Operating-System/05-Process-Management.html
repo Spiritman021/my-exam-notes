@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS Process Management Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="04-Threads.html">← Ch 4: Threads</a><a href="index.html">☰ All topics</a><a href="06-CPU-Scheduling.html">Ch 6: CPU Scheduling →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Operating System — Chapter 5: Process Management</h1>
+  <p class="sub">Volume 01 · Part 5 · Built from the one-shot OS lecture transcript (section 5), plus the exam points the lecture skipped.</p>
+  <ul class="tags">
+    <li>Cricket Analogy</li><li>PCB Fields</li><li>Context Switch</li><li>Dispatcher</li>
+    <li>5-State Model</li><li>7-State (Suspend) Model</li><li>Scheduling Queues</li><li>Long / Short / Medium-Term Schedulers</li>
+    <li>CPU-bound vs I/O-bound</li><li>Swapping</li><li>Degree of Multiprogramming</li><li>Process Creation &amp; Termination</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">5.1</span>Program vs Process: Cricket Analogy</a></li>
+    <li><a href="#s2"><span class="n">5.2</span>Process Control Block (PCB)</a></li>
+    <li><a href="#s3"><span class="n">5.3</span>PCB Registers and Context Switching</a></li>
+    <li><a href="#s3a"><span class="n">5.3A</span>Context-Switch Overhead &amp; Dispatcher<span class="x">ADDED</span></a></li>
+    <li><a href="#s4"><span class="n">5.4</span>Process States</a></li>
+    <li><a href="#s4a"><span class="n">5.4A</span>Scheduling Queues &amp; Queueing Diagram<span class="x">ADDED</span></a></li>
+    <li><a href="#s5"><span class="n">5.5</span>Long-Term Scheduler</a></li>
+    <li><a href="#s6"><span class="n">5.6</span>Short-Term Scheduler (CPU Scheduler)</a></li>
+    <li><a href="#s7"><span class="n">5.7</span>Medium-Term Scheduler and Suspended States</a></li>
+    <li><a href="#s7a"><span class="n">5.7A</span>Scheduler Comparison<span class="x">ADDED</span></a></li>
+    <li><a href="#s8"><span class="n">5.8</span>Summary of Process States (7-State Model)</a></li>
+    <li><a href="#s9"><span class="n">5.9</span>Degree of Multiprogramming</a></li>
+    <li><a href="#s9a"><span class="n">5.9A</span>Process Creation, Termination &amp; Hierarchy<span class="x">ADDED</span></a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 5</div>
+<h2 class="ch">Process Management</h2>
+<p>Chapters 3 and 4 created processes (<code>fork</code>) and threads. This chapter covers how the OS <b>keeps track of each process</b> (the PCB), how it <b>moves the CPU between processes</b> (context switching), which <b>states</b> a process passes through, and which <b>schedulers</b> decide those moves. It is the foundation for CPU Scheduling in Chapter 6.</p>
+
+<!-- 5.1 -->
+<section id="s1">
+<h3><span class="n">5.1</span>Program vs Process: Cricket Analogy</h3>
+<p>Chapter 1 (1.15) covered the basic difference: a <b>program</b> is passive and sits on disk; a <b>process</b> is active and runs in RAM. The lecture makes it "crystal clear" with cricket.</p>
+<div class="box lec"><span class="t">🎓 From the lecture — Cricket</span>
+When you watch a match, some players are <b>active</b> and some are <b>passive</b>.
+<ul>
+<li><b>Active players</b> are <b>on the ground</b>, inside the circle, batting and bowling. They are the <b>processes</b>, and the ground is <b>main memory</b>.</li>
+<li><b>Passive players</b> sit in the <b>dressing room</b> waiting for their chance to go out and create a sensation. They are the <b>programs</b>, and the dressing room is <b>secondary memory</b>.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 660 200" role="img" aria-label="Cricket ground as main memory with active players as processes, dressing room as secondary memory with waiting players as programs">
+  <defs><marker id="a51" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="30" width="190" height="140" rx="8" class="bx"/>
+  <text x="105" y="22" text-anchor="middle" class="b">Dressing room</text>
+  <circle cx="50" cy="75" r="12" class="or"/><circle cx="90" cy="75" r="12" class="or"/><circle cx="130" cy="75" r="12" class="or"/><circle cx="170" cy="75" r="12" class="or"/>
+  <circle cx="70" cy="115" r="12" class="or"/><circle cx="110" cy="115" r="12" class="or"/><circle cx="150" cy="115" r="12" class="or"/>
+  <text x="105" y="155" text-anchor="middle" class="mut">PASSIVE = programs</text>
+  <text x="105" y="190" text-anchor="middle" class="mut">= Secondary memory (disk)</text>
+  <path d="M200 100 H300" class="lna" marker-end="url(#a51)"/><text x="250" y="90" text-anchor="middle" class="mut">"my turn!"</text><text x="250" y="118" text-anchor="middle" class="mut">load</text>
+  <ellipse cx="470" cy="100" rx="165" ry="78" class="gr"/>
+  <text x="470" y="18" text-anchor="middle" class="b">Cricket ground</text>
+  <rect x="460" y="78" width="20" height="44" class="bx"/>
+  <circle cx="400" cy="80" r="12" class="ac"/><circle cx="540" cy="80" r="12" class="ac"/><circle cx="380" cy="130" r="12" class="ac"/><circle cx="560" cy="130" r="12" class="ac"/><circle cx="470" cy="60" r="12" class="ac"/><circle cx="470" cy="145" r="12" class="ac"/>
+  <text x="470" y="200" text-anchor="middle" class="mut">ACTIVE = processes = Main memory (RAM)</text>
+</svg>
+<figcaption>Figure 5.1: The cricket analogy — dressing room (disk) vs ground (RAM)</figcaption>
+</figure>
+</section>
+
+<!-- 5.2 -->
+<section id="s2">
+<h3><span class="n">5.2</span>Process Control Block (PCB)</h3>
+<div class="def"><b>PCB (Process Control Block)</b>, also called the <b>Task Control Block</b>: a data structure the <b>OS creates for every process</b>. It holds <b>all the information about that process</b>. It is the OS's complete record of the process, and it is created when the process is created and <b>destroyed when it terminates</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — "The process's kundali"</span>
+The PCB is the process's <b>complete kundali (horoscope)</b>: everything about it in one place. <b>Each process has its own PCB</b>, and the <b>OS</b> creates it. The lecture goes through these fields:</div>
+
+<div class="def" style="border-left-color:var(--alert);background:var(--alert-bg)"><b>Memory aid for PCB fields: "PiS PC PR R FIP"</b>. In order: <b>P</b>ID · <b>S</b>tate · <b>P</b>rogram <b>C</b>ounter · <b>PR</b>iority · <b>R</b>egisters · <b>F</b>ile list · <b>I</b>/O info · <b>P</b>rotection.</div>
+<figure>
+<svg viewBox="0 0 660 380" role="img" aria-label="PCB as a stack of fields: pointer, process ID, state, program counter, priority, registers, memory limits, open file list, IO info, protection, accounting">
+  <rect x="40" y="10" width="260" height="360" rx="6" class="bx"/>
+  <rect x="50" y="20" width="240" height="28" class="pu"/><text x="170" y="39" text-anchor="middle">Pointer (to next PCB in queue)</text>
+  <rect x="50" y="50" width="240" height="28" class="ac"/><text x="170" y="69" text-anchor="middle" class="b">Process ID (PID)</text>
+  <rect x="50" y="80" width="240" height="28" class="ac"/><text x="170" y="99" text-anchor="middle" class="b">Process State</text>
+  <rect x="50" y="110" width="240" height="28" class="ac"/><text x="170" y="129" text-anchor="middle" class="b">Program Counter</text>
+  <rect x="50" y="140" width="240" height="28" class="ac"/><text x="170" y="159" text-anchor="middle" class="b">Priority (CPU-scheduling info)</text>
+  <rect x="50" y="170" width="240" height="28" class="ac"/><text x="170" y="189" text-anchor="middle" class="b">CPU Registers</text>
+  <rect x="50" y="200" width="240" height="28" class="pu"/><text x="170" y="219" text-anchor="middle">Memory-management info</text>
+  <rect x="50" y="230" width="240" height="28" class="ac"/><text x="170" y="249" text-anchor="middle" class="b">List of open files</text>
+  <rect x="50" y="260" width="240" height="28" class="ac"/><text x="170" y="279" text-anchor="middle" class="b">I/O status information</text>
+  <rect x="50" y="290" width="240" height="28" class="ac"/><text x="170" y="309" text-anchor="middle" class="b">Protection info</text>
+  <rect x="50" y="320" width="240" height="28" class="pu"/><text x="170" y="339" text-anchor="middle">Accounting info</text>
+  <text x="170" y="364" text-anchor="middle" class="mut">… OS-specific fields</text>
+  <text x="320" y="69" class="mut">unique ID, like a roll number</text>
+  <text x="320" y="99" class="mut">new / ready / running / waiting / terminated</text>
+  <text x="320" y="129" class="mut">address of the NEXT instruction</text>
+  <text x="320" y="159" class="mut">kernel processes &gt; user processes</text>
+  <text x="320" y="189" class="mut">saved on context switch (R1, R2 … , SP, AC)</text>
+  <text x="320" y="219" class="mut">base/limit registers, page/segment tables</text>
+  <text x="320" y="249" class="mut">files opened by this process</text>
+  <text x="320" y="279" class="mut">I/O devices allocated / requested</text>
+  <text x="320" y="309" class="mut">no process may interfere with another</text>
+  <text x="320" y="339" class="mut">CPU time used, time limits, job no.</text>
+  <rect x="470" y="345" width="12" height="12" class="ac"/><text x="488" y="356" class="mut">lecture</text>
+  <rect x="545" y="345" width="12" height="12" class="pu"/><text x="563" y="356" class="mut">added</text>
+</svg>
+<figcaption>Figure 5.2: Contents of a Process Control Block</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Field</th><th>Lecture explanation</th></tr>
+<tr><td><b>Process ID (PID)</b></td><td>Uniquely distinguishes P1, P2, P3, P4 in main memory, just as a <b>roll number</b> identifies a student even when several share a name ("10, Rakesh, stand up").</td></tr>
+<tr><td><b>Process state</b></td><td>Which state the process is in now: new, ready, running, waiting/blocked or terminated (see 5.4).</td></tr>
+<tr><td><b>Program counter (PC)</b></td><td>Points to the <b>next instruction to execute</b>. Example: P1 has instructions i1, i2, i3, i4… After i3, P1 is preempted for a higher-priority process. The PC holds <b>i4</b>, so when P1 returns it <b>resumes from i4</b>, not from i1.</td></tr>
+<tr><td><b>Priority</b></td><td>Each process carries a priority value. <b>Kernel/OS processes always have higher priority than user processes</b>, because they do system work.</td></tr>
+<tr><td><b>Registers</b></td><td>The values the process left in CPU registers. Saved at a context switch (5.3).</td></tr>
+<tr><td><b>File list</b></td><td>The list of files the process has opened.</td></tr>
+<tr><td><b>I/O info</b></td><td>Which input and output devices the process needs, and when.</td></tr>
+<tr><td><b>Protection</b></td><td>Ensures <b>no process interferes with another</b> process's workspace. That "will never be tolerated".</td></tr>
+<tr><td><b>… (etc.)</b></td><td>Additional <b>OS-specific fields</b>; each OS can add its own.</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Galvin's standard PCB fields: process state, program counter, CPU registers, <b>CPU-scheduling information</b> (priority, queue pointers), <b>memory-management information</b> (base and limit registers, page tables), <b>accounting information</b> (CPU time used, time limits, process numbers) and <b>I/O status information</b> (allocated devices, open files).</li>
+<li>PCBs live in <b>kernel memory</b>, a protected area that user processes cannot access. The set of all PCBs forms the <b>process table</b>.</li>
+<li>Queues (ready queue, device queues) are <b>linked lists of PCBs</b>, which is why each PCB has a <b>pointer</b> field.</li>
+<li>In Linux, the PCB is the C structure <b><code>task_struct</code></b>.</li>
+</ul></div>
+</section>
+
+<!-- 5.3 -->
+<section id="s3">
+<h3><span class="n">5.3</span>PCB Registers and Context Switching</h3>
+<div class="def"><b>Context switch:</b> switching the CPU from one process to another by <b>saving the state (context) of the current process in its PCB</b> and <b>loading the saved state of the next process from its PCB</b>. A process's <b>context</b> is its CPU register values, program counter, process state and memory-management information.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — Why registers must be saved</span>
+<ol>
+<li><b>P1</b> is using registers R1, R2, R3 and has stored the values <b>1, 2, 3</b>.</li>
+<li>P1 is <b>preempted</b> (forcibly stopped), and <b>P2</b> arrives. P2 also uses R1, R2, R3 and writes its own values, <b>2, 3, 4</b>.</li>
+<li>Problem: P1's values 1, 2, 3 would be <b>overwritten and lost</b>.</li>
+<li>Solution: <b>before</b> the switch from P1 to P2, P1's register values (1, 2, 3) are <b>saved</b> in its PCB.</li>
+<li>When P1 <b>resumes</b>, the saved values 1, 2, 3 are <b>loaded back</b>, and the remaining instructions continue with the correct values.</li>
+</ol>
+P1's context was {1, 2, 3}; P2's context was {2, 3, 4}. Saving before switching is essential, because the process's further instructions depend on those values.</div>
+
+<figure>
+<svg viewBox="0 0 680 330" role="img" aria-label="Context switch timeline: P0 executing, interrupt, save state into PCB0, reload from PCB1, P1 executing, then reverse">
+  <defs><marker id="a52" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="90" y="20" text-anchor="middle" class="b">Process P1</text>
+  <text x="340" y="20" text-anchor="middle" class="b">Operating System</text>
+  <text x="590" y="20" text-anchor="middle" class="b">Process P2</text>
+  <rect x="70" y="30" width="40" height="70" class="gr"/><text x="128" y="70" class="mut">executing</text>
+  <path d="M110 100 L240 110" class="lna" marker-end="url(#a52)"/><text x="170" y="96" class="mut">interrupt / syscall</text>
+  <rect x="245" y="105" width="190" height="30" rx="4" class="or"/><text x="340" y="125" text-anchor="middle">save state into PCB1 {R=1,2,3; PC=i4}</text>
+  <rect x="245" y="140" width="190" height="30" rx="4" class="ac"/><text x="340" y="160" text-anchor="middle">reload state from PCB2</text>
+  <path d="M435 170 L570 180" class="lna" marker-end="url(#a52)"/>
+  <rect x="570" y="180" width="40" height="70" class="gr"/><text x="530" y="220" class="mut">executing</text>
+  <path d="M570 250 L440 258" class="lna" marker-end="url(#a52)"/>
+  <rect x="245" y="255" width="190" height="30" rx="4" class="or"/><text x="340" y="275" text-anchor="middle">save state into PCB2 {R=2,3,4}</text>
+  <rect x="245" y="290" width="190" height="30" rx="4" class="ac"/><text x="340" y="310" text-anchor="middle">reload state from PCB1 → resume i4</text>
+  <path d="M245 305 L110 312" class="lna" marker-end="url(#a52)"/>
+  <rect x="70" y="300" width="40" height="25" class="gr"/>
+  <rect x="70" y="105" width="40" height="190" class="bx" style="stroke-dasharray:4 4"/><text x="90" y="200" text-anchor="middle" class="mut">idle</text>
+  <rect x="570" y="30" width="40" height="145" class="bx" style="stroke-dasharray:4 4"/><text x="590" y="105" text-anchor="middle" class="mut">idle</text>
+  <path d="M245 105 V320" class="ln dash"/><path d="M435 105 V320" class="ln dash"/>
+  <text x="340" y="96" text-anchor="middle" style="fill:var(--bad);font-size:11.5px">CPU does no useful work here = overhead</text>
+</svg>
+<figcaption>Figure 5.3: CPU switch from process to process (lecture's P1 / P2 register example)</figcaption>
+</figure>
+</section>
+
+<!-- 5.3A -->
+<section id="s3a">
+<h3><span class="n">5.3A</span>Context-Switch Overhead &amp; Dispatcher <span class="badge">ADDED</span></h3>
+<ul>
+<li>Context-switch time is <b>pure overhead</b>: the system does no useful work while switching. It typically takes a few microseconds and depends on memory speed, the number of registers and hardware support (some CPUs have multiple register sets).</li>
+<li><b>What triggers a context switch:</b> a timer interrupt (time slice over), a higher-priority process becoming ready (preemption), the running process blocking for I/O, or the process terminating.</li>
+<li><b>Dispatcher:</b> the module that actually <b>gives the CPU to the process the short-term scheduler selected</b>. It performs the context switch, switches to user mode and jumps to the right place in the user program.</li>
+<li><b>Dispatch latency:</b> the time the dispatcher takes to <b>stop one process and start another</b>. It should be as small as possible.</li>
+</ul>
+<div class="num"><span class="t">Numerical: CPU efficiency with context-switch overhead</span>
+<div class="formula">CPU efficiency = useful time / (useful time + switch time) = q / (q + s)</div>
+<b>Given:</b> time quantum q = 10 ms, context-switch time s = 1 ms.<br>
+<b>Step 1:</b> Useful work per cycle = 10 ms; total = 10 + 1 = 11 ms.<br>
+<b>Step 2:</b> Efficiency = 10 / 11 = <b>90.9%</b>, so overhead = <b>9.1%</b>.<br>
+<b>Step 3:</b> With q = 2 ms: 2 / 3 = <b>66.7%</b>, so a third of the CPU time is wasted.<br>
+<b>Conclusion:</b> the <b>smaller the time quantum, the larger the share of time lost to context switches</b>. This matters for Round Robin in Chapter 6.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The <b>scheduler</b> <i>decides</i> which process runs next; the <b>dispatcher</b> <i>does</i> the switch. "Dispatch latency" belongs to the dispatcher. A context switch saves state in the <b>PCB</b>, not on the process's stack. Recall Chapter 3: a <b>mode switch</b> (user↔kernel, same process) is not a <b>context switch</b>.</div>
+</section>
+
+<!-- 5.4 -->
+<section id="s4">
+<h3><span class="n">5.4</span>Process States</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — The five states</span>
+<ul>
+<li><b>New</b>: the program has <b>just been picked up</b> from secondary memory to be put into main memory, but is <b>not yet placed</b> there.</li>
+<li><b>Ready</b>: it is now <b>created in main memory</b>, sitting in the <b>ready queue</b> (P1, P2, P3…) and ready to be given to the CPU.</li>
+<li><b>Ready → Running</b>: <b>scheduling / dispatching</b> picks one process from the ready queue and gives it the CPU.</li>
+<li><b>Running</b>: executing on the CPU. From here there are <b>three exits</b>:
+  <ol>
+  <li><b>I/O request → Wait/Block</b>: whenever a process is in wait/block, it is doing I/O and not using the CPU. When the <b>I/O completes</b>, it goes back to <b>Ready</b>.</li>
+  <li><b>Completion → Terminated</b>: it finished all its CPU work successfully and is terminated.</li>
+  <li><b>Preemption → Ready</b>: it was <b>forcibly stopped</b> (e.g. after a time unit) and goes back to the ready queue while P2 runs. P2 may be preempted in turn for P3, and so on.</li>
+  </ol></li>
+</ul></div>
+
+<figure>
+<svg viewBox="0 0 680 290" role="img" aria-label="Five state process model: new, ready, running, waiting, terminated with labelled transitions">
+  <defs><marker id="a53" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <ellipse cx="80" cy="60" rx="58" ry="26" class="bx"/><text x="80" y="65" text-anchor="middle" class="b">New</text>
+  <ellipse cx="250" cy="150" rx="62" ry="28" class="ac"/><text x="250" y="155" text-anchor="middle" class="b">Ready</text>
+  <ellipse cx="470" cy="150" rx="62" ry="28" class="gr"/><text x="470" y="155" text-anchor="middle" class="b">Running</text>
+  <ellipse cx="600" cy="60" rx="70" ry="26" class="bx"/><text x="600" y="65" text-anchor="middle" class="b">Terminated</text>
+  <ellipse cx="360" cy="250" rx="85" ry="28" class="or"/><text x="360" y="255" text-anchor="middle" class="b">Waiting / Blocked</text>
+  <path d="M118 80 L200 128" class="lna" marker-end="url(#a53)"/><text x="130" y="118" class="mut">admitted (LTS)</text>
+  <path d="M310 140 Q360 112 410 140" class="lna" marker-end="url(#a53)"/><text x="360" y="108" text-anchor="middle" class="mut">scheduler dispatch (STS)</text>
+  <path d="M410 162 Q360 190 310 162" class="lna" marker-end="url(#a53)"/><text x="360" y="200" text-anchor="middle" class="mut">interrupt / preempted</text>
+  <path d="M510 128 L560 84" class="lna" marker-end="url(#a53)"/><text x="548" y="118" class="mut">exit</text>
+  <path d="M470 178 L420 228" class="lna" marker-end="url(#a53)"/><text x="470" y="218" class="mut">I/O or event wait</text>
+  <path d="M290 230 L250 180" class="lna" marker-end="url(#a53)"/><text x="160" y="220" class="mut">I/O or event completion</text>
+</svg>
+<figcaption>Figure 5.4: Five-state process model</figcaption>
+</figure>
+
+<div class="tw"><table>
+<tr><th>Transition</th><th>Cause</th></tr>
+<tr><td>New → Ready</td><td><b>Admitted</b> by the long-term scheduler into main memory</td></tr>
+<tr><td>Ready → Running</td><td><b>Dispatched</b> by the short-term scheduler</td></tr>
+<tr><td>Running → Ready</td><td><b>Preemption</b>: time quantum expired or a higher-priority process arrived</td></tr>
+<tr><td>Running → Waiting</td><td>The process requests <b>I/O</b> or waits for an event</td></tr>
+<tr><td>Waiting → Ready</td><td>I/O or event <b>completed</b></td></tr>
+<tr><td>Running → Terminated</td><td>The process <b>finishes</b> (exit) or is killed</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Impossible transitions)</span>
+<ul>
+<li><b>Waiting → Running</b> directly is <b>NOT possible</b>. After the I/O completes, the process must go through <b>Ready</b> first.</li>
+<li><b>Ready → Waiting</b> is <b>NOT possible</b>. Only a <i>running</i> process can issue an I/O request.</li>
+<li><b>New → Running</b> is <b>NOT possible</b>; it must be admitted to Ready first.</li>
+<li>Only <b>one process per CPU</b> can be <b>Running</b> at a time. Many can be Ready or Waiting.</li>
+<li>In a <b>non-preemptive</b> system, the Running → Ready transition (on a time-out) does not occur.</li>
+</ul></div>
+</section>
+
+<!-- 5.4A -->
+<section id="s4a">
+<h3><span class="n">5.4A</span>Scheduling Queues &amp; Queueing Diagram <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Queue</th><th>Holds</th><th>Location</th></tr>
+<tr><td><b>Job queue</b></td><td>All processes in the system (the new jobs waiting to be admitted)</td><td>Secondary memory</td></tr>
+<tr><td><b>Ready queue</b></td><td>Processes in main memory, ready and waiting for the CPU</td><td>Main memory (linked list of PCBs)</td></tr>
+<tr><td><b>Device (I/O) queues</b></td><td>Processes waiting for a particular I/O device; each device has its own queue</td><td>Main memory</td></tr>
+</table></div>
+<figure>
+<svg viewBox="0 0 680 270" role="img" aria-label="Queueing diagram: ready queue to CPU, then I/O queue, time slice expired, fork child, wait for interrupt, all looping back to ready queue">
+  <defs><marker id="a54" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="20" y="35" class="mut">admit →</text>
+  <rect x="80" y="20" width="200" height="26" class="ac"/>
+  <path d="M120 20 V46 M160 20 V46 M200 20 V46 M240 20 V46" class="ln"/>
+  <text x="180" y="62" text-anchor="middle" class="mut">ready queue</text>
+  <path d="M280 33 H340" class="lna" marker-end="url(#a54)"/>
+  <circle cx="370" cy="33" r="28" class="gr"/><text x="370" y="38" text-anchor="middle" class="b">CPU</text>
+  <path d="M398 33 H470" class="lna" marker-end="url(#a54)"/><text x="490" y="38" class="mut">exit / terminate</text>
+  <path d="M370 61 V90 H600 V230 H40 V33 H78" class="ln"/>
+  <rect x="440" y="80" width="130" height="24" class="or"/><text x="505" y="97" text-anchor="middle">I/O queue → I/O</text>
+  <text x="440" y="122" class="mut">I/O request</text>
+  <rect x="440" y="132" width="130" height="24" class="bx"/><text x="505" y="149" text-anchor="middle">time slice expired</text>
+  <rect x="440" y="166" width="130" height="24" class="pu"/><text x="505" y="183" text-anchor="middle">fork a child → child runs</text>
+  <rect x="440" y="200" width="130" height="24" class="bx"/><text x="505" y="217" text-anchor="middle">wait for an interrupt</text>
+  <path d="M370 90 V212 H438 M370 144 H438 M370 178 H438 M370 104 V92" class="ln"/>
+  <path d="M570 92 H600 M570 144 H600 M570 178 H600 M570 212 H600" class="ln"/>
+  <text x="320" y="250" text-anchor="middle" class="mut">every path ends by returning to the READY queue</text>
+</svg>
+<figcaption>Figure 5.5: Queueing-diagram representation of process scheduling</figcaption>
+</figure>
+</section>
+
+<!-- 5.5 -->
+<section id="s5">
+<h3><span class="n">5.5</span>Types of Schedulers: Long-Term Scheduler</h3>
+<p>There are three schedulers: <b>long-term</b> ("thinks far ahead from the initial point"), <b>short-term</b> ("doesn't need to think so far, but is very fast") and <b>medium-term</b>.</p>
+<div class="def"><b>Long-Term Scheduler (LTS)</b>, also called the <b>Job Scheduler</b>: works <b>between the New and Ready states</b>. It selects which processes from secondary memory (the job pool) are <b>admitted into main memory</b> (the ready queue).</div>
+<div class="box lec"><span class="t">🎓 From the lecture — Balancing the mix (selfie analogy again)</span>
+Every process demands <b>CPU time</b> and <b>I/O time</b>. The LTS decides <b>what combination of processes</b> to put in the ready queue. There are two extremes:
+<ol>
+<li><b>All CPU-heavy</b> (P1, P2, P3 … P100 all want only CPU): every fan's phone is unlocked and the camera is clean, so each one takes all 10 selfies with no I/O delay. The <b>100th person</b> waits and waits, afraid the movie will end before their turn. This leads to <b>starvation</b>.</li>
+<li><b>All I/O-heavy</b>: everyone forgets their password, has a dirty camera or can't open the camera app. The celebrity (the <b>CPU</b>) just stands there saying "click the photo, yaar!" The <b>CPU is idle</b> and utilisation is ruined.</li>
+</ol>
+We want <b>neither extreme</b>. We want a <b>balance</b> between CPU-heavy and I/O-heavy processes, and maintaining that balance is the long-term scheduler's job.</div>
+<div class="box add"><span class="t">➕ Added for exam — CPU-bound vs I/O-bound</span>
+<div class="tw"><table>
+<tr><th>CPU-bound process</th><th>I/O-bound process</th></tr>
+<tr><td>Spends most of its time on computation; has <b>long CPU bursts</b></td><td>Spends most of its time doing I/O; has <b>short CPU bursts</b></td></tr>
+<tr><td>e.g. scientific calculation, video encoding</td><td>e.g. text editor, database queries, copying files</td></tr>
+<tr><td>All CPU-bound: the I/O queues are empty, devices sit idle, and others starve</td><td>All I/O-bound: the ready queue is empty and the <b>CPU sits idle</b></td></tr>
+</table></div>
+The LTS's goal is a <b>good process mix</b> of CPU-bound and I/O-bound processes. It also <b>controls the degree of multiprogramming</b> (5.9). It runs <b>infrequently</b> (minutes apart), so it can afford to be slow. In <b>time-sharing systems</b> such as UNIX and Windows, the LTS is <b>absent or minimal</b>: every new process is simply put in memory.</div>
+</section>
+
+<!-- 5.6 -->
+<section id="s6">
+<h3><span class="n">5.6</span>Short-Term Scheduler (CPU Scheduler)</h3>
+<div class="def"><b>Short-Term Scheduler (STS)</b>, also called the <b>CPU Scheduler</b>: works <b>between the Ready and Running states</b>. It <b>selects one process from the ready queue</b> and allocates the CPU to it. This is <b>scheduling / dispatching</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — Why it must be fast</span>
+CPU time is <b>very valuable</b>. When the running process goes off for I/O (to wait/block), the <b>CPU must not stay idle</b>. At that very moment the STS should pick a process from the ready queue and hand it to the CPU: "I won't keep you idle for long, only the shortest possible time." So its <b>speed matters</b>; it is <b>"Fast &amp; Furious"</b>. That is why it is called the CPU scheduler.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>It runs <b>very frequently</b>, about once every <b>100 milliseconds</b> or on every interrupt and I/O event. It must be the <b>fastest</b> of the three: if it took 10 ms to decide for a 100 ms run, about 9% of CPU time would be wasted on scheduling.</li>
+<li>The <b>scheduling algorithms</b> it uses (FCFS, SJF, SRTF, Round Robin, Priority, multilevel queue) are the subject of <b>Chapter 6</b>.</li>
+<li>It is present in <b>every</b> multiprogramming OS.</li>
+</ul></div>
+</section>
+
+<!-- 5.7 -->
+<section id="s7">
+<h3><span class="n">5.7</span>Medium-Term Scheduler and Suspended States</h3>
+<div class="def"><b>Medium-Term Scheduler (MTS)</b>, also called the <b>Swapping Scheduler</b>: <b>swaps processes out</b> of main memory to secondary memory, where they become <b>suspended</b>, and later <b>swaps them back in</b>. This temporarily reduces the number of processes in memory.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — Swapping and the two suspended states</span>
+<ul>
+<li><b>Swapping</b> is like exchanging two values: variable A = 5 and B = 10 become A = 10 and B = 5. Here, processes are swapped <b>between states / memories</b>.</li>
+<li>Ready and Wait/Block are both in <b>main memory</b>. The new <b>Suspend</b> states, <b>Suspend-Wait</b> and <b>Suspend-Ready</b>, are both in <b>secondary memory</b>.</li>
+<li><b>Scenario:</b> main memory is "<b>khachakhach bhari hui, housefull</b>" (packed full). A <b>very high-priority process</b> arrives and must run first, but there is no space. So the MTS <b>moves one process out</b> of main memory into secondary memory. Space is freed, and the high-priority process comes in, executes and leaves.</li>
+<li>If the evicted process was in <b>Ready</b> (wanting CPU time), it becomes <b>Suspend-Ready</b>. If it was in <b>Wait/Block</b> (doing I/O), it becomes <b>Suspend-Wait</b>. The name tells you where it came from.</li>
+<li>Once the high-priority process finishes, the suspended processes are <b>swapped back in</b>: Suspend-Wait → Wait/Block and Suspend-Ready → Ready.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Swapping: medium term scheduler swaps processes between main memory and backing store">
+  <defs><marker id="a55" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="20" width="250" height="190" rx="6" class="ac" style="fill-opacity:.5"/>
+  <text x="145" y="40" text-anchor="middle" class="b">Main memory — "HOUSEFULL"</text>
+  <rect x="40" y="52" width="100" height="28" class="bx"/><text x="90" y="71" text-anchor="middle">P1</text>
+  <rect x="150" y="52" width="100" height="28" class="bx"/><text x="200" y="71" text-anchor="middle">P2</text>
+  <rect x="40" y="86" width="100" height="28" class="or"/><text x="90" y="105" text-anchor="middle">P3 (ready)</text>
+  <rect x="150" y="86" width="100" height="28" class="bx"/><text x="200" y="105" text-anchor="middle">P4</text>
+  <rect x="40" y="120" width="100" height="28" class="or"/><text x="90" y="139" text-anchor="middle">P5 (waiting)</text>
+  <rect x="150" y="120" width="100" height="28" class="bx"/><text x="200" y="139" text-anchor="middle">P6</text>
+  <rect x="80" y="165" width="130" height="30" class="gr"/><text x="145" y="185" text-anchor="middle" class="b">HIGH-priority Px</text>
+  <rect x="420" y="20" width="240" height="190" rx="6" class="bx"/>
+  <text x="540" y="40" text-anchor="middle" class="b">Secondary memory (backing store)</text>
+  <rect x="440" y="70" width="200" height="32" class="or"/><text x="540" y="91" text-anchor="middle">P3 → SUSPEND-READY</text>
+  <rect x="440" y="120" width="200" height="32" class="or"/><text x="540" y="141" text-anchor="middle">P5 → SUSPEND-WAIT</text>
+  <path d="M140 100 Q300 60 438 86" class="lna" marker-end="url(#a55)"/><text x="345" y="60" text-anchor="middle" class="mut">① swap out (MTS)</text>
+  <path d="M140 134 Q300 160 438 136" class="lna" marker-end="url(#a55)"/>
+  <path d="M440 190 Q330 215 215 190" class="lna dash" marker-end="url(#a55)"/><text x="330" y="222" text-anchor="middle" class="mut">② swap back in after Px finishes</text>
+  <path d="M10 180 H78" class="lna" marker-end="url(#a55)"/>
+</svg>
+<figcaption>Figure 5.6: Medium-term scheduler swapping processes out and in</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam — Other reasons to suspend</span>
+Besides making room for a high-priority process, a process may be suspended to <b>improve the process mix</b> (too many CPU-bound processes), because <b>memory is over-committed / thrashing</b>, at the <b>user's request</b> (Ctrl+Z in UNIX), at the <b>parent's request</b>, or for <b>timing</b> (a periodic process waiting for its next interval). Swapping is mainly used in <b>time-sharing</b> systems. Modern OSs usually swap <b>pages</b> rather than whole processes (Chapter 10).</div>
+</section>
+
+<!-- 5.7A -->
+<section id="s7a">
+<h3><span class="n">5.7A</span>Scheduler Comparison <span class="badge">ADDED</span></h3>
+<figure>
+<svg viewBox="0 0 680 260" role="img" aria-label="Where each scheduler acts: LTS between job pool and ready queue, STS between ready queue and CPU, MTS between memory and swap space">
+  <defs><marker id="a56" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="40" width="130" height="60" rx="6" class="bx"/><text x="75" y="65" text-anchor="middle" class="b">Job pool</text><text x="75" y="83" text-anchor="middle" class="mut">(disk) — New</text>
+  <rect x="250" y="40" width="160" height="60" rx="6" class="ac"/><text x="330" y="65" text-anchor="middle" class="b">Ready queue</text><text x="330" y="83" text-anchor="middle" class="mut">(RAM)</text>
+  <rect x="540" y="40" width="130" height="60" rx="6" class="gr"/><text x="605" y="75" text-anchor="middle" class="b">CPU — Running</text>
+  <rect x="250" y="180" width="160" height="60" rx="6" class="or"/><text x="330" y="205" text-anchor="middle" class="b">Swap space</text><text x="330" y="223" text-anchor="middle" class="mut">Suspend-Ready / Wait</text>
+  <path d="M140 70 H248" class="lna" marker-end="url(#a56)"/><text x="194" y="60" text-anchor="middle" class="b" style="fill:var(--accent)">LTS</text><text x="194" y="120" text-anchor="middle" class="mut">job scheduler</text><text x="194" y="134" text-anchor="middle" class="mut">slowest</text>
+  <path d="M410 70 H538" class="lna" marker-end="url(#a56)"/><text x="474" y="60" text-anchor="middle" class="b" style="fill:var(--accent)">STS</text><text x="474" y="120" text-anchor="middle" class="mut">CPU scheduler</text><text x="474" y="134" text-anchor="middle" class="mut">fastest</text>
+  <path d="M330 100 V178" class="lna" marker-start="url(#a56)" marker-end="url(#a56)"/><text x="345" y="145" class="b" style="fill:var(--accent)">MTS</text><text x="390" y="145" class="mut">swap in / out · medium speed</text>
+</svg>
+<figcaption>Figure 5.7: Where each scheduler acts</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Long-term (LTS)</th><th>Short-term (STS)</th><th>Medium-term (MTS)</th></tr>
+<tr><td>Also called</td><td><b>Job scheduler</b></td><td><b>CPU scheduler</b> / dispatcher's partner</td><td><b>Swapping scheduler</b></td></tr>
+<tr><td>Transition</td><td>New → Ready</td><td>Ready → Running</td><td>Ready/Blocked ↔ Suspend-Ready/Suspend-Wait</td></tr>
+<tr><td>Speed</td><td><b>Slowest</b></td><td><b>Fastest</b></td><td>In between</td></tr>
+<tr><td>Frequency</td><td>Least frequent (minutes)</td><td>Most frequent (milliseconds)</td><td>Moderate</td></tr>
+<tr><td>Degree of multiprogramming</td><td><b>Controls it</b> (increases it)</td><td>Little or no control</td><td><b>Reduces it</b> (swapping out)</td></tr>
+<tr><td>Main goal</td><td>Good mix of CPU-bound and I/O-bound jobs</td><td>Keep the CPU busy; pick the next process</td><td>Free memory, improve the mix</td></tr>
+<tr><td>In time-sharing systems</td><td>Absent or minimal</td><td>Always present</td><td>Present (swapping)</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Speed ranking)</span>
+Near the end of the STS discussion the lecture says it "plays in the medium" on speed. The standard ranking is <b>STS fastest &gt; MTS medium &gt; LTS slowest</b>. In the exam: "Which scheduler is invoked most frequently?" → <b>STS</b>. "Which controls the degree of multiprogramming?" → <b>LTS</b>. "Which performs swapping?" → <b>MTS</b>.</div>
+</section>
+
+<!-- 5.8 -->
+<section id="s8">
+<h3><span class="n">5.8</span>Summary of Process States (7-State Model)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — Which memory each state refers to</span>
+<ul>
+<li><b>Secondary memory</b>: <b>New</b> (the LTS hasn't placed it in RAM yet), <b>Suspend-Wait</b> and <b>Suspend-Ready</b>.</li>
+<li><b>Main memory</b>: <b>Ready</b>, <b>Running</b> and <b>Wait/Block (I/O)</b>.</li>
+<li><b>Terminated</b>: the process completed successfully. Its <b>PCB is destroyed</b> and it is <b>removed from main memory</b>, because its work is done.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 360" role="img" aria-label="Seven state model: new, ready, running, blocked, terminated in main memory; suspend ready and suspend blocked in secondary memory">
+  <defs><marker id="a57" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="150" y="70" width="520" height="150" rx="8" class="gr" style="fill-opacity:.25"/><text x="660" y="88" text-anchor="end" class="mut">MAIN MEMORY</text>
+  <rect x="10" y="240" width="660" height="110" rx="8" class="or" style="fill-opacity:.25"/><text x="660" y="342" text-anchor="end" class="mut">SECONDARY MEMORY</text>
+  <ellipse cx="70" cy="40" rx="55" ry="22" class="bx"/><text x="70" y="45" text-anchor="middle" class="b">New</text>
+  <ellipse cx="260" cy="120" rx="58" ry="24" class="ac"/><text x="260" y="125" text-anchor="middle" class="b">Ready</text>
+  <ellipse cx="470" cy="120" rx="58" ry="24" class="gr"/><text x="470" y="125" text-anchor="middle" class="b">Running</text>
+  <ellipse cx="610" cy="40" rx="62" ry="22" class="bx"/><text x="610" y="45" text-anchor="middle" class="b">Terminated</text>
+  <ellipse cx="470" cy="195" rx="70" ry="22" class="or"/><text x="470" y="200" text-anchor="middle" class="b">Wait / Blocked</text>
+  <ellipse cx="200" cy="295" rx="78" ry="24" class="pu"/><text x="200" y="300" text-anchor="middle" class="b">Suspend-Ready</text>
+  <ellipse cx="480" cy="295" rx="78" ry="24" class="pu"/><text x="480" y="300" text-anchor="middle" class="b">Suspend-Wait</text>
+  <path d="M100 58 L215 104" class="lna" marker-end="url(#a57)"/><text x="130" y="96" class="mut">admit</text>
+  <path d="M60 62 L170 272" class="lna dash" marker-end="url(#a57)"/><text x="40" y="170" class="mut">admit (mem full)</text>
+  <path d="M318 112 L410 112" class="lna" marker-end="url(#a57)"/><text x="364" y="104" text-anchor="middle" class="mut">dispatch</text>
+  <path d="M412 130 L318 130" class="lna" marker-end="url(#a57)"/><text x="364" y="146" text-anchor="middle" class="mut">timeout</text>
+  <path d="M510 100 L570 58" class="lna" marker-end="url(#a57)"/><text x="548" y="92" class="mut">exit</text>
+  <path d="M470 144 V171" class="lna" marker-end="url(#a57)"/><text x="478" y="162" class="mut">I/O wait</text>
+  <path d="M405 186 L300 136" class="lna" marker-end="url(#a57)"/><text x="335" y="178" class="mut">I/O done</text>
+  <path d="M245 143 L215 270" class="lna" marker-end="url(#a57)"/><text x="160" y="215" class="mut">suspend</text>
+  <path d="M235 272 L262 145" class="lna" marker-end="url(#a57)"/><text x="262" y="215" class="mut">activate</text>
+  <path d="M460 216 L465 270" class="lna" marker-end="url(#a57)"/><text x="400" y="248" class="mut">suspend</text>
+  <path d="M500 271 L495 218" class="lna" marker-end="url(#a57)"/><text x="505" y="248" class="mut">activate</text>
+  <path d="M402 295 L280 295" class="lna" marker-end="url(#a57)"/><text x="340" y="288" text-anchor="middle" class="mut">I/O done</text>
+</svg>
+<figcaption>Figure 5.8: Seven-state process model with suspend states</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>State</th><th>Memory</th><th>Meaning</th></tr>
+<tr><td>New</td><td>Secondary</td><td>Being created; not yet admitted</td></tr>
+<tr><td>Ready</td><td>Main</td><td>Waiting for the CPU</td></tr>
+<tr><td>Running</td><td>Main</td><td>Executing on the CPU</td></tr>
+<tr><td>Wait / Blocked</td><td>Main</td><td>Waiting for I/O or an event</td></tr>
+<tr><td>Suspend-Ready</td><td>Secondary</td><td>Swapped out while ready; needs swap-in plus CPU</td></tr>
+<tr><td>Suspend-Wait (Suspend-Blocked)</td><td>Secondary</td><td>Swapped out while waiting. When its <b>I/O completes while still swapped out</b>, it moves to <b>Suspend-Ready</b> <span class="badge">ADDED</span></td></tr>
+<tr><td>Terminated</td><td>—</td><td>Finished; PCB destroyed, memory freed</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Models are counted as <b>2-state</b> (Running / Not running), <b>5-state</b> (New, Ready, Running, Waiting, Terminated) and <b>7-state</b> (5 + Suspend-Ready + Suspend-Wait). The transition <b>Suspend-Wait → Suspend-Ready</b> happens <b>without</b> coming back into memory: the I/O finished while the process was on disk. A <b>New</b> process can go straight to <b>Suspend-Ready</b> if memory is full.</div>
+</section>
+
+<!-- 5.9 -->
+<section id="s9">
+<h3><span class="n">5.9</span>Degree of Multiprogramming</h3>
+<div class="def"><b>Degree of Multiprogramming (DoM):</b> the <b>number of processes present in main memory</b> at a given time.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Aim</b>: keep <b>as many processes as possible</b> in main memory, so that <b>CPU utilisation stays high</b>.</li>
+<li>If only <b>one</b> process is in memory and it goes for I/O, the CPU is idle because there is nothing else to schedule. With more processes: P1 goes to I/O, so give the CPU to P2; P2 goes to I/O, so give it P3; P4 finishes, so give it P5. <b>Options should always be available.</b></li>
+<li>Example: P1 to P10 are in main memory, so the <b>DoM = 10</b>.</li>
+<li><b>Which scheduler impacts DoM most?</b> The <b>long-term scheduler</b>. It works between New and Ready and decides what enters main memory, so it has the <b>most control</b>. The STS has <b>much less</b> control.</li>
+<li>The <b>medium-term scheduler</b> does somewhat the opposite: in some situations it <b>reduces the DoM</b> by moving processes from main memory out to secondary memory (suspended).</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 640 220" role="img" aria-label="Graph of CPU utilisation versus degree of multiprogramming, rising then collapsing due to thrashing">
+  <path d="M60 180 H600 M60 180 V20" class="ln"/>
+  <text x="330" y="210" text-anchor="middle" class="mut">degree of multiprogramming →</text>
+  <text x="20" y="100" class="mut" transform="rotate(-90 20 100)">CPU utilisation</text>
+  <path d="M60 170 C 150 80, 250 45, 380 42 C 430 42, 460 70, 500 150 L 560 172" class="lna"/>
+  <path d="M400 30 V180" class="ln dash"/><text x="400" y="24" text-anchor="middle" class="mut">optimal</text>
+  <text x="200" y="120" class="mut">more processes → CPU busier</text>
+  <text x="470" y="110" style="fill:var(--bad);font-size:12px">thrashing</text>
+</svg>
+<figcaption>Figure 5.9: CPU utilisation vs degree of multiprogramming</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>A <b>stable</b> DoM means the <b>average rate of process creation = the average departure rate</b> of processes leaving the system. The LTS may be invoked only when a process leaves.</li>
+<li>Increasing the DoM raises CPU utilisation <b>only up to a point</b>. Beyond that, processes lack enough memory frames, page faults explode, and the CPU spends its time swapping pages. This is <b>thrashing</b> (Chapter 10), and the fix is to <b>reduce</b> the DoM, which is exactly what the MTS does.</li>
+<li>Chapter 1's formula still applies: <b>CPU utilisation = 1 − pⁿ</b>, where n = DoM.</li>
+</ul></div>
+</section>
+
+<!-- 5.9A -->
+<section id="s9a">
+<h3><span class="n">5.9A</span>Process Creation, Termination &amp; Hierarchy <span class="badge">ADDED</span></h3>
+<ul>
+<li><b>Creation</b>: a <b>parent</b> process creates <b>children</b> (e.g. <code>fork()</code> in UNIX, <code>CreateProcess()</code> in Windows), forming a <b>process tree</b>. Each process is identified by its <b>PID</b>. Linux's root process is <b>systemd/init (PID 1)</b>.</li>
+<li><b>Resource sharing options</b>: the parent and children share all resources, share a subset, or share nothing.</li>
+<li><b>Execution options</b>: the parent runs <b>concurrently</b> with its children, or <b>waits</b> until they finish (<code>wait()</code>).</li>
+<li><b>Address-space options</b>: the child is a <b>duplicate</b> of the parent (<code>fork</code>), or the child loads a <b>new program</b> (<code>exec</code>).</li>
+<li><b>Termination</b>: a process ends with <code>exit()</code>, and the OS frees its resources and destroys its PCB. A parent may <b>abort</b> a child (<code>kill()</code>) if the child exceeds its resources, its task is no longer needed, or the parent is exiting.</li>
+<li><b>Cascading termination</b>: some OSs do not allow a child to exist after its parent terminates, so all descendants are terminated too.</li>
+<li><b>Zombie</b> (terminated, not yet waited for) and <b>orphan</b> (parent died, adopted by init): see Chapter 3.6A.</li>
+<li><b>Independent vs cooperating processes</b>: a cooperating process can affect or be affected by others, through shared data. This motivates <b>IPC</b> (shared memory and message passing) and <b>synchronisation</b> (Chapter 7).</li>
+</ul>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 5</h3>
+<ul>
+<li><b>Cricket</b>: players on the ground = active processes in <b>RAM</b>; players in the dressing room = passive programs on <b>disk</b>.</li>
+<li><b>PCB</b> = the process's "kundali", made by the OS for each process: <b>PID</b> (roll number), <b>state</b>, <b>PC</b> (next instruction, e.g. resume at i4), <b>priority</b> (kernel &gt; user), <b>registers</b>, <b>file list</b>, <b>I/O info</b>, <b>protection</b>, plus OS-specific fields; textbook adds memory and accounting info. Linux: <code>task_struct</code>.</li>
+<li><b>Context switch</b>: save P1's registers (1,2,3) and PC in PCB1, load P2's from PCB2, and later restore P1. It is <b>pure overhead</b>. Efficiency = q/(q+s).</li>
+<li><b>Dispatcher</b> performs the switch; the time it takes is the <b>dispatch latency</b>.</li>
+<li><b>5 states</b>: New → (admit) Ready → (dispatch) Running → I/O → Wait → (I/O done) Ready; Running → (preempt) Ready; Running → (exit) Terminated. <b>Waiting → Running directly is impossible.</b></li>
+<li><b>Queues</b>: job queue (disk), ready queue (RAM, linked PCBs), device queues.</li>
+<li><b>LTS</b> = job scheduler, New→Ready, <b>slowest</b>; balances CPU-bound vs I/O-bound (selfie: all-CPU means starvation, all-I/O means idle CPU); <b>controls the DoM</b>.</li>
+<li><b>STS</b> = CPU scheduler, Ready→Running, <b>fastest</b>, runs about every 100 ms; the CPU must never be idle.</li>
+<li><b>MTS</b> = swapping scheduler; "housefull" memory with a high-priority arrival means swap out. Ready → <b>Suspend-Ready</b>, Wait → <b>Suspend-Wait</b>, both on <b>disk</b>; swapped back in later; <b>reduces the DoM</b>.</li>
+<li><b>Secondary memory states</b>: New, Suspend-Ready, Suspend-Wait. <b>Main memory states</b>: Ready, Running, Wait. Terminated: PCB destroyed.</li>
+<li><b>DoM</b> = number of processes in RAM (P1…P10 gives DoM 10). Higher DoM means higher CPU utilisation, until <b>thrashing</b>.</li>
+<li>Creation: parent → child (fork/exec), process tree, init = PID 1. Termination: exit/abort, cascading termination.</li>
+</ul>
+</div>
+<div class="end">End of Volume 01 — Part 5 · Next: Chapter 6 — CPU Scheduling</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="04-Threads.html">← Ch 4: Threads</a><a href="index.html">☰ All topics</a><a href="06-CPU-Scheduling.html">Ch 6: CPU Scheduling →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('os-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

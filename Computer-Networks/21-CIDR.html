@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN CIDR Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="20-Subnetting.html">← Ch 20: Subnetting</a><a href="index.html">☰ All topics</a><a href="22-IPv4-Header.html">Ch 22: IPv4 Header →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 21: Classless Addressing (CIDR)</h1>
+  <p class="sub">Volume 02 · Part 21 · Built from the one-shot CN lecture transcript (section 21), plus the exam points the lecture skipped. No classes, only blocks: the /n notation, the network mask, finding the network ID two ways, and fixed- and variable-length subnetting inside a CIDR block.</p>
+  <ul class="tags"><li>CIDR</li><li>Classless</li><li>Blocks on Demand</li><li>a.b.c.d/n</li><li>Block ID + Host ID</li><li>Network Mask</li><li>Zero the Host Bits</li><li>AND with Mask</li><li>/28 → /29 → /30</li><li>2^(32−n) Addresses</li><li>Supernetting</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">21.0</span>What is Classless Addressing?</a></li>
+<li><a href="#s1"><span class="n">21.1</span>CIDR Network Mask</a></li>
+<li><a href="#s2"><span class="n">21.2</span>Finding the Network ID: Shortcut Method</a></li>
+<li><a href="#s3"><span class="n">21.3</span>Finding the Network ID: AND with Mask</a></li>
+<li><a href="#s4"><span class="n">21.4</span>Fixed Length Subnetting in CIDR</a></li>
+<li><a href="#s5"><span class="n">21.5</span>Variable Length Subnetting in CIDR</a></li>
+<li><a href="#s6"><span class="n">21.6</span>CIDR Block Rules, Supernetting &amp; Longest Prefix Match<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">21.7</span>Classful vs Classless &amp; Solved Numericals<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 21</div>
+<h2 class="ch">Classless Addressing (CIDR)</h2>
+<p>Classful addressing hands out addresses in only three sizes (16 million, 65 534 or 254 hosts), so most organisations get far too many or too few. <b>CIDR (Classless Inter-Domain Routing)</b> drops the classes. An address block of any power-of-two size is given out on demand, and the address itself carries its own boundary: <code>/n</code> says how many leading bits are the network (block) part. Everything from chapter 20 (masks, AND, FLSM, VLSM) carries over unchanged, only now the starting prefix can be any number, not just 8, 16 or 24.</p>
+
+<section id="s0">
+<h3><span class="n">21.0</span>What is Classless Addressing?</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Classless addressing, lovingly called <b>CIDR</b>. As the name says, there are <b>no classes</b>: no pre-dividing addresses into A, B, C. Instead there are <b>blocks</b>, and IP addresses are supplied <b>as per demand</b>.<br>
+A 32-bit IPv4 address is divided into a <b>block ID</b> (think of it as the network ID) and a <b>host ID</b>. The notation is the usual dotted decimal plus <b>/n</b>, where n = the <b>number of bits for the block / network ID</b>.<br>
+Example: <b>201.1.10.5/28</b>: 28 of the 32 bits are the network ID, the remaining <b>4</b> bits are the host ID, so this block holds 2⁴ = <b>16</b> addresses.</div>
+<figure>
+<svg viewBox="0 0 680 120" role="img" aria-label="201.1.10.5 slash 28: first 28 bits are network or block ID, last 4 bits are host ID">
+  <text x="340" y="20" text-anchor="middle" class="b">201.1.10.5 / 28</text>
+  <rect x="30" y="34" width="520" height="40" class="ac"/><text x="290" y="59" text-anchor="middle" class="b">block / network ID: 28 bits</text>
+  <rect x="550" y="34" width="100" height="40" class="gr"/><text x="600" y="59" text-anchor="middle" class="b">host: 4</text>
+  <text x="290" y="96" text-anchor="middle" font-family="monospace" font-size="12">11001001.00000001.00001010.0000</text>
+  <text x="600" y="96" text-anchor="middle" font-family="monospace" font-size="12">0101</text>
+  <text x="340" y="114" text-anchor="middle" class="mut">2⁴ = 16 addresses in the block</text>
+</svg>
+<figcaption>Figure 21.1: Reading a CIDR address</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A /28 block has <b>16 addresses</b> but only <b>14 usable hosts</b> (minus the network ID and the broadcast address). The lecture says "16 host IDs"; when an exam asks for <b>hosts</b>, answer 2^(32−n) − 2 = <b>14</b>; when it asks for <b>addresses</b> in the block, answer 2^(32−n) = 16.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">21.1</span>CIDR Network Mask</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Same rule as for classes: put a <b>1 in every network bit</b> and a <b>0 in every host bit</b>. For classes the network part was 1, 2 or 3 bytes; here it is whatever n says. For /28: <b>28 ones followed by 4 zeros</b>.</div>
+<div class="formula">/28 mask = 11111111.11111111.11111111.11110000 = 255.255.255.240</div>
+<div class="tw"><table>
+<tr><th>Prefix</th><th>Mask</th><th>Addresses</th><th>Prefix</th><th>Mask</th><th>Addresses</th></tr>
+<tr><td>/8</td><td>255.0.0.0</td><td>16 777 216</td><td>/24</td><td>255.255.255.0</td><td>256</td></tr>
+<tr><td>/12</td><td>255.240.0.0</td><td>1 048 576</td><td>/25</td><td>255.255.255.128</td><td>128</td></tr>
+<tr><td>/16</td><td>255.255.0.0</td><td>65 536</td><td>/26</td><td>255.255.255.192</td><td>64</td></tr>
+<tr><td>/20</td><td>255.255.240.0</td><td>4 096</td><td>/27</td><td>255.255.255.224</td><td>32</td></tr>
+<tr><td>/21</td><td>255.255.248.0</td><td>2 048</td><td>/28</td><td>255.255.255.240</td><td>16</td></tr>
+<tr><td>/22</td><td>255.255.252.0</td><td>1 024</td><td>/29</td><td>255.255.255.248</td><td>8</td></tr>
+<tr><td>/23</td><td>255.255.254.0</td><td>512</td><td>/30</td><td>255.255.255.252</td><td>4</td></tr>
+</table></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">21.2</span>Finding the Network ID: Shortcut Method</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"Find the network ID of the given IP address": many questions are asked on this. The shortcut: the <b>28 network bits</b> are known from /28; <b>don't touch them</b>, copy them as they are. Just make the remaining <b>4 host bits all 0</b>. The last byte of 201.1.10.5 is <code>0000 0101</code>; zeroing its last 4 bits gives <code>0000 0000</code> = 0. Network ID = <b>201.1.10.0/28</b>.</div>
+<div class="num"><span class="t">The same shortcut in decimal (block size)</span>
+/28 → block size 2⁴ = 16 in the last octet. The network ID is the largest multiple of 16 that is ≤ 5 → <b>0</b>. The block runs 201.1.10.0 – <b>201.1.10.15</b> (broadcast = network + block − 1).</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">21.3</span>Finding the Network ID: AND with Mask</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The "ideal / legal" way: <b>AND</b> the IP address with the network mask. AND gives 1 only when <b>both</b> bits are 1. Where the mask has 1s, the output simply <b>copies</b> the address bit (201 stays 201, 1 stays 1, 10 stays 10). Where the mask has 0s, the output is 0. Last byte: 5 = <code>00000101</code> AND 240 = <code>11110000</code> → <code>00000000</code> = <b>0</b>. Network ID = <b>201.1.10.0</b>. So you have a legal method and a simple trick.</div>
+<div class="formula">IP    201 . 1 . 10 . 00000101   (5)
+mask  255 .255 .255 . 11110000   (240)
+AND   201 . 1 . 10 . 00000000   (0)   → network ID 201.1.10.0/28</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">21.4</span>Fixed Length Subnetting in CIDR</h3>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Block 201.1.10.0 slash 28 split by one bit into two slash 29 subnets: A .0 to .7 and B .8 to .15; then B split again into slash 30 subnets B1 .8 to .11 and B2 .12 to .15">
+  <text x="340" y="18" text-anchor="middle" class="b">201.1.10.0/28 (last octet 0 – 15)</text>
+  <rect x="40" y="30" width="600" height="34" class="bx"/><text x="340" y="52" text-anchor="middle">16 addresses</text>
+  <text x="20" y="98" class="b">FLSM</text>
+  <rect x="80" y="78" width="280" height="38" class="ac"/><text x="220" y="94" text-anchor="middle" class="b">A: .0 – .7  /29</text><text x="220" y="110" text-anchor="middle" class="mut">host bit h₁ = 0</text>
+  <rect x="360" y="78" width="280" height="38" class="pu"/><text x="500" y="94" text-anchor="middle" class="b">B: .8 – .15  /29</text><text x="500" y="110" text-anchor="middle" class="mut">h₁ = 1</text>
+  <text x="20" y="160" class="b">VLSM</text>
+  <rect x="80" y="140" width="280" height="38" class="ac"/><text x="220" y="156" text-anchor="middle" class="b">A: .0 – .7  /29</text><text x="220" y="172" text-anchor="middle" class="mut">8 addresses</text>
+  <rect x="360" y="140" width="140" height="38" class="gr"/><text x="430" y="156" text-anchor="middle" class="b">B1: .8–.11</text><text x="430" y="172" text-anchor="middle" class="mut">/30 · bits 10</text>
+  <rect x="500" y="140" width="140" height="38" class="gr"/><text x="570" y="156" text-anchor="middle" class="b">B2: .12–.15</text><text x="570" y="172" text-anchor="middle" class="mut">/30 · bits 11</text>
+  <text x="340" y="196" text-anchor="middle" class="mut">each borrowed host bit moves into the prefix: /28 → /29 → /30</text>
+</svg>
+<figcaption>Figure 21.2: Subnetting a /28 block, equally and unequally</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Same address, <b>201.1.10.5/28</b>, network ID <b>201.1.10.0/28</b>: 28 network bits, 4 host bits. For <b>equal</b> (fixed-length) subnets, leave the 28 network bits alone and fix the host bit <b>closest to the network ID</b> (the MSB of the host part). 0 → subnet A, 1 → subnet B. Three bits remain: <b>000 to 111</b>.<br>
+• Subnet A: <b>201.1.10.0 – 201.1.10.7</b><br>
+• Subnet B: <b>201.1.10.8 – 201.1.10.15</b><br>
+Why <b>/29</b>? We fixed one host bit, so include it in the network ID: 28 + 1 = <b>29</b>. The 3 remaining bits pick the host inside each 8-address subnet.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">21.5</span>Variable Length Subnetting in CIDR</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Same idea, slightly harder. Keep the 28 bits; fix the host MSB. <b>0</b> → subnet <b>A</b> with all 8 addresses (.0 – .7), as before. On the <b>1</b> side we want unequal pieces (4 + 4 instead of one 8), so one bit is not enough: use the <b>next</b> host bit too. A stays as it is; only B is divided. <b>10</b> → <b>B1</b> (.8 – .11), <b>11</b> → <b>B2</b> (.12 – .15).<br>
+The beautiful part is the prefix: subnet A used only 1 host bit → <b>/29</b>. B1 and B2 used 2 host bits → 28 + 2 = <b>/30</b>.</div>
+<div class="tw"><table>
+<tr><th>Subnet</th><th>Fixed host bits</th><th>Range</th><th>Prefix</th><th>Mask</th><th>Addresses</th><th>Usable hosts</th></tr>
+<tr><td>A</td><td>0</td><td>201.1.10.0 – .7</td><td>/29</td><td>255.255.255.248</td><td>8</td><td>6</td></tr>
+<tr><td>B1</td><td>10</td><td>201.1.10.8 – .11</td><td>/30</td><td>255.255.255.252</td><td>4</td><td>2</td></tr>
+<tr><td>B2</td><td>11</td><td>201.1.10.12 – .15</td><td>/30</td><td>255.255.255.252</td><td>4</td><td>2</td></tr>
+</table></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">21.6</span>CIDR Block Rules, Supernetting &amp; Longest Prefix Match <span class="badge">ADDED</span></h3>
+<div class="def"><b>Rules for a valid CIDR block</b> (Forouzan): (1) the number of addresses must be a <b>power of 2</b>; (2) the addresses are <b>contiguous</b>; (3) the <b>first address must be divisible by the block size</b> (its host bits are all 0).</div>
+<div class="formula">addresses in block   N = 2^(32 − n)
+first address        = IP AND mask            (host bits → 0)
+last address         = IP OR (NOT mask)       (host bits → 1)
+usable hosts         = N − 2</div>
+<div class="box add"><span class="t">➕ Supernetting (route aggregation)</span>
+The reverse of subnetting: <b>combine several contiguous blocks into one bigger block</b> by moving the boundary <b>left</b>. Four /24s, 192.168.0.0 – 192.168.3.0, become one <b>192.168.0.0/22</b>. Conditions: the blocks must be contiguous, their count a power of 2, and the first block must start on the bigger block's boundary. This keeps Internet routing tables small, which is why CIDR was introduced (1993, RFC 1519).</div>
+<div class="box add"><span class="t">➕ Longest prefix match</span>
+With CIDR a packet may match several routing entries. The router picks the <b>most specific</b> one, the longest prefix. Table: 10.0.0.0/8 → R1, 10.1.0.0/16 → R2, 10.1.2.0/24 → R3. A packet for 10.1.2.5 matches all three and goes to <b>R3</b> (/24). One for 10.1.9.9 goes to R2; one for 10.9.9.9 goes to R1.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">21.7</span>Classful vs Classless &amp; Solved Numericals <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th></th><th>Classful</th><th>Classless (CIDR)</th></tr>
+<tr><td>Network/host boundary</td><td>fixed at 8, 16 or 24 bits (by class)</td><td>any n, written /n</td></tr>
+<tr><td>Block sizes</td><td>16.7 M, 65 536 or 256 only</td><td>any power of 2</td></tr>
+<tr><td>Find the boundary from</td><td>the first byte</td><td>the /n (or mask)</td></tr>
+<tr><td>Address waste</td><td>high</td><td>low</td></tr>
+<tr><td>Routing tables</td><td>large</td><td>small (aggregation)</td></tr>
+<tr><td>Routing protocols</td><td>RIPv1 (no mask sent)</td><td>RIPv2, OSPF, BGP (mask sent)</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved numericals</span>
+<b>Q1.</b> For 167.199.170.82/27: first address, last address, number of addresses?<br>
+Block 2⁵ = 32 → multiples of 32 ≤ 82 → <b>64</b>. First = <b>167.199.170.64</b>, last = <b>167.199.170.95</b>, <b>32</b> addresses (30 hosts).<br><br>
+<b>Q2.</b> Mask for /20 and number of addresses? <b>255.255.240.0</b>, 2¹² = <b>4096</b>.<br><br>
+<b>Q3.</b> Can 200.10.20.40/28 be the first address of a block? Block 16; 40 is not a multiple of 16 → <b>no</b>. The block containing it starts at <b>200.10.20.32</b>.<br><br>
+<b>Q4.</b> Aggregate 192.168.0.0/24, .1.0/24, .2.0/24, .3.0/24. → <b>192.168.0.0/22</b>.<br><br>
+<b>Q5.</b> An organisation needs 60 hosts. Smallest CIDR block? 2ʰ − 2 ≥ 60 → h = 6 → <b>/26</b> (64 addresses, 62 hosts).<br><br>
+<b>Q6.</b> 201.1.10.13 belongs to which subnet in the lecture's VLSM plan? 13 lies in 12–15 → <b>B2 (201.1.10.12/30)</b>.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+CIDR stands for <b>Classless Inter-Domain Routing</b>. Typical questions: "number of hosts in /27" (30), "mask for /22" (255.255.252.0), "first and last address of a.b.c.d/n", "which prefix aggregates these networks", and "private 172.16.0.0/12 range" (172.16.0.0 – 172.31.255.255).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 21</h3>
+<ul>
+<li>CIDR = <b>no classes, only blocks</b>, given on demand. Notation <b>a.b.c.d/n</b>, n = network (block ID) bits.</li>
+<li>201.1.10.5/28: 28 network + 4 host bits → 16 addresses (14 hosts). Mask = 28 ones = <b>255.255.255.240</b>.</li>
+<li>Network ID: <b>zero the host bits</b> (shortcut) or <b>AND with the mask</b> (legal) → 201.1.10.0/28.</li>
+<li>FLSM in CIDR: borrow 1 host bit → <b>/29</b>: .0–.7 and .8–.15.</li>
+<li>VLSM in CIDR: A .0/29; B split again with a 2nd bit → B1 .8/30, B2 .12/30. Prefix = original + bits borrowed.</li>
+<li>Addresses = 2^(32−n); hosts = 2^(32−n) − 2; first = IP AND mask; last = host bits all 1.</li>
+<li>Valid block: power-of-2 size, contiguous, first address divisible by size.</li>
+<li><b>Supernetting</b> = merge blocks (four /24 → one /22). Routers use the <b>longest prefix match</b>.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 21 · Next: Chapter 22 — IPv4 Header</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="20-Subnetting.html">← Ch 20: Subnetting</a><a href="index.html">☰ All topics</a><a href="22-IPv4-Header.html">Ch 22: IPv4 Header →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

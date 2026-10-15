@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Transmission Media Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="06-OSI-Model.html">← Ch 6: OSI Model</a><a href="index.html">☰ All topics</a><a href="08-Line-Coding.html">Ch 8: Line Coding →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 7: Transmission Media</h1>
+  <p class="sub">Volume 02 · Part 7 · Built from the one-shot CN lecture transcript (section 7), plus the exam points the lecture skipped.</p>
+  <ul class="tags"><li>Guided vs Unguided</li><li>Twisted Pair (UTP/STP, CAT)</li><li>Coaxial</li><li>Optical Fibre</li><li>Ethernet Naming (10Base-T…)</li><li>Radio / Microwave / Infrared</li><li>Spectrum &amp; c = fλ</li><li>Propagation Modes</li><li>Satellite</li><li>Impairments</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">7.0</span>What is Transmission Media?</a></li>
+<li><a href="#s1"><span class="n">7.1</span>Guided Media</a></li>
+<li><a href="#s2"><span class="n">7.2</span>Twisted Pair Cable (10Base-T, 100Base-T)</a></li>
+<li><a href="#s3"><span class="n">7.3</span>Coaxial Cable (10Base2, 10Base5)</a></li>
+<li><a href="#s4"><span class="n">7.4</span>Optical Fibre Cable</a></li>
+<li><a href="#s4a"><span class="n">7.4A</span>Ethernet Naming &amp; Guided-Media Comparison<span class="x">ADDED</span></a></li>
+<li><a href="#s5"><span class="n">7.5</span>Unguided Media: Radio, Microwave, Infrared</a></li>
+<li><a href="#s6"><span class="n">7.6</span>Radio (Omnidirectional) vs Microwave (Unidirectional)</a></li>
+<li><a href="#s6a"><span class="n">7.6A</span>Propagation, Satellite &amp; Impairments<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 7</div>
+<h2 class="ch">Transmission Media</h2>
+<p>Chapter 6 ended at the <b>physical layer</b>, which turns bits into signals. Those signals need something to travel <b>through</b>, which is the transmission medium. It sits <b>below</b> the physical layer, a kind of "layer 0".</p>
+
+<section id="s0">
+<h3><span class="n">7.0</span>What is Transmission Media?</h3>
+<div class="def"><b>Transmission medium:</b> the <b>physical path or channel</b> that carries signals from the sender to the receiver.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+It is the "<b>ground reality, the actual truth</b>": the physical path or channel that carries data from the sending end to the receiving end. Data goes down from the application layer to the physical layer, where the bits are <b>encoded into compatible signals</b> that the medium can carry. At the receiver it goes up layer by layer to the application layer. The medium is the <b>connecting point</b> in the middle.</div>
+<figure>
+<svg viewBox="0 0 640 180" role="img" aria-label="Classification tree of transmission media">
+  <rect x="250" y="10" width="140" height="34" rx="6" class="ac"/><text x="320" y="32" text-anchor="middle" class="b">Transmission media</text>
+  <rect x="80" y="70" width="170" height="34" rx="6" class="gr"/><text x="165" y="92" text-anchor="middle" class="b">Guided (wired)</text>
+  <rect x="390" y="70" width="170" height="34" rx="6" class="or"/><text x="475" y="92" text-anchor="middle" class="b">Unguided (wireless)</text>
+  <path d="M320 44 V58 H165 V70 M320 58 H475 V70" class="ln"/>
+  <rect x="10" y="130" width="90" height="40" rx="5" class="bx"/><text x="55" y="148" text-anchor="middle">Twisted</text><text x="55" y="163" text-anchor="middle">pair</text>
+  <rect x="115" y="130" width="90" height="40" rx="5" class="bx"/><text x="160" y="155" text-anchor="middle">Coaxial</text>
+  <rect x="220" y="130" width="90" height="40" rx="5" class="bx"/><text x="265" y="148" text-anchor="middle">Optical</text><text x="265" y="163" text-anchor="middle">fibre</text>
+  <rect x="340" y="130" width="90" height="40" rx="5" class="bx"/><text x="385" y="148" text-anchor="middle">Radio</text><text x="385" y="163" text-anchor="middle">waves</text>
+  <rect x="440" y="130" width="90" height="40" rx="5" class="bx"/><text x="485" y="155" text-anchor="middle">Microwaves</text>
+  <rect x="540" y="130" width="90" height="40" rx="5" class="bx"/><text x="585" y="155" text-anchor="middle">Infrared</text>
+  <path d="M165 104 V118 H55 V130 M165 118 H160 V130 M165 118 H265 V130 M475 104 V118 H385 V130 M475 118 H485 V130 M475 118 H585 V130" class="ln"/>
+</svg>
+<figcaption>Figure 7.1: Classification of transmission media</figcaption>
+</figure>
+</section>
+
+<section id="s1">
+<h3><span class="n">7.1</span>Guided Media</h3>
+<div class="def"><b>Guided (bounded / wired) media:</b> the signal travels along a <b>physical conductor</b> (cable), which <b>guides</b> it along a fixed path.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Guided media means <b>wired, cables</b>: the data follows the <b>path</b> of the cable. Three types: <b>twisted pair, coaxial and optical fibre</b>. "You are locked inside the cable": wherever the cable goes, the data goes.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">7.2</span>Twisted Pair Cable (10Base-T, 100Base-T)</h3>
+<figure>
+<svg viewBox="0 0 640 140" role="img" aria-label="Twisted pair: two insulated copper wires twisted together; UTP vs STP">
+  <path d="M30 50 C 60 20, 90 80, 120 50 S 180 20, 210 50 S 270 80, 300 50 S 360 20, 390 50" style="stroke:var(--alert);stroke-width:5;fill:none"/>
+  <path d="M30 50 C 60 80, 90 20, 120 50 S 180 80, 210 50 S 270 20, 300 50 S 360 80, 390 50" style="stroke:var(--accent);stroke-width:5;fill:none"/>
+  <text x="210" y="105" text-anchor="middle" class="mut">two insulated copper wires twisted → noise and crosstalk cancel out</text>
+  <rect x="440" y="25" width="180" height="34" rx="5" class="gr"/><text x="530" y="47" text-anchor="middle" class="b">UTP: unshielded</text>
+  <rect x="440" y="70" width="180" height="34" rx="5" class="pu"/><text x="530" y="92" text-anchor="middle" class="b">STP: metal foil shield</text>
+  <text x="530" y="125" text-anchor="middle" class="mut">connector: RJ-45 (LAN), RJ-11 (phone)</text>
+</svg>
+<figcaption>Figure 7.2: Twisted pair cable</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture — Decoding "10Base-T"</span>
+<ul>
+<li><b>10</b> = the bandwidth / data rate, <b>10 Mbps</b>.</li>
+<li><b>Base</b> = <b>baseband</b> (not broadband) transmission.</li>
+<li><b>T</b>: the lecture reads it as distance, a <b>100 m wire length</b>.</li>
+<li>Two flavours: <b>10Base-T</b> and <b>100Base-T</b>. The bandwidth rises to 100 Mbps, so <b>more data in less time</b> (a higher transfer rate).</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (What "T" means)</span>
+In 10Base-T, the "<b>T</b>" stands for <b>Twisted pair</b> (the medium), <b>not</b> distance. The <b>maximum segment length is 100 m</b>, which is why the lecture links T with 100 m. Only in the coaxial names (10Base2, 10Base5) does the last part give the length, in hundreds of metres.</div>
+<div class="box add"><span class="t">➕ Key facts</span>
+<ul>
+<li>Two insulated copper wires are <b>twisted</b> to reduce <b>electromagnetic interference (EMI)</b> and <b>crosstalk</b>.</li>
+<li><b>UTP</b> (Unshielded): cheap, flexible, the most common LAN cable. <b>STP</b> (Shielded): extra metal foil, better noise immunity, costlier.</li>
+<li>Categories: <b>CAT3</b> (10 Mbps, telephone) · <b>CAT5</b> (100 Mbps) · <b>CAT5e</b> (1 Gbps) · <b>CAT6</b> (1 Gbps, 10 Gbps over short runs) · <b>CAT6a</b> (10 Gbps, 100 m) · <b>CAT7/8</b> (10–40 Gbps).</li>
+<li>Connector: <b>RJ-45</b> (8 pins, Ethernet), <b>RJ-11</b> (telephone). <b>Straight-through</b> cable for unlike devices (PC ↔ switch); <b>crossover</b> for like devices (PC ↔ PC, switch ↔ switch).</li>
+<li>Uses: telephone lines, DSL, Ethernet LANs. Limitations: attenuation over distance and limited bandwidth.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">7.3</span>Coaxial Cable (10Base2, 10Base5)</h3>
+<figure>
+<svg viewBox="0 0 640 140" role="img" aria-label="Coaxial cable layers: copper core, insulator, braided shield, outer jacket">
+  <rect x="40" y="40" width="520" height="60" rx="30" class="bx"/>
+  <rect x="80" y="48" width="480" height="44" rx="22" class="pu"/>
+  <rect x="140" y="56" width="420" height="28" rx="14" class="gr"/>
+  <rect x="220" y="64" width="340" height="12" rx="6" style="fill:var(--alert)"/>
+  <text x="60" y="30" class="mut">outer jacket</text><text x="120" y="122" class="mut">braided metal shield (outer conductor)</text>
+  <text x="300" y="30" class="mut">insulator (dielectric)</text><text x="460" y="122" class="mut">copper core</text>
+</svg>
+<figcaption>Figure 7.3: Coaxial cable</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Two variants: <b>10Base2</b> and <b>10Base5</b>. Here the <b>length</b> is varied and the <b>bandwidth is kept constant (10 Mbps)</b>, again <b>baseband</b>. <b>2</b> means about <b>200 m</b> and <b>5</b> means <b>500 m</b> of wire length. Moving from twisted pair to coaxial, the distance grows from 100 m to 200 m and then 500 m.</div>
+<div class="box add"><span class="t">➕ Key facts</span>
+<ul>
+<li>Structure: a central <b>copper core</b>, insulator, <b>braided metal shield</b> and outer jacket. It carries <b>higher frequencies</b> and resists noise better than twisted pair.</li>
+<li><b>10Base2 = "Thinnet"</b> (RG-58): the exact maximum segment is <b>185 m</b> (≈ 200). <b>10Base5 = "Thicknet"</b> (RG-8): <b>500 m</b>. Both were used in old <b>bus</b> Ethernet.</li>
+<li>Connector: <b>BNC</b> (with T-connectors and terminators). <b>RG-59/RG-6</b>: cable TV and CCTV.</li>
+<li>Uses: cable TV, the cable-Internet last mile, old LANs, CCTV.</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">7.4</span>Optical Fibre Cable</h3>
+<figure>
+<svg viewBox="0 0 640 170" role="img" aria-label="Optical fibre core and cladding with light bouncing by total internal reflection">
+  <rect x="30" y="40" width="580" height="80" rx="8" class="bx"/><text x="40" y="34" class="mut">cladding (lower refractive index)</text>
+  <rect x="30" y="62" width="580" height="36" class="ac"/><text x="590" y="85" text-anchor="end" class="mut">core (glass)</text>
+  <path d="M30 80 L90 64 L150 96 L210 64 L270 96 L330 64 L390 96 L450 64 L510 96 L570 64 L610 76" style="stroke:var(--alert);stroke-width:2.5;fill:none"/>
+  <text x="320" y="145" text-anchor="middle" class="mut">light pulses travel by TOTAL INTERNAL REFLECTION · source: LED (multimode) or LASER (single-mode)</text>
+</svg>
+<figcaption>Figure 7.4: Optical fibre: core, cladding and total internal reflection</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+It reaches about <b>2 km</b>, again <b>baseband</b>, with <b>higher speed</b>. It operates in <b>full-duplex mode</b>, and it has the <b>greatest distance</b> of all the cables mentioned.</div>
+<div class="box add"><span class="t">➕ Key facts</span>
+<ul>
+<li>It carries data as <b>light pulses</b> through a glass or plastic <b>core</b> surrounded by <b>cladding</b> of lower refractive index. Light stays inside by <b>total internal reflection</b>.</li>
+<li><b>Single-mode</b>: a very thin core (≈ 8–10 µm) and a <b>laser</b> source; one light path; very long distances (tens of km or more). <b>Multimode</b>: a thicker core (50/62.5 µm) and an <b>LED</b> source; many paths, causing modal dispersion; shorter distances (≈ 2 km). It comes as step-index and graded-index.</li>
+<li><b>Advantages</b>: the <b>highest bandwidth</b> (Gbps to Tbps), <b>very low attenuation</b>, <b>immune to EMI</b>, lightweight, <b>secure</b> (very hard to tap).</li>
+<li><b>Disadvantages</b>: costly, needs skilled installation and splicing, fragile, carries light in one direction only (so two fibres are used for full-duplex).</li>
+<li>Connectors: SC, ST, LC. Uses: Internet backbones, undersea cables, FTTH, bank data-centre links.</li>
+</ul></div>
+</section>
+
+<section id="s4a">
+<h3><span class="n">7.4A</span>Ethernet Naming &amp; Guided-Media Comparison <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Decoding Ethernet names: &lt;speed&gt;Base&lt;medium/length&gt;</span>
+<div class="tw"><table>
+<tr><th>Name</th><th>Speed</th><th>Medium</th><th>Max segment</th></tr>
+<tr><td>10Base5 (Thicknet)</td><td>10 Mbps</td><td>Thick coaxial</td><td>500 m</td></tr>
+<tr><td>10Base2 (Thinnet)</td><td>10 Mbps</td><td>Thin coaxial</td><td>185 m (≈ 200)</td></tr>
+<tr><td><b>10Base-T</b></td><td>10 Mbps</td><td><b>Twisted pair</b> (CAT3+)</td><td>100 m</td></tr>
+<tr><td>10Base-F</td><td>10 Mbps</td><td>Fibre</td><td>≈ 2 km</td></tr>
+<tr><td><b>100Base-TX</b> (Fast Ethernet)</td><td>100 Mbps</td><td>Twisted pair (CAT5)</td><td>100 m</td></tr>
+<tr><td>100Base-FX</td><td>100 Mbps</td><td>Multimode fibre</td><td>2 km</td></tr>
+<tr><td><b>1000Base-T</b> (Gigabit)</td><td>1 Gbps</td><td>CAT5e/6</td><td>100 m</td></tr>
+<tr><td>1000Base-SX / LX</td><td>1 Gbps</td><td>Multimode / single-mode fibre</td><td>≈ 550 m / 5 km</td></tr>
+<tr><td>10GBase-T</td><td>10 Gbps</td><td>CAT6a</td><td>100 m</td></tr>
+</table></div>
+<b>Base</b> = baseband: the whole medium carries one digital signal. <b>Broad</b> (as in 10Broad36) = broadband: multiple analog channels.</div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Twisted pair</th><th>Coaxial</th><th>Optical fibre</th></tr>
+<tr><td>Signal</td><td>Electrical</td><td>Electrical</td><td><b>Light</b></td></tr>
+<tr><td>Bandwidth</td><td>Low to medium</td><td>Medium to high</td><td><b>Highest</b></td></tr>
+<tr><td>Distance (lecture)</td><td>100 m</td><td>200 / 500 m</td><td><b>2 km+</b></td></tr>
+<tr><td>Noise / EMI immunity</td><td>Low (STP better)</td><td>Good</td><td><b>Immune</b></td></tr>
+<tr><td>Cost</td><td><b>Cheapest</b></td><td>Moderate</td><td>Costliest</td></tr>
+<tr><td>Security</td><td>Easy to tap</td><td>Moderate</td><td><b>Very secure</b></td></tr>
+<tr><td>Use</td><td>LAN, telephone</td><td>Cable TV, old LAN</td><td>Backbone, long haul</td></tr>
+</table></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">7.5</span>Unguided Media: Radio, Microwave and Infrared</h3>
+<div class="def"><b>Unguided (unbounded / wireless) media:</b> signals travel through <b>free space</b> (air or vacuum) as electromagnetic waves, without a physical conductor. Transmission and reception happen through <b>antennas</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+With guided media you're "locked in a cable". With unguided media there is <b>free space, open air</b>: data is transmitted through <b>wireless signals and waves</b>. Moving from <b>radio → microwave → infrared</b>, the <b>frequency increases</b>:
+<ul><li><b>Radio waves</b>: <b>3 kHz – 1 GHz</b></li><li><b>Microwaves</b>: <b>1 GHz – 300 GHz</b></li><li><b>Infrared</b>: <b>300 GHz – 400 THz</b></li></ul>
+After infrared comes the <b>visible spectrum</b>, and beyond it <b>UV</b> with even higher frequency. Always remember: <b>frequency is inversely proportional to wavelength</b>. Where frequency rises, wavelength falls.</div>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="Electromagnetic spectrum: radio, microwave, infrared, visible, UV with frequency increasing and wavelength decreasing">
+  <defs><marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="50" width="170" height="44" class="gr"/><text x="105" y="70" text-anchor="middle" class="b">Radio</text><text x="105" y="86" text-anchor="middle" class="mut">3 kHz – 1 GHz</text>
+  <rect x="190" y="50" width="170" height="44" class="ac"/><text x="275" y="70" text-anchor="middle" class="b">Microwave</text><text x="275" y="86" text-anchor="middle" class="mut">1 – 300 GHz</text>
+  <rect x="360" y="50" width="160" height="44" class="or"/><text x="440" y="70" text-anchor="middle" class="b">Infrared</text><text x="440" y="86" text-anchor="middle" class="mut">300 GHz – 400 THz</text>
+  <rect x="520" y="50" width="70" height="44" class="pu"/><text x="555" y="76" text-anchor="middle" class="b">Visible</text>
+  <rect x="590" y="50" width="70" height="44" class="bx"/><text x="625" y="76" text-anchor="middle" class="b">UV →</text>
+  <path d="M20 115 H660" class="lna" marker-end="url(#m1)"/><text x="340" y="132" text-anchor="middle" class="b">frequency increases →</text>
+  <path d="M660 150 H20" class="lna" marker-end="url(#m1)"/><text x="340" y="165" text-anchor="middle" class="b">← wavelength increases</text>
+  <text x="340" y="35" text-anchor="middle" class="mut">c = f × λ  (speed of light = frequency × wavelength)</text>
+</svg>
+<figcaption>Figure 7.5: Wireless spectrum used for communication</figcaption>
+</figure>
+<div class="num"><span class="t">Numerical: c = f × λ (added)</span>
+c = 3 × 10⁸ m/s. Wi-Fi at <b>2.4 GHz</b>: λ = 3×10⁸ / 2.4×10⁹ = <b>0.125 m (12.5 cm)</b>. FM radio at 100 MHz: λ = 3×10⁸ / 10⁸ = <b>3 m</b>.<br>
+<b>Conclusion:</b> higher frequency means a shorter wavelength, so smaller antennas but more absorption by walls and obstacles.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">7.6</span>Radio Waves (Omnidirectional) vs Microwaves (Unidirectional)</h3>
+<figure>
+<svg viewBox="0 0 640 200" role="img" aria-label="Omnidirectional radio antenna radiating in all directions versus unidirectional microwave towers aligned">
+  <text x="150" y="20" text-anchor="middle" class="b">Radio: omnidirectional</text>
+  <circle cx="150" cy="110" r="25" style="fill:none;stroke:var(--accent)"/><circle cx="150" cy="110" r="50" style="fill:none;stroke:var(--accent);opacity:.7"/><circle cx="150" cy="110" r="75" style="fill:none;stroke:var(--accent);opacity:.4"/>
+  <path d="M150 110 V140 M140 140 H160" style="stroke:var(--ink);stroke-width:3"/>
+  <text x="150" y="196" text-anchor="middle" class="mut">no antenna alignment needed</text>
+  <text x="470" y="20" text-anchor="middle" class="b">Microwave: unidirectional</text>
+  <path d="M340 180 V70 M600 180 V70" style="stroke:var(--ink);stroke-width:4"/><path d="M330 180 H350 M590 180 H610" style="stroke:var(--ink);stroke-width:3"/>
+  <rect x="340" y="62" width="22" height="22" rx="11" class="or"/><rect x="578" y="62" width="22" height="22" rx="11" class="or"/>
+  <path d="M364 73 H576" style="stroke:var(--alert);stroke-width:3;stroke-dasharray:8 5"/>
+  <text x="470" y="60" text-anchor="middle" class="mut">narrow beam, line of sight</text>
+  <text x="470" y="196" text-anchor="middle" class="mut">tall towers with dish antennas ALIGNED</text>
+</svg>
+<figcaption>Figure 7.6: Omnidirectional vs unidirectional transmission</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Radio waves are omnidirectional</b>: they travel in <b>every direction</b>, so the sending and receiving antennas <b>needn't be aligned</b> ("antenna se antenna milao" isn't needed). <b>Microwaves are unidirectional</b>: on a very tall <b>tower</b>, the sending antenna is <b>aligned</b> with the receiving tower's antenna, and data goes in that one direction.</div>
+<div class="tw"><table>
+<tr><th>Basis <span class="badge">ADDED</span></th><th>Radio waves</th><th>Microwaves</th><th>Infrared</th></tr>
+<tr><td>Frequency</td><td>3 kHz – 1 GHz</td><td>1 – 300 GHz</td><td>300 GHz – 400 THz</td></tr>
+<tr><td>Direction</td><td><b>Omnidirectional</b></td><td><b>Unidirectional</b> (line of sight)</td><td>Unidirectional, line of sight</td></tr>
+<tr><td>Antenna alignment</td><td>Not needed</td><td><b>Needed</b> (dish / horn)</td><td>Must point at the receiver</td></tr>
+<tr><td>Penetrates walls?</td><td><b>Yes</b></td><td>Partly (higher frequencies don't)</td><td><b>No</b>: blocked by walls</td></tr>
+<tr><td>Interference / security</td><td>High interference; easy to eavesdrop</td><td>Less interference</td><td><b>Secure</b> within a room; no interference between rooms</td></tr>
+<tr><td>Range</td><td>Long (multicast)</td><td>Long with tall towers or satellites</td><td><b>Very short</b></td></tr>
+<tr><td>Uses</td><td>AM/FM radio, TV broadcast, walkie-talkie, paging</td><td>Mobile phones, <b>satellite</b>, terrestrial links, <b>Wi-Fi (2.4/5 GHz)</b>, Bluetooth</td><td><b>TV remote</b>, IrDA, short-range device links</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"TV remote uses?" → <b>infrared</b>. "Satellite / mobile communication?" → <b>microwave</b>. "Omnidirectional?" → <b>radio waves</b>. "Which wireless signal can't pass through walls?" → <b>infrared</b>. Wi-Fi and Bluetooth use the <b>2.4 GHz ISM band</b> (Wi-Fi also 5 GHz and 6 GHz).</div>
+</section>
+
+<section id="s6a">
+<h3><span class="n">7.6A</span>Propagation, Satellite &amp; Impairments <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Propagation mode</th><th>How</th><th>Frequency / use</th></tr>
+<tr><td><b>Ground wave</b></td><td>Follows the curvature of the Earth</td><td>Low frequency (&lt; 2 MHz): AM radio</td></tr>
+<tr><td><b>Sky wave</b></td><td>Reflected by the <b>ionosphere</b> back to Earth</td><td>2–30 MHz (HF): long-distance shortwave radio</td></tr>
+<tr><td><b>Line of sight</b></td><td>Straight line; antennas must "see" each other</td><td>&gt; 30 MHz: microwave, satellite, FM, TV</td></tr>
+</table></div>
+<ul>
+<li><b>Communication satellite</b>: a microwave relay in space. <b>Uplink</b> (Earth → satellite) and <b>downlink</b> use different frequencies. <b>GEO</b> (geostationary) is at <b>35,786 km</b> and appears fixed in the sky; about 3 satellites cover the whole Earth. It has a delay of about 240–270 ms one way. <b>LEO</b> (e.g. Starlink) is at 500–2000 km with low delay. <b>VSAT</b> is used by banks for remote ATMs and branches.</li>
+<li><b>Transmission impairments</b>: <b>attenuation</b> (loss of signal strength with distance, fixed by <b>repeaters/amplifiers</b>; measured in <b>decibels</b>, dB = 10 log₁₀(P₂/P₁)), <b>distortion</b> (the signal's shape changes because components travel at different speeds), and <b>noise</b> (thermal, induced, <b>crosstalk</b>, impulse).</li>
+<li><b>Data-rate limits</b>: <b>Nyquist</b> (noiseless channel) gives bit rate = 2 × B × log₂L. <b>Shannon</b> (noisy channel) gives capacity C = B × log₂(1 + SNR). Example: B = 3000 Hz and SNR = 3162 (≈ 35 dB) give C ≈ 3000 × 11.63 ≈ <b>34.9 kbps</b>.</li>
+</ul>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 7</h3>
+<ul>
+<li>Medium = the physical path that carries the encoded signals ("ground reality"). <b>Guided</b> (wired): twisted pair, coaxial, fibre. <b>Unguided</b> (wireless): radio, microwave, infrared.</li>
+<li><b>Twisted pair</b>: 10Base-T / 100Base-T. 10 = Mbps, Base = baseband, <b>T = twisted pair</b> (max 100 m; the lecture reads T as 100 m). UTP/STP, CAT5e/6, RJ-45.</li>
+<li><b>Coaxial</b>: 10Base2 (≈ 200 m, really 185 m, thinnet) and 10Base5 (500 m, thicknet); 10 Mbps baseband; BNC; cable TV.</li>
+<li><b>Optical fibre</b>: light by total internal reflection; ≈ 2 km+ (the most distance), baseband, full-duplex, highest bandwidth, EMI-immune, secure. Single-mode (laser, long) vs multimode (LED, short).</li>
+<li>Spectrum: <b>radio 3 kHz–1 GHz</b> → <b>microwave 1–300 GHz</b> → <b>infrared 300 GHz–400 THz</b> → visible → UV. Frequency ∝ 1/wavelength (c = fλ).</li>
+<li><b>Radio = omnidirectional</b> (no alignment, passes walls). <b>Microwave = unidirectional</b> (aligned tower antennas, line of sight, satellite, mobile). <b>Infrared</b> = TV remote, blocked by walls.</li>
+<li>Propagation: ground, sky (ionosphere), line of sight. GEO satellite at 35,786 km. Impairments: attenuation, distortion, noise. Shannon C = B log₂(1+SNR).</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 7 · Next: Chapter 8 — Line Coding</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="06-OSI-Model.html">← Ch 6: OSI Model</a><a href="index.html">☰ All topics</a><a href="08-Line-Coding.html">Ch 8: Line Coding →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Network Topologies Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="03-Connection-Types.html">← Ch 3: Connection Types (Line Configuration)</a><a href="index.html">☰ All topics</a><a href="05-Types-of-Networks.html">Ch 5: Types of Networks →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 4: Network Topologies</h1>
+  <p class="sub">Volume 02 · Part 4 · Built from the one-shot CN lecture transcript (section 4), plus the exam points the lecture skipped. "High-weightage topic" (lecture).</p>
+  <ul class="tags"><li>Physical vs Logical</li><li>Point-to-Point</li><li>Mesh</li><li>n(n−1)/2 Links</li><li>Ports per Device</li><li>Star</li><li>Bus</li><li>Ring &amp; Token</li><li>Tree</li><li>Hybrid</li><li>Link-Count Comparison</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">4.0</span>What is a Topology?</a></li>
+<li><a href="#s1"><span class="n">4.1</span>Point-to-Point Topology</a></li>
+<li><a href="#s2"><span class="n">4.2</span>Mesh Topology</a></li>
+<li><a href="#s3"><span class="n">4.3</span>Numerical: Links in Mesh, n(n−1)/2</a></li>
+<li><a href="#s4"><span class="n">4.4</span>Star Topology</a></li>
+<li><a href="#s5"><span class="n">4.5</span>Bus Topology</a></li>
+<li><a href="#s6"><span class="n">4.6</span>Ring Topology</a></li>
+<li><a href="#s7"><span class="n">4.7</span>Number of Links: Mesh vs Star vs Bus</a></li>
+<li><a href="#s8"><span class="n">4.8</span>Tree Topology</a></li>
+<li><a href="#s9"><span class="n">4.9</span>Hybrid Topology &amp; Master Comparison<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 4</div>
+<h2 class="ch">Network Topologies</h2>
+<p>Chapter 3 showed that a single link is either <b>dedicated</b> (point-to-point) or <b>shared</b> (multipoint). A topology combines many such links into a whole network. The choice decides the <b>cost</b> (number of cables), the <b>reliability</b> (what happens when a link or device fails), and later which <b>access protocols</b> are needed.</p>
+
+<section id="s0">
+<h3><span class="n">4.0</span>What is a Topology?</h3>
+<div class="def"><b>Topology:</b> the <b>structure or arrangement</b> that defines <b>how the nodes of a network are connected to each other</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A network contains many nodes. The topology answers <b>in what fashion they are connected</b>: "it's trying to define the structure, how the nodes are connected to each other". Many types exist, and questions on them carry <b>high weightage</b>.</div>
+<div class="box add"><span class="t">➕ Physical vs logical topology</span>
+<b>Physical topology</b>: the actual layout of cables and devices. <b>Logical topology</b>: how data actually flows. Example: a <b>hub-based star</b> is physically a star but <b>logically a bus</b> (every frame reaches everyone). A Token Ring wired to a central MAU is physically a star but <b>logically a ring</b>.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">4.1</span>Point-to-Point Topology</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The most basic, "primitive" topology: a <b>dedicated</b> link between station 1 and station 2. Each takes turns as sender and receiver. It is <b>simple, durable and low-cost</b>, and works well <b>locally</b>, but it is not convincing at a large or global scale. The next topologies cost more because they need many cables.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">4.2</span>Mesh Topology</h3>
+<div class="def"><b>Mesh (full mesh):</b> <b>every node has a dedicated point-to-point link to every other node</b> in the network.</div>
+<figure>
+<svg viewBox="0 0 640 260" role="img" aria-label="Full mesh of five nodes A to E with all ten links drawn">
+  <g class="ln" style="stroke:var(--accent);stroke-width:1.6">
+    <path d="M320 40 L470 120 M320 40 L415 220 M320 40 L225 220 M320 40 L170 120 M470 120 L415 220 M470 120 L225 220 M470 120 L170 120 M415 220 L225 220 M415 220 L170 120 M225 220 L170 120"/>
+  </g>
+  <circle cx="320" cy="40" r="22" class="ac"/><text x="320" y="45" text-anchor="middle" class="b">A</text>
+  <circle cx="470" cy="120" r="22" class="ac"/><text x="470" y="125" text-anchor="middle" class="b">B</text>
+  <circle cx="415" cy="220" r="22" class="ac"/><text x="415" y="225" text-anchor="middle" class="b">C</text>
+  <circle cx="225" cy="220" r="22" class="ac"/><text x="225" y="225" text-anchor="middle" class="b">D</text>
+  <circle cx="170" cy="120" r="22" class="ac"/><text x="170" y="125" text-anchor="middle" class="b">E</text>
+  <text x="560" y="60" class="mut">n = 5 devices</text><text x="560" y="80" class="mut">links = 5×4/2 = 10</text><text x="560" y="100" class="mut">ports/device = 4</text>
+</svg>
+<figcaption>Figure 4.1: Full mesh with 5 nodes needs 10 dedicated links</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Node (station, machine, device) <b>A</b> connects through a <b>dedicated link</b> to B, C, D and E. B also connects to everyone, and so on: each node is connected to every other node. All those cables make it <b>expensive and clumsy</b>. With 10, 20 or 25 nodes the diagram becomes very complex.</div>
+<div class="tw"><table>
+<tr><th>Advantages <span class="badge">ADDED</span></th><th>Disadvantages</th></tr>
+<tr><td><ul><li><b>Dedicated links</b>: no traffic sharing, no collisions</li><li><b>Robust / fault-tolerant</b>: if one link fails, others take over</li><li><b>Privacy and security</b>: data goes directly to the receiver</li><li>Easy to isolate faults</li></ul></td>
+<td><ul><li><b>Huge cabling and I/O ports</b>, so very expensive</li><li>Complex installation and reconfiguration</li><li>Bulky wiring; many links are rarely used</li></ul></td></tr>
+</table></div>
+<p><b>Used where reliability is critical</b>: WAN and Internet backbones, connections between bank data centres, military networks. A <b>partial mesh</b> (only some nodes fully connected) is the common compromise.</p>
+</section>
+
+<section id="s3">
+<h3><span class="n">4.3</span>Numerical: Number of Links in Mesh, n(n−1)/2</h3>
+<div class="num"><span class="t">Essential formulas</span>
+<div class="formula">Full mesh with n devices:
+  Number of links (duplex)       = n(n − 1) / 2
+  I/O ports per device           = n − 1
+  Total ports in the network     = n(n − 1)
+  Links if simplex (one-way)     = n(n − 1)</div></div>
+<div class="num"><span class="t">Numerical (lecture)</span>
+<b>n = 5</b>: links = 5 × 4 / 2 = 20 / 2 = <b>10</b>. The lecture counts all 10 on the diagram.<br>
+<b>n = 10</b>: links = 10 × 9 / 2 = 90 / 2 = <b>45</b>.<br>
+<b>Conclusion:</b> doubling the devices from 5 to 10 increased the links <b>4.5×</b> (10 to 45), more than 4 times. The cost grows roughly with <b>n²</b>.</div>
+<div class="num"><span class="t">More practice (added)</span>
+n = 6 → 15 links, 5 ports per device, 30 ports in total. n = 8 → 28 links. n = 20 → 190 links.<br>
+<b>Reverse:</b> a mesh has 21 links; how many devices? n(n−1)/2 = 21 → n(n−1) = 42 → <b>n = 7</b>.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">4.4</span>Star Topology</h3>
+<div class="def"><b>Star:</b> every device has a dedicated link only to a <b>central device (hub or switch)</b>. Devices are not linked directly to each other; all traffic passes through the centre.</div>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="Star topology: four nodes connected to central hub">
+  <rect x="270" y="95" width="100" height="44" rx="8" class="or"/><text x="320" y="122" text-anchor="middle" class="b">Hub / Switch</text>
+  <circle cx="150" cy="50" r="22" class="ac"/><text x="150" y="55" text-anchor="middle" class="b">A</text>
+  <circle cx="490" cy="50" r="22" class="ac"/><text x="490" y="55" text-anchor="middle" class="b">B</text>
+  <circle cx="150" cy="190" r="22" class="ac"/><text x="150" y="195" text-anchor="middle" class="b">C</text>
+  <circle cx="490" cy="190" r="22" class="ac"/><text x="490" y="195" text-anchor="middle" class="b">D</text>
+  <path d="M170 60 L272 105 M470 60 L368 105 M170 180 L272 130 M470 180 L368 130" class="ln" style="stroke-width:2"/>
+  <text x="320" y="20" text-anchor="middle" class="mut">n devices → n links</text>
+  <text x="320" y="225" text-anchor="middle" style="fill:var(--bad)">centre fails → whole network down</text>
+</svg>
+<figcaption>Figure 4.2: Star topology</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>All nodes connect to a <b>central hub</b>, a single <b>point of contact</b>. They are not interconnected as in mesh.</li>
+<li>It needs far fewer links than mesh, so it is <b>not expensive and not complex</b>.</li>
+<li>If B sends a message to A, it goes through the hub, which sends it <b>to everyone</b> (C and D too), but only A, the destination, reads it.</li>
+<li>If an ordinary node goes down, the others are not affected. But if the <b>central hub goes down</b>, the whole network <b>crashes</b>. That is its biggest disadvantage.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Advantages <span class="badge">ADDED</span></th><th>Disadvantages</th></tr>
+<tr><td><ul><li>Cheaper than mesh: <b>one link and one port per device</b></li><li>Easy to install, add or remove devices</li><li>Easy fault isolation; one node failure doesn't affect others</li><li>Centralised management</li></ul></td>
+<td><ul><li>The hub/switch is a <b>single point of failure</b></li><li>More cable than bus or ring</li><li>Performance depends on the central device</li></ul></td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap (Hub vs switch)</span>
+The lecture's "goes to everyone" behaviour is true for a <b>hub</b> (it broadcasts every frame, so it is logically a bus with one collision domain). A <b>switch</b> sends a frame <b>only to the destination port</b> (Chapter 9). Modern office LANs are <b>switched stars</b>, the most widely used LAN topology today.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">4.5</span>Bus Topology</h3>
+<div class="def"><b>Bus:</b> all devices connect to <b>one shared backbone cable</b> (the bus) through <b>drop lines and taps</b>. The ends of the cable carry <b>terminators</b>. It is a <b>multipoint</b> configuration.</div>
+<figure>
+<svg viewBox="0 0 640 200" role="img" aria-label="Bus topology with backbone, terminators, drop lines and a collision between two transmissions">
+  <rect x="30" y="92" width="16" height="22" class="or"/><rect x="594" y="92" width="16" height="22" class="or"/>
+  <text x="38" y="135" text-anchor="middle" class="mut">terminator</text><text x="602" y="135" text-anchor="middle" class="mut">terminator</text>
+  <path d="M46 103 H594" style="stroke:var(--ink);stroke-width:5"/>
+  <text x="320" y="130" text-anchor="middle" class="mut">shared backbone cable (one link)</text>
+  <circle cx="130" cy="40" r="20" class="ac"/><text x="130" y="45" text-anchor="middle" class="b">A</text>
+  <circle cx="260" cy="40" r="20" class="ac"/><text x="260" y="45" text-anchor="middle" class="b">B</text>
+  <circle cx="390" cy="40" r="20" class="ac"/><text x="390" y="45" text-anchor="middle" class="b">C</text>
+  <circle cx="520" cy="40" r="20" class="ac"/><text x="520" y="45" text-anchor="middle" class="b">D</text>
+  <path d="M130 60 V103 M260 60 V103 M390 60 V103 M520 60 V103" class="ln"/>
+  <text x="140" y="85" class="mut" style="font-size:11px">drop line</text>
+  <path d="M130 103 Q 230 160 325 160" style="stroke:var(--accent);stroke-width:2;fill:none"/>
+  <path d="M520 103 Q 420 160 325 160" style="stroke:var(--alert);stroke-width:2;fill:none"/>
+  <text x="325" y="180" text-anchor="middle" style="fill:var(--bad)">💥 A and D send together → COLLISION</text>
+</svg>
+<figcaption>Figure 4.3: Bus topology and a collision</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>A single cable (the transmission medium) is laid out, with a <b>terminator</b> marking the end ("the link won't extend after this").</li>
+<li>Every station connects to the bus through a <b>drop line</b>. It is a <b>multipoint, shared link / shared channel</b>.</li>
+<li>The biggest problem is <b>collision</b>: if A and B send data at the same time, the signals collide and <b>both are destroyed</b>, "no use". Collision detection and avoidance (<b>CSMA/CD, CSMA/CA</b>) come in the Data Link Layer chapters, where bus topology is used heavily.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Advantages <span class="badge">ADDED</span></th><th>Disadvantages</th></tr>
+<tr><td><ul><li><b>Least cabling</b>: one backbone, so cheapest</li><li>Easy to install for small networks</li><li>Easy to extend by tapping in</li></ul></td>
+<td><ul><li><b>Collisions</b>; performance drops as nodes increase</li><li>A <b>backbone break / fault brings the whole network down</b> (single point of failure)</li><li>Hard to find faults; limited cable length and number of nodes</li><li>Signal reflection without terminators</li></ul></td></tr>
+</table></div>
+<p><b>Examples:</b> early Ethernet over coaxial cable (10Base2 "thinnet", 10Base5 "thicknet").</p>
+</section>
+
+<section id="s6">
+<h3><span class="n">4.6</span>Ring Topology</h3>
+<div class="def"><b>Ring:</b> each device connects to exactly <b>two neighbours</b>, forming a closed loop. Data travels <b>in one direction</b> from device to device until it reaches the destination. Each device has a <b>repeater</b> that regenerates the signal.</div>
+<figure>
+<svg viewBox="0 0 640 250" role="img" aria-label="Ring topology with six nodes, repeaters and a circulating token">
+  <defs><marker id="r1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <circle cx="320" cy="125" r="90" style="fill:none;stroke:var(--muted);stroke-width:2"/>
+  <path d="M410 125 A90 90 0 0 1 320 215" class="lna" marker-end="url(#r1)"/>
+  <g>
+  <circle cx="320" cy="35" r="20" class="ac"/><text x="320" y="40" text-anchor="middle" class="b">A</text>
+  <circle cx="398" cy="80" r="20" class="ac"/><text x="398" y="85" text-anchor="middle" class="b">B</text>
+  <circle cx="398" cy="170" r="20" class="ac"/><text x="398" y="175" text-anchor="middle" class="b">C</text>
+  <circle cx="320" cy="215" r="20" class="ac"/><text x="320" y="220" text-anchor="middle" class="b">D</text>
+  <circle cx="242" cy="170" r="20" class="ac"/><text x="242" y="175" text-anchor="middle" class="b">E</text>
+  <circle cx="242" cy="80" r="20" class="ac"/><text x="242" y="85" text-anchor="middle" class="b">F</text>
+  </g>
+  <rect x="300" y="113" width="40" height="24" rx="12" class="or"/><text x="320" y="130" text-anchor="middle" style="font-size:11px">token</text>
+  <text x="500" y="70" class="mut">each node has a</text><text x="500" y="86" class="mut">repeater (boosts signal)</text>
+  <text x="500" y="150" class="mut">only the token holder</text><text x="500" y="166" class="mut">may transmit</text>
+  <text x="70" y="125" class="mut">n devices → n links</text>
+</svg>
+<figcaption>Figure 4.4: Ring topology with token passing</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The nodes form a <b>ring structure</b>. A <b>token</b> circulates around the whole ring (detailed in <b>Token Ring</b>, Chapter 18). As the packet or token keeps revolving, its <b>strength can fall</b>, so <b>repeaters</b> attached to every host <b>boost it back</b> to the original strength.</div>
+<div class="tw"><table>
+<tr><th>Advantages <span class="badge">ADDED</span></th><th>Disadvantages</th></tr>
+<tr><td><ul><li><b>No collisions</b>: an orderly token-based turn</li><li>Equal access for all nodes; predictable performance under heavy load</li><li>Easy to locate faults</li></ul></td>
+<td><ul><li><b>A single node or link break disrupts the whole ring</b> (unidirectional)</li><li><b>Adding or removing a node is difficult</b>: the ring must be broken (lecture: "thoda mushkil, thoda expensive")</li><li>Delay grows with the number of nodes</li></ul></td></tr>
+</table></div>
+<p><b>Fix:</b> a <b>dual ring</b> (two counter-rotating rings, as in <b>FDDI</b> and SONET) keeps working if one ring breaks. <b>Examples:</b> IBM Token Ring (IEEE 802.5), FDDI.</p>
+</section>
+
+<section id="s7">
+<h3><span class="n">4.7</span>Number of Links: Mesh vs Star vs Bus</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Mesh</b>: n(n−1)/2 links.</li>
+<li><b>Star</b>: the count drops sharply. Each device has one link to the central point, so <b>n devices need n links</b>.</li>
+<li><b>Bus</b>: even fewer, <b>only one link</b>: the shared channel, shared link or <b>backbone</b>.</li>
+<li><b>Ring</b>'s big drawback: adding a new node to an existing ring is <b>difficult and expensive</b>.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Topology</th><th>Links / cables for n devices</th><th>Ports per device</th><th>n = 5</th><th>n = 10</th></tr>
+<tr><td>Mesh</td><td><b>n(n−1)/2</b></td><td>n − 1</td><td>10</td><td>45</td></tr>
+<tr><td>Star</td><td><b>n</b> (plus a hub with n ports)</td><td>1</td><td>5</td><td>10</td></tr>
+<tr><td>Ring</td><td><b>n</b></td><td>2</td><td>5</td><td>10</td></tr>
+<tr><td>Bus</td><td><b>1 backbone</b> + n drop lines</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>Tree</td><td>n − 1 (as in any tree)</td><td>—</td><td>4</td><td>9</td></tr>
+</table></div>
+</section>
+
+<section id="s8">
+<h3><span class="n">4.8</span>Tree Topology</h3>
+<div class="def"><b>Tree (hierarchical / extended star):</b> a <b>hierarchy of stars</b>. A <b>central (root) hub</b> connects to <b>secondary hubs</b>, which connect to further hubs or to devices, top-down like a tree.</div>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="Tree topology: central hub, secondary hubs, devices">
+  <rect x="270" y="15" width="100" height="36" rx="6" class="or"/><text x="320" y="38" text-anchor="middle" class="b">Central hub</text>
+  <rect x="110" y="95" width="100" height="34" rx="6" class="pu"/><text x="160" y="117" text-anchor="middle">Secondary hub</text>
+  <rect x="430" y="95" width="100" height="34" rx="6" class="pu"/><text x="480" y="117" text-anchor="middle">Secondary hub</text>
+  <circle cx="320" cy="112" r="16" class="ac"/>
+  <g>
+  <circle cx="60" cy="190" r="16" class="ac"/><circle cx="130" cy="190" r="16" class="ac"/><circle cx="200" cy="190" r="16" class="ac"/>
+  <circle cx="400" cy="190" r="16" class="ac"/><circle cx="470" cy="190" r="16" class="ac"/>
+  <rect x="520" y="174" width="90" height="32" rx="6" class="pu"/><text x="565" y="195" text-anchor="middle" style="font-size:11px">further hub</text>
+  </g>
+  <path d="M320 51 L160 95 M320 51 L480 95 M320 51 V96 M160 129 L60 174 M160 129 L130 174 M160 129 L200 174 M480 129 L400 174 M480 129 L470 174 M480 129 L560 174" class="ln"/>
+  <text x="320" y="225" text-anchor="middle" class="mut">root fails → its whole sub-tree loses connectivity</text>
+</svg>
+<figcaption>Figure 4.5: Tree topology</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Tree topology covers ring's disadvantage (difficulty adding nodes). It follows a <b>top-down approach</b>, like a tree: a <b>root</b>, its <b>children</b>, their children, and so on. The most important point is the <b>root point of contact</b>, the <b>central hub</b>. At the next level down are the <b>secondary hubs (SH)</b>, then further secondary hubs, and devices connect to these hubs. <b>Adding a device is very easy</b>: just connect it to a hub.</div>
+<div class="tw"><table>
+<tr><th>Advantages <span class="badge">ADDED</span></th><th>Disadvantages</th></tr>
+<tr><td><ul><li>Scalable; easy to add segments and devices</li><li>Hierarchical, so it suits organisations (HQ → zone → branch) and campuses</li><li>Fault isolation per branch</li></ul></td>
+<td><ul><li><b>Root hub failure cuts off the whole network</b> (the backbone is critical)</li><li>More cabling; complex configuration at scale</li></ul></td></tr>
+</table></div>
+</section>
+
+<section id="s9">
+<h3><span class="n">4.9</span>Hybrid Topology &amp; Master Comparison <span class="badge">ADDED</span></h3>
+<div class="def"><b>Hybrid topology:</b> a combination of <b>two or more</b> basic topologies (e.g. star-bus, star-ring). Most real networks, including the Internet, are hybrids.</div>
+<div class="tw"><table>
+<tr><th>Topology</th><th>Links (n devices)</th><th>Cost</th><th>Single point of failure?</th><th>Collisions</th><th>Adding nodes</th><th>Typical use</th></tr>
+<tr><td>Mesh</td><td>n(n−1)/2</td><td><b>Highest</b></td><td>No: <b>most reliable</b></td><td>None</td><td>Hard</td><td>WAN backbone, data-centre links</td></tr>
+<tr><td>Star</td><td>n</td><td>Medium</td><td><b>Yes: hub/switch</b></td><td>Hub: yes · switch: no</td><td>Easy</td><td>Office LAN (most common)</td></tr>
+<tr><td>Bus</td><td>1 backbone</td><td><b>Lowest</b></td><td><b>Yes: backbone</b></td><td><b>Yes</b></td><td>Easy (tap)</td><td>Old coaxial Ethernet</td></tr>
+<tr><td>Ring</td><td>n</td><td>Low to medium</td><td>Yes (single ring)</td><td>None (token)</td><td><b>Hard</b></td><td>Token Ring, FDDI, SONET</td></tr>
+<tr><td>Tree</td><td>n − 1</td><td>Medium</td><td><b>Yes: root</b></td><td>Depends on hubs</td><td>Easy</td><td>Campus, enterprise hierarchy</td></tr>
+<tr><td>Hybrid</td><td>Varies</td><td>Varies</td><td>Varies</td><td>Varies</td><td>Flexible</td><td>Large networks, the Internet</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"Most reliable / fault-tolerant" → <b>mesh</b>. "Most expensive" → mesh. "Least cable" → <b>bus</b>.</li>
+<li>"Central device failure brings down the network" → <b>star</b>. "Needs terminators" → <b>bus</b>. "Uses a token" → <b>ring</b>. "Hierarchy of stars" → <b>tree</b>.</li>
+<li>"Most commonly used LAN topology today" → <b>star</b> (switched Ethernet). "Number of cables for 7 computers in a mesh" → 7×6/2 = <b>21</b>.</li>
+</ul></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 4</h3>
+<ul>
+<li><b>Topology</b> = how nodes are connected (physical layout vs logical flow; a hub star is logically a bus).</li>
+<li><b>Point-to-point</b>: dedicated link between 2 stations; simple and cheap, local only.</li>
+<li><b>Mesh</b>: every node to every node; links = <b>n(n−1)/2</b> (5 → 10, 10 → 45), ports per device = n − 1. Robust, private, no collisions, but most expensive and clumsy.</li>
+<li><b>Star</b>: all to a central hub, so <b>n links</b>. Cheap and easy; a hub broadcasts to all but only the destination reads it. <b>Central hub down → network crashes.</b></li>
+<li><b>Bus</b>: one backbone + drop lines + <b>terminators</b>; multipoint shared channel; <b>collisions</b> (CSMA/CD later); backbone failure kills everything.</li>
+<li><b>Ring</b>: a loop with a <b>circulating token</b>; <b>repeaters</b> boost the signal; no collisions; adding a node is hard; one break disrupts it (dual ring / FDDI fixes this).</li>
+<li><b>Links</b>: mesh n(n−1)/2 › star n = ring n › bus 1.</li>
+<li><b>Tree</b>: root central hub → secondary hubs → devices; easy to add nodes; the root is critical. <b>Hybrid</b> = a mix (the Internet).</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 4 · Next: Chapter 5 — Types of Networks</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="03-Connection-Types.html">← Ch 3: Connection Types (Line Configuration)</a><a href="index.html">☰ All topics</a><a href="05-Types-of-Networks.html">Ch 5: Types of Networks →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

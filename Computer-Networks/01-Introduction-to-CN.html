@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Introduction Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><span></span><a href="index.html">☰ All topics</a><a href="02-Transmission-Modes.html">Ch 2: Transmission Modes →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 1: Introduction to Computer Networks</h1>
+  <p class="sub">Volume 02 · Part 1 · Built from the one-shot CN lecture transcript (section 1), plus the exam points the lecture skipped.</p>
+  <ul class="tags">
+    <li>What is a Network</li><li>Data Communication Components</li><li>Network Criteria</li><li>Nodes, Hosts &amp; Links</li>
+    <li>Protocols &amp; Standards</li><li>IP / MAC / Port Address</li><li>Socket</li><li>Well-known Ports</li>
+    <li>DNS</li><li>Client-Server vs P2P</li><li>Internet / Intranet / Extranet</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s0"><span class="n">1.0</span>How This Subject Is Organised</a></li>
+    <li><a href="#s1"><span class="n">1.1</span>What is a Computer Network</a></li>
+    <li><a href="#s1a"><span class="n">1.1A</span>Data Communication, Criteria &amp; Uses<span class="x">ADDED</span></a></li>
+    <li><a href="#s2"><span class="n">1.2</span>Basic Terminology: Nodes</a></li>
+    <li><a href="#s3"><span class="n">1.3</span>Protocols</a></li>
+    <li><a href="#s3a"><span class="n">1.3A</span>Protocol Elements &amp; Standards Bodies<span class="x">ADDED</span></a></li>
+    <li><a href="#s4"><span class="n">1.4</span>IP Address, MAC Address and Port Number</a></li>
+    <li><a href="#s4a"><span class="n">1.4A</span>Sockets &amp; Well-Known Ports<span class="x">ADDED</span></a></li>
+    <li><a href="#s5"><span class="n">1.5</span>DNS (Domain Name System)</a></li>
+    <li><a href="#s6"><span class="n">1.6</span>Client-Server and Peer-to-Peer Architecture</a></li>
+    <li><a href="#s6a"><span class="n">1.6A</span>Internet, Intranet, Extranet &amp; a Short History<span class="x">ADDED</span></a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 1</div>
+<h2 class="ch">Introduction to Computer Networks</h2>
+<p>This is the opening chapter of the Computer Networks volume. Before going layer by layer through the OSI model, the lecture "learns the work from the name": what a network is, what devices sit on it, the rules they follow (<b>protocols</b>), how each one is identified (<b>IP, MAC, port</b>), how names become addresses (<b>DNS</b>), and the two basic ways of organising a network (<b>client-server</b> and <b>peer-to-peer</b>).</p>
+
+<!-- 1.0 -->
+<section id="s0">
+<h3><span class="n">1.0</span>How This Subject Is Organised</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The whole story of Computer Networks is divided into the <b>7 layers of the OSI model</b>. The lecture goes layer by layer through each one's <b>functions, roles, responsibilities, concepts and terms</b>. First come some <b>prerequisites and basic terminology</b>, which are needed for every later concept. "Start from the beginning with me."</div>
+<figure>
+<svg viewBox="0 0 640 140" role="img" aria-label="Roadmap: basics then the seven OSI layers from physical to application">
+  <defs><marker id="n1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="45" width="95" height="50" rx="6" class="or"/><text x="57" y="68" text-anchor="middle" class="b">Basics</text><text x="57" y="85" text-anchor="middle" class="mut">this chapter</text>
+  <path d="M105 70 H125" class="lna" marker-end="url(#n1)"/>
+  <g>
+  <rect x="128" y="45" width="68" height="50" class="gr"/><text x="162" y="68" text-anchor="middle" style="font-size:11.5px" class="b">Physical</text><text x="162" y="84" text-anchor="middle" class="mut">L1</text>
+  <rect x="198" y="45" width="68" height="50" class="gr"/><text x="232" y="68" text-anchor="middle" style="font-size:11.5px" class="b">Data Link</text><text x="232" y="84" text-anchor="middle" class="mut">L2</text>
+  <rect x="268" y="45" width="68" height="50" class="ac"/><text x="302" y="68" text-anchor="middle" style="font-size:11.5px" class="b">Network</text><text x="302" y="84" text-anchor="middle" class="mut">L3</text>
+  <rect x="338" y="45" width="68" height="50" class="ac"/><text x="372" y="68" text-anchor="middle" style="font-size:11.5px" class="b">Transport</text><text x="372" y="84" text-anchor="middle" class="mut">L4</text>
+  <rect x="408" y="45" width="68" height="50" class="pu"/><text x="442" y="68" text-anchor="middle" style="font-size:11.5px" class="b">Session</text><text x="442" y="84" text-anchor="middle" class="mut">L5</text>
+  <rect x="478" y="45" width="72" height="50" class="pu"/><text x="514" y="68" text-anchor="middle" style="font-size:11.5px" class="b">Presentation</text><text x="514" y="84" text-anchor="middle" class="mut">L6</text>
+  <rect x="552" y="45" width="78" height="50" class="pu"/><text x="591" y="68" text-anchor="middle" style="font-size:11.5px" class="b">Application</text><text x="591" y="84" text-anchor="middle" class="mut">L7</text>
+  </g>
+  <text x="380" y="125" text-anchor="middle" class="mut">the volume walks through the layers bottom-up</text>
+</svg>
+<figcaption>Figure 1.1: Roadmap of the Computer Networks volume</figcaption>
+</figure>
+</section>
+
+<!-- 1.1 -->
+<section id="s1">
+<h3><span class="n">1.1</span>What is a Computer Network</h3>
+<div class="def"><b>Computer network:</b> a group of <b>interconnected devices (nodes)</b>, linked through <b>wired or wireless</b> media, that can <b>communicate and exchange data</b> and <b>share resources</b> (hardware and software) by following common rules (<b>protocols</b>).</div>
+<div class="box lec"><span class="t">🎓 From the lecture — "Network is the new net worth"</span>
+Elders used to say "<b>hard work</b> karo". Then came "<b>smart work</b>". Today they say hard work and smart work are fine, but "<b>kaisa hai aapka network?</b> Network is the new net worth." The same idea applies to computers.
+<ul>
+<li><b>Myth buster</b>: "Computer network" does <b>not</b> mean the network has only computers. Any <b>digital device</b> can be a member (printers, servers, routers, phones).</li>
+<li>They are connected through <b>wired or wireless</b> media.</li>
+<li><b>Why connect?</b> To <b>communicate</b> ("vaartalaap"), to <b>exchange, transfer and share data</b>, and to <b>share resources</b>, both hardware and software.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="A network of heterogeneous nodes: PC, laptop, phone, printer, server connected through a switch and router to the Internet">
+  <ellipse cx="560" cy="60" rx="70" ry="38" class="bx"/><text x="560" y="65" text-anchor="middle" class="b">Internet</text>
+  <rect x="270" y="95" width="90" height="36" rx="6" class="ac"/><text x="315" y="118" text-anchor="middle" class="b">Switch</text>
+  <rect x="420" y="95" width="80" height="36" rx="6" class="or"/><text x="460" y="118" text-anchor="middle" class="b">Router</text>
+  <rect x="40" y="20" width="90" height="36" rx="5" class="gr"/><text x="85" y="43" text-anchor="middle">PC</text>
+  <rect x="40" y="95" width="90" height="36" rx="5" class="gr"/><text x="85" y="118" text-anchor="middle">Laptop (Wi-Fi)</text>
+  <rect x="40" y="170" width="90" height="36" rx="5" class="gr"/><text x="85" y="193" text-anchor="middle">Smartphone</text>
+  <rect x="230" y="180" width="90" height="36" rx="5" class="pu"/><text x="275" y="203" text-anchor="middle">Printer</text>
+  <rect x="340" y="180" width="90" height="36" rx="5" class="pu"/><text x="385" y="203" text-anchor="middle">Server</text>
+  <path d="M130 38 L270 108 M130 113 L270 113 M130 188 L270 120 M275 180 L300 131 M385 180 L330 131 M360 113 H420 M500 105 L500 80 L492 70" class="ln"/>
+  <path d="M130 113 L270 113" class="ln dash"/>
+  <text x="200" y="104" class="mut" style="font-size:11px">wireless</text>
+  <text x="320" y="20" text-anchor="middle" class="mut">every device on the network = a NODE</text>
+</svg>
+<figcaption>Figure 1.2: A network is made of many kinds of nodes, not just computers</figcaption>
+</figure>
+</section>
+
+<!-- 1.1A -->
+<section id="s1a">
+<h3><span class="n">1.1A</span>Data Communication, Criteria &amp; Uses <span class="badge">ADDED</span></h3>
+<div class="def"><b>Data communication:</b> the exchange of data between two devices through some transmission medium.</div>
+<figure>
+<svg viewBox="0 0 640 170" role="img" aria-label="Five components of data communication: sender, receiver, message, medium, protocol">
+  <defs><marker id="n2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="60" width="110" height="50" rx="6" class="ac"/><text x="75" y="90" text-anchor="middle" class="b">① Sender</text>
+  <rect x="510" y="60" width="110" height="50" rx="6" class="ac"/><text x="565" y="90" text-anchor="middle" class="b">② Receiver</text>
+  <rect x="250" y="20" width="140" height="34" rx="5" class="or"/><text x="320" y="42" text-anchor="middle" class="b">③ Message</text>
+  <path d="M130 85 H508" class="lna" marker-end="url(#n2)"/><text x="320" y="100" text-anchor="middle" class="b">④ Transmission medium</text><text x="320" y="116" text-anchor="middle" class="mut">cable, fibre, air</text>
+  <rect x="200" y="130" width="240" height="30" rx="5" class="pu"/><text x="320" y="150" text-anchor="middle" class="b">⑤ Protocol (rules both follow)</text>
+  <path d="M75 110 V145 H198 M565 110 V145 H442" class="ln dash"/>
+</svg>
+<figcaption>Figure 1.3: The five components of data communication</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Topic</th><th>Points to remember</th></tr>
+<tr><td><b>Four characteristics</b> of an effective data-communication system</td><td><b>Delivery</b> (to the correct destination) · <b>Accuracy</b> (no corruption) · <b>Timeliness</b> (on time, as real-time video needs) · <b>Jitter</b> (variation in packet arrival time should be small)</td></tr>
+<tr><td><b>Network criteria</b></td><td><b>Performance</b> (transit time, response time, throughput, delay) · <b>Reliability</b> (failure frequency, recovery time) · <b>Security</b> (protection from unauthorised access and viruses)</td></tr>
+<tr><td><b>Uses / goals</b></td><td>Resource sharing (printers, files, the Internet) · communication (e-mail, chat, video calls) · centralised data and backup · e-commerce and online banking (CBS, UPI, ATM networks) · distributed computing · reliability through redundancy</td></tr>
+<tr><td><b>Data flow</b></td><td>Simplex, half-duplex, full-duplex (Chapter 2)</td></tr>
+</table></div>
+</section>
+
+<!-- 1.2 -->
+<section id="s2">
+<h3><span class="n">1.2</span>Basic Terminology: Nodes</h3>
+<div class="def"><b>Node:</b> the general term for <b>any device connected to a network</b> that can send, receive or forward data.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Computers are nodes, but if you think <i>only</i> computers are nodes, "you've gained wrong knowledge". <b>Printers, servers, routers, switches</b> and all the other hardware we'll study are also nodes connected in the network.</div>
+<div class="tw"><table>
+<tr><th>Term <span class="badge">ADDED</span></th><th>Meaning</th></tr>
+<tr><td><b>Host / end system</b></td><td>A node that is the <b>source or final destination</b> of data (a PC, phone or server)</td></tr>
+<tr><td><b>Intermediate node</b></td><td>A node that <b>forwards</b> data on its way (router, switch, hub, bridge)</td></tr>
+<tr><td><b>Link</b></td><td>The communication channel joining two nodes (wired or wireless)</td></tr>
+<tr><td><b>Topology</b></td><td>The arrangement of nodes and links (Chapter 4)</td></tr>
+<tr><td><b>Bandwidth</b></td><td>The maximum data rate a link supports (bps). <b>Throughput</b> is the rate actually achieved.</td></tr>
+<tr><td><b>Latency / delay</b></td><td>The time for data to travel from source to destination (propagation + transmission + queuing + processing)</td></tr>
+<tr><td><b>Packet / frame / segment</b></td><td>Names for data units at the network layer, data-link layer and transport layer respectively (Chapter 6)</td></tr>
+</table></div>
+</section>
+
+<!-- 1.3 -->
+<section id="s3">
+<h3><span class="n">1.3</span>Protocols</h3>
+<div class="def"><b>Protocol:</b> a <b>set of rules</b> that governs data communication: what is sent, how it is sent and when it is sent. Every communicating device must <b>agree on and follow</b> it.</div>
+<div class="box lec"><span class="t">🎓 From the lecture — "You have to follow this protocol"</span>
+As in the movies: "<b>you have to follow the protocol</b>". A protocol is a set of rules, ways and laws that you must <b>agree to</b>. Why? A network is <b>heterogeneous</b>: computers, printers, servers and routers each do different jobs and have different features. To connect them and transfer data <b>without disturbance</b>, they must all accept one set of rules.<br>
+Examples to come: <b>TCP, IP, UDP, FTP, SMTP, POP</b> and many more at the application and transport layers.</div>
+<div class="box add"><span class="t">➕ Analogy</span>
+Two people can only talk if they share a <b>language</b> (vocabulary = syntax, meaning = semantics) and <b>etiquette</b> (don't talk over each other = timing). Protocols are the "language plus etiquette" of devices.</div>
+</section>
+
+<!-- 1.3A -->
+<section id="s3a">
+<h3><span class="n">1.3A</span>Protocol Elements &amp; Standards Bodies <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Key element</th><th>Defines</th><th>Example</th></tr>
+<tr><td><b>Syntax</b></td><td>The <b>structure / format</b> of the data: which bits mean what</td><td>The first 8 bits are the source address, the next 8 the destination…</td></tr>
+<tr><td><b>Semantics</b></td><td>The <b>meaning</b> of each section and the action to take</td><td>What does this address or control field mean?</td></tr>
+<tr><td><b>Timing</b></td><td><b>When</b> data is sent and <b>how fast</b></td><td>The sender at 100 Mbps and the receiver at 1 Mbps must coordinate (flow control)</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert — standards bodies</span>
+<ul>
+<li><b>ISO</b>: International Organization for Standardization, which created the <b>OSI model</b>.</li>
+<li><b>IEEE</b>: Institute of Electrical and Electronics Engineers. LAN standards: <b>802.3 Ethernet</b>, <b>802.11 Wi-Fi</b>, <b>802.15 Bluetooth</b>, 802.5 Token Ring.</li>
+<li><b>IETF</b>: Internet Engineering Task Force, which publishes Internet standards as <b>RFCs</b> (Request for Comments). IANA/ICANN assigns IP addresses, port numbers and domain names.</li>
+<li><b>ITU-T</b> (telecom), <b>ANSI</b> (American), <b>EIA/TIA</b> (cabling).</li>
+<li>A <b>de facto</b> standard is adopted through widespread use; a <b>de jure</b> standard is legislated by an official body.</li>
+</ul></div>
+</section>
+
+<!-- 1.4 -->
+<section id="s4">
+<h3><span class="n">1.4</span>IP Address, MAC Address and Port Number</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+There are three kinds of address, each working at a <b>different layer</b>:
+<ul>
+<li><b>MAC address</b> → <b>Data Link Layer</b> (L2)</li>
+<li><b>IP address</b> → <b>Network Layer</b> (L3)</li>
+<li><b>Port number</b> → <b>Transport Layer</b> (L4)</li>
+</ul>
+<b>IP address</b>: any device that wants to join a network gets an IP address, so it can be <b>uniquely identified</b> in that network.<br>
+<b>Analogy</b>: in a class, if the teacher calls "Rajesh", <b>10 Rajeshes</b> stand up; "Suresh", 20 stand up; "Akshay", 50. Common names can't identify anyone uniquely, so we use <b>roll numbers</b>. The IP address is the device's roll number. (Details come in the Network Layer chapter.)</div>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="Three addresses mapped to layers: port at transport, IP at network, MAC at data link, with postal analogy">
+  <rect x="20" y="20" width="200" height="50" class="pu"/><text x="120" y="42" text-anchor="middle" class="b">Transport (L4)</text><text x="120" y="60" text-anchor="middle" class="mut">PORT number</text>
+  <rect x="20" y="80" width="200" height="50" class="ac"/><text x="120" y="102" text-anchor="middle" class="b">Network (L3)</text><text x="120" y="120" text-anchor="middle" class="mut">IP address</text>
+  <rect x="20" y="140" width="200" height="50" class="gr"/><text x="120" y="162" text-anchor="middle" class="b">Data Link (L2)</text><text x="120" y="180" text-anchor="middle" class="mut">MAC (physical) address</text>
+  <text x="250" y="50" class="mut">→ which APPLICATION / process?   e.g. 443 (HTTPS)</text>
+  <text x="250" y="110" class="mut">→ which DEVICE on the Internet?    e.g. 192.168.1.10</text>
+  <text x="250" y="170" class="mut">→ which NIC on the local link?      e.g. 3C-52-82-1A-7F-B9</text>
+  <text x="320" y="215" text-anchor="middle" class="b">Postal analogy: city/street = IP · house = MAC · person in the house = port</text>
+</svg>
+<figcaption>Figure 1.4: Port, IP and MAC addresses and their layers</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Basis <span class="badge">ADDED</span></th><th>MAC address</th><th>IP address</th><th>Port number</th></tr>
+<tr><td>Also called</td><td>Physical / hardware / burned-in address</td><td>Logical address</td><td>Service / process address</td></tr>
+<tr><td>Layer</td><td>Data Link (L2)</td><td>Network (L3)</td><td>Transport (L4)</td></tr>
+<tr><td>Size</td><td><b>48 bits</b> (6 bytes), written in <b>hexadecimal</b></td><td>IPv4 <b>32 bits</b> (dotted decimal) · IPv6 <b>128 bits</b> (hex, colons)</td><td><b>16 bits</b> → 0 to 65,535</td></tr>
+<tr><td>Example</td><td>3C:52:82:1A:7F:B9</td><td>192.168.1.10 · 2001:db8::1</td><td>80, 443, 25</td></tr>
+<tr><td>Assigned by</td><td>Manufacturer, burned into the <b>NIC</b> (first 24 bits = OUI, the vendor ID)</td><td>Network admin / <b>DHCP</b> / ISP; changes with the network</td><td>OS / application; well-known ports by IANA</td></tr>
+<tr><td>Identifies</td><td>The device's interface on the <b>local</b> network (hop to hop)</td><td>The device <b>globally</b> (end to end)</td><td>The <b>process / application</b> on the device</td></tr>
+<tr><td>Changes?</td><td>Fixed (can be spoofed)</td><td>Can change</td><td>Per connection or service</td></tr>
+<tr><td>Mapping</td><td colspan="3"><b>ARP</b> finds the MAC from an IP · <b>RARP</b> finds the IP from a MAC (Chapter 24)</td></tr>
+</table></div>
+</section>
+
+<!-- 1.4A -->
+<section id="s4a">
+<h3><span class="n">1.4A</span>Sockets &amp; Well-Known Ports <span class="badge">ADDED</span></h3>
+<div class="def"><b>Socket</b> = <b>IP address + port number</b> (e.g. 142.250.183.4:443). A connection is identified uniquely by the <b>pair of sockets</b> (client IP:port ↔ server IP:port) plus the protocol.</div>
+<div class="tw"><table>
+<tr><th>Port range</th><th>Name</th><th>Use</th></tr>
+<tr><td>0 – 1023</td><td><b>Well-known</b></td><td>Standard services (assigned by IANA)</td></tr>
+<tr><td>1024 – 49151</td><td><b>Registered</b></td><td>Vendor applications (e.g. MySQL 3306)</td></tr>
+<tr><td>49152 – 65535</td><td><b>Dynamic / ephemeral</b></td><td>Temporary client-side ports</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Protocol</th><th>Port</th><th>Protocol</th><th>Port</th></tr>
+<tr><td>FTP (data / control)</td><td><b>20 / 21</b></td><td>HTTP</td><td><b>80</b></td></tr>
+<tr><td>SSH</td><td><b>22</b></td><td>POP3</td><td><b>110</b></td></tr>
+<tr><td>Telnet</td><td><b>23</b></td><td>NTP</td><td>123</td></tr>
+<tr><td>SMTP</td><td><b>25</b></td><td>IMAP</td><td><b>143</b></td></tr>
+<tr><td>DNS</td><td><b>53</b></td><td>SNMP</td><td><b>161</b> (trap 162)</td></tr>
+<tr><td>DHCP (server / client)</td><td><b>67 / 68</b></td><td>HTTPS</td><td><b>443</b></td></tr>
+<tr><td>TFTP</td><td>69</td><td>RDP</td><td>3389</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Port numbers are <b>16-bit</b>, so the maximum is <b>65,535</b>. FTP uses <b>two</b> ports (20 for data, 21 for control). DNS uses <b>UDP 53</b> for queries and TCP 53 for zone transfers. A MAC address is 48 bits (12 hex digits); IPv4 is 32 bits; IPv6 is 128 bits.</div>
+</section>
+
+<!-- 1.5 -->
+<section id="s5">
+<h3><span class="n">1.5</span>DNS (Domain Name System)</h3>
+<div class="def"><b>DNS:</b> an <b>application-layer protocol</b> and distributed database that <b>translates domain names into IP addresses</b>. It is the "phone book of the Internet".</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Input: a <b>domain name</b> like <i>5minutesengineering.com</i>. Output: its <b>IP address</b>. That is, DNS <b>translates a domain name into an IP address</b>. The full hierarchy of how it does this comes in the Application Layer chapter, at the very end.</div>
+<figure>
+<svg viewBox="0 0 680 250" role="img" aria-label="DNS resolution: browser asks resolver, which queries root, TLD and authoritative servers, then returns IP">
+  <defs><marker id="n3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="100" width="110" height="50" rx="6" class="ac"/><text x="65" y="122" text-anchor="middle" class="b">Your browser</text><text x="65" y="139" text-anchor="middle" class="mut">www.sbi.co.in ?</text>
+  <rect x="190" y="100" width="130" height="50" rx="6" class="or"/><text x="255" y="122" text-anchor="middle" class="b">Local DNS resolver</text><text x="255" y="139" text-anchor="middle" class="mut">(ISP / 8.8.8.8)</text>
+  <rect x="440" y="15" width="220" height="44" rx="6" class="gr"/><text x="550" y="35" text-anchor="middle" class="b">① Root server (.)</text><text x="550" y="51" text-anchor="middle" class="mut">"ask the .in server"</text>
+  <rect x="440" y="100" width="220" height="44" rx="6" class="gr"/><text x="550" y="120" text-anchor="middle" class="b">② TLD server (.in / .com)</text><text x="550" y="136" text-anchor="middle" class="mut">"ask sbi.co.in's server"</text>
+  <rect x="440" y="185" width="220" height="44" rx="6" class="gr"/><text x="550" y="205" text-anchor="middle" class="b">③ Authoritative server</text><text x="550" y="221" text-anchor="middle" class="mut">"IP = 14.140.x.x"</text>
+  <path d="M120 120 H188" class="lna" marker-end="url(#n3)"/>
+  <path d="M188 135 H122" class="lna" marker-end="url(#n3)"/><text x="155" y="158" text-anchor="middle" class="mut">IP</text>
+  <path d="M320 115 L438 40 M320 125 L438 122 M320 135 L438 205" class="ln" marker-end="url(#n3)"/>
+  <text x="380" y="245" text-anchor="middle" class="mut">results are cached (TTL) so later lookups are fast</text>
+</svg>
+<figcaption>Figure 1.5: How a DNS lookup works (iterative queries from the resolver)</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ DNS essentials</span>
+<ul>
+<li><b>Hierarchy</b>: root (.) → <b>top-level domains</b>: generic (.com, .org, .net, .gov, .edu) and country code (.in, .uk) → second-level (sbi.co.in) → subdomains (www, mail).</li>
+<li><b>Port 53</b>: <b>UDP</b> for normal queries, <b>TCP</b> for zone transfers and large replies.</li>
+<li><b>Recursive query</b>: "give me the final answer" (client → resolver). <b>Iterative query</b>: "tell me whom to ask next" (resolver → root → TLD → authoritative).</li>
+<li><b>Records</b>: <b>A</b> (name → IPv4), <b>AAAA</b> (name → IPv6), <b>CNAME</b> (alias), <b>MX</b> (mail server), <b>NS</b> (name server), <b>PTR</b> (IP → name, reverse lookup).</li>
+<li>Before DNS existed, every host used a single <b>hosts file</b>, which still overrides DNS locally. <b>DNS spoofing / cache poisoning</b> is an attack that sends users to fake sites (relevant for bank phishing).</li>
+</ul></div>
+</section>
+
+<!-- 1.6 -->
+<section id="s6">
+<h3><span class="n">1.6</span>Client-Server and Peer-to-Peer Architecture</h3>
+<figure>
+<svg viewBox="0 0 680 250" role="img" aria-label="Client-server with central server and request response arrows, versus peer-to-peer mesh of peers">
+  <defs><marker id="n4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker>
+  <marker id="n5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker></defs>
+  <text x="160" y="20" text-anchor="middle" class="b">Client-Server</text>
+  <rect x="115" y="100" width="90" height="50" rx="6" class="or"/><text x="160" y="130" text-anchor="middle" class="b">SERVER</text>
+  <rect x="20" y="30" width="80" height="34" rx="5" class="ac"/><text x="60" y="52" text-anchor="middle">Client 1</text>
+  <rect x="220" y="30" width="80" height="34" rx="5" class="ac"/><text x="260" y="52" text-anchor="middle">Client 2</text>
+  <rect x="20" y="190" width="80" height="34" rx="5" class="ac"/><text x="60" y="212" text-anchor="middle">Client 3</text>
+  <rect x="220" y="190" width="80" height="34" rx="5" class="ac"/><text x="260" y="212" text-anchor="middle">Client 4</text>
+  <path d="M75 64 L128 98 M245 64 L192 98 M75 190 L128 152 M245 190 L192 152" class="lna" marker-end="url(#n4)"/>
+  <path d="M120 100 L68 66 M200 100 L252 66" style="stroke:var(--ok);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#n5)"/>
+  <text x="160" y="245" text-anchor="middle" class="mut">blue = request · green = response</text>
+  <path d="M340 20 V240" class="ln dash"/>
+  <text x="510" y="20" text-anchor="middle" class="b">Peer-to-Peer (no central server)</text>
+  <circle cx="420" cy="70" r="28" class="gr"/><text x="420" y="75" text-anchor="middle">Peer A</text>
+  <circle cx="600" cy="70" r="28" class="gr"/><text x="600" y="75" text-anchor="middle">Peer B</text>
+  <circle cx="420" cy="190" r="28" class="gr"/><text x="420" y="195" text-anchor="middle">Peer C</text>
+  <circle cx="600" cy="190" r="28" class="gr"/><text x="600" y="195" text-anchor="middle">Peer D</text>
+  <path d="M448 70 H572 M420 98 V162 M600 98 V162 M448 190 H572 M440 90 L580 170 M580 90 L440 170" class="ln"/>
+  <text x="510" y="245" text-anchor="middle" class="mut">each peer is both client and server</text>
+</svg>
+<figcaption>Figure 1.6: Client-server vs peer-to-peer</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Client-server</b>: there is a <b>central server unit</b>. Many clients connect to it and send <b>requests</b> for resources or data. The server doesn't ignore them; it examines each request and replies with a <b>response</b>.<br>
+<b>Peer-to-peer</b>: "remove the central server unit; we don't need a central controlling or coordinating unit." The nodes are interconnected directly. <b>Sometimes one acts as the server and another as the client, and sometimes the roles reverse</b>, so peers finish the work among themselves.</div>
+<div class="tw"><table>
+<tr><th>Basis <span class="badge">ADDED</span></th><th>Client-Server</th><th>Peer-to-Peer (P2P)</th></tr>
+<tr><td>Central server</td><td><b>Yes</b>: a dedicated, powerful server</td><td><b>No</b>: every peer is equal</td></tr>
+<tr><td>Role</td><td>Fixed: client requests, server serves</td><td>Each node is <b>both client and server</b></td></tr>
+<tr><td>Data storage</td><td>Centralised on the server</td><td>Distributed across peers</td></tr>
+<tr><td>Security and backup</td><td><b>Better</b>: central control and access management</td><td>Weaker: each peer manages its own</td></tr>
+<tr><td>Cost</td><td>Expensive (server hardware and admin)</td><td>Cheap and easy to set up</td></tr>
+<tr><td>Scalability</td><td>Limited by the server; the server is a <b>single point of failure</b> and a bottleneck</td><td>Scales well; no single point of failure</td></tr>
+<tr><td>Examples</td><td>Web (browser ↔ web server), e-mail, net banking, ATM ↔ bank's core banking server</td><td>BitTorrent, early Skype, blockchain/Bitcoin, LAN file sharing in a small office</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Banking systems (CBS, ATM, UPI switch) are <b>client-server</b>, for central control, security and audit. <b>BitTorrent</b> is the classic <b>P2P</b> example. Hybrid models also exist: Skype used central login with P2P calls.</div>
+</section>
+
+<!-- 1.6A -->
+<section id="s6a">
+<h3><span class="n">1.6A</span>Internet, Intranet, Extranet &amp; a Short History <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Internet</th><th>Intranet</th><th>Extranet</th></tr>
+<tr><td>The global, public "network of networks" using TCP/IP</td><td>A <b>private</b> network inside an organisation, using Internet technology</td><td>Part of an intranet opened to <b>selected outsiders</b> (partners, vendors)</td></tr>
+<tr><td>Anyone can access it</td><td>Employees only</td><td>Authorised external users</td></tr>
+<tr><td>e.g. google.com</td><td>e.g. a bank's HRMS portal</td><td>e.g. a bank's portal for loan DSAs or vendors</td></tr>
+</table></div>
+<ul>
+<li><b>ARPANET</b> (1969, US Department of Defense) was the forerunner of the Internet. It adopted <b>TCP/IP on 1 January 1983</b>.</li>
+<li><b>Vint Cerf and Bob Kahn</b> are the "fathers of the Internet" (TCP/IP). <b>Tim Berners-Lee</b> invented the <b>World Wide Web</b> (1989, HTTP/HTML). The Internet is the network; the Web is a service running on it.</li>
+<li>India: <b>ERNET</b> (1986) was the first; public Internet came through <b>VSNL</b> on 15 August 1995.</li>
+</ul>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 1</h3>
+<ul>
+<li><b>CN</b> = interconnected nodes (any digital device, not only computers) over wired or wireless media, to communicate, share data and share hardware and software resources. "Network is the new net worth."</li>
+<li>Five components of data communication: <b>sender, receiver, message, medium, protocol</b>. Characteristics: delivery, accuracy, timeliness, jitter. Criteria: performance, reliability, security.</li>
+<li><b>Node</b> = any connected device (computer, printer, server, router, switch). Host = end device; intermediate node = forwarder.</li>
+<li><b>Protocol</b> = an agreed set of rules, needed because the network is <b>heterogeneous</b>. Elements: <b>syntax, semantics, timing</b>. Examples: TCP, IP, UDP, FTP, SMTP, POP.</li>
+<li>Standards: ISO (OSI), IEEE (802.x), IETF (RFC), ITU-T.</li>
+<li><b>Addresses</b>: MAC → L2 (48-bit hex, on the NIC) · IP → L3 (IPv4 32-bit, IPv6 128-bit; the "roll number" analogy) · Port → L4 (16-bit, 0–65535). Socket = IP + port.</li>
+<li>Ports: FTP 20/21, SSH 22, Telnet 23, SMTP 25, DNS 53, DHCP 67/68, HTTP 80, POP3 110, IMAP 143, SNMP 161, HTTPS 443.</li>
+<li><b>DNS</b>: domain name → IP (application layer, port 53, UDP). Root → TLD → authoritative; A, AAAA, MX, CNAME, PTR records.</li>
+<li><b>Client-server</b>: central server, request/response, secure, single point of failure (banking, web). <b>P2P</b>: no central server, peers swap roles, cheap and scalable (BitTorrent).</li>
+<li>Internet (public) · intranet (private) · extranet (private plus partners). ARPANET 1969; TCP/IP in 1983.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 1 · Next: Chapter 2 — Transmission Modes</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><span></span><a href="index.html">☰ All topics</a><a href="02-Transmission-Modes.html">Ch 2: Transmission Modes →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

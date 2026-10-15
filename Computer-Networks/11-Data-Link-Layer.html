@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Data Link Layer Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="10-Switching-Techniques.html">← Ch 10: Switching Techniques</a><a href="index.html">☰ All topics</a><a href="12-Multiple-Access-Protocols.html">Ch 12: Multiple Access Protocols →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 11: Data Link Layer</h1>
+  <p class="sub">Volume 02 · Part 11 · Built from the one-shot CN lecture transcript (section 11), plus the exam points the lecture skipped. Overview chapter for the Data Link Layer block (Chapters 11–18).</p>
+  <ul class="tags"><li>Position &amp; Responsibilities</li><li>LLC Sublayer (802.2)</li><li>MAC Sublayer</li><li>Frame = Header + Payload + Trailer</li><li>Node-to-Node (Hop) Delivery</li><li>MAC Changes per Hop, IP Doesn't</li><li>DLL Services</li><li>HDLC &amp; PPP</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">11.0</span>Position &amp; Roadmap of the DLL</a></li>
+<li><a href="#s1"><span class="n">11.1</span>DLL Sublayers: LLC and MAC</a></li>
+<li><a href="#s2"><span class="n">11.2</span>Framing and Node-to-Node Delivery</a></li>
+<li><a href="#s3"><span class="n">11.3</span>DLL Services, Link Types &amp; Protocols (HDLC, PPP)<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 11</div>
+<h2 class="ch">Data Link Layer</h2>
+<p>Chapter 6 was only a <b>trailer</b> of each layer. The lecture says the physical layer is now done "more than enough" (Chapters 7–10). This chapter starts the full <b>movie</b> of layer 2, the <b>Data Link Layer (DLL)</b>. It is an overview; the following chapters cover each DLL responsibility in depth.</p>
+
+<section id="s0">
+<h3><span class="n">11.0</span>Position &amp; Roadmap of the DLL</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The DLL is the <b>second layer from the bottom</b>, "sandwiched" between the <b>network layer</b> above and the <b>physical layer</b> below. Its roles and responsibilities: <b>flow control, error control, access control, physical addressing and framing</b>. Coming up in detail:
+<ul>
+<li><b>Access control</b>, covered first even though it is listed last: CSMA, CSMA/CD, CSMA/CA, pure and slotted ALOHA, token passing in Token Ring.</li>
+<li><b>Flow control</b>: simple stop-and-wait, Go-Back-N, Selective Repeat.</li>
+<li><b>Error control</b>: CRC, checksum.</li>
+<li><b>Framing</b>: how frames are generated. <b>Physical addressing</b>: MAC.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="DLL between network and physical layer, with its five responsibilities and the chapters that cover them">
+  <rect x="40" y="20" width="180" height="40" class="ac"/><text x="130" y="45" text-anchor="middle" class="b">Network layer (L3)</text>
+  <rect x="40" y="70" width="180" height="90" class="gr"/><text x="130" y="105" text-anchor="middle" class="b">DATA LINK (L2)</text><text x="130" y="125" text-anchor="middle" class="mut">LLC (upper)</text><text x="130" y="143" text-anchor="middle" class="mut">MAC (lower)</text>
+  <path d="M40 115 H220" class="ln dash"/>
+  <rect x="40" y="170" width="180" height="40" class="or"/><text x="130" y="195" text-anchor="middle" class="b">Physical layer (L1)</text>
+  <g>
+  <rect x="290" y="20" width="370" height="30" rx="5" class="bx"/><text x="300" y="40" class="b">Access control</text><text x="650" y="40" text-anchor="end" class="mut">CSMA/CD/CA, ALOHA, token → Ch 12, 18</text>
+  <rect x="290" y="56" width="370" height="30" rx="5" class="bx"/><text x="300" y="76" class="b">Flow control</text><text x="650" y="76" text-anchor="end" class="mut">stop-and-wait, GBN, SR → Ch 13</text>
+  <rect x="290" y="92" width="370" height="30" rx="5" class="bx"/><text x="300" y="112" class="b">Error control</text><text x="650" y="112" text-anchor="end" class="mut">parity, CRC, checksum, Hamming → Ch 14</text>
+  <rect x="290" y="128" width="370" height="30" rx="5" class="bx"/><text x="300" y="148" class="b">Physical addressing</text><text x="650" y="148" text-anchor="end" class="mut">MAC address, Ethernet → Ch 15, 16</text>
+  <rect x="290" y="164" width="370" height="30" rx="5" class="bx"/><text x="300" y="184" class="b">Framing</text><text x="650" y="184" text-anchor="end" class="mut">stuffing, length field → Ch 17</text>
+  </g>
+  <path d="M220 115 H288" class="ln"/>
+</svg>
+<figcaption>Figure 11.1: The DLL's position and its five responsibilities</figcaption>
+</figure>
+</section>
+
+<section id="s1">
+<h3><span class="n">11.1</span>DLL Sublayers: LLC and MAC</h3>
+<div class="def">The IEEE 802 standards divide the DLL into two sublayers: the <b>upper LLC (Logical Link Control)</b> and the <b>lower MAC (Media Access Control)</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The DLL as a whole is divided into <b>two sublayers</b>:
+<ul>
+<li><b>Higher sublayer: LLC (Logical Link Control)</b>. It handles <b>flow control</b>, <b>error control</b> and, to some extent, <b>framing</b>.</li>
+<li><b>Lower sublayer: MAC (Media Access Control)</b>. It handles <b>access control</b> and <b>physical addressing</b>.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>LLC (upper)</th><th>MAC (lower)</th></tr>
+<tr><td>Standard <span class="badge">ADDED</span></td><td><b>IEEE 802.2</b>, common to all LANs</td><td>Specific to each LAN: <b>802.3</b> Ethernet, <b>802.11</b> Wi-Fi, <b>802.5</b> Token Ring</td></tr>
+<tr><td>Main jobs</td><td>Flow control, error control, (framing); interface to the network layer; <b>multiplexing</b> several network-layer protocols (IP, IPX) over one link <span class="badge">ADDED</span></td><td><b>Access control</b> (who may use the shared medium: CSMA/CD, CSMA/CA, token), <b>physical (MAC) addressing</b>, frame delimiting, FCS</td></tr>
+<tr><td>Hardware vs software <span class="badge">ADDED</span></td><td>Mostly software (driver)</td><td>Mostly hardware (the <b>NIC</b>)</td></tr>
+<tr><td>Faces</td><td>Network layer</td><td>Physical layer / medium</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Which sublayer handles media access and the MAC address?" → <b>MAC</b>. "Which provides flow and error control and is common to all IEEE LANs?" → <b>LLC (802.2)</b>. The order is <b>LLC on top, MAC below</b>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">11.2</span>Framing and Node-to-Node Delivery</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>What comes down from the network layer (its header + data) is treated by the DLL as <b>data / payload</b>. "This term is important."</li>
+<li>The DLL attaches its own <b>header</b> and <b>trailer</b> and sends the result down to the physical layer.</li>
+<li>The finished unit is called a <b>frame</b>. Other layers have other names, but in general you can call it a "packet".</li>
+<li><b>Delivery is node-to-node (hop-to-hop)</b>: to get from host H1 to host H2, frames don't make one big "long jump" ("they aren't long-jump experts"). They make <b>short jumps</b>: H1 → nearby router (hop 1) → next router (hop 2) → H2 (hop 3).</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 120" role="img" aria-label="Generic frame: header with destination MAC, source MAC, type; payload; trailer FCS">
+  <rect x="20" y="40" width="230" height="44" class="gr"/><text x="135" y="58" text-anchor="middle" class="b">HEADER</text><text x="135" y="76" text-anchor="middle" class="mut">dest MAC · src MAC · type / control</text>
+  <rect x="250" y="40" width="300" height="44" class="bx"/><text x="400" y="58" text-anchor="middle" class="b">PAYLOAD</text><text x="400" y="76" text-anchor="middle" class="mut">network-layer packet (IP header + data)</text>
+  <rect x="550" y="40" width="110" height="44" class="or"/><text x="605" y="58" text-anchor="middle" class="b">TRAILER</text><text x="605" y="76" text-anchor="middle" class="mut">FCS (CRC)</text>
+  <text x="340" y="25" text-anchor="middle" class="b">FRAME</text>
+  <text x="340" y="110" text-anchor="middle" class="mut">e.g. Ethernet: payload 46–1500 bytes (MTU 1500) · FCS 4 bytes</text>
+</svg>
+<figcaption>Figure 11.2: Structure of a frame</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Hop-by-hop: IP addresses stay the same end to end, MAC addresses change at every hop">
+  <defs><marker id="h1m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="80" width="90" height="44" rx="6" class="ac"/><text x="55" y="100" text-anchor="middle" class="b">H1</text><text x="55" y="116" text-anchor="middle" class="mut">MAC A</text>
+  <circle cx="240" cy="102" r="26" class="or"/><text x="240" y="98" text-anchor="middle" class="b">R1</text><text x="240" y="113" text-anchor="middle" class="mut" style="font-size:10px">B | C</text>
+  <circle cx="440" cy="102" r="26" class="or"/><text x="440" y="98" text-anchor="middle" class="b">R2</text><text x="440" y="113" text-anchor="middle" class="mut" style="font-size:10px">D | E</text>
+  <rect x="580" y="80" width="90" height="44" rx="6" class="gr"/><text x="625" y="100" text-anchor="middle" class="b">H2</text><text x="625" y="116" text-anchor="middle" class="mut">MAC F</text>
+  <path d="M100 102 H212 M268 102 H412 M468 102 H578" class="lna" marker-end="url(#h1m)"/>
+  <text x="156" y="72" text-anchor="middle" class="b">hop 1</text><text x="340" y="72" text-anchor="middle" class="b">hop 2</text><text x="523" y="72" text-anchor="middle" class="b">hop 3</text>
+  <text x="156" y="150" text-anchor="middle" class="mut" style="font-size:11px">MAC A → B</text><text x="340" y="150" text-anchor="middle" class="mut" style="font-size:11px">MAC C → D</text><text x="523" y="150" text-anchor="middle" class="mut" style="font-size:11px">MAC E → F</text>
+  <text x="340" y="180" text-anchor="middle" style="fill:var(--accent)">IP: H1 → H2 stays the SAME on every hop (end to end, network layer)</text>
+  <text x="340" y="200" text-anchor="middle" style="fill:var(--alert)">MAC source/destination CHANGE at every hop (node to node, data link layer)</text>
+  <text x="340" y="220" text-anchor="middle" class="mut">each router removes the old frame and builds a new one</text>
+</svg>
+<figcaption>Figure 11.3: Hop-to-hop delivery: MAC addresses change per hop, IP addresses don't</figcaption>
+</figure>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+As a packet travels across routers, the <b>source and destination IP addresses stay the same</b> (except with NAT), but the <b>source and destination MAC addresses are rewritten at every hop</b>. That is why the DLL is "node-to-node" and the network layer is "end-to-end". The DLL's data unit = <b>frame</b>.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">11.3</span>DLL Services, Link Types &amp; Protocols (HDLC, PPP) <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Service offered to the network layer</th><th>Meaning</th><th>Used on</th></tr>
+<tr><td>Unacknowledged connectionless</td><td>Send frames; no ACK, no connection; lost frames are not recovered here</td><td>Ethernet (low-error links)</td></tr>
+<tr><td>Acknowledged connectionless</td><td>Each frame is acknowledged; no connection</td><td>Wi-Fi (unreliable channels)</td></tr>
+<tr><td>Acknowledged connection-oriented</td><td>Connect → numbered frames in order, each acknowledged → release</td><td>HDLC, long or unreliable links</td></tr>
+</table></div>
+<ul>
+<li><b>Two kinds of links</b>: <b>point-to-point</b> (one sender, one receiver, so no access control is needed: PPP, HDLC) and <b>broadcast / multipoint</b> (a shared medium, so the MAC sublayer's multiple-access protocols are needed: Ethernet, Wi-Fi).</li>
+<li><b>HDLC</b> (High-level Data Link Control, ISO): bit-oriented, flag <b>01111110</b>, <b>bit stuffing</b>. Frame types: <b>I-frames</b> (data), <b>S-frames</b> (supervisory: ACK, RR, RNR, REJ), <b>U-frames</b> (unnumbered: link management). Modes: NRM, ABM, ARM.</li>
+<li><b>PPP</b> (Point-to-Point Protocol): <b>byte-oriented</b> (byte stuffing), used on dial-up, DSL and leased lines. <b>LCP</b> (Link Control Protocol) sets up the link; <b>NCP</b> configures network protocols (IPCP for IP); authentication with <b>PAP</b> (plain password) or <b>CHAP</b> (challenge-response, more secure). PPP has no flow control and only error detection.</li>
+<li>Other DLL protocols and technologies: Ethernet (802.3), Wi-Fi MAC (802.11), Token Ring (802.5), Frame Relay, ATM, SLIP. Devices: <b>switch, bridge, NIC</b>.</li>
+</ul>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 11</h3>
+<ul>
+<li>DLL = layer 2, sandwiched between network (L3) and physical (L1). Jobs: <b>flow, error and access control, physical addressing, framing</b>.</li>
+<li>Roadmap: access control (CSMA/CD/CA, ALOHA, token) · flow control (stop-and-wait, GBN, SR) · error control (CRC, checksum) · framing · MAC.</li>
+<li><b>Two sublayers</b>: <b>LLC</b> (upper, IEEE 802.2: flow and error control, framing in part) and <b>MAC</b> (lower: access control and physical addressing; 802.3, 802.11, 802.5).</li>
+<li>The network-layer packet becomes the <b>payload</b>; the DLL adds a <b>header + trailer</b>, giving a <b>frame</b>. The trailer = FCS/CRC.</li>
+<li><b>Node-to-node / hop-to-hop</b> delivery ("short jumps, not a long jump"): H1 → R1 → R2 → H2. <b>MAC changes at every hop; IP stays the same.</b></li>
+<li>Services: unacknowledged connectionless, acknowledged connectionless, acknowledged connection-oriented. HDLC (bit-oriented, I/S/U frames) and PPP (byte-oriented, LCP/NCP, PAP/CHAP).</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 11 · Next: Chapter 12 — Multiple Access Protocols</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="10-Switching-Techniques.html">← Ch 10: Switching Techniques</a><a href="index.html">☰ All topics</a><a href="12-Multiple-Access-Protocols.html">Ch 12: Multiple Access Protocols →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

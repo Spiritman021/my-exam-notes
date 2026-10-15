@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN IGMP Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="25-ICMP.html">← Ch 25: ICMP</a><a href="index.html">☰ All topics</a><a href="27-Routing.html">Ch 27: Routing →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 26: IGMP (Internet Group Management Protocol)</h1>
+  <p class="sub">Volume 02 · Part 26 · Built from the one-shot CN lecture transcript (section 26), plus the exam points the lecture skipped. The lecture covers IGMP briefly; this chapter adds what exams actually ask: how hosts join and leave multicast groups, the three versions, and how a group address maps to a MAC address.</p>
+  <ul class="tags"><li>Multicast Group Membership</li><li>Host ↔ Local Router</li><li>Protocol No. 2</li><li>IGMPv1 8 bytes</li><li>Group Address 32 bits</li><li>Query · Report · Leave</li><li>224.0.0.1 / 224.0.0.2</li><li>v1 · v2 · v3</li><li>01:00:5E + 23 bits</li><li>IGMP Snooping</li><li>MLD (IPv6)</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">26.0</span>IGMP in the Lecture: Purpose and IGMPv1 Packet</a></li>
+<li><a href="#s1"><span class="n">26.1</span>What IGMP Really Does<span class="x">ADDED</span></a></li>
+<li><a href="#s2"><span class="n">26.2</span>Join, Query, Report, Leave<span class="x">ADDED</span></a></li>
+<li><a href="#s3"><span class="n">26.3</span>IGMP Versions 1, 2 and 3<span class="x">ADDED</span></a></li>
+<li><a href="#s4"><span class="n">26.4</span>Delivering Multicast on a LAN: MAC Mapping &amp; Snooping<span class="x">ADDED</span></a></li>
+<li><a href="#s5"><span class="n">26.5</span>ICMP vs IGMP &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 26</div>
+<h2 class="ch">IGMP (Internet Group Management Protocol)</h2>
+<p>Multicast (class D, 224.0.0.0 – 239.255.255.255, ch 19) sends one stream to a whole group, like the festival WhatsApp group of ch 16. But a router has to know whether <b>anyone on its LAN</b> wants that group before it bothers forwarding the stream there. <b>IGMP</b> is how hosts tell their local router "I've joined group G" and "I've left". It manages <b>membership</b> only; moving multicast traffic between routers is the job of multicast routing protocols such as PIM.</p>
+
+<section id="s0">
+<h3><span class="n">26.0</span>IGMP in the Lecture: Purpose and IGMPv1 Packet</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Not many questions are asked on IGMP; knowing this much is more than enough. <b>IGMP = Internet Group Management Protocol.</b> The key thing to remember is the kinds of communication involved: <b>one-to-one (unicast)</b> and <b>one-to-many (multicast)</b>.<br>
+<b>IGMPv1 packet format:</b> it runs from bit 0 to 31, two 32-bit slots, so the whole packet is <b>8 bytes</b>.
+<ul><li><b>Version</b> = 1</li><li><b>Type</b></li><li><b>Unused</b> bits</li><li><b>Checksum</b>: 16 bits, computed the same way as before (ch 14)</li><li>and the "<b>chhupa rustam</b>" (hidden hero) field: the <b>group address</b>, <b>32 bits</b>, the multicast group the message is about.</li></ul></div>
+<figure>
+<svg viewBox="0 0 680 130" role="img" aria-label="IGMPv1 packet: version 4 bits, type 4 bits, unused 8 bits, checksum 16 bits; group address 32 bits; total 8 bytes">
+  <g font-size="12"><text x="40" y="18" class="mut">0</text><text x="190" y="18" class="mut">8</text><text x="340" y="18" class="mut">16</text><text x="630" y="18" class="mut">31</text></g>
+  <rect x="40" y="26" width="75" height="40" class="ac"/><text x="77" y="44" text-anchor="middle" class="b" font-size="12">Version</text><text x="77" y="59" text-anchor="middle" class="mut">4 (= 1)</text>
+  <rect x="115" y="26" width="75" height="40" class="ac"/><text x="152" y="44" text-anchor="middle" class="b" font-size="12">Type</text><text x="152" y="59" text-anchor="middle" class="mut">4</text>
+  <rect x="190" y="26" width="150" height="40" class="bx"/><text x="265" y="44" text-anchor="middle" class="b" font-size="12">Unused</text><text x="265" y="59" text-anchor="middle" class="mut">8</text>
+  <rect x="340" y="26" width="300" height="40" class="gr"/><text x="490" y="44" text-anchor="middle" class="b" font-size="12">Checksum</text><text x="490" y="59" text-anchor="middle" class="mut">16</text>
+  <rect x="40" y="66" width="600" height="40" class="pu"/><text x="340" y="84" text-anchor="middle" class="b" font-size="12">Group address (the "chhupa rustam")</text><text x="340" y="99" text-anchor="middle" class="mut">32</text>
+  <text x="340" y="124" text-anchor="middle" class="mut">2 rows × 4 bytes = 8 bytes</text>
+</svg>
+<figcaption>Figure 26.1: IGMPv1 message format</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+IGMP itself is a <b>multicast</b> protocol: it exists only to manage <b>group membership</b>. It does not set up unicast communication (unicast needs no group management). The precise one-liner: "IGMP is used by hosts and adjacent routers to establish <b>multicast group memberships</b>." In IGMPv2 the first byte is a single 8-bit Type field and the unused byte becomes <b>Max Response Time</b>.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">26.1</span>What IGMP Really Does <span class="badge">ADDED</span></h3>
+<figure>
+<svg viewBox="0 0 680 220" role="img" aria-label="Video server sends multicast group 239.1.1.1 across routers using PIM; the local router uses IGMP with hosts on its LAN to learn that host H1 and H3 have joined the group, so it forwards the stream onto the LAN">
+  <defs><marker id="gm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="30" width="120" height="44" rx="6" class="or"/><text x="80" y="50" text-anchor="middle" class="b">Video source</text><text x="80" y="66" text-anchor="middle" class="mut">→ 239.1.1.1</text>
+  <circle cx="240" cy="52" r="22" class="pu"/><text x="240" y="57" text-anchor="middle" class="b">R</text>
+  <circle cx="380" cy="52" r="22" class="pu"/><text x="380" y="57" text-anchor="middle" class="b">R</text>
+  <path d="M140 52 H216 M262 52 H356" class="lna" marker-end="url(#gm)"/>
+  <text x="300" y="24" text-anchor="middle" class="mut">multicast routing (PIM, DVMRP)</text>
+  <path d="M380 74 V120" class="lna" marker-end="url(#gm)"/>
+  <rect x="300" y="122" width="360" height="90" rx="8" class="gr"/>
+  <text x="480" y="140" text-anchor="middle" class="b">Local LAN</text>
+  <rect x="320" y="152" width="70" height="40" rx="5" class="ac"/><text x="355" y="170" text-anchor="middle" class="b">H1</text><text x="355" y="185" text-anchor="middle" class="mut" font-size="10">member</text>
+  <rect x="405" y="152" width="70" height="40" rx="5" class="bx"/><text x="440" y="170" text-anchor="middle">H2</text><text x="440" y="185" text-anchor="middle" class="mut" font-size="10">not member</text>
+  <rect x="490" y="152" width="70" height="40" rx="5" class="ac"/><text x="525" y="170" text-anchor="middle" class="b">H3</text><text x="525" y="185" text-anchor="middle" class="mut" font-size="10">member</text>
+  <text x="430" y="100" class="b" style="fill:var(--add)">IGMP lives here:</text><text x="430" y="116" class="mut">host ↔ directly connected router</text>
+  <text x="20" y="120" class="mut">Router learns via IGMP</text><text x="20" y="136" class="mut">"at least one member of</text><text x="20" y="152" class="mut">239.1.1.1 is on my LAN"</text><text x="20" y="168" class="mut">→ forward the stream here.</text>
+</svg>
+<figcaption>Figure 26.2: IGMP works only on the last hop</figcaption>
+</figure>
+<div class="def"><b>IGMP:</b> a network-layer protocol (IP protocol number <b>2</b>) by which <b>hosts report their multicast group memberships</b> to their <b>directly connected (local) multicast router</b>, and the router periodically checks whether any members are still there.</div>
+<div class="box add"><span class="t">➕ Key facts</span>
+<ul><li>Scope is <b>local</b>: IGMP messages are sent with <b>TTL = 1</b> and never cross a router.</li>
+<li>The router does not track <i>which</i> hosts are members, only <b>whether at least one</b> member of each group exists on each interface.</li>
+<li>IGMP is <b>not a routing protocol</b>. Between routers, multicast trees are built by <b>PIM</b> (Protocol Independent Multicast), DVMRP or MOSPF.</li>
+<li>Applications: IPTV, live video, stock tickers, software distribution, online gaming, routing protocols themselves (OSPF uses 224.0.0.5/6).</li>
+<li>IPv6 equivalent: <b>MLD (Multicast Listener Discovery)</b>, carried in ICMPv6 (MLDv1 ≈ IGMPv2, MLDv2 ≈ IGMPv3).</li></ul></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">26.2</span>Join, Query, Report, Leave <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Message</th><th>Sent by → to</th><th>Destination IP</th><th>Purpose</th></tr>
+<tr><td><b>General query</b></td><td>router → all hosts</td><td>224.0.0.1 (all hosts)</td><td>"Is anyone still a member of any group?" (about every 125 s)</td></tr>
+<tr><td><b>Group-specific query</b> (v2+)</td><td>router → hosts</td><td>the group address</td><td>"Is anyone still in group G?" (after a leave)</td></tr>
+<tr><td><b>Membership report</b></td><td>host → router</td><td>the group address</td><td>"I am a member of G" (to join, or in answer to a query)</td></tr>
+<tr><td><b>Leave group</b> (v2+)</td><td>host → routers</td><td>224.0.0.2 (all routers)</td><td>"I am leaving G"</td></tr>
+</table></div>
+<div class="num"><span class="t">The life cycle</span>
+<b>1. Join:</b> an application wants group G; the host sends an <b>unsolicited membership report</b> for G at once. The router starts forwarding G onto the LAN.<br>
+<b>2. Monitor:</b> the router sends periodic <b>general queries</b>. Each host waits a <b>random delay</b> before reporting; if it hears another host report G first, it <b>suppresses</b> its own report (the router only needs one answer per group). This is called <b>report suppression</b>.<br>
+<b>3. Leave:</b> (v2) the host sends <b>leave group</b>; the router sends a group-specific query; if nobody reports within the timeout, the router stops forwarding G. (In v1 there is no leave message; the router simply times the group out after several unanswered queries.)</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">26.3</span>IGMP Versions 1, 2 and 3 <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th></th><th>IGMPv1</th><th>IGMPv2</th><th>IGMPv3</th></tr>
+<tr><td>RFC</td><td>1112 (1989)</td><td>2236 (1997)</td><td>3376 (2002)</td></tr>
+<tr><td>Messages</td><td>query, report</td><td>+ <b>leave group</b>, group-specific query</td><td>+ source lists in reports and queries</td></tr>
+<tr><td>Leaving a group</td><td>silent timeout (slow)</td><td>explicit leave (fast)</td><td>explicit, per source</td></tr>
+<tr><td>Max response time</td><td>fixed (10 s)</td><td>set in the query</td><td>set in the query</td></tr>
+<tr><td>Querier election</td><td>left to the routing protocol</td><td>lowest IP address wins</td><td>lowest IP address wins</td></tr>
+<tr><td>Source filtering</td><td>no</td><td>no</td><td><b>yes</b>: INCLUDE / EXCLUDE sources → <b>Source-Specific Multicast (SSM)</b></td></tr>
+<tr><td>Report sent to</td><td>group address</td><td>group address</td><td>224.0.0.22</td></tr>
+</table></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">26.4</span>Delivering Multicast on a LAN: MAC Mapping &amp; Snooping <span class="badge">ADDED</span></h3>
+<div class="def"><b>IPv4 multicast → Ethernet MAC:</b> take the fixed prefix <b>01:00:5E</b>, set the next bit to 0, and copy the <b>low-order 23 bits</b> of the group IP address. (A class D address has 28 variable bits, so <b>5 bits are lost</b>: <b>2⁵ = 32</b> different groups share each MAC address.)</div>
+<div class="formula">224.1.1.1     → low 23 bits: (1 AND 0x7F).1.1 = 01.01.01 → 01:00:5E:01:01:01
+239.129.1.1   → 129 = 1000 0001 → drop the top bit → 0000 0001 → 01:00:5E:01:01:01   (same MAC!)
+224.0.0.251   → 01:00:5E:00:00:FB   (mDNS)</div>
+<div class="box add"><span class="t">➕ Why the overlap matters</span>
+Because 32 groups share a MAC, a NIC may accept frames for a group it did not join; the <b>IP layer</b> then checks the full group address and discards the extras. (IPv6 maps multicast to <b>33:33</b> + the low 32 bits.)</div>
+<div class="box add"><span class="t">➕ IGMP snooping</span>
+A plain layer-2 switch floods multicast frames out of every port, like broadcast. With <b>IGMP snooping</b>, the switch <b>listens to IGMP reports and leaves</b> passing through it and forwards each group only to the ports where members are. This is essential for IPTV on switched LANs.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">26.5</span>ICMP vs IGMP &amp; Solved Questions <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th></th><th>ICMP</th><th>IGMP</th></tr>
+<tr><td>Full form</td><td>Internet Control Message Protocol</td><td>Internet Group Management Protocol</td></tr>
+<tr><td>Job</td><td>error reporting and diagnostics (ping, traceroute)</td><td>multicast group membership</td></tr>
+<tr><td>IP protocol number</td><td>1</td><td>2</td></tr>
+<tr><td>Communication</td><td>mostly unicast, to the source</td><td>multicast, host ↔ local router</td></tr>
+<tr><td>Scope</td><td>end to end across routers</td><td>local link only (TTL 1)</td></tr>
+<tr><td>IPv6 version</td><td>ICMPv6</td><td>MLD (inside ICMPv6)</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> IGMP is used for? <b>Managing multicast group membership</b> between hosts and their local router.<br><br>
+<b>Q2.</b> IP protocol number of IGMP? <b>2</b>.<br><br>
+<b>Q3.</b> Size of an IGMPv1 message? <b>8 bytes</b>.<br><br>
+<b>Q4.</b> Which IGMP version introduced the leave-group message? <b>IGMPv2</b>. Source-specific multicast? <b>IGMPv3</b>.<br><br>
+<b>Q5.</b> To which address does a router send a general query? <b>224.0.0.1</b> (all hosts). A v2 leave goes to? <b>224.0.0.2</b> (all routers).<br><br>
+<b>Q6.</b> Ethernet MAC for group 230.10.20.30? 10 = 0000 1010 (top bit already 0) → <b>01:00:5E:0A:14:1E</b>.<br><br>
+<b>Q7.</b> Which switch feature limits multicast flooding? <b>IGMP snooping</b>.<br><br>
+<b>Q8.</b> IPv6 replacement for IGMP? <b>MLD (Multicast Listener Discovery)</b>.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Typical MCQs: "IGMP works at which layer?" (<b>network</b>), "IGMP is used for?" (<b>multicasting / group management</b>), "class D addresses are for?" (<b>multicast</b>), and "which protocol is used for IPTV group joins?" (<b>IGMP</b>).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 26</h3>
+<ul>
+<li>IGMP = Internet Group Management Protocol: hosts tell their <b>local router</b> which <b>multicast groups</b> they belong to. Network layer, IP protocol <b>2</b>, TTL 1.</li>
+<li>Lecture: unicast (1→1) and multicast (1→many); IGMPv1 packet = Version (1) + Type + Unused + Checksum (16) + <b>Group address (32, the "chhupa rustam")</b> = <b>8 bytes</b>.</li>
+<li>Messages: general query (→ 224.0.0.1), group-specific query, membership report (→ group), leave (→ 224.0.0.2, v2+).</li>
+<li>Join = unsolicited report; monitor = periodic queries + <b>report suppression</b>; leave = leave message + group-specific query.</li>
+<li>v1 query/report · v2 + leave, max response time, querier election · v3 + source filtering (SSM).</li>
+<li>Multicast MAC = <b>01:00:5E</b> + low 23 bits → 32 groups per MAC. Switches use <b>IGMP snooping</b>.</li>
+<li>Not a routing protocol (that's PIM). IPv6 uses <b>MLD</b>.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 26 · Next: Chapter 27 — Routing</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="25-ICMP.html">← Ch 25: ICMP</a><a href="index.html">☰ All topics</a><a href="27-Routing.html">Ch 27: Routing →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

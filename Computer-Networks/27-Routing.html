@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Routing Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="26-IGMP.html">← Ch 26: IGMP</a><a href="index.html">☰ All topics</a><a href="28-Transport-Layer.html">Ch 28: Transport Layer →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 27: Routing</h1>
+  <p class="sub">Volume 02 · Part 27 · Built from the one-shot CN lecture transcript (section 27), plus the exam points the lecture skipped. How routers build their routing tables: static vs dynamic routing, then the two classic algorithms (Distance Vector and Link State) worked fully on one four-router network.</p>
+  <ul class="tags"><li>Routing vs Switching vs Flooding</li><li>Static vs Dynamic</li><li>Distance Vector (Bellman–Ford)</li><li>Rounds = n − 1</li><li>Shortcut Method</li><li>Link State</li><li>Flooding LSPs</li><li>Dijkstra</li><li>Sequence Numbers</li><li>Age / Timer</li><li>RIP · OSPF · BGP</li><li>Count to Infinity</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">27.1</span>Routing vs Switching vs Flooding</a></li>
+<li><a href="#s2"><span class="n">27.2</span>Static vs Dynamic Routing</a></li>
+<li><a href="#s3"><span class="n">27.3</span>Distance Vector Routing: Initial Routing Table (Round 1)</a></li>
+<li><a href="#s4"><span class="n">27.4</span>DVR Round 2: Sharing Distance Vectors with Neighbours</a></li>
+<li><a href="#s5"><span class="n">27.5</span>DVR: Number of Rounds (n − 1)</a></li>
+<li><a href="#s6"><span class="n">27.6</span>DVR: Shortcut Method for Routing Tables</a></li>
+<li><a href="#s7"><span class="n">27.7</span>Link State Routing: Flooding and Global Knowledge</a></li>
+<li><a href="#s8"><span class="n">27.8</span>LSR: Applying Dijkstra's Algorithm</a></li>
+<li><a href="#s9"><span class="n">27.9</span>LSR: Sequence Numbers in Link State Packets</a></li>
+<li><a href="#s10"><span class="n">27.10</span>LSR: Corrupted Sequence Number Problem and Timer Field</a></li>
+<li><a href="#s11"><span class="n">27.11</span>Count-to-Infinity &amp; Its Fixes<span class="x">ADDED</span></a></li>
+<li><a href="#s12"><span class="n">27.12</span>DVR vs LSR, RIP · OSPF · BGP &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 27</div>
+<h2 class="ch">Routing</h2>
+<p>A router forwards each packet by looking up its <b>routing table</b>. This chapter is about how that table gets built. Either an admin types it in (<b>static</b>), or the routers work it out among themselves (<b>dynamic</b>). The two dynamic families are <b>Distance Vector</b> (each router trusts its neighbours' summaries and improves its table round by round) and <b>Link State</b> (every router learns the whole map and runs Dijkstra on it). Both are worked on the same small network below, so you can compare the answers.</p>
+
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="The lecture's network: routers A, B, C, D with links A–B cost 15, A–D cost 5, B–C cost 1, B–D cost 8, C–D cost 4">
+  <path d="M150 50 L530 50" class="ln"/><text x="340" y="40" text-anchor="middle" class="b">15</text>
+  <path d="M150 50 L150 190" class="ln"/><text x="132" y="125" text-anchor="end" class="b">5</text>
+  <path d="M530 50 L530 190" class="ln"/><text x="548" y="125" class="b">1</text>
+  <path d="M150 190 L530 190" class="ln"/><text x="340" y="212" text-anchor="middle" class="b">4</text>
+  <path d="M150 190 L530 50" class="ln"/><text x="352" y="112" class="b">8</text>
+  <circle cx="150" cy="50" r="26" class="ac"/><text x="150" y="56" text-anchor="middle" class="b">A</text>
+  <circle cx="530" cy="50" r="26" class="ac"/><text x="530" y="56" text-anchor="middle" class="b">B</text>
+  <circle cx="530" cy="190" r="26" class="ac"/><text x="530" y="196" text-anchor="middle" class="b">C</text>
+  <circle cx="150" cy="190" r="26" class="ac"/><text x="150" y="196" text-anchor="middle" class="b">D</text>
+  <path d="M176 194 L504 194" style="stroke:var(--ok);stroke-width:3;fill:none" class="dash"/>
+  <path d="M154 76 L154 164" style="stroke:var(--ok);stroke-width:3;fill:none" class="dash"/>
+  <path d="M534 164 L534 76" style="stroke:var(--ok);stroke-width:3;fill:none" class="dash"/>
+  <text x="676" y="150" text-anchor="end" class="mut">best A→B:</text><text x="676" y="166" text-anchor="end" class="mut">A–D–C–B</text><text x="676" y="182" text-anchor="end" class="b" style="fill:var(--ok)">= 5+4+1 = 10</text>
+</svg>
+<figcaption>Figure 27.1: The lecture's network (n = 4 routers) used in every example</figcaption>
+</figure>
+
+<section id="s1">
+<h3><span class="n">27.1</span>Routing vs Switching vs Flooding</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+These three terms confuse many people.<br>
+• <b>Routing</b>: in the algorithm sense, "the process of <b>designing / creating a routing table</b>" (the general meaning, choosing the best path, from ch 19 also holds).<br>
+• <b>Switching</b>: just <b>sending a packet along some path</b>, node to node, until it reaches the destination.<br>
+• <b>Flooding</b>: sending the packet on <b>all possible paths</b>: whatever arrives on a router's incoming link is copied onto <b>every outgoing link</b>. No routing table is used at all.</div>
+<div class="tw"><table>
+<tr><th></th><th>Routing</th><th>Flooding</th></tr>
+<tr><td>Routing table</td><td>used</td><td>not used</td></tr>
+<tr><td>Paths used</td><td>selected path only</td><td>all paths</td></tr>
+<tr><td>Reliability</td><td>less: one path</td><td>more: some copy will surely arrive</td></tr>
+<tr><td>Duplicate packets</td><td>no</td><td><b>yes</b></td></tr>
+<tr><td>Traffic / congestion</td><td>low (sophisticated, estimated)</td><td><b>very high</b></td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Taming flooding</span>
+Flooding is used where robustness matters more than efficiency (military networks, distributing link-state packets in 27.7). To stop endless copies: put a <b>hop counter</b> in each packet (like TTL), keep a <b>sequence number</b> so a router forwards each packet only once, or use <b>selective flooding</b> (only on links roughly in the right direction).</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">27.2</span>Static vs Dynamic Routing</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Routing algorithms fall into two categories, by how the routing table is created, built, updated and maintained.<br>
+<b>Static (manual):</b> an admin edits every table by hand. If router R2 goes down, the alternative path from source to destination must be written in manually. If one road is jammed and a quiet side street exists, that too must be updated by hand, as must any new shorter path. This is <b>effort- and time-consuming</b>, so it is not used much.<br>
+<b>Dynamic:</b> no manual intervention, no manual maintenance, no manual table building: the routers do it themselves. Two popular dynamic algorithms asked in exams: <b>DVR (Distance Vector Routing)</b> and <b>LSR (Link State Routing)</b>.</div>
+<div class="tw"><table>
+<tr><th></th><th>Static (non-adaptive)</th><th>Dynamic (adaptive)</th></tr>
+<tr><td>Table built by</td><td>administrator, by hand</td><td>routing protocol, automatically</td></tr>
+<tr><td>Reacts to failures / congestion</td><td>no (until someone edits it)</td><td>yes</td></tr>
+<tr><td>Overhead</td><td>none on the network, CPU light</td><td>routing messages, more CPU and memory</td></tr>
+<tr><td>Security</td><td>more predictable</td><td>routes can be influenced by others</td></tr>
+<tr><td>Best for</td><td>small or stub networks, a default route</td><td>large and changing networks</td></tr>
+<tr><td>Examples</td><td><code>ip route …</code>, default route 0.0.0.0/0</td><td>RIP, OSPF, EIGRP, BGP</td></tr>
+</table></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">27.3</span>Distance Vector Routing: Initial Routing Table (Round 1)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Goal: a routing table for each of the <b>n = 4</b> routers A, B, C, D. Each table has three columns: <b>Destination</b>, <b>Distance</b> (it could equally be cost or delay; we always want the <b>minimum</b>, a minimisation problem), and <b>Next hop</b> (the next router to send to).<br>
+In <b>round 1</b> a router knows only its <b>directly connected neighbours</b> (one link, one edge). Reading A's table: to A, distance 0; to B, the direct link costs <b>15</b>, next hop B (there are shorter ways, but round 1 doesn't know them); to C there is no direct link, so distance <b>∞</b> and next hop blank ("I don't know"); to D, <b>5</b>, next hop D.</div>
+<div class="tw"><table>
+<tr><th>Round 1</th><th>to A</th><th>to B</th><th>to C</th><th>to D</th></tr>
+<tr><td><b>A</b></td><td>0 / A</td><td>15 / B</td><td>∞ / –</td><td>5 / D</td></tr>
+<tr><td><b>B</b></td><td>15 / A</td><td>0 / B</td><td>1 / C</td><td>8 / D</td></tr>
+<tr><td><b>C</b></td><td>∞ / –</td><td>1 / B</td><td>0 / C</td><td>4 / D</td></tr>
+<tr><td><b>D</b></td><td>5 / A</td><td>8 / B</td><td>4 / C</td><td>0 / D</td></tr>
+</table></div>
+<p class="mut" style="font-size:13.5px">Each cell = distance / next hop. Each row is that router's <b>distance vector</b>.</p>
+</section>
+
+<section id="s4">
+<h3><span class="n">27.4</span>DVR Round 2: Sharing Distance Vectors with Neighbours</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Round 2 considers paths of up to <b>2 links</b>: maybe taking two links is cheaper than one. Each router's <b>direct neighbours</b> send it their <b>distance vectors</b> (one column of distances, hence "distance vector routing"). A's neighbours are B and D: B sends (15, 0, 1, 8) and D sends (5, 8, 4, 0). A builds a new table from these.<br>
+Notation: <b>A,B</b> (comma) = the direct link; <b>A–B</b> (dash) = any path, possibly through other nodes.<br>
+• <b>A → B:</b> direct = 15, or via D = A→D 5 + D→B 8 = <b>13</b>. 13 &lt; 15 → distance 13, next hop <b>D</b>.<br>
+• <b>A → C:</b> via B = 15 + 1 = 16, via D = 5 + 4 = <b>9</b>. 9 beats ∞ and 16 → 9, next hop <b>D</b> (A must jump to D first).<br>
+• <b>A → D:</b> direct = 5; via B = 15 + 8 = 23 → keep <b>5</b>, next hop D.<br>
+B, C and D do the same with their own neighbours' vectors (B receives from A, C and D).</div>
+<div class="tw"><table>
+<tr><th>Round 2</th><th>to A</th><th>to B</th><th>to C</th><th>to D</th></tr>
+<tr><td><b>A</b></td><td>0 / A</td><td><b>13 / D</b></td><td><b>9 / D</b></td><td>5 / D</td></tr>
+<tr><td><b>B</b></td><td><b>13 / D</b></td><td>0 / B</td><td>1 / C</td><td><b>5 / C</b></td></tr>
+<tr><td><b>C</b></td><td><b>9 / D</b></td><td>1 / B</td><td>0 / C</td><td>4 / D</td></tr>
+<tr><td><b>D</b></td><td>5 / A</td><td><b>5 / C</b></td><td>4 / C</td><td>0 / D</td></tr>
+</table></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">27.5</span>DVR: Number of Rounds (n − 1)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+How many times must "share vectors with neighbours, then update" be repeated? <b>n − 1</b> rounds: with 4 routers, <b>3 rounds</b>.<br>
+Watch A → B improve: round 1 (1 link) = <b>15</b>; round 2 (2 links: A–D–B) = <b>13</b>; round 3 (3 links: A–D–C–B = 5 + 4 + 1) = <b>10</b>, the true minimum. The guarantee: after <b>n − 1 rounds</b> every table holds the minimum distance. With many routers this is long and slow, which is why the shortcut matters.</div>
+<div class="tw"><table>
+<tr><th>Round 3 (final)</th><th>to A</th><th>to B</th><th>to C</th><th>to D</th></tr>
+<tr><td><b>A</b></td><td>0 / A</td><td><b>10 / D</b></td><td>9 / D</td><td>5 / D</td></tr>
+<tr><td><b>B</b></td><td><b>10 / C</b></td><td>0 / B</td><td>1 / C</td><td>5 / C</td></tr>
+<tr><td><b>C</b></td><td>9 / D</td><td>1 / B</td><td>0 / C</td><td>4 / D</td></tr>
+<tr><td><b>D</b></td><td>5 / A</td><td>5 / C</td><td>4 / C</td><td>0 / D</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Why n − 1</span>
+A shortest path in an n-node network uses at most <b>n − 1 links</b>, and each round lets information travel one more link. This is the <b>Bellman–Ford</b> algorithm run in a distributed way. In practice routers do not count rounds; they keep exchanging vectors (RIP every 30 s) and stop changing when the tables <b>converge</b>.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">27.6</span>DVR: Shortcut Method for Routing Tables</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The fast way to fill a router's new table. Write the neighbours' vectors side by side; above each, write the <b>cost of the link to that neighbour</b>. For each destination, <b>add</b> the link cost to the neighbour's distance, take the <b>minimum</b>, and record that neighbour as the next hop.</div>
+<div class="num"><span class="t">Router A, round 2, by the shortcut</span>
+<div class="formula">neighbour:          B (link 15)     D (link 5)       min → next hop
+to B :  15 + 0  = 15     5 + 8  = 13       13 → D
+to C :  15 + 1  = 16     5 + 4  =  9        9 → D
+to D :  15 + 8  = 23     5 + 0  =  5        5 → D</div></div>
+<div class="num"><span class="t">Router C, round 2, by the shortcut</span>
+<div class="formula">neighbour:          B (link 1)      D (link 4)       min → next hop
+to A :   1 + 15 = 16     4 + 5  =  9        9 → D
+to B :   1 + 0  =  1     4 + 8  = 12        1 → B
+to D :   1 + 8  =  9     4 + 0  =  4        4 → D</div>
+The formula behind it: <b>D<sub>x</sub>(y) = min over neighbours v of { c(x, v) + D<sub>v</sub>(y) }</b> (the Bellman–Ford equation).</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">27.7</span>Link State Routing: Flooding and Global Knowledge</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Much simpler: no n − 1 rounds. Every router keeps a <b>link-state packet (LSP)</b> listing its <b>direct links</b>: A: B 15, D 5 · B: A 15, D 8, C 1 · D: A 5, B 8, C 4 · C: D 4, B 1. (The same information as the round-1 vectors.)<br>
+The big difference: in DVR a router got only its <b>neighbours'</b> vectors (<b>local knowledge</b>). In LSR every router <b>floods</b> its packet to <b>everyone</b>, neighbour or not. So C's information also reaches A, and every router gets every other router's packet: <b>global knowledge</b>. This is the most important difference between DVR and LSR.<br>
+With global knowledge, each router draws the <b>whole network diagram</b> for itself (A–B 15, A–D 5, D–C 4, C–B 1, B–D 8).</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">27.8</span>LSR: Applying Dijkstra's Algorithm</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+On that diagram the router runs <b>Dijkstra's algorithm</b> (a strange name, but very useful) and gets its final table. (The full Dijkstra method is covered in the lecturer's DAA one-shot.) In the exam you can often see the shortest paths by inspection:<br>
+• A → B: options 15, 5 + 8 = 13, 5 + 4 + 1 = <b>10</b> → 10, next hop <b>D</b>.<br>
+• A → C: 15 + 1 = 16 or 5 + 4 = <b>9</b> → 9, next hop D.<br>
+• A → D: direct <b>5</b> (15 + 8 = 23 or 15 + 1 + 4 = 20 are far longer), next hop D.<br>
+Very fast, and the same answer DVR reached only after 3 rounds.</div>
+<div class="num"><span class="t">Dijkstra from A, step by step</span>
+<div class="formula">step  settled        B          C          D
+init  {A}            15 (A)     ∞          5 (A)
+1     {A, D}         13 (D)     9 (D)      5 ✔      ← D is the closest; relax via D
+2     {A, D, C}      10 (C)     9 ✔                  ← C next; B via C = 9 + 1 = 10
+3     {A, D, C, B}   10 ✔
+Final table of A:  B 10 via D · C 9 via D · D 5 via D</div></div>
+</section>
+
+<section id="s9">
+<h3><span class="n">27.9</span>LSR: Sequence Numbers in Link State Packets</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The LSP has one more field. Routers R1 … R5: R1 floods its packet <b>version 1</b>; one copy takes a long road (R2, R3, R4) to R5. Meanwhile R1 sends packets 2 and 3, which reach R5 quickly. A <b>higher number means newer</b> (updated) information, and routers always want the latest. So when the slow packet 1 finally arrives, R5 already has packet 3 from R1: packet 1 is old news and is <b>discarded</b>.<br>
+That number is the <b>sequence number</b>, carried in every LSP: higher = updated, lower = outdated.</div>
+<div class="formula">LSP = [ source router | sequence number | age | list of (neighbour, cost) ]</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">27.10</span>LSR: Corrupted Sequence Number Problem and Timer Field</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+R5 keeps the latest sequence number from each router: R1 = 3, R2 = 5, R3 = 10, R4 = 9. R1's next packet should carry 4, but the field gets <b>corrupted</b> into, say, <b>101</b>. Being higher, it is accepted. Now R1's real packets 4, 5, 6 … 100 all look <b>older</b> than 101 and are <b>discarded</b>: R5 sits on stale information while the updates are thrown away.<br>
+<b>Fix: a timer (age) field.</b> Each stored latest packet may be kept only for a limited time. When the timer runs out, it is discarded and the next packet that arrives (say 5) is accepted. Even if a sequence number was corrupted, the router recovers after the timeout and stays up to date.</div>
+<div class="box add"><span class="t">➕ How real protocols handle it</span>
+OSPF uses a large <b>32-bit sequence number</b> space (so wrap-around is rare) plus an <b>age</b> field: every LSA is refreshed every 30 minutes and removed when its age reaches <b>MaxAge = 1 hour</b>. Every LSA is also protected by a <b>checksum</b>, so corrupted ones are rejected rather than stored.</div>
+</section>
+
+<section id="s11">
+<h3><span class="n">27.11</span>Count-to-Infinity &amp; Its Fixes <span class="badge">ADDED</span></h3>
+<div class="box trap"><span class="t">⚠️ The classic DVR weakness</span>
+"Good news travels fast, <b>bad news travels slowly</b>." Chain A — B — C, cost 1 each. If link A–B breaks, B no longer reaches A directly, but C still advertises "A at distance 2". B believes it: "A via C = 3". Then C updates to 4 via B, B to 5 via C … the two keep counting up towards infinity, possibly forming a <b>routing loop</b> meanwhile. This is the <b>count-to-infinity problem</b>; link state does not suffer from it.</div>
+<div class="tw"><table>
+<tr><th>Fix</th><th>Idea</th></tr>
+<tr><td><b>Define infinity small</b></td><td>RIP treats <b>16 hops = unreachable</b>, so counting stops quickly (and RIP networks are limited to 15 hops)</td></tr>
+<tr><td><b>Split horizon</b></td><td>never advertise a route back out of the interface you learned it from</td></tr>
+<tr><td><b>Poison reverse</b></td><td>advertise it back, but with distance ∞ ("don't use me for this")</td></tr>
+<tr><td><b>Triggered updates / hold-down timers</b></td><td>send changes immediately; ignore worse news for a while after a route fails</td></tr>
+</table></div>
+</section>
+
+<section id="s12">
+<h3><span class="n">27.12</span>DVR vs LSR, RIP · OSPF · BGP &amp; Solved Questions <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th></th><th>Distance Vector (DVR)</th><th>Link State (LSR)</th></tr>
+<tr><td>Knowledge</td><td><b>local</b>: neighbours' vectors only</td><td><b>global</b>: full topology map</td></tr>
+<tr><td>Shares</td><td>its whole table, with neighbours only</td><td>its own links (LSP), flooded to all routers</td></tr>
+<tr><td>Algorithm</td><td>Bellman–Ford</td><td>Dijkstra (shortest path first)</td></tr>
+<tr><td>Updates</td><td>periodic</td><td>on change (plus periodic refresh)</td></tr>
+<tr><td>Convergence</td><td>slow; count-to-infinity</td><td>fast; no count-to-infinity</td></tr>
+<tr><td>CPU / memory</td><td>low</td><td>high (stores the whole map)</td></tr>
+<tr><td>Bandwidth</td><td>whole tables, regularly</td><td>small LSPs, but flooding</td></tr>
+<tr><td>Protocol</td><td><b>RIP</b> (also IGRP, EIGRP is advanced DV)</td><td><b>OSPF</b>, IS-IS</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th></th><th>RIP</th><th>OSPF</th><th>BGP</th></tr>
+<tr><td>Type</td><td>distance vector</td><td>link state</td><td><b>path vector</b></td></tr>
+<tr><td>Scope</td><td>intra-domain (IGP)</td><td>intra-domain (IGP)</td><td><b>inter-domain</b> (EGP), between autonomous systems</td></tr>
+<tr><td>Metric</td><td><b>hop count</b> (max 15; 16 = ∞)</td><td><b>cost</b> (based on bandwidth)</td><td>path attributes / policy</td></tr>
+<tr><td>Updates</td><td>every <b>30 s</b></td><td>on change; LSA refresh 30 min</td><td>incremental</td></tr>
+<tr><td>Runs over</td><td><b>UDP 520</b></td><td>directly on IP, protocol <b>89</b></td><td><b>TCP 179</b></td></tr>
+<tr><td>Extras</td><td>RIPv2 adds masks (classless) and multicast 224.0.0.9</td><td>areas (backbone area 0), hello packets, 224.0.0.5/6</td><td>the routing protocol of the Internet</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> With 6 routers, how many DVR rounds guarantee the shortest paths? n − 1 = <b>5</b>.<br><br>
+<b>Q2.</b> In the lecture's network, what is C's distance and next hop to A after convergence? <b>9 via D</b>.<br><br>
+<b>Q3.</b> Router X has neighbours Y (link 2) and Z (link 6). Y says "W at 7", Z says "W at 1". X's route to W? Via Y: 9, via Z: <b>7</b> → <b>7 via Z</b>.<br><br>
+<b>Q4.</b> Which algorithm suffers from count-to-infinity? <b>Distance vector</b> (RIP).<br><br>
+<b>Q5.</b> Which routing protocol uses Dijkstra? <b>OSPF</b>. Which uses Bellman–Ford? <b>RIP</b>.<br><br>
+<b>Q6.</b> RIP's maximum hop count? <b>15</b> (16 = unreachable).<br><br>
+<b>Q7.</b> Which protocol routes between autonomous systems? <b>BGP</b> (path vector, TCP 179).<br><br>
+<b>Q8.</b> In LSR, why are sequence numbers used? To tell <b>new LSPs from old</b> ones arriving late; an <b>age</b> field fixes the corrupted-sequence problem.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Frequent MCQs: "RIP is based on?" (<b>distance vector / Bellman–Ford</b>), "OSPF is based on?" (<b>link state / Dijkstra</b>), "RIP metric?" (<b>hop count</b>), "BGP is?" (<b>exterior, path vector</b>), "flooding drawback?" (<b>duplicates, congestion</b>), "count-to-infinity fix?" (<b>split horizon / poison reverse</b>).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 27</h3>
+<ul>
+<li>Routing = build the routing table; switching = send along a path; <b>flooding</b> = all outgoing links, no table: reliable but duplicates and congestion.</li>
+<li>Static = manual, slow to adapt; dynamic = automatic: <b>DVR</b> and <b>LSR</b>.</li>
+<li>DVR round 1: only direct neighbours (A: 0, 15, ∞, 5). Each round: get neighbours' vectors, new distance = <b>min(link cost + neighbour's distance)</b>, next hop = that neighbour.</li>
+<li>Rounds needed = <b>n − 1</b>. A→B: 15 → 13 → <b>10</b> (A–D–C–B). Final A: B 10/D, C 9/D, D 5/D.</li>
+<li>Shortcut: write neighbours' vectors, add link costs, take the minimum per row.</li>
+<li>LSR: each router floods its <b>LSP</b> to all → <b>global knowledge</b> → draws the map → <b>Dijkstra</b>. Same answers, faster.</li>
+<li>LSP <b>sequence number</b>: higher = newer; old ones discarded. Corrupted big number blocks updates → <b>timer/age</b> field.</li>
+<li>DVR weakness: <b>count-to-infinity</b> → infinity = 16, split horizon, poison reverse.</li>
+<li><b>RIP</b> (DV, hop count ≤ 15, 30 s, UDP 520) · <b>OSPF</b> (LS, cost, Dijkstra, IP 89, areas) · <b>BGP</b> (path vector, inter-AS, TCP 179).</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 27 · Next: Chapter 28 — Transport Layer</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="26-IGMP.html">← Ch 26: IGMP</a><a href="index.html">☰ All topics</a><a href="28-Transport-Layer.html">Ch 28: Transport Layer →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

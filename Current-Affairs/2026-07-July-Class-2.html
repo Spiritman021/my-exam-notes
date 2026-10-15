@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CA July 2026 · Class 2</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+
+.item{border-top:1px solid var(--line);padding:12px 0 4px}
+.item:first-of-type{border-top:0;padding-top:0}
+.item h4{margin:0 0 4px;font-size:16.5px}
+.item ul{margin:4px 0}
+.gk{font-size:13.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:6px 10px;margin:6px 0 4px}
+.gk b{color:var(--ink)}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+.tag.bank{color:var(--lec);border:1px solid var(--lec)}
+.tag.hot{color:var(--alert);border:1px solid var(--alert)}
+.recallbar{position:sticky;top:0;z-index:4;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--alert);border-radius:6px;padding:10px 14px;margin:16px 0;font-size:14px}
+.recallbar button{font:inherit;font-size:13px;background:var(--accent);color:#fff;border:0;border-radius:4px;padding:5px 12px;cursor:pointer}
+.recallbar button.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+.recallbar .hint{color:var(--muted);flex:1;min-width:200px}
+html.recall .item b.k{background:var(--surface-2);color:transparent;border-radius:3px;outline:1px dashed var(--muted);cursor:pointer;user-select:none}
+html.recall .item b.k.shown{color:inherit;background:var(--accent-soft);outline:0}
+.quiz details{border:1px solid var(--line);border-radius:5px;margin:6px 0;background:var(--surface)}
+.quiz summary{cursor:pointer;padding:8px 12px;font-weight:550}
+.quiz details p{margin:0;padding:0 12px 10px 32px;color:var(--accent);font-weight:600}
+.howto ol{margin:6px 0 0}
+.item::after{content:"";display:block;clear:both}
+.item figure.pic{float:right;width:150px;margin:2px 0 8px 16px;text-align:center}
+.item figure.pic img{width:150px;height:110px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px;display:block}
+.item figure.pic figcaption{font-size:11px;letter-spacing:0;text-transform:none;font-weight:500;margin-top:3px;line-height:1.3}
+.item figure.pic figcaption a{color:var(--muted);text-decoration:none}
+@media (max-width:600px){.item figure.pic{width:110px;margin-left:10px}.item figure.pic img{width:110px;height:84px}}
+@media print{.item figure.pic{break-inside:avoid}}
+.gt{position:relative;border-bottom:1.5px dotted var(--accent);cursor:help;outline:0}
+.gt .pop{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:270px;max-width:80vw;padding:10px 12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13px;font-weight:400;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal}
+.gt .pop::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.gt:hover .pop,.gt:focus .pop,.gt:focus-within .pop{display:block}
+.gt .pop img{float:right;width:64px;height:48px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:4px;padding:2px;margin:0 0 4px 8px}
+.gt .pop .pt{display:block;color:var(--accent);font-size:13.5px;margin-bottom:2px}
+.gt .pop .ps{display:block;color:var(--muted);font-size:12.5px;margin-bottom:4px}
+.gt .pop .pl{display:block;clear:both;margin:0;padding:0}
+.gt .pop .pi{display:block;position:relative;padding-left:14px;margin:2px 0}
+.gt .pop .pi::before{content:"";position:absolute;left:3px;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+html.recall .gt .pop{color:var(--ink)}
+html.recall b.k:not(.shown) .gt{border-bottom:0}
+html.recall b.k:not(.shown) .gt .pop{display:none!important}
+@media print{.gt .pop{display:none!important}}
+</style>
+<script src="../assets/embed.js"></script>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Class navigation"><a href="2026-07-July-Class-1.html">← Class 1</a><a href="index.html">☰ All classes</a><a href="2026-07-July-Class-3.html">Class 3 →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT · Current Affairs · July 2026</div>
+  <h1>Current Affairs — July 2026 · Class 2</h1>
+  <p class="sub">Class 2 of the July 2026 monthly series (Ashish Gautam, Adda247) · 28 topics, grouped by exam category.</p>
+  <div class="legend"><span class="l1">🏦 Banking focus</span><span class="l2">➕ Static GK link</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 Likely question</span></div>
+</header>
+<div class="box lec howto"><span class="t">🎓 How to study this page</span>
+<ol>
+<li><b>Read once</b> with Recall mode off. Hover over (or tap) any <span style="border-bottom:1.5px dotted var(--accent)">dotted name</span> to see its static GK.</li>
+<li><b>Turn Recall mode on</b>: the key facts are hidden. Say each one before you click to reveal it.</li>
+<li><b>Take the self-test</b> at the end. Revise again tomorrow, in a week and in a month, using only the Rapid Revision box after that.</li>
+</ol></div>
+<div class="recallbar"><button id="recall" type="button">Recall mode: off</button><button id="revealall" class="ghost" type="button">Reveal all</button><span class="hint">Hides the key facts. Click any blank to reveal it.</span></div>
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#c1"><span class="n">1</span>Payments &amp; Fintech</a></li><li><a href="#c2"><span class="n">2</span>Economy &amp; Business</a></li><li><a href="#c3"><span class="n">3</span>Government Schemes</a></li><li><a href="#c4"><span class="n">4</span>Science, Tech &amp; Aviation</a></li><li><a href="#c5"><span class="n">5</span>Appointments</a></li><li><a href="#c6"><span class="n">6</span>International</a></li><li><a href="#c7"><span class="n">7</span>Sports</a></li><li><a href="#quiz"><span class="n">8</span>Self-test (15 questions)</a></li><li><a href="#rapid"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+<section id="c1"><h3><span class="n">1</span>Payments &amp; Fintech</h3><div class="item"><figure class="pic"><img src="img/society-for-worldwide-interbank-financial-telecomm-87fe33.png" alt="SWIFT" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:SWIFT_2021_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">SWIFT</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">NPCI<span class="pop" role="tooltip"><img src="img/national-payments-corporation-of-india-07d24f.png" alt=""><b class="pt">NPCI</b><span class="ps">National Payments Corporation of India</span><span class="pl"><span class="pi">Est. <b>2008</b></span><span class="pi">HQ <b>Mumbai</b></span><span class="pi">Umbrella body for retail payments, set up by RBI &amp; IBA</span><span class="pi">Runs UPI, RuPay, IMPS</span></span></span></span>'s Dilip Asbe joins <span class="gt" tabindex="0">SWIFT<span class="pop" role="tooltip"><img src="img/society-for-worldwide-interbank-financial-telecomm-87fe33.png" alt=""><b class="pt">SWIFT</b><span class="ps">Society for Worldwide Interbank Financial Telecommunication</span><span class="pl"><span class="pi">Est. <b>1973</b></span><span class="pi">HQ <b>La Hulpe, Belgium</b></span><span class="pi">Messaging network, not a bank</span></span></span></span>'s Global Supervisory Board</h4><ul><li>Dilip Asbe, <b class="k">MD &amp; CEO of NPCI</b>, joins SWIFT's Global Supervisory Board.</li><li>India's <b class="k">first direct representation</b> on SWIFT's top supervisory body.</li></ul><div class="gk">➕ <b>Static GK:</b> SWIFT (Society for Worldwide Interbank Financial Telecommunication) — Est. <b class="k">1973</b> · HQ <b class="k">La Hulpe, Belgium</b>. A secure messaging network, <b>not a bank</b>: it holds or moves no money. SWIFT code = <b class="k">8 or 11</b> characters: 4 bank code + 2 country code + 2 location code + 3 optional branch code.</div><div class="box trap"><span class="t">⚠️ Exam trap</span>SWIFT code layout is a favourite IT/banking question: <b>4-2-2-(3)</b> = Bank-Country-Location-(Branch).</div></div><div class="item"><figure class="pic"><img src="img/national-payments-corporation-of-india-07d24f.png" alt="National Payments Corporation of India" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:National_Payments_Corporation_of_India_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">National Payments Corporation of India</a></figcaption></figure><h4><span class="gt" tabindex="0">NPCI<span class="pop" role="tooltip"><img src="img/national-payments-corporation-of-india-07d24f.png" alt=""><b class="pt">NPCI</b><span class="ps">National Payments Corporation of India</span><span class="pl"><span class="pi">Est. <b>2008</b></span><span class="pi">HQ <b>Mumbai</b></span><span class="pi">Umbrella body for retail payments, set up by RBI &amp; IBA</span><span class="pi">Runs UPI, RuPay, IMPS</span></span></span></span> partners HSBC India &amp; J.P. Morgan Payments for real-time forex settlement</h4><ul><li>Real-time FX settlement for <b class="k">cross-border <span class="gt" tabindex="0">UPI<span class="pop" role="tooltip"><img src="img/file-upi-logo-svg-7ab817.png" alt=""><b class="pt">UPI</b><span class="ps">Unified Payments Interface</span><span class="pl"><span class="pi">Launched <b>2016</b> by <b>NPCI</b></span></span></span></span></b>: exchange rate fixed at the time of payment.</li><li>Customer sees the exact INR amount before confirming.</li></ul></div><div class="item"><figure class="pic"><img src="img/seychelles-d2e444.png" alt="Seychelles" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Flag_of_Seychelles.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Seychelles</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">UPI<span class="pop" role="tooltip"><img src="img/file-upi-logo-svg-7ab817.png" alt=""><b class="pt">UPI</b><span class="ps">Unified Payments Interface</span><span class="pl"><span class="pi">Launched <b>2016</b> by <b>NPCI</b></span></span></span></span> goes abroad — <span class="gt" tabindex="0">Seychelles<span class="pop" role="tooltip"><b class="pt">Seychelles</b><span class="ps">Island nation in the Indian Ocean</span><span class="pl"><span class="pi">Capital <b>Victoria</b></span><span class="pi">Currency <b>Seychellois rupee</b></span></span></span></span> and <span class="gt" tabindex="0">Greece<span class="pop" role="tooltip"><b class="pt">Greece</b><span class="pl"><span class="pi">Capital <b>Athens</b></span><span class="pi">Currency <b>Euro</b></span></span></span></span></h4><ul><li>Seychelles: <b class="k"><span class="gt" tabindex="0">NIPL<span class="pop" role="tooltip"><b class="pt">NIPL</b><span class="ps">NPCI International Payments Ltd</span><span class="pl"><span class="pi">International arm of NPCI</span><span class="pi">Takes UPI and RuPay abroad</span></span></span></span></b> + <b class="k">Central Bank of Seychelles</b> agreement; Indian travellers pay by scanning QR with any UPI app.</li><li>Greece: live via <b class="k"><span class="gt" tabindex="0">Eurobank<span class="pop" role="tooltip"><b class="pt">Eurobank</b><span class="ps">Greek bank</span><span class="pl"><span class="pi">HQ <b>Athens</b></span></span></span></span></b> + NIPL; announced during Piyush Goyal's visit to Athens.</li><li>UPI now available in <b class="k">10</b> countries (in different forms).</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Seychelles appears twice this month: the <b>UPI agreement</b> (NIPL) and the <b>₹1,250 cr Line of Credit</b> (EXIM Bank) — see International.</div></div></section>
+<section id="c2"><h3><span class="n">2</span>Economy &amp; Business</h3><div class="item"><figure class="pic"><img src="img/hindustan-petroleum-675468.png" alt="Hindustan Petroleum" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Hindustan_Petroleum_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Hindustan Petroleum</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>PM dedicates India's 24th refinery at Pachpadra, Rajasthan</h4><ul><li>Location: <b class="k">Pachpadra, Balotra district, Rajasthan</b>; India's <b class="k">24th</b> refinery.</li><li>India's <b class="k">first Greenfield Integrated Refinery-cum-Petrochemical Complex</b>.</li><li>Built by <b class="k">HPCL Rajasthan Refinery Ltd (HRRL)</b>: HPCL <b class="k">74%</b>, Rajasthan govt <b class="k">26%</b>.</li><li>Investment <b class="k">₹79,450 crore+</b>; refining <b class="k">9 MMTPA</b>; petrochemicals <b class="k">2.4 MMTPA</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/renesas-electronics-2db2e6.png" alt="Renesas Electronics" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Renesas_Electronics_logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Renesas Electronics</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>CG Semi's ₹7,500 crore OSAT facility opens at Sanand, Gujarat</h4><ul><li><b class="k">OSAT</b> = Outsourced Semiconductor Assembly and Test; marks start of commercial chip production.</li><li>Partners: <b class="k">Renesas Electronics (Japan)</b> and <b class="k">Stars Microelectronics (Thailand)</b>.</li><li>Among the first four projects approved under the <b class="k">India Semiconductor Mission (ISM)</b>.</li></ul><div class="gk">➕ <b>Static GK:</b> Gujarat chip map: <b>Tata Electronics fab — Dholera</b> · <b>Micron ATMP — Sanand</b> · <b>CG Semi OSAT — Sanand</b> · Kaynes OSAT.</div><div class="box trap"><span class="t">⚠️ Exam trap</span>Dholera = Tata's <b>fab</b>; Sanand = Micron and CG Semi <b>assembly/test</b> plants. Don't mix them up.</div></div><div class="item"><figure class="pic"><img src="img/noida-international-airport-477182.jpg" alt="Noida International Airport" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Prime_Minister_of_Bharat,_Shri_Narendra_Damodardas_Modi_at_the_inauguration_ceremony_of_the_Noida_International_Airport,_Jewar.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · GODL-India">Noida International Airport</a></figcaption></figure><h4>Amber &amp; Ascent-K Circuits plant — foundation stone at Jewar, UP</h4><ul><li>Location: <b class="k">Jewar, Uttar Pradesh</b>; by Ashwini Vaishnaw, Bhupender Yadav and CM Yogi Adityanath.</li></ul></div></section>
+<section id="c3"><h3><span class="n">3</span>Government Schemes</h3><div class="item"><figure class="pic"><img src="img/ayushman-bharat-pradhan-mantri-jan-arogya-yojana-646347.png" alt="Ayushman Bharat Yojana" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Ayushman_Bharat_logo.png" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Ayushman Bharat Yojana</a></figcaption></figure><h4>Ayushman Sarathi — WhatsApp chatbot for PM-JAY</h4><ul><li>Launched by Health Minister <b class="k">J.P. Nadda</b>; developed by the <b class="k"><span class="gt" tabindex="0">National Health Authority<span class="pop" role="tooltip"><b class="pt">National Health Authority</b><span class="ps">NHA</span><span class="pl"><span class="pi">Implements <b>AB PM-JAY</b></span><span class="pi">Under Ministry of Health &amp; Family Welfare</span><span class="pi">HQ New Delhi</span></span></span></span></b>.</li><li>Lets beneficiaries access AB PM-JAY services on WhatsApp anytime.</li></ul></div><div class="item"><figure class="pic"><img src="img/vasantrao-naik-marathwada-krishi-vidyapeeth-e3c755.png" alt="Vasantrao Naik Marathwada Krishi Vidyapeeth" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Vasantrao_Naik_Marathwada_Krishi_Vidyapeeth_logo.png" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Vasantrao Naik Marathwada Krishi Vidyapeeth</a></figcaption></figure><h4>MoFPI Common Incubation Centre at Parbhani, Maharashtra</h4><ul><li>Inaugurated by Food Processing Minister <b class="k">Chirag Paswan</b> at College of Food Technology, <b class="k">Vasantrao Naik Marathwada Krishi Vidyapeeth, Parbhani</b>.</li><li>For food-processing startups, value addition and skills.</li></ul></div></section>
+<section id="c4"><h3><span class="n">4</span>Science, Tech &amp; Aviation</h3><div class="item"><figure class="pic"><img src="img/indian-space-research-organisation-9cdedb.png" alt="ISRO" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Indian_Space_Research_Organisation_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">ISRO</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>India's first satellite-based landing (<span class="gt" tabindex="0">SLS<span class="pop" role="tooltip"><b class="pt">SLS</b><span class="ps">Satellite-Based Landing System</span><span class="pl"><span class="pi">Guides landing using satellite navigation instead of ground-based radio aids</span></span></span></span>) of a jet, using GAGAN</h4><ul><li>By <b class="k"><span class="gt" tabindex="0">DGCA<span class="pop" role="tooltip"><b class="pt">DGCA</b><span class="ps">Directorate General of Civil Aviation</span><span class="pl"><span class="pi">India's aviation regulator</span><span class="pi">Under <b>Ministry of Civil Aviation</b></span><span class="pi">HQ <b>New Delhi</b></span></span></span></span></b> on an <b class="k">IndiGo Airbus A320</b> at <b class="k">Udaipur</b> Airport, Rajasthan.</li><li>First satellite-guided landing of a jet in India — earlier only on turboprops.</li><li><b class="k">GAGAN</b> = GPS Aided GEO Augmented Navigation, India's <b class="k">SBAS</b>, built by <b class="k"><span class="gt" tabindex="0">ISRO<span class="pop" role="tooltip"><img src="img/indian-space-research-organisation-9cdedb.png" alt=""><b class="pt">ISRO</b><span class="ps">Indian Space Research Organisation</span><span class="pl"><span class="pi">Est. <b>1969</b></span><span class="pi">HQ <b>Bengaluru</b></span><span class="pi">Under Department of Space</span></span></span></span> + <span class="gt" tabindex="0">AAI<span class="pop" role="tooltip"><b class="pt">AAI</b><span class="ps">Airports Authority of India</span><span class="pl"><span class="pi">Est. <b>1995</b></span><span class="pi">HQ <b>New Delhi</b></span><span class="pi">Under Ministry of Civil Aviation</span></span></span></span></b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/undavalli-caves-88d600.jpg" alt="Undavalli Caves" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Undavalli_Caves,_Vijayawada,_Guntur,_Andhra_Pradesh,_India_(2018)_1.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Undavalli Caves</a></figcaption></figure><h4>First PinS instrument approach for helicopters — Undavalli, <span class="gt" tabindex="0">Andhra Pradesh<span class="pop" role="tooltip"><img src="img/undavalli-caves-88d600.jpg" alt=""><b class="pt">Andhra Pradesh</b><span class="pl"><span class="pi">Capital <b class="k">Amaravati</b></span><span class="pi">CM <b class="k">N. Chandrababu Naidu</b></span><span class="pi">Governor S. Abdul Nazeer</span><span class="pi">Tiger Reserve Nagarjunasagar-Srisailam</span></span></span></span></h4><ul><li><b class="k">Point-in-Space (PinS)</b>: satellite-based procedure for precise helicopter landings without ground instrument infrastructure.</li><li>At <b class="k">Undavalli Heliport, AP</b>; developed by <b class="k"><span class="gt" tabindex="0">AAI<span class="pop" role="tooltip"><b class="pt">AAI</b><span class="ps">Airports Authority of India</span><span class="pl"><span class="pi">Est. <b>1995</b></span><span class="pi">HQ <b>New Delhi</b></span><span class="pi">Under Ministry of Civil Aviation</span></span></span></span></b>, approved by <span class="gt" tabindex="0">DGCA<span class="pop" role="tooltip"><b class="pt">DGCA</b><span class="ps">Directorate General of Civil Aviation</span><span class="pl"><span class="pi">India's aviation regulator</span><span class="pi">Under <b>Ministry of Civil Aviation</b></span><span class="pi">HQ <b>New Delhi</b></span></span></span></span>; Ministry of Civil Aviation.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Both aviation firsts are <b>satellite-based</b>: GAGAN/SLS = jet at Udaipur; PinS = helicopter at Undavalli.</div></div></section>
+<section id="c5"><h3><span class="n">5</span>Appointments</h3><p class="cs">Group by organisation — who heads what, and since when.</p><div class="item"><figure class="pic"><img src="img/central-board-of-direct-taxes-a7a278.png" alt="Central Board of Direct Taxes" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Logo_of_Income_Tax_Department_India.png" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Central Board of Direct Taxes</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Ravi Agrawal reappointed CBDT Chairman for six months</h4><ul><li>Extension: <b class="k">1 July 2026 – 31 December 2026</b> (contract basis).</li><li>CBDT is under the <b class="k">Department of Revenue, Ministry of Finance</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/vikram-misri-12162d.jpg" alt="Vikram Misri" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Vikram_Misri_in_2024_(cropped).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Vikram Misri</a></figcaption></figure><h4>Vikram Misri — Foreign Secretary tenure extended by one year</h4><ul><li>Approved by the <b class="k">ACC</b>; <b class="k">15 July 2026 – 14 July 2027</b>.</li></ul></div><div class="item"><h4><span class="tag bank">🏦 Banking</span><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> appoints Ravi Shankar as Executive Director</h4><ul><li>Will oversee <b class="k">Department of Statistics and Information Management (DSIM)</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span><b>Ravi Agrawal</b> = CBDT Chairman; <b>Ravi Shankar</b> = RBI Executive Director.</div></div><div class="item"><figure class="pic"><img src="img/malaysia-3f0e49.png" alt="Malaysia" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Flag_of_Malaysia.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Malaysia</a></figcaption></figure><h4>Somnath Ghosh — next High Commissioner to Malaysia</h4><ul><li>Currently Consul General of India in <b class="k">Chicago</b>.</li></ul></div><div class="item"><h4>Anupam Misra takes charge as CMD, <span class="gt" tabindex="0">Hindustan Copper<span class="pop" role="tooltip"><b class="pt">Hindustan Copper</b><span class="pl"><span class="pi">PSU under <b class="k">Ministry of Mines</b></span><span class="pi">Founded <b class="k">1967</b></span><span class="pi">HQ <b class="k">Kolkata</b></span></span></span></span> Ltd</h4><ul><li>Succeeds <b class="k">Sanjiv Kumar Singh</b> (retired 30 June).</li></ul></div><div class="item"><figure class="pic"><img src="img/ms-dhoni-db8faf.jpg" alt="MS Dhoni" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:MS_Dhoni_(Prabhav_%2723_-_RiGI_2023).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY 3.0">MS Dhoni</a></figcaption></figure><h4>M.S. Dhoni — National Brand Ambassador of DRiV</h4><ul><li>DRiV = aftermarket auto-parts division of <b class="k">Tenneco</b>.</li></ul></div></section>
+<section id="c6"><h3><span class="n">6</span>International</h3><div class="item"><figure class="pic"><img src="img/file-logo-of-exim-bank-png-a78d2c.png" alt="Logo of Exim Bank" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Logo_of_Exim_Bank.png" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Logo of Exim Bank</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>India–<span class="gt" tabindex="0">Seychelles<span class="pop" role="tooltip"><b class="pt">Seychelles</b><span class="ps">Island nation in the Indian Ocean</span><span class="pl"><span class="pi">Capital <b>Victoria</b></span><span class="pi">Currency <b>Seychellois rupee</b></span></span></span></span> ₹1,250 crore Line of Credit</h4><ul><li>Umbrella LoC worth <b class="k">₹1,250 crore</b>, in <b class="k">Indian Rupees</b>; signed during PM Modi's State Visit.</li><li>Implemented through <b class="k"><span class="gt" tabindex="0">EXIM Bank<span class="pop" role="tooltip"><img src="img/file-logo-of-exim-bank-png-a78d2c.png" alt=""><b class="pt">EXIM Bank</b><span class="ps">Export-Import Bank of India</span><span class="pl"><span class="pi">Est. <b>1982</b></span><span class="pi">HQ <b>Mumbai</b></span><span class="pi">Extends Lines of Credit to other countries</span></span></span></span></b>; for priority development projects in Seychelles.</li></ul></div><div class="item"><figure class="pic"><img src="img/palace-of-nations-fff1b7.jpg" alt="Palace of Nations" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:UN_Building_A_Southern_Lawn.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 3.0">Palace of Nations</a></figcaption></figure><h4>India at the first UN Global Dialogue on AI Governance</h4><ul><li>Led by MoS External Affairs <b class="k">Kirti Vardhan Singh</b>; held in <b class="k">Geneva</b>.</li><li>Forum set up by the <b class="k">UN General Assembly</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/keiko-fujimori-1c3006.jpg" alt="Keiko Fujimori" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Pdta._Keiko_Fujimori_(3x4_cropped).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">Keiko Fujimori</a></figcaption></figure><h4>Keiko Fujimori declared President-elect of <span class="gt" tabindex="0">Peru<span class="pop" role="tooltip"><img src="img/keiko-fujimori-1c3006.jpg" alt=""><b class="pt">Peru</b><span class="pl"><span class="pi">Capital <b class="k">Lima</b></span><span class="pi">Currency <b class="k">Sol</b></span></span></span></span></h4><ul><li>Peru — western South America.</li></ul></div></section>
+<section id="c7"><h3><span class="n">7</span>Sports</h3><p class="cs">Learn as: cricket · tennis · chess · F1 · athletics · football · badminton.</p><div class="item"><figure class="pic"><img src="img/beth-mooney-ee47a2.jpg" alt="Beth Mooney" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:2020_ICC_W_T20_WC_A_v_SL_02-24_Mooney_(01)_(cropped).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Beth Mooney</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Australia win ICC Women's T20 World Cup 2026</h4><ul><li>Beat hosts <b class="k">England</b> in the final at <b class="k">Lord&#39;s, London</b>.</li><li>Australia's <b class="k">7th</b> T20 WC title, <b class="k">14th</b> women's World Cup overall.</li><li>Player of the Match and of the Series: <b class="k">Beth Mooney</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/2028-summer-olympics-41c608.png" alt="2028 Summer Olympics" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:2028_Summer_Olympics_Logo.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Public domain">2028 Summer Olympics</a></figcaption></figure><h4>India women qualify for cricket at LA 2028 Olympics</h4><ul><li>Cricket returns to the Olympics after <b class="k">128 years</b>; T20 format, <b class="k">6 teams</b> each for men and women.</li></ul></div><div class="item"><figure class="pic"><img src="img/the-championships-wimbledon-742e0c.png" alt="Wimbledon Championships" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Wimbledon.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Wimbledon Championships</a></figcaption></figure><h4>Wimbledon 2026 — London</h4><ul><li>At the <b class="k">All England Lawn Tennis and Croquet Club</b>.</li><li>3rd Grand Slam of the year; oldest tournament (<b class="k">1877</b>); only Grand Slam on <b class="k">grass</b>.</li></ul><div class="gk">➕ <b>Static GK:</b> Grand Slam order: Australian Open → French Open (Roland Garros, clay) → Wimbledon (grass) → US Open.</div></div><div class="item"><figure class="pic"><img src="img/stan-wawrinka-b9f643.jpg" alt="Stan Wawrinka" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Wawrinka_RG19_(16)_(48199015787).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 2.0">Stan Wawrinka</a></figcaption></figure><h4>Stan Wawrinka announces retirement</h4><ul><li>Swiss; <b class="k">3</b> Grand Slam singles titles (Australian, French, US Open).</li><li>Olympic gold in men's doubles with <b class="k">Roger Federer</b>, <b class="k">Beijing 2008</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Wawrinka never won <b>Wimbledon</b>.</div></div><div class="item"><figure class="pic"><img src="img/vladimir-kramnik-e90126.jpg" alt="Vladimir Kramnik" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Vladimir_Kramnik_2,_Candidates_Tournament_2018.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 3.0">Vladimir Kramnik</a></figcaption></figure><h4>Chess — India's 97th GM; Kramnik banned</h4><ul><li><b class="k">Harshavardhan G.B.</b> became India's <b class="k">97th</b> Grandmaster (final norm at 2nd Chola Chess GM tournament, Chennai; crossed 2500 Elo).</li><li><span class="gt" tabindex="0">FIDE<span class="pop" role="tooltip"><b class="pt">FIDE</b><span class="ps">International Chess Federation</span><span class="pl"><span class="pi">Est. <b>1924</b></span><span class="pi">HQ <b>Lausanne, Switzerland</b></span></span></span></span> banned former world champion <b class="k">Vladimir Kramnik</b> (Russia) for <b class="k">two years</b> for breaching ethics and disciplinary codes.</li></ul></div><div class="item"><figure class="pic"><img src="img/charles-leclerc-a9994e.jpg" alt="Charles Leclerc" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Charles_Leclerc_at_the_2026_Cannes_Film_Festival_(cropped).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Charles Leclerc</a></figcaption></figure><h4>Charles Leclerc wins British Grand Prix</h4><ul><li>At <b class="k">Silverstone</b>; Ferrari's <b class="k">250th</b> F1 win; Leclerc's <b class="k">9th</b> race win. He is from <b class="k">Monaco</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/anju-bobby-george-1a6241.jpg" alt="Anju Bobby George" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:15Anju-Bobby-George1_(cropped).jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Anju Bobby George</a></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Ancy Sojan breaks 22-year-old long jump record</h4><ul><li>Jumped <b class="k">6.88 m</b>, beating <b class="k">Anju Bobby George</b>'s 6.83 m (Athens Olympics 2004).</li><li>At the National Inter-State Athletics Championships, <b class="k">Kalinga Stadium, Bhubaneswar</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/durand-cup-4a8165.png" alt="Durand Cup" loading="lazy"><figcaption><a href="https://en.wikipedia.org/wiki/File:Durand_Cup.svg" target="_blank" rel="noopener" title="Wikimedia Commons · Fair use">Durand Cup</a></figcaption></figure><h4>135th Durand Cup, 25 July – 23 August 2026</h4><ul><li>Five host cities: Kolkata, Ranchi, Imphal, Shillong, Guwahati; <b class="k">Ranchi</b> hosts for the first time.</li></ul></div><div class="item"><figure class="pic"><img src="img/kidambi-srikanth-45cd3f.jpg" alt="Srikanth Kidambi" loading="lazy"><figcaption><a href="https://commons.wikimedia.org/wiki/File:Yonex_IFB_2013_-_Eightfinal_-_Boonsak_Ponsana_%E2%80%94_K._Srikanth_01.jpg" target="_blank" rel="noopener" title="Wikimedia Commons · CC BY-SA 4.0">Srikanth Kidambi</a></figcaption></figure><h4>Kidambi Srikanth — silver at US Open badminton 2026</h4><ul><li>Lost the men's singles final to <b class="k">Su Li-yang (Chinese Taipei)</b>.</li></ul></div></section>
+<section id="quiz" class="quiz"><h3><span class="n">8</span>Self-test</h3><p class="cs">Answer out loud first, then click to check. Re-test the ones you missed tomorrow.</p><details><summary>Where is India's 24th refinery, and who built it?</summary><p>Pachpadra (Balotra, Rajasthan) — HPCL Rajasthan Refinery Ltd; HPCL 74%, Rajasthan 26%</p></details><details><summary>CG Semi's OSAT plant: where, and which foreign partners?</summary><p>Sanand, Gujarat — Renesas (Japan), Stars Microelectronics (Thailand)</p></details><details><summary>India's first satellite-based jet landing used which system, and where?</summary><p>GAGAN, IndiGo A320 at Udaipur</p></details><details><summary>Where is India's first PinS helicopter approach?</summary><p>Undavalli Heliport, Andhra Pradesh</p></details><details><summary>How many characters in a SWIFT code? Where is SWIFT's HQ?</summary><p>8 or 11; La Hulpe, Belgium</p></details><details><summary>Which Indian joined SWIFT's Global Supervisory Board?</summary><p>Dilip Asbe, MD &amp; CEO, NPCI</p></details><details><summary>UPI went live in Greece through which bank?</summary><p>Eurobank (with NIPL); UPI now in 10 countries</p></details><details><summary>India–Seychelles Line of Credit value and implementing bank?</summary><p>₹1,250 crore, EXIM Bank</p></details><details><summary>CBDT Chairman reappointed till 31 Dec 2026?</summary><p>Ravi Agrawal</p></details><details><summary>Which RBI department will new ED Ravi Shankar oversee?</summary><p>DSIM — Statistics and Information Management</p></details><details><summary>New CMD of Hindustan Copper?</summary><p>Anupam Misra (HQ Kolkata, Ministry of Mines)</p></details><details><summary>Women's T20 World Cup 2026 winner and Player of the Series?</summary><p>Australia (beat England at Lord's); Beth Mooney</p></details><details><summary>India's 97th Grandmaster?</summary><p>Harshavardhan G.B.</p></details><details><summary>Ancy Sojan's new national long jump record?</summary><p>6.88 m (old: 6.83 m, Anju Bobby George)</p></details><details><summary>Which city debuts as a Durand Cup host in 2026?</summary><p>Ranchi</p></details></section><div class="rapid" id="rapid"><h3>⚡ Rapid Revision</h3><ul><li>24th refinery: Pachpadra, Rajasthan — HRRL (HPCL 74 / Raj 26), ₹79,450 cr, 9 MMTPA.</li><li>CG Semi OSAT ₹7,500 cr at Sanand (Renesas + Stars). Tata fab = Dholera.</li><li>GAGAN (ISRO + AAI) jet landing at Udaipur; PinS helicopter approach at Undavalli, AP.</li><li>SWIFT: 1973, La Hulpe (Belgium), code 8/11 chars. Dilip Asbe (NPCI) on its board.</li><li>UPI: Greece (Eurobank) + Seychelles (Central Bank) → 10 countries. Seychelles LoC ₹1,250 cr via EXIM.</li><li>Appointments: Ravi Agrawal CBDT (to 31 Dec 26) · Vikram Misri FS (to 14 Jul 27) · Ravi Shankar RBI ED · Anupam Misra Hindustan Copper.</li><li>Sports: Australia Women's T20 WC (Mooney) · Leclerc British GP · Harshavardhan 97th GM · Ancy Sojan 6.88 m.</li></ul></div>
+<p class="end" id="fin">End of July 2026 · Class 2</p>
+<nav class="topnav" aria-label="Class navigation"><a href="2026-07-July-Class-1.html">← Class 1</a><a href="index.html">☰ All classes</a><a href="2026-07-July-Class-3.html">Class 3 →</a></nav>
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('ca-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('ca-notes-theme',nxt);}catch(e){}
+  });
+  var rb=document.getElementById('recall');
+  if(!rb) return;
+  // Recall mode: blank out key facts; click one to reveal it.
+  function setRecall(on){
+    root.classList.toggle('recall',on);
+    rb.textContent='Recall mode: '+(on?'on':'off');
+    document.querySelectorAll('b.k.shown').forEach(function(b){b.classList.remove('shown');});
+  }
+  rb.addEventListener('click',function(){ setRecall(!root.classList.contains('recall')); });
+  document.getElementById('revealall').addEventListener('click',function(){
+    document.querySelectorAll('b.k').forEach(function(b){b.classList.add('shown');});
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('b.k'); if(b && root.classList.contains('recall')) b.classList.toggle('shown');
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN MAC Address Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="15-Ethernet.html">← Ch 15: Ethernet (IEEE 802.3)</a><a href="index.html">☰ All topics</a><a href="17-Framing.html">Ch 17: Framing in Data Link Layer →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 16: MAC Address</h1>
+  <p class="sub">Volume 02 · Part 16 · Built from the one-shot CN lecture transcript (section 16), plus the exam points the lecture skipped. The data link layer's address: where it lives, how it is written, and how one bit tells unicast from multicast.</p>
+  <ul class="tags"><li>Media Access Control</li><li>Physical Address</li><li>NIC ROM</li><li>48 bits = 6 bytes</li><li>12 Hex Digits</li><li>OUI 24 bits</li><li>Device ID</li><li>Burned-In Address</li><li>Unicast LSB 0</li><li>Multicast LSB 1</li><li>Broadcast FF:FF:FF:FF:FF:FF</li><li>U/L Bit</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">16.0</span>What is a MAC Address?</a></li>
+<li><a href="#s1"><span class="n">16.1</span>MAC Address Location and Format (NIC, 48-bit Hex)</a></li>
+<li><a href="#s2"><span class="n">16.2</span>OUI (Manufacturer ID) and Device ID; Burned-In Address</a></li>
+<li><a href="#s3"><span class="n">16.3</span>Unicast MAC Address</a></li>
+<li><a href="#s4"><span class="n">16.4</span>Multicast MAC Address</a></li>
+<li><a href="#s5"><span class="n">16.5</span>Broadcast MAC Address</a></li>
+<li><a href="#s6"><span class="n">16.6</span>Broadcast vs Multicast Addresses</a></li>
+<li><a href="#s7"><span class="n">16.7</span>The Second Bit, Transmission Order and Special Addresses<span class="x">ADDED</span></a></li>
+<li><a href="#s8"><span class="n">16.8</span>MAC vs IP Address (Preview) &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 16</div>
+<h2 class="ch">MAC Address</h2>
+<p>In chapter 15 the Ethernet frame carried a 6-byte destination and a 6-byte source address. This chapter is about those addresses. A MAC address identifies a <b>network interface</b> on the local link. It is fixed by the manufacturer, written as 12 hex digits, and a <b>single bit</b> in its first byte tells whether a frame is meant for one station or for a group.</p>
+
+<section id="s0">
+<h3><span class="n">16.0</span>What is a MAC Address?</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+We are discussing the data link layer, and leaving out the MAC address would be "badi galat baat". <b>MAC = Media Access Control</b> address, lovingly called the <b>physical address</b>. In the next layer (network layer) comes the <b>IP address</b>, the <b>logical address</b>. Later there is a full "MAC vs IP" contest over many rounds; for now, learn where the MAC address is found and how it is written.</div>
+<div class="def"><b>MAC address:</b> a <b>48-bit</b> (6-byte) identifier assigned to a <b>network interface card (NIC)</b>, used by the <b>data link layer (MAC sublayer)</b> to deliver frames <b>within one local network</b> (hop to hop). Also called the physical, hardware, Ethernet or <b>burned-in address (BIA)</b>.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">16.1</span>MAC Address Location and Format (NIC, 48-bit Hex)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Every device you buy comes with a <b>Network Interface Card (NIC)</b>. On it is a <b>ROM</b>, and the MAC address is written there in a <b>hard-coded</b> way.<br>
+It is written with a <b>colon (:)</b> or a <b>dash (-)</b> as the separator; each group between separators is <b>one byte</b>. Why one byte? Hexadecimal digits run 0–9 then A–F (10–15): <b>16 = 2⁴</b> options, so <b>one hex digit = 4 bits</b>, and <b>two hex digits = 8 bits = 1 byte</b>. Six such groups = <b>6 bytes = 6 × 8 = 48 bits</b>.</div>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="MAC address A2:4F:1C:7B:3D:90 split into six bytes; first three bytes are the OUI or manufacturer ID, last three the device ID; first byte A2 expanded to binary 1010 0010 with the least significant bit marked">
+  <text x="340" y="22" text-anchor="middle" class="mut">written as  A2:4F:1C:7B:3D:90   or   A2-4F-1C-7B-3D-90</text>
+  <g font-family="monospace" font-size="18">
+  <rect x="70" y="36" width="80" height="40" class="ac"/><text x="110" y="62" text-anchor="middle" class="b">A2</text>
+  <rect x="160" y="36" width="80" height="40" class="ac"/><text x="200" y="62" text-anchor="middle">4F</text>
+  <rect x="250" y="36" width="80" height="40" class="ac"/><text x="290" y="62" text-anchor="middle">1C</text>
+  <rect x="350" y="36" width="80" height="40" class="gr"/><text x="390" y="62" text-anchor="middle">7B</text>
+  <rect x="440" y="36" width="80" height="40" class="gr"/><text x="480" y="62" text-anchor="middle">3D</text>
+  <rect x="530" y="36" width="80" height="40" class="gr"/><text x="570" y="62" text-anchor="middle">90</text>
+  </g>
+  <path d="M70 84 V92 H330 V84" class="lna"/><text x="200" y="108" text-anchor="middle" style="fill:var(--accent)" class="b">OUI · manufacturer ID (3 bytes)</text>
+  <path d="M350 84 V92 H610 V84" style="stroke:var(--lec);stroke-width:2;fill:none"/><text x="480" y="108" text-anchor="middle" style="fill:var(--lec)" class="b">device ID · NIC-specific (3 bytes)</text>
+  <path d="M110 118 V136" class="ln"/>
+  <g font-family="monospace" font-size="16">
+  <text x="40" y="160" class="mut" font-family="var(--body)" font-size="12">first byte:</text>
+  <text x="125" y="160" xml:space="preserve">1010 001<tspan class="b" style="fill:var(--alert)">0</tspan></text>
+  </g>
+  <text x="155" y="182" text-anchor="middle" class="mut">A = 1010 · 2 = 0010</text>
+  <path d="M206 166 V176 H300" style="stroke:var(--alert);stroke-width:1.5;fill:none"/>
+  <text x="305" y="180" style="fill:var(--alert)" class="b">LSB of first byte: 0 = unicast, 1 = multicast</text>
+</svg>
+<figcaption>Figure 16.1: Anatomy of a MAC address</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Quick facts</span>
+<b>12 hex digits</b>, 48 bits → 2⁴⁸ ≈ <b>281 trillion</b> possible addresses. A third notation (Cisco) groups 4 hex digits with dots: <code>A24F.1C7B.3D90</code>. To see yours: Windows <code>ipconfig /all</code> or <code>getmac</code>; Linux/macOS <code>ip link</code> / <code>ifconfig</code>. The 48-bit format is called <b>EUI-48</b> (IEEE); IPv6 uses a 64-bit form, <b>EUI-64</b>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">16.2</span>OUI (Manufacturer ID) and Device ID; Burned-In Address</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The <b>first 3 bytes</b> tell us about the <b>NIC manufacturer</b>. The <b>last 3 bytes</b> are the <b>device ID</b>.<br>
+Unlike the IP address (which is flexible, as we will see), the MAC address is treated as <b>permanent</b>. That is why it is called a <b>burned-in address</b>: it has been "burned" into the card and cannot be changed.</div>
+<div class="box add"><span class="t">➕ Who assigns what</span>
+The first 24 bits are the <b>OUI (Organizationally Unique Identifier)</b>, bought from the <b>IEEE Registration Authority</b> by each manufacturer (e.g. different OUIs for Intel, Cisco, Apple). The manufacturer then gives every card it makes a unique last-24-bit number. OUI + serial = <b>globally unique</b>. One OUI gives 2²⁴ ≈ 16.7 million addresses.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Burned in and cannot be changed" is true of the address <b>in the ROM</b>. But the address the OS <b>uses</b> can be overridden in software: <b>MAC spoofing</b> / a locally administered address. Phones and laptops now use <b>random MAC addresses</b> per Wi-Fi network for privacy. If asked "can a MAC address be changed?", the textbook answer is "the burned-in one is fixed, but it can be spoofed in software".</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">16.3</span>Unicast MAC Address</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Unicast = one-to-one</b>: one station sends to exactly one other station.<br>
+Identification: look at the <b>first byte</b> and its <b>LSB</b> (least significant, right-most bit). Example first byte <b>A2</b>: A = 10 = <code>1010</code>, 2 = <code>0010</code> → <code>1010 0010</code>. The LSB is <b>0</b>, so it is a <b>unicast</b> address.</div>
+<div class="num"><span class="t">Shortcut</span>
+You only need the <b>second hex digit</b> of the first byte. If it is <b>even</b> (0, 2, 4, 6, 8, A, C, E), the LSB is 0 → <b>unicast</b>. If it is <b>odd</b> (1, 3, 5, 7, 9, B, D, F), the LSB is 1 → <b>multicast</b>.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">16.4</span>Multicast MAC Address</h3>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Unicast: D sends to one station. Multicast: D sends to group ID containing A, B, C. Broadcast: D sends to every station using FF:FF:FF:FF:FF:FF">
+  <defs><marker id="ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="110" y="20" text-anchor="middle" class="b">Unicast (1 → 1)</text>
+  <text x="340" y="20" text-anchor="middle" class="b">Multicast (1 → group)</text>
+  <text x="570" y="20" text-anchor="middle" class="b">Broadcast (1 → all)</text>
+  <circle cx="110" cy="60" r="18" class="pu"/><text x="110" y="65" text-anchor="middle" class="b">D</text>
+  <circle cx="50" cy="150" r="16" class="bx"/><text x="50" y="155" text-anchor="middle">A</text>
+  <circle cx="110" cy="150" r="16" class="ac"/><text x="110" y="155" text-anchor="middle" class="b">B</text>
+  <circle cx="170" cy="150" r="16" class="bx"/><text x="170" y="155" text-anchor="middle">C</text>
+  <path d="M110 78 V130" class="lna" marker-end="url(#ma)"/>
+  <text x="110" y="190" text-anchor="middle" class="mut">LSB of 1st byte = 0</text>
+  <path d="M225 10 V195" class="ln dash"/>
+  <circle cx="340" cy="60" r="18" class="pu"/><text x="340" y="65" text-anchor="middle" class="b">D</text>
+  <rect x="250" y="122" width="160" height="50" rx="8" class="ac dash"/>
+  <circle cx="280" cy="150" r="15" class="ac"/><text x="280" y="155" text-anchor="middle" class="b">A</text>
+  <circle cx="330" cy="150" r="15" class="ac"/><text x="330" y="155" text-anchor="middle" class="b">B</text>
+  <circle cx="380" cy="150" r="15" class="ac"/><text x="380" y="155" text-anchor="middle" class="b">C</text>
+  <circle cx="440" cy="150" r="15" class="bx"/><text x="440" y="155" text-anchor="middle">E</text>
+  <path d="M340 78 V118" class="lna" marker-end="url(#ma)"/>
+  <text x="330" y="190" text-anchor="middle" class="mut">group ID, LSB = 1</text>
+  <path d="M465 10 V195" class="ln dash"/>
+  <circle cx="570" cy="60" r="18" class="pu"/><text x="570" y="65" text-anchor="middle" class="b">D</text>
+  <circle cx="500" cy="150" r="15" class="ac"/><text x="500" y="155" text-anchor="middle" class="b">A</text>
+  <circle cx="547" cy="150" r="15" class="ac"/><text x="547" y="155" text-anchor="middle" class="b">B</text>
+  <circle cx="594" cy="150" r="15" class="ac"/><text x="594" y="155" text-anchor="middle" class="b">C</text>
+  <circle cx="641" cy="150" r="15" class="ac"/><text x="641" y="155" text-anchor="middle" class="b">E</text>
+  <path d="M565 78 L505 131 M568 78 L549 131 M572 78 L592 131 M575 78 L636 131" class="lna"/>
+  <text x="570" y="190" text-anchor="middle" class="mut">FF:FF:FF:FF:FF:FF</text>
+</svg>
+<figcaption>Figure 16.2: Unicast, multicast and broadcast delivery</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Multicast = one-to-many.</b> The <b>festival-wishes</b> analogy: sending a wishes picture to each relative one by one is time-consuming, so you make a <b>group</b> (close relatives, close friends) and post the message <b>once</b>; everyone in the group gets it.<br>
+Likewise station <b>D</b> wants to send to <b>A, B and C</b> only. Put A, B, C in a group; the group gets a <b>group ID</b>, and that group ID <b>is the multicast address</b>. Send to it once, and A, B and C all receive it.<br>
+Identification: first byte <b>A1</b> = <code>1010 0001</code>. The LSB is now <b>1</b>, so it is a <b>multicast</b> address.</div>
+<div class="box add"><span class="t">➕ Real multicast MACs</span>
+IPv4 multicast maps to MACs starting <code>01:00:5E</code>; IPv6 multicast to <code>33:33</code>. Spanning Tree (STP) BPDUs go to <code>01:80:C2:00:00:00</code>. All start with an <b>odd</b> second digit, as the rule predicts. A multicast address can only be a <b>destination</b>, never a source.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">16.5</span>Broadcast MAC Address</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Broadcast is different from multicast. On the bus there may be many more nodes; multicast reached only the chosen group (A, B, C). <b>Broadcast</b> means, literally, <b>from one to everyone</b> (recall the broadcast domain from the network-devices chapter).<br>
+The broadcast MAC address is <b>all Fs</b>: two Fs per byte × 6 bytes = <b>12 Fs</b> → <code>FF:FF:FF:FF:FF:FF</code>. Remember "12 F".</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<code>FF:FF:FF:FF:FF:FF</code> = all <b>48 bits set to 1</b>. It is used by <b>ARP requests</b> ("who has this IP?", chapter 24) and DHCP Discover. <b>Switches flood</b> broadcast frames out of every port; <b>routers do not forward</b> them, so a router marks the edge of a broadcast domain.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">16.6</span>Broadcast vs Multicast Addresses</h3>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="Venn diagram: broadcast address set lies completely inside the multicast address set; A1:... is multicast but not broadcast">
+  <ellipse cx="300" cy="85" rx="250" ry="72" class="pu"/>
+  <text x="120" y="60" class="b" style="fill:var(--add)">Multicast</text><text x="120" y="78" class="mut">LSB of 1st byte = 1</text>
+  <text x="110" y="118" font-family="monospace">A1:4F:…</text><text x="110" y="136" font-family="monospace">01:00:5E:…</text>
+  <ellipse cx="400" cy="85" rx="110" ry="40" class="ac"/>
+  <text x="400" y="80" text-anchor="middle" class="b">Broadcast</text><text x="400" y="98" text-anchor="middle" font-family="monospace" font-size="12">FF:FF:FF:FF:FF:FF</text>
+  <text x="565" y="70" class="b" style="fill:var(--ok)">every broadcast</text><text x="565" y="86" class="b" style="fill:var(--ok)">is multicast ✔</text>
+  <text x="565" y="116" class="b" style="fill:var(--bad)">every multicast</text><text x="565" y="132" class="b" style="fill:var(--bad)">is broadcast ✘</text>
+</svg>
+<figcaption>Figure 16.3: Broadcast is a special case of multicast</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The <b>golden statement</b>: <b>every broadcast address is a multicast address, but the reverse is not true</b>. Picture broadcast as a circle <b>inside</b> the bigger multicast circle. The first byte of the broadcast address is <code>FF</code>; its LSB is <b>1</b>, so it satisfies the multicast rule. But <code>A1:…</code> is multicast (LSB 1) and <b>not</b> broadcast, because it is not 12 Fs.</div>
+<div class="tw"><table>
+<tr><th>Type</th><th>Meaning</th><th>Rule</th><th>Example</th></tr>
+<tr><td>Unicast</td><td>one-to-one</td><td>LSB of 1st byte = 0 (2nd hex digit even)</td><td><code>A2:4F:1C:7B:3D:90</code></td></tr>
+<tr><td>Multicast</td><td>one-to-group</td><td>LSB of 1st byte = 1 (2nd hex digit odd)</td><td><code>A1:4F:1C:7B:3D:90</code></td></tr>
+<tr><td>Broadcast</td><td>one-to-all</td><td>all 48 bits = 1</td><td><code>FF:FF:FF:FF:FF:FF</code></td></tr>
+</table></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">16.7</span>The Second Bit, Transmission Order and Special Addresses <span class="badge">ADDED</span></h3>
+<div class="def"><b>Two flag bits in the first byte:</b> bit 0 (LSB) = <b>I/G</b> (Individual/Group): 0 = unicast, 1 = multicast. Bit 1 = <b>U/L</b> (Universal/Local): 0 = <b>globally unique</b> (assigned via the IEEE OUI), 1 = <b>locally administered</b> (set by an admin or software; random MACs use this).</div>
+<div class="num"><span class="t">Read the first byte</span>
+<div class="formula">first byte  b7 b6 b5 b4 b3 b2 | b1  | b0
+                               | U/L | I/G
+A2 = 1010 0010  →  U/L = 1 (local),  I/G = 0 (unicast)
+A0 = 1010 0000  →  U/L = 0 (global), I/G = 0 (unicast)
+01 = 0000 0001  →  U/L = 0 (global), I/G = 1 (multicast)</div></div>
+<div class="box add"><span class="t">➕ Transmission order</span>
+Ethernet sends each byte <b>LSB first</b> (left to right byte by byte, but within a byte from right to left). So the <b>I/G bit is the very first bit</b> of the destination address on the wire: a station knows at once whether the frame is individual or group. Example: <code>47</code> = 0100 0111 is sent as <code>11100010</code>.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">16.8</span>MAC vs IP Address (Preview) &amp; Solved Questions <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Point</th><th>MAC address</th><th>IP address</th></tr>
+<tr><td>Also called</td><td>physical / hardware address</td><td>logical address</td></tr>
+<tr><td>Layer</td><td>Data link (layer 2)</td><td>Network (layer 3)</td></tr>
+<tr><td>Size</td><td>48 bits (6 bytes), hex</td><td>32 bits IPv4 (dotted decimal) / 128 bits IPv6</td></tr>
+<tr><td>Assigned by</td><td>manufacturer (OUI from IEEE)</td><td>network admin / DHCP (ranges from ISP / IANA)</td></tr>
+<tr><td>Changes?</td><td>fixed (burned in)</td><td>changes when the device moves networks</td></tr>
+<tr><td>Scope</td><td>local link, hop to hop</td><td>end to end, across networks</td></tr>
+<tr><td>Mapping</td><td colspan="2">IP → MAC by <b>ARP</b>; MAC → IP by <b>RARP</b> (chapter 24)</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> Type of <code>4A:30:10:21:10:1A</code>? First byte 4A, second digit A (even) → <b>unicast</b>.<br><br>
+<b>Q2.</b> Type of <code>47:20:1B:2E:08:EE</code>? Second digit 7 (odd) → <b>multicast</b>.<br><br>
+<b>Q3.</b> Type of <code>FF:FF:FF:FF:FF:FF</code>? <b>Broadcast</b> (and, technically, multicast too).<br><br>
+<b>Q4.</b> How many hex digits and bits in a MAC address? <b>12</b> hex digits, <b>48</b> bits.<br><br>
+<b>Q5.</b> Which part identifies the vendor? The first <b>24 bits (OUI)</b>.<br><br>
+<b>Q6.</b> Which device uses MAC addresses to forward frames? A <b>switch / bridge</b> (layer 2). A router uses IP addresses.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 16</h3>
+<ul>
+<li>MAC = <b>Media Access Control</b> = <b>physical</b> address (IP = logical). Layer 2, used for hop-to-hop delivery.</li>
+<li>Stored hard-coded in the <b>NIC's ROM</b> → <b>burned-in address</b>, permanent (but can be spoofed in software).</li>
+<li><b>48 bits = 6 bytes = 12 hex digits</b>; separators <code>:</code> or <code>-</code>. 1 hex digit = 4 bits; 2 hex digits = 1 byte.</li>
+<li>First 3 bytes = <b>OUI / manufacturer</b> (from IEEE); last 3 bytes = <b>device ID</b>.</li>
+<li><b>Unicast</b> (1→1): LSB of first byte = <b>0</b> (A2 = 1010 0010). <b>Multicast</b> (1→group, festival WhatsApp group): LSB = <b>1</b> (A1 = 1010 0001). Shortcut: 2nd hex digit even = unicast, odd = multicast.</li>
+<li><b>Broadcast</b> (1→all): <b>12 Fs</b>, <code>FF:FF:FF:FF:FF:FF</code>. Used by ARP; switches flood it, routers block it.</li>
+<li>Golden rule: <b>every broadcast is multicast; not every multicast is broadcast</b>.</li>
+<li>Bit 1 of the first byte = U/L (0 global, 1 local). Ethernet sends LSB first, so the I/G bit goes out first.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 16 · Next: Chapter 17 — Framing in Data Link Layer</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="15-Ethernet.html">← Ch 15: Ethernet (IEEE 802.3)</a><a href="index.html">☰ All topics</a><a href="17-Framing.html">Ch 17: Framing in Data Link Layer →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Error Detection Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="13-Flow-Control.html">← Ch 13: Flow Control</a><a href="index.html">☰ All topics</a><a href="15-Ethernet.html">Ch 15: Ethernet (IEEE 802.3) →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 14: Error Detection and Correction</h1>
+  <p class="sub">Volume 02 · Part 14 · Built from the one-shot CN lecture transcript (section 14), plus the exam points the lecture skipped. Error control in the data link layer: how the receiver finds out that bits were damaged on the way.</p>
+  <ul class="tags"><li>Single-bit vs Burst Error</li><li>Hamming Distance (XOR)</li><li>Even / Odd Parity</li><li>2-D Parity</li><li>Checksum</li><li>Wraparound + 1's Complement</li><li>CRC</li><li>Generator Polynomial</li><li>n − 1 Zeros</li><li>Hamming Code</li><li>d<sub>min</sub> Rules</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">14.0</span>Why Error Control?</a></li>
+<li><a href="#s1"><span class="n">14.1</span>Types of Errors: Single-Bit and Burst Errors</a></li>
+<li><a href="#s2"><span class="n">14.2</span>Hamming Distance</a></li>
+<li><a href="#s3"><span class="n">14.3</span>Simple (Single-Bit) Parity Check</a></li>
+<li><a href="#s4"><span class="n">14.4</span>Two-Dimensional Parity Check</a></li>
+<li><a href="#s5"><span class="n">14.5</span>Checksum</a></li>
+<li><a href="#s6"><span class="n">14.6</span>Checksum: Wraparound Addition and One's Complement</a></li>
+<li><a href="#s7"><span class="n">14.7</span>Cyclic Redundancy Check (CRC): Sender Side</a></li>
+<li><a href="#s8"><span class="n">14.8</span>CRC: Receiver Side Checking</a></li>
+<li><a href="#s9"><span class="n">14.9</span>Error Correction: Hamming Code<span class="x">ADDED</span></a></li>
+<li><a href="#s10"><span class="n">14.10</span>Comparison Table &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 14</div>
+<h2 class="ch">Error Detection and Correction</h2>
+<p>Chapter 13 handled frames that go <b>missing</b>. This chapter handles frames that <b>arrive but are damaged</b>. The sender adds a few <b>redundant bits</b> (parity, checksum or CRC) to the data. The receiver redoes the same calculation; if the result does not match, the frame is discarded and the ARQ machinery from chapter 13 gets it resent. Correction (fixing the bit on the spot) needs more redundancy, which is where the <b>Hamming code</b> comes in.</p>
+
+<section id="s0">
+<h3><span class="n">14.0</span>Why Error Control?</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Data that leaves the sender is <b>not guaranteed</b> to reach the receiver exactly as sent. On the way, bits can get <b>corrupted, modified, altered or manipulated</b> (pick any word; it means an error was introduced). In the lecture's picture, the outer bits are fine but the <b>three middle bits</b> have flipped: 1 became 0 and 0 became 1. Error control in the DLL is about catching this.</div>
+<div class="def"><b>Redundancy:</b> extra bits added to the data <b>only for checking</b>. Detection asks "<b>is there</b> an error?"; correction asks "<b>where</b> is it?" and fixes it. Detection + retransmission (ARQ) is used on wired links; <b>Forward Error Correction (FEC)</b>, which fixes errors without resending, is used where resending is costly (satellite links, live streaming, memory with ECC) <span class="badge">ADDED</span>.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">14.1</span>Types of Errors: Single-Bit and Burst Errors</h3>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="Single-bit error flips one bit; burst error damages a run of bits from the first to the last corrupted bit">
+  <text x="20" y="22" class="b">(a) Single-bit error</text>
+  <text x="20" y="52" class="mut">sent</text><text x="20" y="88" class="mut">received</text>
+  <g font-family="monospace">
+  <rect x="90" y="34" width="30" height="26" class="bx"/><text x="105" y="52" text-anchor="middle">0</text>
+  <rect x="120" y="34" width="30" height="26" class="bx"/><text x="135" y="52" text-anchor="middle">1</text>
+  <rect x="150" y="34" width="30" height="26" class="bx"/><text x="165" y="52" text-anchor="middle">0</text>
+  <rect x="90" y="70" width="30" height="26" class="bx"/><text x="105" y="88" text-anchor="middle">0</text>
+  <rect x="120" y="70" width="30" height="26" class="or"/><text x="135" y="88" text-anchor="middle" class="b">0</text>
+  <rect x="150" y="70" width="30" height="26" class="bx"/><text x="165" y="88" text-anchor="middle">0</text>
+  </g>
+  <text x="90" y="122" class="mut">only 1 bit changed → rare</text>
+  <path d="M300 10 V180" class="ln dash"/>
+  <text x="330" y="22" class="b">(b) Burst error (length 5)</text>
+  <text x="330" y="52" class="mut">sent</text><text x="330" y="88" class="mut">received</text>
+  <g font-family="monospace">
+  <rect x="400" y="34" width="30" height="26" class="bx"/><text x="415" y="52" text-anchor="middle">1</text>
+  <rect x="430" y="34" width="30" height="26" class="bx"/><text x="445" y="52" text-anchor="middle">0</text>
+  <rect x="460" y="34" width="30" height="26" class="bx"/><text x="475" y="52" text-anchor="middle">1</text>
+  <rect x="490" y="34" width="30" height="26" class="bx"/><text x="505" y="52" text-anchor="middle">1</text>
+  <rect x="520" y="34" width="30" height="26" class="bx"/><text x="535" y="52" text-anchor="middle">0</text>
+  <rect x="550" y="34" width="30" height="26" class="bx"/><text x="565" y="52" text-anchor="middle">1</text>
+  <rect x="580" y="34" width="30" height="26" class="bx"/><text x="595" y="52" text-anchor="middle">0</text>
+  <rect x="400" y="70" width="30" height="26" class="bx"/><text x="415" y="88" text-anchor="middle">1</text>
+  <rect x="430" y="70" width="30" height="26" class="or"/><text x="445" y="88" text-anchor="middle" class="b">1</text>
+  <rect x="460" y="70" width="30" height="26" class="bx"/><text x="475" y="88" text-anchor="middle">1</text>
+  <rect x="490" y="70" width="30" height="26" class="or"/><text x="505" y="88" text-anchor="middle" class="b">0</text>
+  <rect x="520" y="70" width="30" height="26" class="or"/><text x="535" y="88" text-anchor="middle" class="b">1</text>
+  <rect x="550" y="70" width="30" height="26" class="bx"/><text x="565" y="88" text-anchor="middle">1</text>
+  <rect x="580" y="70" width="30" height="26" class="bx"/><text x="595" y="88" text-anchor="middle">0</text>
+  </g>
+  <path d="M430 108 V116 H580 V108" class="lna"/>
+  <text x="505" y="134" text-anchor="middle" style="fill:var(--accent)" class="b">burst length = 5</text>
+  <text x="505" y="152" text-anchor="middle" class="mut">first bad bit → last bad bit (middle bits may be fine)</text>
+</svg>
+<figcaption>Figure 14.1: Single-bit error vs burst error</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Sent <code>010</code>, received <code>000</code>. Check bit by bit: first same, last same, the middle one differs. Only <b>one bit</b> changed, so it is a <b>single-bit (1-bit) error</b>. You might think this is the common case, but it is actually <b>less common</b>. The common one is the <b>burst error</b>: <b>two or more bits</b> get corrupted together, "in bulk".</div>
+<div class="box add"><span class="t">➕ Definitions to write in the exam</span>
+<b>Burst length</b> is counted from the <b>first corrupted bit to the last corrupted bit</b>, even if some bits in between are fine. Burst errors are common because noise usually lasts longer than one bit time: a 1 ms noise spike on a 1 kbps line hits 1 bit, but on a 100 Mbps line it hits about 100 000 bits. Single-bit errors are more typical of <b>parallel</b> transmission.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">14.2</span>Hamming Distance</h3>
+<div class="def"><b>Hamming distance d(x, y):</b> the <b>number of positions in which two equal-length words differ</b>. Find it by taking <b>x XOR y</b> and <b>counting the 1s</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+It tells how many bits look <b>dissimilar</b> between what was sent and what was received (asked "many times", so it is included). XOR rule: <b>same bits → 0</b>, <b>different bits (01 or 10) → 1</b>. Go bit by bit, write the XOR result, then count the 1s. In the lecture's example the result had <b>four 1s</b>, so four bits were altered compared with the sender's data.</div>
+<div class="num"><span class="t">Worked example</span>
+<div class="formula">sent      1 0 1 1 0 1 1 0
+received  1 1 0 0 0 1 0 0
+XOR       0 1 1 1 0 0 1 0   → four 1s → d = 4</div></div>
+<div class="box add"><span class="t">➕ Minimum Hamming distance (d<sub>min</sub>) — the rules every exam asks</span>
+d<sub>min</sub> = the smallest Hamming distance between any two valid codewords of a code.
+<ul><li>To <b>detect up to s</b> errors: <b>d<sub>min</sub> ≥ s + 1</b>.</li>
+<li>To <b>correct up to t</b> errors: <b>d<sub>min</sub> ≥ 2t + 1</b>.</li>
+<li>Simple parity has d<sub>min</sub> = 2 → detects 1 error, corrects 0. The Hamming (7,4) code has d<sub>min</sub> = 3 → detects 2 <i>or</i> corrects 1.</li></ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Hamming <b>distance</b> (a number that compares two words) is not the same as the Hamming <b>code</b> (a correction scheme, 14.9). And d<sub>min</sub> = 5 can correct <b>2</b> errors (2·2 + 1 = 5), not 4.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">14.3</span>Simple (Single-Bit) Parity Check</h3>
+<div class="def"><b>Parity</b> is about the <b>count of 1s</b>. <b>Even parity:</b> the data plus the parity bit together hold an even number of 1s. <b>Odd parity:</b> an odd number. Sender and receiver must <b>agree</b> on which one beforehand; even parity is the usual choice.</div>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Sender's generator adds a parity bit to data 0001 giving 00011; receiver's checker counts ones: even means accept, odd means discard">
+  <defs><marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="20" y="22" class="b">Sender</text>
+  <rect x="20" y="34" width="120" height="34" class="bx"/><text x="80" y="56" text-anchor="middle" font-family="monospace">0 0 0 1</text>
+  <text x="80" y="86" text-anchor="middle" class="mut">data (one 1 = odd)</text>
+  <path d="M140 51 H180" class="lna" marker-end="url(#pa)"/>
+  <rect x="182" y="30" width="110" height="42" class="ac"/><text x="237" y="49" text-anchor="middle" class="b">Generator</text><text x="237" y="64" text-anchor="middle" class="mut">count 1s → odd → 1</text>
+  <path d="M292 51 H330" class="lna" marker-end="url(#pa)"/>
+  <rect x="332" y="34" width="150" height="34" class="bx"/><text x="390" y="56" text-anchor="middle" font-family="monospace">0 0 0 1</text>
+  <rect x="452" y="34" width="30" height="34" class="pu"/><text x="467" y="56" text-anchor="middle" font-family="monospace" class="b">1</text>
+  <text x="407" y="86" text-anchor="middle" class="mut">data + parity = two 1s (even)</text>
+  <path d="M482 51 H530" class="lna" marker-end="url(#pa)"/><text x="506" y="42" text-anchor="middle" class="mut">link</text>
+  <rect x="532" y="30" width="130" height="42" class="gr"/><text x="597" y="49" text-anchor="middle" class="b">Checker</text><text x="597" y="64" text-anchor="middle" class="mut">count all 1s</text>
+  <text x="20" y="128" class="b" style="fill:var(--ok)">1 bit flips → 0 0 0 0 1 → one 1 (odd) → discard, ask for resend ✔ detected</text>
+  <text x="20" y="156" class="b" style="fill:var(--bad)">2 bits flip → 1 0 1 1 1 → four 1s (even) → accepted ✘ missed</text>
+  <text x="20" y="184" class="mut">Rule: parity catches any ODD number of flipped bits and misses any EVEN number.</text>
+</svg>
+<figcaption>Figure 14.2: Even-parity generator and checker</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Sender and receiver agree to work on <b>even parity</b>. The sender gives the data bits to the <b>generator</b>, which counts the 1s. Data <code>0001</code> has <b>one</b> 1 (odd), so the parity bit is <b>1</b>; if the data already had an even count, the parity bit would be <b>0</b>. The sender transmits <code>0001</code> + <code>1</code>.<br>
+At the receiver the <b>checker</b> counts again. If one bit flipped (a 1 became 0), only <b>one</b> 1 is left: odd parity, so the checker says "this message is compromised, <b>discard</b> it and tell the sender to <b>retransmit</b>".<br>
+But if <b>two</b> bits flip (two 0s became 1s), the count becomes <b>four</b>: still even, so the checker happily <b>passes</b> a wrong frame. As the name says, single-bit parity only promises to catch a <b>single-bit</b> error; "don't expect more from me", with more errors it can call wrong data right.</div>
+<div class="box add"><span class="t">➕ Precise statement</span>
+Simple parity detects <b>all odd-numbered errors</b> (1, 3, 5 … bits) and <b>no even-numbered errors</b>. It can <b>never correct</b>, because it does not say <i>which</i> bit flipped. Overhead: 1 bit per data unit. It is used in serial/ASCII transmission and in memory.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Single-bit parity detects only single-bit errors" is the lecture's simple wording; the exam-correct answer is that it detects any <b>odd</b> number of bit errors. A 3-bit error <b>is</b> caught.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">14.4</span>Two-Dimensional Parity Check</h3>
+<figure>
+<svg viewBox="0 0 680 250" role="img" aria-label="Three data rows 101, 010, 111 with row parities 0, 1, 1 and column parities 0, 0, 0; a flip at row 2 column 2 makes row 2 and column 2 both odd, locating the error">
+  <text x="20" y="22" class="b">(a) Sender builds the grid (even parity)</text>
+  <g font-family="monospace">
+  <text x="30" y="70" class="mut">d1</text><text x="30" y="104" class="mut">d2</text><text x="30" y="138" class="mut">d3</text>
+  <rect x="60" y="50" width="34" height="34" class="bx"/><text x="77" y="72" text-anchor="middle">1</text>
+  <rect x="94" y="50" width="34" height="34" class="bx"/><text x="111" y="72" text-anchor="middle">0</text>
+  <rect x="128" y="50" width="34" height="34" class="bx"/><text x="145" y="72" text-anchor="middle">1</text>
+  <rect x="168" y="50" width="34" height="34" class="pu"/><text x="185" y="72" text-anchor="middle" class="b">0</text>
+  <rect x="60" y="84" width="34" height="34" class="bx"/><text x="77" y="106" text-anchor="middle">0</text>
+  <rect x="94" y="84" width="34" height="34" class="bx"/><text x="111" y="106" text-anchor="middle">1</text>
+  <rect x="128" y="84" width="34" height="34" class="bx"/><text x="145" y="106" text-anchor="middle">0</text>
+  <rect x="168" y="84" width="34" height="34" class="pu"/><text x="185" y="106" text-anchor="middle" class="b">1</text>
+  <rect x="60" y="118" width="34" height="34" class="bx"/><text x="77" y="140" text-anchor="middle">1</text>
+  <rect x="94" y="118" width="34" height="34" class="bx"/><text x="111" y="140" text-anchor="middle">1</text>
+  <rect x="128" y="118" width="34" height="34" class="bx"/><text x="145" y="140" text-anchor="middle">1</text>
+  <rect x="168" y="118" width="34" height="34" class="pu"/><text x="185" y="140" text-anchor="middle" class="b">1</text>
+  <rect x="60" y="158" width="34" height="34" class="pu"/><text x="77" y="180" text-anchor="middle" class="b">0</text>
+  <rect x="94" y="158" width="34" height="34" class="pu"/><text x="111" y="180" text-anchor="middle" class="b">0</text>
+  <rect x="128" y="158" width="34" height="34" class="pu"/><text x="145" y="180" text-anchor="middle" class="b">0</text>
+  <rect x="168" y="158" width="34" height="34" class="pu"/><text x="185" y="180" text-anchor="middle" class="b">0</text>
+  </g>
+  <text x="215" y="106" class="mut">← row</text><text x="215" y="120" class="mut">parity</text>
+  <text x="130" y="212" text-anchor="middle" class="mut">↑ column parity</text>
+  <path d="M340 10 V240" class="ln dash"/>
+  <text x="360" y="22" class="b">(b) Receiver: one bit flipped</text>
+  <g font-family="monospace">
+  <rect x="400" y="50" width="34" height="34" class="bx"/><text x="417" y="72" text-anchor="middle">1</text>
+  <rect x="434" y="50" width="34" height="34" class="bx"/><text x="451" y="72" text-anchor="middle">0</text>
+  <rect x="468" y="50" width="34" height="34" class="bx"/><text x="485" y="72" text-anchor="middle">1</text>
+  <rect x="508" y="50" width="34" height="34" class="pu"/><text x="525" y="72" text-anchor="middle">0</text>
+  <rect x="400" y="84" width="34" height="34" class="bx"/><text x="417" y="106" text-anchor="middle">0</text>
+  <rect x="434" y="84" width="34" height="34" class="or"/><text x="451" y="106" text-anchor="middle" class="b">0</text>
+  <rect x="468" y="84" width="34" height="34" class="bx"/><text x="485" y="106" text-anchor="middle">0</text>
+  <rect x="508" y="84" width="34" height="34" class="pu"/><text x="525" y="106" text-anchor="middle">1</text>
+  <rect x="400" y="118" width="34" height="34" class="bx"/><text x="417" y="140" text-anchor="middle">1</text>
+  <rect x="434" y="118" width="34" height="34" class="bx"/><text x="451" y="140" text-anchor="middle">1</text>
+  <rect x="468" y="118" width="34" height="34" class="bx"/><text x="485" y="140" text-anchor="middle">1</text>
+  <rect x="508" y="118" width="34" height="34" class="pu"/><text x="525" y="140" text-anchor="middle">1</text>
+  <rect x="400" y="158" width="34" height="34" class="pu"/><text x="417" y="180" text-anchor="middle">0</text>
+  <rect x="434" y="158" width="34" height="34" class="pu"/><text x="451" y="180" text-anchor="middle">0</text>
+  <rect x="468" y="158" width="34" height="34" class="pu"/><text x="485" y="180" text-anchor="middle">0</text>
+  <rect x="508" y="158" width="34" height="34" class="pu"/><text x="525" y="180" text-anchor="middle">0</text>
+  </g>
+  <path d="M396 101 H548" style="stroke:var(--alert);stroke-width:2;fill:none" class="dash"/>
+  <path d="M451 46 V196" style="stroke:var(--alert);stroke-width:2;fill:none" class="dash"/>
+  <text x="556" y="98" style="fill:var(--alert)" class="b">row 2 odd</text>
+  <text x="451" y="214" text-anchor="middle" style="fill:var(--alert)" class="b">column 2 odd</text>
+  <text x="560" y="140" class="mut">crossing point =</text><text x="560" y="156" class="mut">the bad bit →</text><text x="560" y="172" class="mut">flip it back</text>
+</svg>
+<figcaption>Figure 14.3: 2-D parity locates (and so corrects) a single-bit error</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+An "evolved version" of simple parity. Arrange the data units as a <b>matrix</b>, one per row: d1 = <code>101</code>, d2 = <code>010</code>, d3 = <code>111</code>. Give every <b>row</b> a parity bit and every <b>column</b> a parity bit (even parity throughout).<br>
+• Row 1 has two 1s → already even → parity <b>0</b>. Row 2 has one 1 → parity <b>1</b>. Row 3 has three 1s → add one more → parity <b>1</b>.<br>
+• Each column has two 1s → column parities <b>0, 0, 0</b>.<br>
+<b>1-bit error:</b> the 1 in row 2 becomes 0. Row 2 now has an odd count ("kuch to gadbad hai"), and column 2 is odd too. The row and column <b>cross at the bad bit</b>, so 2-D parity can <b>detect, locate and correct</b> a single-bit error by flipping it back.<br>
+<b>2-bit error</b> (two 0s → 1s in the same row): the row still looks even, but the <b>column</b> check catches it (three 1s with column parity 0). <b>3-bit error:</b> also caught.<br>
+<b>4-bit error:</b> flip bits so that the changes cancel out in every row <b>and</b> every column (a 1→0 and a 0→1 in the same row, mirrored in another row). All parities stay even, so the error <b>escapes</b>.</div>
+<div class="box add"><span class="t">➕ Exam-ready summary</span>
+2-D parity detects <b>all 1-, 2- and 3-bit errors</b>, and burst errors up to the row length; it can <b>correct a single-bit</b> error. It <b>fails</b> when 4 errors sit at the <b>corners of a rectangle</b> (2 in one row, 2 in another, in the same columns). Overhead for an m × n block: <b>m + n + 1</b> parity bits. Also called <b>LRC (Longitudinal Redundancy Check)</b>; the row parity alone is <b>VRC (Vertical Redundancy Check)</b>.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">14.5</span>Checksum</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"Check the sum": a very widely used method. The checksum sits in the <b>trailer</b> (tail) of the frame, after the data. Split the data into 4-bit fields, here holding the values <b>8, 2, 4, 5, 2, 6, 4, 5</b>. Add them as you go: 8 → 10 → 14 → 19 → 21 → 27 → 31 → <b>36</b>.<br>
+<b>Idea 1:</b> put 36 in the checksum field. The receiver adds the data again, gets 36, and <b>compares</b> it with the field. Comparing works but is "a bit costly".<br>
+<b>Idea 2 (better):</b> send the <b>negative</b>, <b>−36</b>. The receiver simply <b>adds everything, including the checksum</b>: 36 + (−36) = <b>0</b>. A zero result means <b>no corruption</b>; addition alone does the job.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+The Internet checksum is <b>16 bits</b> and is used in the <b>IPv4 header</b> (header only), <b>TCP</b>, <b>UDP</b> and <b>ICMP</b>. IPv6 dropped the header checksum. Ethernet frames use <b>CRC-32</b>, not a checksum. These are frequent one-liners.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">14.6</span>Checksum: Wraparound Addition and One's Complement</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The fields are only 4 bits, but 36 = <code>100100</code> needs <b>6</b> bits. Fix: take the <b>extra bits on the left</b> (the carry) and <b>add them back</b> into the lower 4 bits. This is <b>wraparound</b> addition. Then take the <b>one's complement</b> (flip every bit) instead of a minus sign.</div>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Sender: 36 is 10 0100; wrap 10 into 0100 gives 0110 = 6; complement gives 1001 = 9. Receiver: 36 + 9 = 45 = 10 1101; wrap gives 1111 = 15; complement gives 0000, so accept">
+  <rect x="20" y="10" width="300" height="210" rx="6" class="ac"/>
+  <text x="170" y="34" text-anchor="middle" class="b">Sender</text>
+  <g font-family="monospace">
+  <text x="40" y="64">sum = 36   =  <tspan style="fill:var(--alert)" font-weight="700">10</tspan> 0100</text>
+  <text x="40" y="90">wrap:            0100</text>
+  <text x="40" y="112">              + <tspan style="fill:var(--alert)" font-weight="700">  10</tspan></text>
+  <text x="40" y="136">              = 0110 (6)</text>
+  <text x="40" y="168">1's complement → <tspan font-weight="700" style="fill:var(--accent)">1001 (9)</tspan></text>
+  </g>
+  <text x="170" y="204" text-anchor="middle" class="mut">checksum field = 9</text>
+  <rect x="360" y="10" width="300" height="210" rx="6" class="gr"/>
+  <text x="510" y="34" text-anchor="middle" class="b">Receiver</text>
+  <g font-family="monospace">
+  <text x="380" y="64">36 + 9 = 45 = <tspan style="fill:var(--alert)" font-weight="700">10</tspan> 1101</text>
+  <text x="380" y="90">wrap:           1101</text>
+  <text x="380" y="112">             + <tspan style="fill:var(--alert)" font-weight="700">  10</tspan></text>
+  <text x="380" y="136">             = 1111 (15)</text>
+  <text x="380" y="168">1's complement → <tspan font-weight="700" style="fill:var(--ok)">0000</tspan></text>
+  </g>
+  <text x="510" y="204" text-anchor="middle" class="mut">all zeros → accept</text>
+</svg>
+<figcaption>Figure 14.4: The lecture's checksum, bit by bit</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture (continued)</span>
+Sender: 36 → wrap the extra <code>10</code> into <code>0100</code> → <code>0110</code> = 6 → one's complement → <code>1001</code> = <b>9</b>. Put 9 in the checksum field.<br>
+Receiver: does the same sum (36) <b>plus</b> the checksum (9) = 45 = <code>101101</code> → wrap → <code>1111</code> = 15 → one's complement → <b><code>0000</code></b>. Result <b>zero</b> means valid: no error, no corruption, no modification.</div>
+<div class="num"><span class="t">Procedure to memorise</span>
+<b>Sender:</b> split into k-bit words → add them with wraparound (one's complement sum) → complement → that is the checksum.<br>
+<b>Receiver:</b> add all words <b>including the checksum</b> with wraparound → complement → <b>all 0s = accept</b>, anything else = reject. (Equivalently: the wrapped sum before complementing is <b>all 1s</b>.)</div>
+<div class="box trap"><span class="t">⚠️ Weakness</span>
+Checksum misses errors that <b>cancel out</b> in the sum: one word goes up by some amount and another goes down by the same amount, or two words <b>swap places</b> (addition does not care about order). That is why CRC is preferred at the data link layer.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">14.7</span>Cyclic Redundancy Check (CRC): Sender Side</h3>
+<div class="def"><b>CRC:</b> treat the data as a binary number, divide it by an agreed <b>divisor (generator)</b> using <b>modulo-2 division</b> (XOR, no carries or borrows), and send the <b>remainder</b> along with the data. The receiver divides again; a remainder of <b>all 0s</b> means no error.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Data = <code>1100</code>. Generator polynomial = <b>x³ + x + 1</b>. Write a 1 for every power present and a 0 for every power missing: x³ yes (1), x² no (0), x yes (1), 1 yes (1) → divisor <b><code>1011</code></b>.<br>
+The divisor has <b>n = 4</b> bits, so append <b>n − 1 = 3</b> zeros (the places for remainder bits r2 r1 r0, initially 0) → dividend <code>1100000</code>.<br>
+Division rule: go <b>left to right</b>; wherever you see the <b>first 1</b>, place the divisor under it and <b>XOR</b> (same → 0, different → 1). Bring the remaining bits down unchanged and repeat. Stop when no 1 is left that still has 4 bits under it. The last 3 bits are the remainder, <b><code>010</code></b>. Replace the appended zeros with it and send <b><code>1100 010</code></b>.</div>
+<div class="num"><span class="t">Sender division (modulo 2)</span>
+<div class="formula">            1 1 0 0 0 0 0      ← 1100 + 000
+XOR         1 0 1 1
+            ───────
+            0 1 1 1 0 0 0
+XOR           1 0 1 1
+              ───────
+            0 0 1 0 1 0 0
+XOR             1 0 1 1
+                ───────
+            0 0 0 0 0 1 0      → remainder (last 3 bits) = 010
+
+Transmitted codeword = 1100 | 010</div></div>
+</section>
+
+<section id="s8">
+<h3><span class="n">14.8</span>CRC: Receiver Side Checking</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Both sides know the divisor. The <b>checker</b> runs the same left-to-right XOR division on the whole received codeword. If the remainder is <b>all zeros</b>, there is "no tension": accept. If it is <b>non-zero</b>, the error has been <b>detected</b>.<br>
+Why stop where we stopped? Because once the divisor is placed under the next 1, there are <b>not enough bits left</b> to XOR with; there is nothing to divide, so the leftover bits are the remainder.</div>
+<div class="num"><span class="t">Receiver division</span>
+<div class="formula">            1 1 0 0 0 1 0      ← received codeword
+XOR         1 0 1 1
+            ───────
+            0 1 1 1 0 1 0
+XOR           1 0 1 1
+              ───────
+            0 0 1 0 1 1 0
+XOR             1 0 1 1
+                ───────
+            0 0 0 0 0 0 0      → remainder 000 → ACCEPT</div></div>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="CRC block diagram: data plus n minus 1 zeros goes to the generator which divides by the divisor; data plus remainder is sent; the checker divides again and accepts if the remainder is zero">
+  <defs><marker id="ca" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="40" width="130" height="50" class="bx"/><text x="75" y="62" text-anchor="middle" class="b">Data</text><text x="75" y="78" text-anchor="middle" class="mut">+ (n−1) zeros</text>
+  <path d="M140 65 H170" class="lna" marker-end="url(#ca)"/>
+  <rect x="172" y="40" width="120" height="50" class="ac"/><text x="232" y="62" text-anchor="middle" class="b">Generator</text><text x="232" y="78" text-anchor="middle" class="mut">÷ divisor (XOR)</text>
+  <path d="M292 65 H322" class="lna" marker-end="url(#ca)"/>
+  <rect x="324" y="40" width="130" height="50" class="pu"/><text x="389" y="62" text-anchor="middle" class="b">Data + CRC</text><text x="389" y="78" text-anchor="middle" class="mut">sent on the link</text>
+  <path d="M454 65 H484" class="lna" marker-end="url(#ca)"/>
+  <rect x="486" y="40" width="120" height="50" class="gr"/><text x="546" y="62" text-anchor="middle" class="b">Checker</text><text x="546" y="78" text-anchor="middle" class="mut">÷ same divisor</text>
+  <text x="546" y="118" text-anchor="middle" style="fill:var(--ok)" class="b">remainder 0 → accept</text>
+  <text x="546" y="138" text-anchor="middle" style="fill:var(--bad)" class="b">non-zero → discard</text>
+  <text x="232" y="118" text-anchor="middle" class="mut">remainder = n−1 bits</text>
+</svg>
+<figcaption>Figure 14.5: CRC generator and checker</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ CRC facts for the exam</span>
+<ul><li>A generator of <b>degree r</b> has <b>r + 1 bits</b> and produces an <b>r-bit</b> CRC (that is the lecture's "n bits → n − 1 zeros").</li>
+<li>CRC detects <b>all burst errors of length ≤ r</b>, all single-bit errors, and all odd-numbered errors if the generator has <b>(x + 1)</b> as a factor.</li>
+<li>Standard generators: <b>CRC-8</b> (ATM header), <b>CRC-16</b>, <b>CRC-CCITT</b> (HDLC), <b>CRC-32</b> (<b>Ethernet</b> FCS, IEEE 802.3).</li>
+<li>Implemented in hardware with <b>shift registers and XOR gates</b>, so it is fast. It goes in the <b>FCS (Frame Check Sequence)</b> field of the trailer.</li></ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Append zeros equal to the <b>degree</b> of the polynomial (number of divisor bits − 1), <b>not</b> the number of divisor bits. For x³ + x + 1, that is 3 zeros, not 4. And modulo-2 "subtraction" is plain XOR: no borrowing.</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">14.9</span>Error Correction: Hamming Code <span class="badge">ADDED</span></h3>
+<div class="def"><b>Hamming code:</b> a single-bit error-<b>correcting</b> code. Parity bits sit at positions that are <b>powers of 2</b> (1, 2, 4, 8 …); each one checks the positions whose binary index contains that power. The receiver recomputes the checks; the failed checks, read as a binary number (the <b>syndrome</b>), give the <b>position of the bad bit</b>.</div>
+<div class="num"><span class="t">How many parity bits? (asked very often)</span>
+For m data bits you need the smallest r with <div class="formula">2ʳ ≥ m + r + 1</div>
+m = 4 → r = 3 (8 ≥ 8) → Hamming (7,4). m = 7 (ASCII) → r = 4 (16 ≥ 12) → 11 bits. m = 16 → r = 5 (32 ≥ 22).</div>
+<div class="num"><span class="t">Worked example: data 1011, even parity</span>
+<div class="formula">position   1   2   3   4   5   6   7
+role       p1  p2  d   p4  d   d   d
+data               1       0   1   1
+p1 checks 1,3,5,7 → 1+0+1 = even → p1 = 0
+p2 checks 2,3,6,7 → 1+1+1 = odd  → p2 = 1
+p4 checks 4,5,6,7 → 0+1+1 = even → p4 = 0
+codeword = 0 1 1 0 0 1 1
+
+Bit 6 flips → received 0 1 1 0 0 0 1
+p1 check (1,3,5,7) = 0+1+0+1 even → 0
+p2 check (2,3,6,7) = 1+1+0+1 odd  → 1
+p4 check (4,5,6,7) = 0+0+0+1 odd  → 1
+syndrome p4 p2 p1 = 110 = 6 → flip bit 6 back ✔</div></div>
+<div class="box add"><span class="t">➕ Where correction is used</span>
+Hamming (7,4) has d<sub>min</sub> = 3: it corrects 1 bit <i>or</i> detects 2. Adding one overall parity bit gives <b>SEC-DED</b> (single error correct, double error detect), used in <b>ECC RAM</b>. Other FEC codes: Reed–Solomon (CDs, QR codes, DSL), convolutional and LDPC codes (Wi-Fi, 4G/5G).</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">14.10</span>Comparison Table &amp; Solved Questions <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Method</th><th>Redundancy</th><th>Detects</th><th>Corrects?</th><th>Where used</th></tr>
+<tr><td>Simple parity (VRC)</td><td>1 bit per unit</td><td>all odd-numbered errors</td><td>No</td><td>serial / ASCII, memory</td></tr>
+<tr><td>2-D parity (LRC)</td><td>m + n + 1 bits</td><td>all 1-, 2-, 3-bit errors; misses 4 at rectangle corners</td><td>1 bit</td><td>older block transmission</td></tr>
+<tr><td>Checksum</td><td>16 bits (Internet)</td><td>most errors; misses ones that cancel or swap</td><td>No</td><td>IPv4 header, TCP, UDP, ICMP</td></tr>
+<tr><td>CRC</td><td>r bits (degree r)</td><td>all bursts ≤ r, all single, odd counts with (x+1)</td><td>No</td><td>Ethernet (CRC-32), HDLC, Wi-Fi</td></tr>
+<tr><td>Hamming code</td><td>r bits, 2ʳ ≥ m + r + 1</td><td>2 bits</td><td>1 bit</td><td>ECC memory</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> d(10101, 11110)? XOR = 01011 → <b>3</b>.<br><br>
+<b>Q2.</b> A code must correct up to 2 errors. Minimum d<sub>min</sub>? 2t + 1 = <b>5</b>. To only detect 4 errors? s + 1 = <b>5</b> as well.<br><br>
+<b>Q3.</b> Even-parity bit for <code>1101011</code>? Five 1s (odd) → parity bit <b>1</b>.<br><br>
+<b>Q4.</b> Data <code>100100</code>, generator x³ + x² + 1 (<code>1101</code>). CRC?<br>
+Append 3 zeros: <code>100100000</code>. Divide: 1001⊕1101 = 0100 → 1000⊕1101 = 0101 → 1010⊕1101 = 0111 → 1110⊕1101 = 0011 → remainder <b><code>001</code></b>. Send <code>100100 001</code>.<br><br>
+<b>Q5.</b> How many check bits does a CRC with generator x⁴ + x + 1 add? Degree 4 → <b>4 bits</b>.<br><br>
+<b>Q6.</b> Hamming parity bits for 8 data bits? r = 4 (16 ≥ 13) → 12-bit codeword.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 14</h3>
+<ul>
+<li>Errors: <b>single-bit</b> (one bit flips, rare) vs <b>burst</b> (2+ bits, common). Burst length = first bad bit to last bad bit.</li>
+<li><b>Hamming distance</b> = number of 1s in x XOR y. Detect s errors: d<sub>min</sub> ≥ <b>s + 1</b>; correct t errors: d<sub>min</sub> ≥ <b>2t + 1</b>.</li>
+<li><b>Simple parity</b> (even is usual): the generator adds a 1 if the data has an odd count of 1s. It detects any <b>odd</b> number of errors, misses even numbers, and never corrects.</li>
+<li><b>2-D parity</b>: row + column parity; <b>locates and corrects 1 bit</b>, detects up to 3; fails on 4 errors at the corners of a rectangle.</li>
+<li><b>Checksum</b>: sum the words with <b>wraparound</b>, then <b>one's complement</b>. Receiver adds everything including the checksum; complement = <b>0</b> means accept. Lecture example: 36 → 6 → <b>9</b>; receiver 45 → 15 → 0. Used in IPv4 header, TCP, UDP (16-bit).</li>
+<li><b>CRC</b>: polynomial → bits (x³ + x + 1 = <b>1011</b>); append <b>n − 1</b> zeros (= degree); XOR division left to right at each leading 1; remainder replaces the zeros. Receiver remainder <b>000</b> = accept. Lecture: 1100 ÷ 1011 → <b>010</b>, send 1100010.</li>
+<li>CRC detects all bursts ≤ degree r; CRC-32 is used in Ethernet's FCS.</li>
+<li><b>Hamming code</b>: parity bits at 1, 2, 4, 8…; <b>2ʳ ≥ m + r + 1</b>; syndrome = position of the bad bit. 1011 → <b>0110011</b>.</li>
+<li>Detection + ARQ for wired links; FEC (Hamming, Reed–Solomon) where resending is costly.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 14 · Next: Chapter 15 — Ethernet (IEEE 802.3)</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="13-Flow-Control.html">← Ch 13: Flow Control</a><a href="index.html">☰ All topics</a><a href="15-Ethernet.html">Ch 15: Ethernet (IEEE 802.3) →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

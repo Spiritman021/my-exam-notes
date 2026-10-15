@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS Disk Scheduling Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="10-Virtual-Memory.html">← Ch 10: Virtual Memory</a><a href="index.html">☰ All topics</a><a href="12-File-Systems.html">Ch 12: File Systems →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Operating System — Chapter 11: Disk Management and Disk Scheduling</h1>
+  <p class="sub">Volume 01 · Part 11 · Built from the one-shot OS lecture transcript (section 11), plus the exam points the lecture skipped. All head-movement charts are generated from the request sequences.</p>
+  <ul class="tags">
+    <li>Platter · Surface · Track · Sector · Cylinder</li><li>Disk Capacity</li><li>Seek Time</li><li>Rotational Latency</li>
+    <li>Transfer Time &amp; Rate</li><li>Access Time Numericals</li><li>FCFS</li><li>SSTF</li><li>SCAN</li><li>LOOK</li><li>C-SCAN</li><li>C-LOOK</li>
+    <li>Disk Formatting &amp; Swap</li><li>RAID Levels</li><li>HDD vs SSD</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">11.1</span>Disk Architecture</a></li>
+    <li><a href="#s2"><span class="n">11.2</span>Numerical: Disk Capacity</a></li>
+    <li><a href="#s3"><span class="n">11.3</span>Disk Access Time</a></li>
+    <li><a href="#s4"><span class="n">11.4</span>Seek Time</a></li>
+    <li><a href="#s5"><span class="n">11.5</span>Rotational Latency</a></li>
+    <li><a href="#s6"><span class="n">11.6</span>Transfer Time &amp; Data Transfer Rate</a></li>
+    <li><a href="#s7"><span class="n">11.7</span>Numerical: Capacity, Sector Addressing, Transfer Rate</a></li>
+    <li><a href="#s7a"><span class="n">11.7A</span>Access-Time Numericals<span class="x">ADDED</span></a></li>
+    <li><a href="#s8"><span class="n">11.8</span>Disk Scheduling Overview</a></li>
+    <li><a href="#s9"><span class="n">11.9</span>FCFS</a></li>
+    <li><a href="#s10"><span class="n">11.10</span>SSTF</a></li>
+    <li><a href="#s11"><span class="n">11.11</span>SCAN (Elevator)</a></li>
+    <li><a href="#s12"><span class="n">11.12</span>LOOK</a></li>
+    <li><a href="#s13"><span class="n">11.13</span>C-SCAN</a></li>
+    <li><a href="#s14"><span class="n">11.14</span>C-LOOK</a></li>
+    <li><a href="#s15"><span class="n">11.15</span>Comparison</a></li>
+    <li><a href="#s16"><span class="n">11.16</span>Disk Formatting, Swap Space, RAID &amp; SSD<span class="x">ADDED</span></a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 11</div>
+<h2 class="ch">Disk Management and Disk Scheduling</h2>
+<p>Virtual memory (Chapter 10) keeps most pages on <b>disk</b>, and every page fault and file read hits the disk, the slowest part of the hierarchy. This chapter covers how a hard disk is built, how to calculate its <b>capacity</b> and <b>access time</b>, and how the OS orders pending requests (<b>disk scheduling</b>) to minimise the <b>seek time</b>, the biggest component of that access time.</p>
+
+<!-- 11.1 -->
+<section id="s1">
+<h3><span class="n">11.1</span>Disk Architecture: Platters, Surfaces, Tracks, Sectors</h3>
+<figure>
+<svg viewBox="0 0 680 300" role="img" aria-label="Hard disk architecture: spindle, platters with upper and lower surfaces, read-write heads on actuator arm">
+  <defs><marker id="c1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="195" y="30" width="14" height="240" class="pu"/><text x="202" y="290" text-anchor="middle" class="mut">spindle</text>
+  <ellipse cx="202" cy="80" rx="150" ry="22" class="ac"/><ellipse cx="202" cy="150" rx="150" ry="22" class="ac"/><ellipse cx="202" cy="220" rx="150" ry="22" class="ac"/>
+  <text x="20" y="85" class="mut">platter 1</text><text x="20" y="155" class="mut">platter 2</text><text x="20" y="225" class="mut">platter 3</text>
+  <path d="M30 50 L 70 70" class="ln"/><text x="10" y="45" class="mut">upper surface</text>
+  <path d="M30 115 L 70 95" class="ln"/><text x="10" y="122" class="mut">lower surface</text>
+  <rect x="560" y="40" width="16" height="220" class="or"/><text x="568" y="285" text-anchor="middle" class="mut">actuator</text>
+  <g class="ln" style="stroke:var(--alert);stroke-width:3">
+    <path d="M560 70 H300"/><path d="M560 90 H300"/><path d="M560 140 H300"/><path d="M560 160 H300"/><path d="M560 210 H300"/><path d="M560 230 H300"/>
+  </g>
+  <g style="fill:var(--alert)"><rect x="294" y="66" width="10" height="8"/><rect x="294" y="86" width="10" height="8"/><rect x="294" y="136" width="10" height="8"/><rect x="294" y="156" width="10" height="8"/><rect x="294" y="206" width="10" height="8"/><rect x="294" y="226" width="10" height="8"/></g>
+  <text x="430" y="60" class="mut">read/write heads (one per surface)</text>
+  <text x="430" y="125" class="mut">on actuator arms</text>
+  <path d="M420 255 H520" class="lna" marker-start="url(#c1)" marker-end="url(#c1)"/><text x="470" y="275" text-anchor="middle" class="mut">heads move in / out only</text>
+  <path d="M60 255 C 120 290, 280 290, 340 255" class="lna" marker-end="url(#c1)"/><text x="200" y="275" text-anchor="middle" class="mut">platters rotate</text>
+</svg>
+<figcaption>Figure 11.1: Moving-head disk mechanism</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 640 230" role="img" aria-label="Top view of a surface showing concentric tracks and a sector, and a cylinder across platters">
+  <circle cx="140" cy="115" r="100" class="ac"/><circle cx="140" cy="115" r="75" class="bx"/><circle cx="140" cy="115" r="50" class="ac"/><circle cx="140" cy="115" r="20" class="pu"/>
+  <path d="M140 115 L240 115 A100 100 0 0 0 210.7 44.3 Z" style="fill:var(--alert);opacity:.35"/>
+  <text x="250" y="70" class="mut">sector (pie slice of a track)</text>
+  <text x="250" y="125" class="mut">track = concentric ring</text>
+  <text x="250" y="145" class="mut">outer tracks are longer</text>
+  <text x="140" y="228" text-anchor="middle" class="mut">top view of one surface</text>
+  <ellipse cx="520" cy="60" rx="90" ry="16" class="bx"/><ellipse cx="520" cy="115" rx="90" ry="16" class="bx"/><ellipse cx="520" cy="170" rx="90" ry="16" class="bx"/>
+  <ellipse cx="520" cy="60" rx="55" ry="10" style="fill:none;stroke:var(--alert);stroke-width:2.5"/><ellipse cx="520" cy="115" rx="55" ry="10" style="fill:none;stroke:var(--alert);stroke-width:2.5"/><ellipse cx="520" cy="170" rx="55" ry="10" style="fill:none;stroke:var(--alert);stroke-width:2.5"/>
+  <path d="M465 60 V170 M575 60 V170" style="stroke:var(--alert);stroke-dasharray:4 4"/>
+  <text x="520" y="215" text-anchor="middle" class="mut">CYLINDER = same track on all surfaces</text>
+</svg>
+<figcaption>Figure 11.2: Tracks, sectors and cylinders</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Platter</b>: one disk "plate" (like a CD). Each platter has <b>2 surfaces</b>, upper and lower. A disk can have <b>many platters</b>.</li>
+<li><b>Spindle</b>: the rod that holds all the platters together and rotates them.</li>
+<li><b>Track</b>: a concentric circular ring on a surface. <b>Outer tracks are bigger</b>, and tracks get smaller towards the centre.</li>
+<li><b>Sector</b>: each track is divided into blocks or sections called sectors. This is where the data actually lives.</li>
+<li><b>Read/write head</b>: one per surface (upper and lower). All heads are held by the <b>actuator arm</b>. The heads move <b>back and forth</b> (in/out), never in a circle; the <b>platter</b> rotates.</li>
+<li>Hierarchy: <b>platter → 2 surfaces → tracks → sectors → data</b>.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ More terms</span>
+<b>Cylinder</b>: the set of tracks at the same arm position on all surfaces. Moving within a cylinder needs <b>no seek</b>. Typical sector size is <b>512 B</b> (now 4 KB "Advanced Format"). <b>CAV</b> (constant angular velocity) keeps the same number of sectors per track, so bit density is higher on inner tracks. <b>CLV</b> (constant linear velocity, CDs and DVDs) puts more sectors on outer tracks. <b>Head crash</b>: the head touches the platter surface, which usually destroys data.</div>
+</section>
+
+<!-- 11.2 -->
+<section id="s2">
+<h3><span class="n">11.2</span>Numerical Example: Disk Capacity</h3>
+<div class="num"><span class="t">Essential formula</span>
+<div class="formula">Disk capacity = platters × 2 (surfaces) × tracks/surface × sectors/track × bytes/sector
+             = surfaces × tracks × sectors × sector size</div></div>
+<div class="num"><span class="t">Numerical (lecture)</span>
+8 platters, 2 surfaces each, 256 tracks per surface, 512 sectors per track, 512 B per sector.<br>
+<b>Step 1:</b> write each as a power of 2: 2³ × 2¹ × 2⁸ × 2⁹ × 2⁹.<br>
+<b>Step 2:</b> add the exponents: 3 + 1 + 8 + 9 + 9 = <b>30</b>, so 2³⁰ bytes.<br>
+<b>Conclusion:</b> capacity = 2³⁰ B = <b>1 GB</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The lecture says "2³⁰ = 1 MB" here. That is a slip: <b>2³⁰ B = 1 GB</b> (2²⁰ = 1 MB). Remember: 2¹⁰ K, 2²⁰ M, 2³⁰ G, 2⁴⁰ T.</div>
+</section>
+
+<!-- 11.3 -->
+<section id="s3">
+<h3><span class="n">11.3</span>Disk Access Time</h3>
+<div class="def"><b>Disk access time:</b> the total time to <b>read or write</b> a particular piece of data on the disk.</div>
+<div class="num"><span class="t">Essential formula</span>
+<div class="formula">Disk access time = Seek time + Rotational latency + Transfer time   (+ controller overhead + queuing delay, if given)</div></div>
+<figure>
+<svg viewBox="0 0 640 110" role="img" aria-label="Access time composed of seek, rotational latency, transfer">
+  <rect x="20" y="30" width="300" height="40" class="or"/><text x="170" y="55" text-anchor="middle" class="b">Seek time (arm moves to track)</text>
+  <rect x="320" y="30" width="180" height="40" class="ac"/><text x="410" y="55" text-anchor="middle" class="b">Rotational latency</text>
+  <rect x="500" y="30" width="120" height="40" class="gr"/><text x="560" y="55" text-anchor="middle" class="b">Transfer</text>
+  <text x="320" y="95" text-anchor="middle" class="mut">seek usually dominates → disk scheduling tries to reduce it</text>
+</svg>
+<figcaption>Figure 11.3: Components of disk access time</figcaption>
+</figure>
+</section>
+
+<!-- 11.4 -->
+<section id="s4">
+<h3><span class="n">11.4</span>Seek Time</h3>
+<div class="def"><b>Seek time:</b> the time for the <b>read/write head (arm)</b> to move from its <b>current track</b> to the <b>target track</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The head moves back and forth across tracks. If it is on an outer track and the target is an inner one, the time to get there is the seek time.
+<div class="formula">Seek time = n × s     (n = number of tracks crossed, s = time to cross one track)</div></div>
+<div class="box add"><span class="t">➕ Average seek time</span>
+Manufacturers quote the <b>average seek time</b> (typically 3 to 12 ms), roughly the time to move across one-third of the tracks. If a question gives "average seek time", use it directly. Seek time is the <b>largest</b> component of access time, which is why disk scheduling targets it.</div>
+</section>
+
+<!-- 11.5 -->
+<section id="s5">
+<h3><span class="n">11.5</span>Rotational Latency</h3>
+<div class="def"><b>Rotational latency:</b> once on the right track, the time for the platter to <b>rotate the desired sector under the head</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The head can't rotate; it only moves in and out. So if it is at sector 0 and the data is in sector 2, the <b>disk must rotate</b> sector 2 under the head.
+<div class="formula">Rotational latency = θ / f   (θ = angle between current and target sector, f = rotational frequency)
+Average rotational latency = ½ × time for one rotation</div></div>
+<div class="num"><span class="t">Numerical (added)</span>
+The disk spins at <b>7200 RPM</b>.<br>
+Rotations per second = 7200 / 60 = 120, so one rotation = 1/120 s = <b>8.33 ms</b>.<br>
+Average rotational latency = 8.33 / 2 = <b>4.17 ms</b>.<br>
+(At 3600 RPM: one rotation = 16.67 ms, average latency = 8.33 ms. At 15,000 RPM: 4 ms and 2 ms.)</div>
+</section>
+
+<!-- 11.6 -->
+<section id="s6">
+<h3><span class="n">11.6</span>Transfer Time and Data Transfer Rate</h3>
+<div class="def"><b>Transfer time:</b> once the head is over the right sector, the time to actually <b>read or write the data</b>.</div>
+<div class="num"><span class="t">Essential formulas (lecture)</span>
+<div class="formula">Transfer time = data size / data transfer rate
+Data transfer rate = number of heads (surfaces) × capacity of one track × rotations per second</div></div>
+<div class="box add"><span class="t">➕ Single-head form</span>
+Many questions assume <b>one head reads at a time</b>. Then the transfer rate = track capacity × rotations per second, and the transfer time for one sector = one rotation ÷ sectors per track. Read whether the question says the heads transfer <b>in parallel</b>, as the lecture's formula assumes.</div>
+</section>
+
+<!-- 11.7 -->
+<section id="s7">
+<h3><span class="n">11.7</span>Numerical Example: Capacity, Sector Addressing and Transfer Rate</h3>
+<div class="num"><span class="t">Numerical (lecture)</span>
+Given: 16 surfaces, 128 tracks per surface, 256 sectors per track, 512 B per sector, 3600 RPM.<br><br>
+<b>(a) Capacity</b> = 2⁴ × 2⁷ × 2⁸ × 2⁹ = 2²⁸ B = 2⁸ × 2²⁰ = <b>256 MB</b>.<br><br>
+<b>(b) Bits to address a sector</b>: total sectors = surfaces × tracks × sectors = 2⁴ × 2⁷ × 2⁸ = 2¹⁹, so <b>19 bits</b>.<br><br>
+<b>(c) Data transfer rate</b> = heads × track capacity × rotations per second.<br>
+Track capacity = 256 × 512 = 2⁸ × 2⁹ = 2¹⁷ B = 128 KB. Rotations per second = 3600 / 60 = 60.<br>
+Rate = 2⁴ × 2¹⁷ × 60 = 2²¹ × 60 = 2 MB × 60 = <b>120 MB/s</b>.</div>
+</section>
+
+<!-- 11.7A -->
+<section id="s7a">
+<h3><span class="n">11.7A</span>Access-Time Numericals <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Numerical 1: time to read one sector</span>
+Average seek = 4 ms; 7200 RPM; 400 sectors per track; sector = 512 B.<br>
+One rotation = 60/7200 s = 8.33 ms, so average rotational latency = <b>4.17 ms</b>.<br>
+Transfer one sector = 8.33 / 400 = <b>0.021 ms</b>.<br>
+Access time = 4 + 4.17 + 0.021 ≈ <b>8.19 ms</b>.<br>
+<b>Conclusion:</b> transfer is tiny. Seek and rotation dominate, so reading sectors <b>sequentially</b> on the same track or cylinder is far faster than random reads.</div>
+<div class="num"><span class="t">Numerical 2: seek from a track count</span>
+The head is at track 20, the target is track 70, and crossing one track takes 0.1 ms.<br>
+Seek = |70 − 20| × 0.1 = 50 × 0.1 = <b>5 ms</b>.</div>
+<div class="num"><span class="t">Numerical 3: total seek from disk scheduling</span>
+If a schedule moves the head a total of 85 tracks (SSTF below) and crossing one track takes 1 ms, then total seek time = <b>85 ms</b>.</div>
+</section>
+
+<!-- 11.8 -->
+<section id="s8">
+<h3><span class="n">11.8</span>Disk Scheduling Algorithms Overview</h3>
+<div class="def"><b>Disk scheduling:</b> the OS orders the pending I/O requests (track numbers in the request queue) so that the <b>total head movement, and therefore total seek time, is minimised</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+There are several algorithms: <b>FCFS, SSTF, SCAN, LOOK, C-SCAN and C-LOOK</b>, all applied to one example.</div>
+<div class="num"><span class="t">Common problem used for all six (lecture)</span>
+Tracks <b>0 to 99</b> (100 tracks). Request queue: <b>80, 30, 90, 95, 45</b>. Head currently at <b>50</b>. Direction for SCAN-family algorithms: towards <b>larger</b> track numbers.</div>
+<div class="box lec"><span class="t">🎓 Counting shortcut (lecture)</span>
+Total head movement = sum of |differences| between consecutive positions. If the head keeps moving <b>in one direction</b> through several stops, just subtract the <b>two extreme ends</b> of that run: 95 − 30 instead of (90 − 30) + (95 − 90). The answer is the same with fewer steps.</div>
+</section>
+
+<!-- 11.9 -->
+<section id="s9">
+<h3><span class="n">11.9</span>FCFS Disk Scheduling</h3>
+<div class="def"><b>FCFS (First Come First Serve):</b> serve the requests <b>in the order they arrive</b>.</div>
+<figure><svg viewBox="0 0 640 220" role="img" aria-label="Head movement chart for FCFS"><defs><marker id="dk545" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs><path d="M40 30 H610" class="ln"/><path d="M40.0 26 V34" class="ln"/><text x="40.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">0</text><path d="M212.7 26 V34" class="ln"/><text x="212.7" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">30</text><path d="M299.1 26 V34" class="ln"/><text x="299.1" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">45</text><path d="M327.9 26 V34" class="ln"/><text x="327.9" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">50</text><path d="M500.6 26 V34" class="ln"/><text x="500.6" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">80</text><path d="M558.2 26 V34" class="ln"/><text x="558.2" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">90</text><path d="M587.0 26 V34" class="ln"/><text x="587.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">95</text><path d="M610.0 26 V34" class="ln"/><text x="610.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">99</text><path d="M327.9 50 L500.6 78" class="lna" marker-end="url(#dk545)"/><path d="M500.6 78 L212.7 106" class="lna" marker-end="url(#dk545)"/><path d="M212.7 106 L558.2 134" class="lna" marker-end="url(#dk545)"/><path d="M558.2 134 L587.0 162" class="lna" marker-end="url(#dk545)"/><path d="M587.0 162 L299.1 190" class="lna" marker-end="url(#dk545)"/><circle cx="327.9" cy="50" r="4" style="fill:var(--accent)"/><circle cx="500.6" cy="78" r="4" style="fill:var(--accent)"/><circle cx="212.7" cy="106" r="4" style="fill:var(--accent)"/><circle cx="558.2" cy="134" r="4" style="fill:var(--accent)"/><circle cx="587.0" cy="162" r="4" style="fill:var(--accent)"/><circle cx="299.1" cy="190" r="4" style="fill:var(--accent)"/></svg><figcaption>Head movement — FCFS: 50 → 80 → 30 → 90 → 95 → 45 · total = 195 tracks</figcaption></figure>
+<div class="num"><span class="t">Calculation</span>
+(80−50) + (80−30) + (90−30) + (95−90) + (95−45) = 30 + 50 + 60 + 5 + 50 = <b>195 tracks</b>.<br>
+Using the shortcut: 30 + 50 + (95 − 30) + 50 = 195.</div>
+<div class="box add"><span class="t">➕ Properties</span>
+Fair, with <b>no starvation</b>, and simple. But it causes wild swings across the disk, so the total seek is high. It is fine under a <b>light load</b>.</div>
+</section>
+
+<!-- 11.10 -->
+<section id="s10">
+<h3><span class="n">11.10</span>SSTF (Shortest Seek Time First)</h3>
+<div class="def"><b>SSTF:</b> from the current head position, serve the <b>closest pending request</b> next (the one with the minimum seek distance).</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+At 50, the nearest requests are 45 (distance 5) and 80 (distance 30), so go to <b>45</b>. From 45 the nearest is <b>30</b>. From 30 the nearest left is <b>80</b>, then <b>90</b>, then <b>95</b>.</div>
+<figure><svg viewBox="0 0 640 220" role="img" aria-label="Head movement chart for SSTF"><defs><marker id="dk9506" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs><path d="M40 30 H610" class="ln"/><path d="M40.0 26 V34" class="ln"/><text x="40.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">0</text><path d="M212.7 26 V34" class="ln"/><text x="212.7" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">30</text><path d="M299.1 26 V34" class="ln"/><text x="299.1" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">45</text><path d="M327.9 26 V34" class="ln"/><text x="327.9" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">50</text><path d="M500.6 26 V34" class="ln"/><text x="500.6" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">80</text><path d="M558.2 26 V34" class="ln"/><text x="558.2" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">90</text><path d="M587.0 26 V34" class="ln"/><text x="587.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">95</text><path d="M610.0 26 V34" class="ln"/><text x="610.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">99</text><path d="M327.9 50 L299.1 78" class="lna" marker-end="url(#dk9506)"/><path d="M299.1 78 L212.7 106" class="lna" marker-end="url(#dk9506)"/><path d="M212.7 106 L500.6 134" class="lna" marker-end="url(#dk9506)"/><path d="M500.6 134 L558.2 162" class="lna" marker-end="url(#dk9506)"/><path d="M558.2 162 L587.0 190" class="lna" marker-end="url(#dk9506)"/><circle cx="327.9" cy="50" r="4" style="fill:var(--accent)"/><circle cx="299.1" cy="78" r="4" style="fill:var(--accent)"/><circle cx="212.7" cy="106" r="4" style="fill:var(--accent)"/><circle cx="500.6" cy="134" r="4" style="fill:var(--accent)"/><circle cx="558.2" cy="162" r="4" style="fill:var(--accent)"/><circle cx="587.0" cy="190" r="4" style="fill:var(--accent)"/></svg><figcaption>Head movement — SSTF: 50 → 45 → 30 → 80 → 90 → 95 · total = 85 tracks</figcaption></figure>
+<div class="num"><span class="t">Calculation</span>
+(50 − 30) + (95 − 30) = 20 + 65 = <b>85 tracks</b>, compared with 195 for FCFS.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+SSTF is like <b>SJF</b> for disks. It gives a good average but is <b>not optimal</b> in general, and it can cause <b>starvation</b>: requests far from the head may wait forever if new nearby requests keep arriving. It also favours middle tracks.</div>
+</section>
+
+<!-- 11.11 -->
+<section id="s11">
+<h3><span class="n">11.11</span>SCAN (Elevator) Algorithm</h3>
+<div class="def"><b>SCAN:</b> the head moves in one direction serving every request on the way <b>all the way to the end of the disk</b> (track 99 or 0), then <b>reverses</b> and serves requests on the way back. It works like an <b>elevator</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Going towards higher tracks: 50 → 80 → 90 → 95 → <b>99</b> (the extreme end, even though 99 is <b>not requested</b>; that is the disadvantage) → back to 45 → 30.</div>
+<figure><svg viewBox="0 0 640 248" role="img" aria-label="Head movement chart for SCAN"><defs><marker id="dk3818" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs><path d="M40 30 H610" class="ln"/><path d="M40.0 26 V34" class="ln"/><text x="40.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">0</text><path d="M212.7 26 V34" class="ln"/><text x="212.7" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">30</text><path d="M299.1 26 V34" class="ln"/><text x="299.1" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">45</text><path d="M327.9 26 V34" class="ln"/><text x="327.9" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">50</text><path d="M500.6 26 V34" class="ln"/><text x="500.6" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">80</text><path d="M558.2 26 V34" class="ln"/><text x="558.2" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">90</text><path d="M587.0 26 V34" class="ln"/><text x="587.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">95</text><path d="M610.0 26 V34" class="ln"/><text x="610.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">99</text><path d="M327.9 50 L500.6 78" class="lna" marker-end="url(#dk3818)"/><path d="M500.6 78 L558.2 106" class="lna" marker-end="url(#dk3818)"/><path d="M558.2 106 L587.0 134" class="lna" marker-end="url(#dk3818)"/><path d="M587.0 134 L610.0 162" class="lna" marker-end="url(#dk3818)"/><path d="M610.0 162 L299.1 190" class="lna" marker-end="url(#dk3818)"/><path d="M299.1 190 L212.7 218" class="lna" marker-end="url(#dk3818)"/><circle cx="327.9" cy="50" r="4" style="fill:var(--accent)"/><circle cx="500.6" cy="78" r="4" style="fill:var(--accent)"/><circle cx="558.2" cy="106" r="4" style="fill:var(--accent)"/><circle cx="587.0" cy="134" r="4" style="fill:var(--accent)"/><circle cx="610.0" cy="162" r="4" style="fill:var(--accent)"/><circle cx="299.1" cy="190" r="4" style="fill:var(--accent)"/><circle cx="212.7" cy="218" r="4" style="fill:var(--accent)"/></svg><figcaption>Head movement — SCAN: 50 → 80 → 90 → 95 → 99 → 45 → 30 · total = 118 tracks</figcaption></figure>
+<div class="num"><span class="t">Calculation</span>
+(99 − 50) + (99 − 30) = 49 + 69 = <b>118 tracks</b>. The trip from 95 to 99 and back is wasted overhead (4 + 4 = 8).</div>
+<div class="box add"><span class="t">➕ Properties</span>
+<b>No starvation</b>, and a lower variance in response time than SSTF. But requests at the far end that just missed the head must wait for a full round trip, and the middle tracks are served twice as often as the ends.</div>
+</section>
+
+<!-- 11.12 -->
+<section id="s12">
+<h3><span class="n">11.12</span>LOOK Algorithm</h3>
+<div class="def"><b>LOOK:</b> like SCAN, but the head goes only as far as the <b>last request</b> in each direction (it "looks" ahead), then reverses. It does <b>not</b> touch the disk's extreme end.</div>
+<figure><svg viewBox="0 0 640 220" role="img" aria-label="Head movement chart for LOOK"><defs><marker id="dk5767" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs><path d="M40 30 H610" class="ln"/><path d="M40.0 26 V34" class="ln"/><text x="40.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">0</text><path d="M212.7 26 V34" class="ln"/><text x="212.7" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">30</text><path d="M299.1 26 V34" class="ln"/><text x="299.1" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">45</text><path d="M327.9 26 V34" class="ln"/><text x="327.9" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">50</text><path d="M500.6 26 V34" class="ln"/><text x="500.6" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">80</text><path d="M558.2 26 V34" class="ln"/><text x="558.2" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">90</text><path d="M587.0 26 V34" class="ln"/><text x="587.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">95</text><path d="M610.0 26 V34" class="ln"/><text x="610.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">99</text><path d="M327.9 50 L500.6 78" class="lna" marker-end="url(#dk5767)"/><path d="M500.6 78 L558.2 106" class="lna" marker-end="url(#dk5767)"/><path d="M558.2 106 L587.0 134" class="lna" marker-end="url(#dk5767)"/><path d="M587.0 134 L299.1 162" class="lna" marker-end="url(#dk5767)"/><path d="M299.1 162 L212.7 190" class="lna" marker-end="url(#dk5767)"/><circle cx="327.9" cy="50" r="4" style="fill:var(--accent)"/><circle cx="500.6" cy="78" r="4" style="fill:var(--accent)"/><circle cx="558.2" cy="106" r="4" style="fill:var(--accent)"/><circle cx="587.0" cy="134" r="4" style="fill:var(--accent)"/><circle cx="299.1" cy="162" r="4" style="fill:var(--accent)"/><circle cx="212.7" cy="190" r="4" style="fill:var(--accent)"/></svg><figcaption>Head movement — LOOK: 50 → 80 → 90 → 95 → 45 → 30 · total = 110 tracks</figcaption></figure>
+<div class="num"><span class="t">Calculation</span>
+(95 − 50) + (95 − 30) = 45 + 65 = <b>110 tracks</b>.</div>
+<div class="box lec"><span class="t">🎓 Why 110 and not 114? (lecture)</span>
+SCAN = 118 and LOOK = 110, a difference of <b>8</b>, not 4. The 95 → 99 stretch is counted <b>twice</b> in SCAN, once going out and once coming back, so LOOK saves 4 + 4 = 8.</div>
+</section>
+
+<!-- 11.13 -->
+<section id="s13">
+<h3><span class="n">11.13</span>C-SCAN Algorithm</h3>
+<div class="def"><b>C-SCAN (Circular SCAN):</b> the head moves in one direction serving requests up to the <b>end of the disk</b>. Then it <b>jumps straight back to the other end</b> (track 0) <b>without serving</b> anything on the way, and continues serving in the same direction. The disk is treated as <b>circular</b>.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+50 → 80 → 90 → 95 → <b>99</b> → jump to <b>0</b> → 30 → 45. Touching 0 is extra overhead.</div>
+<figure><svg viewBox="0 0 640 276" role="img" aria-label="Head movement chart for C-SCAN"><defs><marker id="dk2988" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs><path d="M40 30 H610" class="ln"/><path d="M40.0 26 V34" class="ln"/><text x="40.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">0</text><path d="M212.7 26 V34" class="ln"/><text x="212.7" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">30</text><path d="M299.1 26 V34" class="ln"/><text x="299.1" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">45</text><path d="M327.9 26 V34" class="ln"/><text x="327.9" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">50</text><path d="M500.6 26 V34" class="ln"/><text x="500.6" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">80</text><path d="M558.2 26 V34" class="ln"/><text x="558.2" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">90</text><path d="M587.0 26 V34" class="ln"/><text x="587.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">95</text><path d="M610.0 26 V34" class="ln"/><text x="610.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">99</text><path d="M327.9 50 L500.6 78" class="lna" marker-end="url(#dk2988)"/><path d="M500.6 78 L558.2 106" class="lna" marker-end="url(#dk2988)"/><path d="M558.2 106 L587.0 134" class="lna" marker-end="url(#dk2988)"/><path d="M587.0 134 L610.0 162" class="lna" marker-end="url(#dk2988)"/><path d="M610.0 162 L40.0 190" class="lna" marker-end="url(#dk2988)"/><path d="M40.0 190 L212.7 218" class="lna" marker-end="url(#dk2988)"/><path d="M212.7 218 L299.1 246" class="lna" marker-end="url(#dk2988)"/><circle cx="327.9" cy="50" r="4" style="fill:var(--accent)"/><circle cx="500.6" cy="78" r="4" style="fill:var(--accent)"/><circle cx="558.2" cy="106" r="4" style="fill:var(--accent)"/><circle cx="587.0" cy="134" r="4" style="fill:var(--accent)"/><circle cx="610.0" cy="162" r="4" style="fill:var(--accent)"/><circle cx="40.0" cy="190" r="4" style="fill:var(--accent)"/><circle cx="212.7" cy="218" r="4" style="fill:var(--accent)"/><circle cx="299.1" cy="246" r="4" style="fill:var(--accent)"/></svg><figcaption>Head movement — C-SCAN: 50 → 80 → 90 → 95 → 99 → 0 → 30 → 45 · total = 193 tracks</figcaption></figure>
+<div class="num"><span class="t">Calculation</span>
+(99 − 50) + (99 − 0) + (45 − 0) = 49 + 99 + 45 = <b>193 tracks</b> (counting the return jump).</div>
+<div class="box add"><span class="t">➕ Why use C-SCAN?</span>
+It gives a <b>more uniform waiting time</b> than SCAN: every request waits at most about one sweep. That makes it good for heavily loaded systems. The return jump is fast (the head isn't reading), and some books <b>don't count it</b>: 49 + 45 = 94. Always state your convention.</div>
+</section>
+
+<!-- 11.14 -->
+<section id="s14">
+<h3><span class="n">11.14</span>C-LOOK Algorithm</h3>
+<div class="def"><b>C-LOOK:</b> the circular version of LOOK. The head serves requests in one direction up to the <b>highest request</b>, then jumps to the <b>lowest pending request</b> (not track 0) and continues in the same direction.</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+50 → 80 → 90 → 95 (highest request) → jump to <b>30</b> (lowest request) → 45.</div>
+<figure><svg viewBox="0 0 640 220" role="img" aria-label="Head movement chart for C-LOOK"><defs><marker id="dk7292" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs><path d="M40 30 H610" class="ln"/><path d="M40.0 26 V34" class="ln"/><text x="40.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">0</text><path d="M212.7 26 V34" class="ln"/><text x="212.7" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">30</text><path d="M299.1 26 V34" class="ln"/><text x="299.1" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">45</text><path d="M327.9 26 V34" class="ln"/><text x="327.9" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">50</text><path d="M500.6 26 V34" class="ln"/><text x="500.6" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">80</text><path d="M558.2 26 V34" class="ln"/><text x="558.2" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">90</text><path d="M587.0 26 V34" class="ln"/><text x="587.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">95</text><path d="M610.0 26 V34" class="ln"/><text x="610.0" y="20" text-anchor="middle" class="mut" style="font-size:10.5px">99</text><path d="M327.9 50 L500.6 78" class="lna" marker-end="url(#dk7292)"/><path d="M500.6 78 L558.2 106" class="lna" marker-end="url(#dk7292)"/><path d="M558.2 106 L587.0 134" class="lna" marker-end="url(#dk7292)"/><path d="M587.0 134 L212.7 162" class="lna" marker-end="url(#dk7292)"/><path d="M212.7 162 L299.1 190" class="lna" marker-end="url(#dk7292)"/><circle cx="327.9" cy="50" r="4" style="fill:var(--accent)"/><circle cx="500.6" cy="78" r="4" style="fill:var(--accent)"/><circle cx="558.2" cy="106" r="4" style="fill:var(--accent)"/><circle cx="587.0" cy="134" r="4" style="fill:var(--accent)"/><circle cx="212.7" cy="162" r="4" style="fill:var(--accent)"/><circle cx="299.1" cy="190" r="4" style="fill:var(--accent)"/></svg><figcaption>Head movement — C-LOOK: 50 → 80 → 90 → 95 → 30 → 45 · total = 125 tracks</figcaption></figure>
+<div class="num"><span class="t">Calculation</span>
+(95 − 50) + (95 − 30) + (45 − 30) = 45 + 65 + 15 = <b>125 tracks</b> (counting the jump). Without the jump: 45 + 15 = 60.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The lecture writes the C-LOOK total as "<b>120</b>" (and "129" in the summary). The correct sum is <b>45 + 65 + 15 = 125</b>. Always redo the arithmetic yourself.</div>
+</section>
+
+<!-- 11.15 -->
+<section id="s15">
+<h3><span class="n">11.15</span>Comparison of Disk Scheduling Algorithms</h3>
+<div class="tw"><table>
+<tr><th>Algorithm</th><th>Path (head 50, towards higher)</th><th>Total head movement</th><th>Starvation?</th><th>Note</th></tr>
+<tr><td>FCFS</td><td>50→80→30→90→95→45</td><td><b>195</b> (worst)</td><td>No</td><td>Fair, simple</td></tr>
+<tr><td>SSTF</td><td>50→45→30→80→90→95</td><td><b>85</b> (best here)</td><td><b>Yes</b></td><td>Like SJF</td></tr>
+<tr><td>SCAN</td><td>50→…→95→<b>99</b>→45→30</td><td><b>118</b></td><td>No</td><td>Elevator; goes to the disk end</td></tr>
+<tr><td>LOOK</td><td>50→…→95→45→30</td><td><b>110</b></td><td>No</td><td>SCAN without the end</td></tr>
+<tr><td>C-SCAN</td><td>50→…→99→<b>0</b>→30→45</td><td><b>193</b></td><td>No</td><td>Uniform wait; one-way service</td></tr>
+<tr><td>C-LOOK</td><td>50→…→95→30→45</td><td><b>125</b></td><td>No</td><td>C-SCAN without the ends</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+SSTF gives the <b>best</b> result (85) for this example. FCFS is the <b>worst</b> (195), with C-SCAN close behind (193).</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"<b>Elevator algorithm</b>" = <b>SCAN</b>. Starvation is possible in <b>SSTF</b>. The fairest and simplest is <b>FCFS</b>. The most uniform waiting time comes from <b>C-SCAN / C-LOOK</b>.</li>
+<li>SCAN and C-SCAN go to the <b>disk ends</b> (0 / 99); LOOK and C-LOOK stop at the <b>last request</b>.</li>
+<li>Heavily loaded systems prefer <b>SCAN / C-SCAN / LOOK</b>. SSTF or LOOK is a common default. Modern SSDs have no seek, so a simple <b>FCFS/NOOP</b> scheduler is used.</li>
+<li>Always check: the <b>direction</b> (towards larger or smaller), whether the <b>return jump</b> counts, and the disk range (0 to n−1).</li>
+</ul></div>
+<div class="num"><span class="t">Practice (added, Galvin): queue 98, 183, 37, 122, 14, 124, 65, 67, head 53, tracks 0–199</span>
+FCFS = <b>640</b> · SSTF = <b>236</b> · SCAN towards 0 = <b>236</b> (53 → 0 → 183). Work these out using the same shortcuts.</div>
+</section>
+
+<!-- 11.16 -->
+<section id="s16">
+<h3><span class="n">11.16</span>Disk Formatting, Swap Space, RAID &amp; SSD <span class="badge">ADDED</span></h3>
+<h4>Disk management tasks</h4>
+<ul>
+<li><b>Low-level (physical) formatting</b>: divides the disk into sectors, each with a header, a data area (usually 512 B) and a trailer (ECC, the error-correcting code). It is done at the factory.</li>
+<li><b>Partitioning</b>: splits the disk into one or more groups of cylinders (logical disks, e.g. C:, D:). <b>Logical formatting</b>: creates a <b>file system</b> (FAT, NTFS, ext4).</li>
+<li><b>Boot block</b>: holds the bootstrap loader; the <b>MBR</b> is in sector 0 (Chapter 1). <b>Bad blocks</b> are handled by <b>sector sparing</b> (remapping to spare sectors) or sector slipping.</li>
+<li><b>Swap space</b>: the disk area used by virtual memory (Chapter 10). It can be a separate raw partition (faster) or a file in the file system (e.g. <code>pagefile.sys</code> in Windows).</li>
+</ul>
+<h4>RAID (Redundant Array of Independent Disks)</h4>
+<div class="tw"><table>
+<tr><th>Level</th><th>Technique</th><th>Min disks</th><th>Redundancy</th><th>Use</th></tr>
+<tr><td><b>RAID 0</b></td><td><b>Striping</b> (block-level) across disks</td><td>2</td><td>None: one disk fails, all data is lost</td><td>Speed only</td></tr>
+<tr><td><b>RAID 1</b></td><td><b>Mirroring</b>: an identical copy on each disk</td><td>2</td><td>Survives 1 disk failure; 50% capacity</td><td>Reliability (OS disks)</td></tr>
+<tr><td>RAID 2</td><td>Bit-level striping + Hamming-code ECC</td><td>—</td><td>ECC</td><td>Obsolete</td></tr>
+<tr><td>RAID 3</td><td>Byte-level striping + dedicated parity disk</td><td>3</td><td>1 disk</td><td>Rare</td></tr>
+<tr><td>RAID 4</td><td>Block-level striping + <b>dedicated</b> parity disk</td><td>3</td><td>1 disk; the parity disk is a bottleneck</td><td>Rare</td></tr>
+<tr><td><b>RAID 5</b></td><td>Block-level striping + <b>distributed parity</b></td><td>3</td><td>Survives <b>1</b> disk failure</td><td>Most common for servers</td></tr>
+<tr><td><b>RAID 6</b></td><td>Like 5 with <b>double</b> distributed parity (P + Q)</td><td>4</td><td>Survives <b>2</b> disk failures</td><td>Large arrays</td></tr>
+<tr><td><b>RAID 10 (1+0)</b></td><td>Mirroring + striping (a stripe of mirrors)</td><td>4</td><td>One disk per mirror pair</td><td>Databases (performance + reliability)</td></tr>
+</table></div>
+<div class="num"><span class="t">Numerical: usable RAID capacity</span>
+Four 2 TB disks. RAID 0 = 8 TB · RAID 1 (2 mirrored pairs) / RAID 10 = 4 TB · RAID 5 = (4 − 1) × 2 = <b>6 TB</b> · RAID 6 = (4 − 2) × 2 = <b>4 TB</b>.</div>
+<div class="tw"><table>
+<tr><th>HDD (magnetic)</th><th>SSD (flash / NVM)</th></tr>
+<tr><td>Moving parts: seek and rotational latency</td><td>No moving parts: <b>no seek, no rotation</b></td></tr>
+<tr><td>Slower (ms access), cheaper per GB, larger capacity</td><td>Much faster (µs access), costlier, uses less power</td></tr>
+<tr><td>Disk scheduling (SCAN etc.) matters a lot</td><td>Usually FCFS/NOOP; <b>wear levelling</b> needed (limited write cycles); TRIM / garbage collection</td></tr>
+</table></div>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 11</h3>
+<ul>
+<li><b>Disk</b>: platters (2 surfaces each) on a spindle; tracks (concentric rings, the outer ones bigger) divided into sectors (the data). One read/write head per surface on the actuator arm; heads move in/out while platters rotate. Cylinder = the same track on every surface.</li>
+<li><b>Capacity</b> = surfaces × tracks × sectors × sector size. Lecture: 8 × 2 × 256 × 512 × 512 = 2³⁰ = <b>1 GB</b> (the lecture slips to "1 MB"). 16 × 128 × 256 × 512 = 2²⁸ = <b>256 MB</b>; 2¹⁹ sectors → <b>19 bits</b> to address.</li>
+<li><b>Access time</b> = seek + rotational latency + transfer. <b>Seek</b> = tracks crossed × time per track. <b>Rotational latency</b> = θ/f; average = ½ rotation (7200 RPM → 4.17 ms).</li>
+<li><b>Transfer rate</b> = heads × track capacity × rotations per second. Lecture: 16 × 128 KB × 60 = <b>120 MB/s</b>. Transfer time = data size / rate.</li>
+<li><b>Scheduling</b> (head 50; queue 80, 30, 90, 95, 45; tracks 0–99; towards higher): <b>FCFS 195</b> · <b>SSTF 85</b> (best here; starvation possible) · <b>SCAN 118</b> (elevator, to 99) · <b>LOOK 110</b> (to the last request) · <b>C-SCAN 193</b> (99 → jump to 0) · <b>C-LOOK 125</b> (95 → jump to 30).</li>
+<li>Shortcut: in one-direction runs, subtract the extreme ends. SCAN − LOOK = 8 because the 95 ↔ 99 stretch counts twice.</li>
+<li>Added: formatting, boot block, bad blocks, swap space. <b>RAID 0</b> striping · <b>1</b> mirroring · <b>5</b> distributed parity (1 failure) · <b>6</b> double parity (2) · <b>10</b> mirror + stripe. SSD: no seek.</li>
+</ul>
+</div>
+<div class="end">End of Volume 01 — Part 11 · Next: Chapter 12 — File Systems</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="10-Virtual-Memory.html">← Ch 10: Virtual Memory</a><a href="index.html">☰ All topics</a><a href="12-File-Systems.html">Ch 12: File Systems →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('os-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

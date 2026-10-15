@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OS Structure Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="01-Introduction-to-OS.html">← Ch 1: Introduction</a><a href="index.html">☰ All topics</a><a href="03-System-Calls.html">Ch 3: System Calls →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Operating System — Chapter 2: Operating System Structure</h1>
+  <p class="sub">Volume 01 · Part 2 · Built from the one-shot OS lecture transcript (section 2), plus the exam points the lecture skipped.</p>
+  <ul class="tags">
+    <li>Simple (MS-DOS)</li><li>Monolithic Kernel</li><li>Layered</li><li>Microkernel</li>
+    <li>Modular (LKM)</li><li>Hybrid</li><li>Exokernel / Nanokernel</li><li>Virtual Machines</li><li>CLI vs GUI</li><li>Shells</li>
+  </ul>
+  <div class="legend">
+    <span class="l1">🎓 From the lecture</span>
+    <span class="l2">➕ Added for exam (not in lecture)</span>
+    <span class="l3">⚠️ Exam trap</span>
+    <span class="l4">🎯 IBPS exam alert</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s0"><span class="n">2.0</span>What "OS Structure" Means</a></li>
+    <li><a href="#s1"><span class="n">2.1</span>Simple Structure (MS-DOS)</a></li>
+    <li><a href="#s1a"><span class="n">2.1A</span>Monolithic Kernel Structure<span class="x">ADDED</span></a></li>
+    <li><a href="#s2"><span class="n">2.2</span>Layered Structure</a></li>
+    <li><a href="#s3"><span class="n">2.3</span>Microkernel Structure</a></li>
+    <li><a href="#s3a"><span class="n">2.3A</span>Modular &amp; Hybrid Structures<span class="x">ADDED</span></a></li>
+    <li><a href="#s3b"><span class="n">2.3B</span>Exokernel, Nanokernel &amp; Virtual Machines<span class="x">ADDED</span></a></li>
+    <li><a href="#s3c"><span class="n">2.3C</span>Master Comparison of Structures<span class="x">ADDED</span></a></li>
+    <li><a href="#s4"><span class="n">2.4</span>User Interfaces: CLI and GUI</a></li>
+    <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
+  </ol>
+</nav>
+
+<div class="chapter">Chapter 2</div>
+<h2 class="ch">Operating System Structure</h2>
+<p>Chapter 1 established that the OS sits between the user and the hardware and does many management jobs. This chapter looks <b>inside</b> the OS: how its many components are <b>arranged</b>, how they <b>interact</b>, and what each arrangement costs in <b>speed, safety and ease of change</b>.</p>
+
+<!-- 2.0 -->
+<section id="s0">
+<h3><span class="n">2.0</span>What "OS Structure" Means</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+An OS contains <b>many components and modules</b>. The <b>structure</b> of the OS tells you how they are <b>arranged and organised</b>, and how they <b>interconnect and interact</b> to carry out a function.</div>
+<div class="box add"><span class="t">➕ Added for exam — Why structure matters</span>
+A modern OS is huge (millions of lines of code). A good structure makes it:
+<ul>
+<li><b>Reliable</b>: a bug in one part should not crash everything.</li>
+<li><b>Secure</b>: user programs should not reach the hardware directly.</li>
+<li><b>Maintainable / extensible</b>: new drivers and features can be added easily.</li>
+<li><b>Fast</b>: fewer boundary crossings mean less overhead.</li>
+</ul>
+These goals conflict. <b>Speed favours a monolithic design</b>; <b>safety and extensibility favour a microkernel</b>. Every structure below is a different trade-off.</div>
+<p>Structures in order of evolution: <b>Simple → Monolithic → Layered → Microkernel → Modular → Hybrid</b>. Exokernels and virtual machines are specialised variants.</p>
+</section>
+
+<!-- 2.1 -->
+<section id="s1">
+<h3><span class="n">2.1</span>Simple Structure (MS-DOS)</h3>
+<div class="def"><b>Simple structure:</b> the simplest, <b>loosely organised</b> OS design with <b>no well-defined structure</b> and <b>no protection boundaries</b>. Layers exist, but application programs can <b>bypass</b> them and access the hardware (I/O, BIOS) <b>directly</b>.</div>
+
+<figure>
+<svg viewBox="0 0 620 300" role="img" aria-label="MS-DOS simple structure: application programs can reach the BIOS and hardware directly">
+  <defs><marker id="a21" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--bad)"/></marker></defs>
+  <rect x="60" y="15" width="320" height="44" rx="5" class="or"/><text x="220" y="42" text-anchor="middle" class="b">Application Programs</text>
+  <rect x="60" y="75" width="320" height="44" rx="5" class="bx"/><text x="220" y="102" text-anchor="middle" class="b">Resident System Programs</text>
+  <rect x="60" y="135" width="320" height="44" rx="5" class="bx"/><text x="220" y="162" text-anchor="middle" class="b">MS-DOS Device Drivers</text>
+  <rect x="60" y="195" width="320" height="44" rx="5" class="gr"/><text x="220" y="222" text-anchor="middle" class="b">ROM BIOS Device Drivers</text>
+  <rect x="60" y="255" width="320" height="36" rx="5" class="ac"/><text x="220" y="278" text-anchor="middle" class="b">Hardware</text>
+  <path d="M380 37 C 470 40, 470 200, 382 215" style="stroke:var(--bad);stroke-width:2;fill:none" marker-end="url(#a21)"/>
+  <path d="M380 30 C 520 40, 520 260, 382 272" style="stroke:var(--bad);stroke-width:2;fill:none;stroke-dasharray:5 4" marker-end="url(#a21)"/>
+  <text x="530" y="120" text-anchor="middle" class="mut">apps bypass</text><text x="530" y="136" text-anchor="middle" class="mut">layers and touch</text><text x="530" y="152" text-anchor="middle" class="mut">BIOS / hardware</text><text x="530" y="168" text-anchor="middle" class="mut">directly ⚠</text>
+</svg>
+<figcaption>Figure 2.1: Simple structure of MS-DOS — no enforced boundaries</figcaption>
+</figure>
+
+<div class="box lec"><span class="t">🎓 From the lecture — Layers &amp; the "fresher" analogy</span>
+From top to bottom: <b>Application programs → System programs → Device drivers → BIOS (Basic Input/Output System)</b> device drivers. The user/application program can <b>interact directly with I/O</b>. That is <b>easy</b>, but <b>dangerous</b>: no proper structure is followed, so <b>if a user program fails, the whole OS crashes</b>.
+<p>It is like a company where a <b>fresher</b> can directly access the company's <b>accounting information</b>. While the fresher is well-behaved there is no problem. But if a mischievous one leaks the accounts to a competitor, the <b>company crashes</b>. The best example is <b>MS-DOS</b>.</p></div>
+
+<div class="tw"><table>
+<tr><th>Advantages</th><th>Disadvantages</th></tr>
+<tr><td><ul><li>Easy to design and implement</li><li><b>Fast</b>, with very few layers between the app and the hardware</li><li>Fits in very little memory (MS-DOS was built for small machines)</li></ul></td>
+<td><ul><li><b>No protection</b>: a buggy or malicious program can crash the whole system</li><li>Poorly separated functions make it hard to maintain and extend</li><li>No security, so it is unsuitable for multi-user use</li></ul></td></tr>
+</table></div>
+
+<div class="box add"><span class="t">➕ Added for exam — Why MS-DOS had no protection</span>
+MS-DOS was written for the <b>Intel 8088</b>, which had <b>no dual mode (user/kernel) and no hardware memory protection</b>. The OS therefore had no way to stop an application touching hardware. MS-DOS was <b>single-user, single-tasking</b> and <b>CLI-based</b> (COMMAND.COM). <b>Original UNIX</b> is also listed under "limited structuring"; see 2.1A.</div>
+</section>
+
+<!-- 2.1A -->
+<section id="s1a">
+<h3><span class="n">2.1A</span>Monolithic Kernel Structure <span class="badge">ADDED</span></h3>
+<div class="def"><b>Monolithic kernel:</b> the <b>entire OS</b> (process management, memory management, file system, device drivers, networking, system-call interface) runs as <b>one large program in kernel space</b>, in a single address space. Any part can call any other part directly.</div>
+<figure>
+<svg viewBox="0 0 620 260" role="img" aria-label="Monolithic kernel: all services inside kernel space">
+  <rect x="20" y="15" width="580" height="50" rx="5" class="or"/><text x="310" y="37" text-anchor="middle" class="b">User space</text><text x="310" y="54" text-anchor="middle" class="mut">applications · shells · compilers · libraries</text>
+  <text x="310" y="83" text-anchor="middle" class="mut">— system-call interface (trap into kernel) —</text>
+  <rect x="20" y="92" width="580" height="112" rx="5" class="ac"/>
+  <text x="310" y="112" text-anchor="middle" class="b">Kernel space — ONE big kernel</text>
+  <rect x="35" y="122" width="105" height="34" rx="4" class="bx"/><text x="87" y="144" text-anchor="middle">Process mgmt</text>
+  <rect x="148" y="122" width="105" height="34" rx="4" class="bx"/><text x="200" y="144" text-anchor="middle">Memory mgmt</text>
+  <rect x="261" y="122" width="105" height="34" rx="4" class="bx"/><text x="313" y="144" text-anchor="middle">File system</text>
+  <rect x="374" y="122" width="105" height="34" rx="4" class="bx"/><text x="426" y="144" text-anchor="middle">Device drivers</text>
+  <rect x="487" y="122" width="100" height="34" rx="4" class="bx"/><text x="537" y="144" text-anchor="middle">Networking</text>
+  <text x="310" y="188" text-anchor="middle" class="mut">direct function calls — fast, but one faulty driver can crash all</text>
+  <rect x="20" y="214" width="580" height="36" rx="5" class="gr"/><text x="310" y="237" text-anchor="middle" class="b">Hardware</text>
+</svg>
+<figcaption>Figure 2.2: Monolithic kernel</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Advantages</th><th>Disadvantages</th></tr>
+<tr><td><ul><li><b>Highest performance</b>: services talk by direct function calls, with no message passing</li><li>Simple communication inside the kernel</li></ul></td>
+<td><ul><li>A bug in any service, such as a driver, can <b>crash the entire system</b></li><li>A large kernel is hard to maintain, debug and port</li><li>Adding a feature may mean recompiling the kernel (solved by modules, 2.3A)</li></ul></td></tr>
+</table></div>
+<p><b>Examples:</b> traditional <b>UNIX</b>, <b>Linux</b> (monolithic but modular), BSD, Solaris, MS-DOS, Windows 9x.</p>
+<div class="box trap"><span class="t">⚠️ Exam trap (UNIX)</span>
+The lecture says the layered approach is used in UNIX. In textbook terms (Galvin), <b>traditional UNIX</b> is a <b>monolithic structure with limited layering</b>: a kernel layer plus system programs. The classic <b>pure layered OS is THE</b> (Dijkstra, 1968). In MCQs: <b>"Linux kernel type?" → Monolithic</b>. <b>"First layered OS?" → THE</b>.</div>
+</section>
+
+<!-- 2.2 -->
+<section id="s2">
+<h3><span class="n">2.2</span>Layered Structure</h3>
+<div class="def"><b>Layered structure:</b> the OS is divided into a number of <b>layers (levels)</b>, each built on top of the one below. <b>Layer 0 (L0)</b> is the <b>hardware</b>; the <b>outermost layer (LN)</b> is the <b>user interface</b>. Each layer uses <b>only the services of layers below it</b>.</div>
+
+<figure>
+<svg viewBox="0 0 620 330" role="img" aria-label="Layered OS drawn as concentric rings from hardware L0 at centre to user interface LN outside">
+  <circle cx="200" cy="165" r="150" class="or"/>
+  <circle cx="200" cy="165" r="115" class="bx"/>
+  <circle cx="200" cy="165" r="80" class="pu"/>
+  <circle cx="200" cy="165" r="45" class="gr"/>
+  <text x="200" y="161" text-anchor="middle" class="b">L0</text><text x="200" y="177" text-anchor="middle" class="mut">Hardware</text>
+  <text x="200" y="108" text-anchor="middle" class="b">L1</text>
+  <text x="200" y="72" text-anchor="middle" class="b">L2</text>
+  <text x="200" y="37" text-anchor="middle" class="b">LN — User Interface</text>
+  <g>
+  <rect x="380" y="30" width="230" height="34" rx="4" class="or"/><text x="495" y="52" text-anchor="middle">LN: User interface / programs</text>
+  <rect x="380" y="70" width="230" height="34" rx="4" class="bx"/><text x="495" y="92" text-anchor="middle">L4: I/O buffering / file system</text>
+  <rect x="380" y="110" width="230" height="34" rx="4" class="bx"/><text x="495" y="132" text-anchor="middle">L3: Operator console / device</text>
+  <rect x="380" y="150" width="230" height="34" rx="4" class="pu"/><text x="495" y="172" text-anchor="middle">L2: Memory management</text>
+  <rect x="380" y="190" width="230" height="34" rx="4" class="pu"/><text x="495" y="212" text-anchor="middle">L1: CPU scheduling</text>
+  <rect x="380" y="230" width="230" height="34" rx="4" class="gr"/><text x="495" y="252" text-anchor="middle">L0: Hardware</text>
+  </g>
+  <text x="495" y="285" text-anchor="middle" class="mut">upper layer → uses services of lower</text>
+  <text x="495" y="301" text-anchor="middle" class="mut">lower layer ✗ cannot call upper</text>
+  <text x="495" y="320" text-anchor="middle" class="mut">(example ordering — THE system)</text>
+</svg>
+<figcaption>Figure 2.3: Layered operating system — L0 hardware (core) to LN user interface (outermost)</figcaption>
+</figure>
+
+<div class="box lec"><span class="t">🎓 From the lecture — Layers &amp; the company hierarchy</span>
+<ul>
+<li>The layers are <b>independent</b> of each other. The innermost layer, <b>L0</b>, is the <b>hardware layer</b>, and layers build up as L1, L2, L3…</li>
+<li>The <b>outermost layer</b> is the <b>UI (user interface) layer</b>, which faces the user. The <b>innermost</b> is hardware-oriented.</li>
+<li>Each layer <b>holds its own specific task / functionality</b>.</li>
+<li><b>Hierarchy</b>: a layer <b>can use the services of the lower layer</b>. L1 uses L0; L2 uses L1 and L0.</li>
+<li>Company analogy: the <b>fresher</b> is at the bottom, with the <b>manager, HR and founding members</b> above. Everyone above can get work done by the fresher, who can't refuse ("just got the job!"). Upper layers consume lower layers' services.</li>
+<li>It looks <b>more complex</b> because there are many layers, but a <b>user program failure does not crash the system</b> the way it does in the simple structure.</li>
+</ul></div>
+
+<div class="tw"><table>
+<tr><th>Advantages</th><th>Disadvantages</th></tr>
+<tr><td><ul>
+<li><b>Easy debugging and verification</b>: debug L0 first, then L1 assuming L0 is correct, and so on. A bug is found in the layer being tested.</li>
+<li><b>Modularity / abstraction</b>: a layer only needs to know <i>what</i> the lower layer does, not <i>how</i></li>
+<li>A layer's implementation can change without affecting the others</li>
+<li>Better protection than the simple structure</li></ul></td>
+<td><ul>
+<li><b>Hard to define layers</b> carefully, because a layer can use only lower layers. Example: the backing-store driver must sit below memory management, yet it may need scheduling.</li>
+<li><b>Less efficient / slower</b>: a request passes through many layers, and each adds overhead (parameter passing)</li>
+<li>Complex to design</li></ul></td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert (Layered)</span>
+"The main advantage of the layered approach?" → <b>Simplicity of construction and debugging</b>. "Main disadvantage?" → <b>Overhead / reduced performance</b> and <b>difficulty in defining layers</b>. Examples: <b>THE OS</b> (Dijkstra), <b>MULTICS</b> (rings), and partially <b>Windows NT</b> and UNIX. The same layering idea appears in networking as the <b>OSI / TCP-IP models</b>.</div>
+</section>
+
+<!-- 2.3 -->
+<section id="s3">
+<h3><span class="n">2.3</span>Microkernel Structure</h3>
+<div class="def"><b>Microkernel:</b> the kernel is made <b>as small as possible</b> by <b>removing all non-essential components</b> from it and running them as ordinary <b>user-space processes (servers)</b>. Only the bare essentials stay in kernel space: <b>IPC, basic memory management and CPU scheduling</b>. Components talk to each other by <b>message passing</b> through the microkernel.</div>
+
+<figure>
+<svg viewBox="0 0 640 290" role="img" aria-label="Microkernel: drivers, file system and applications in user space communicate via message passing through a small kernel">
+  <defs><marker id="a23" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="10" width="620" height="110" rx="6" class="or" style="fill-opacity:.35"/>
+  <text x="30" y="30" class="b">User space (user mode)</text>
+  <rect x="30" y="45" width="130" height="50" rx="5" class="bx"/><text x="95" y="66" text-anchor="middle" class="b">Application</text><text x="95" y="82" text-anchor="middle" class="mut">program</text>
+  <rect x="180" y="45" width="130" height="50" rx="5" class="bx"/><text x="245" y="66" text-anchor="middle" class="b">File system</text><text x="245" y="82" text-anchor="middle" class="mut">server</text>
+  <rect x="330" y="45" width="130" height="50" rx="5" class="bx"/><text x="395" y="66" text-anchor="middle" class="b">Device driver</text><text x="395" y="82" text-anchor="middle" class="mut">server</text>
+  <rect x="480" y="45" width="130" height="50" rx="5" class="bx"/><text x="545" y="66" text-anchor="middle" class="b">Network / GUI</text><text x="545" y="82" text-anchor="middle" class="mut">server</text>
+  <path d="M95 95 V160 M245 95 V160 M395 95 V160 M545 95 V160" class="lna" marker-start="url(#a23)" marker-end="url(#a23)"/>
+  <text x="320" y="140" text-anchor="middle" class="mut">messages (IPC)</text>
+  <rect x="10" y="160" width="620" height="76" rx="6" class="ac"/>
+  <text x="30" y="180" class="b">Kernel space — MICROKERNEL</text>
+  <rect x="120" y="190" width="120" height="34" rx="4" class="pu"/><text x="180" y="212" text-anchor="middle">IPC</text>
+  <rect x="260" y="190" width="120" height="34" rx="4" class="pu"/><text x="320" y="212" text-anchor="middle">Basic memory mgmt</text>
+  <rect x="400" y="190" width="120" height="34" rx="4" class="pu"/><text x="460" y="212" text-anchor="middle">CPU scheduling</text>
+  <rect x="10" y="246" width="620" height="36" rx="5" class="gr"/><text x="320" y="269" text-anchor="middle" class="b">Hardware</text>
+</svg>
+<figcaption>Figure 2.4: Microkernel architecture — services run in user space and talk via message passing</figcaption>
+</figure>
+
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>The <b>kernel</b> is the <b>"karta-dharta", the sole worker</b> of the OS. It does everything itself and is the <b>brain</b> of the OS.</li>
+<li>We make it <b>lighter and smaller</b> by <b>removing all non-essential components</b>. What remains is the <b>microkernel</b>.</li>
+<li>There are two modes or spaces: <b>user mode / user space</b> and <b>kernel mode / kernel space</b>. The microkernel in kernel space keeps only a few chosen functions: <b>IPC (inter-process communication), memory management and CPU scheduling</b>.</li>
+<li><b>Drivers, the file system and application programs</b> run in <b>user space</b> and communicate with the microkernel <b>via messaging</b>. The microkernel talks to the <b>hardware</b> beneath it.</li>
+<li>The system becomes <b>lightweight</b>, and <b>new components can be added without modifying the kernel</b>: just add them in user space.</li>
+<li>The lecture's example is <b>macOS</b>. <b>Limitation</b>: however simple it looks, the implementation turns out to be <b>complex</b>.</li>
+</ul></div>
+
+<div class="tw"><table>
+<tr><th>Advantages</th><th>Disadvantages</th></tr>
+<tr><td><ul>
+<li><b>Easy to extend</b>: new services are added in user space with no kernel change</li>
+<li><b>More reliable and secure</b>: if a driver or file server crashes, only that server fails and the kernel keeps running</li>
+<li><b>Portable</b>: only the small kernel needs porting to new hardware</li>
+<li>Small kernel → easier to verify</li></ul></td>
+<td><ul>
+<li><b>Performance overhead</b>: every service request needs <b>message passing</b> and repeated <b>user↔kernel mode switches / context switches</b>, so it is slower than monolithic</li>
+<li>Complex to design and implement (as the lecture notes)</li></ul></td></tr>
+</table></div>
+
+<div class="box add"><span class="t">➕ Added for exam — Examples</span>
+Pure or near-pure microkernels: <b>Mach</b> (Carnegie Mellon), <b>QNX</b> (cars, RTOS), <b>MINIX 3</b>, <b>L4 family</b>, <b>Symbian</b>, <b>Redox</b>, Google's <b>Zircon</b> (Fuchsia), <b>seL4</b> (formally verified).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap (macOS)</span>
+The lecture calls macOS a microkernel example. Precisely, macOS/iOS use the <b>XNU kernel</b>, a <b>hybrid</b> of the <b>Mach microkernel</b> plus BSD UNIX components, all running in kernel space. If the options contain <b>both "microkernel" and "hybrid"</b>, choose <b>hybrid</b> for macOS and Windows NT. If only micro and monolithic are offered, macOS → microkernel (Mach-based).</div>
+</section>
+
+<!-- 2.3A -->
+<section id="s3a">
+<h3><span class="n">2.3A</span>Modular &amp; Hybrid Structures <span class="badge">ADDED</span></h3>
+<h4>Modular structure: Loadable Kernel Modules (LKM)</h4>
+<div class="def"><b>Modular kernel:</b> a small <b>core kernel</b> plus a set of <b>loadable kernel modules</b> (drivers, file systems, network protocols) that can be <b>linked in or removed at run time</b> without rebooting or recompiling. It uses object-oriented ideas: each module has a defined interface.</div>
+<figure>
+<svg viewBox="0 0 560 240" role="img" aria-label="Modular kernel: core kernel surrounded by loadable modules">
+  <rect x="200" y="90" width="160" height="60" rx="8" class="ac"/><text x="280" y="116" text-anchor="middle" class="b">Core kernel</text><text x="280" y="134" text-anchor="middle" class="mut">scheduling, memory</text>
+  <rect x="20" y="20" width="140" height="40" rx="5" class="pu"/><text x="90" y="45" text-anchor="middle">Device drivers</text>
+  <rect x="210" y="10" width="140" height="40" rx="5" class="pu"/><text x="280" y="35" text-anchor="middle">File systems</text>
+  <rect x="400" y="20" width="140" height="40" rx="5" class="pu"/><text x="470" y="45" text-anchor="middle">Network protocols</text>
+  <rect x="20" y="180" width="140" height="40" rx="5" class="pu"/><text x="90" y="205" text-anchor="middle">Scheduling classes</text>
+  <rect x="210" y="190" width="140" height="40" rx="5" class="pu"/><text x="280" y="215" text-anchor="middle">Executable formats</text>
+  <rect x="400" y="180" width="140" height="40" rx="5" class="pu"/><text x="470" y="205" text-anchor="middle">System calls</text>
+  <path d="M160 50 L200 95 M280 50 V90 M400 50 L360 95 M160 190 L200 145 M280 190 V150 M400 190 L360 145" class="ln dash"/>
+  <text x="280" y="172" text-anchor="middle" class="mut">modules load/unload at run time (insmod / rmmod)</text>
+</svg>
+<figcaption>Figure 2.5: Modular kernel with loadable kernel modules</figcaption>
+</figure>
+<ul>
+<li>It resembles <b>layered</b> (each module has defined interfaces) but is <b>more flexible</b>, because any module can call any other.</li>
+<li>It resembles <b>microkernel</b> (small core) but is <b>faster</b>, because modules run in <b>kernel space</b> and need no message passing.</li>
+<li>Examples: <b>Linux</b> (<code>insmod</code>, <code>rmmod</code>, <code>lsmod</code>), <b>Solaris</b>, modern UNIX and macOS kernel extensions.</li>
+</ul>
+
+<h4>Hybrid kernel</h4>
+<div class="def"><b>Hybrid kernel:</b> combines <b>microkernel design</b> (modular servers, message-based structure) with <b>monolithic performance</b>. Most services are kept <b>inside kernel space</b> for speed.</div>
+<ul>
+<li>Examples: <b>Windows NT family</b> (Windows XP/7/10/11, Windows Server); <b>macOS / iOS (XNU = Mach + BSD)</b>; Android = <b>Linux kernel (monolithic + modules)</b> plus a user-space framework.</li>
+<li>Almost all modern OSs are hybrids. Pure designs are rare.</li>
+</ul>
+</section>
+
+<!-- 2.3B -->
+<section id="s3b">
+<h3><span class="n">2.3B</span>Exokernel, Nanokernel &amp; Virtual Machines <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Type</th><th>Idea</th><th>Example</th></tr>
+<tr><td><b>Exokernel</b></td><td>The kernel only <b>securely multiplexes raw hardware</b>, without abstractions. Applications manage resources through <b>library operating systems</b>. Maximum flexibility.</td><td>MIT Exokernel (Aegis), Nemesis</td></tr>
+<tr><td><b>Nanokernel / Picokernel</b></td><td>Even smaller than a microkernel. It handles little more than <b>interrupts and timers</b>; used in embedded and real-time systems.</td><td>Adeos, some RTOS kernels</td></tr>
+<tr><td><b>Virtual machine</b></td><td>Software (a <b>hypervisor / VMM</b>) creates the <b>illusion of multiple complete machines</b> on one physical machine. Each VM runs its own guest OS.</td><td>VMware, VirtualBox, Hyper-V, KVM, Xen</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Hypervisor types (frequently asked with cloud/virtualisation)</span>
+<ul>
+<li><b>Type 1 (bare-metal / native)</b>: runs <b>directly on hardware</b>. Examples: VMware ESXi, Microsoft Hyper-V, Xen, KVM. Used in data centres and cloud.</li>
+<li><b>Type 2 (hosted)</b>: runs <b>on top of a host OS</b> like an application. Examples: VirtualBox, VMware Workstation, Parallels.</li>
+<li>The first virtual machine OS was <b>IBM VM/370</b>. The <b>JVM</b> (Java Virtual Machine) is a <i>process</i> VM, not a system VM.</li>
+</ul></div>
+</section>
+
+<!-- 2.3C -->
+<section id="s3c">
+<h3><span class="n">2.3C</span>Master Comparison of Structures <span class="badge">ADDED</span></h3>
+<figure>
+<svg viewBox="0 0 660 230" role="img" aria-label="Side-by-side: monolithic kernel versus microkernel, showing what lives in kernel space">
+  <text x="160" y="18" text-anchor="middle" class="b">Monolithic</text>
+  <rect x="20" y="28" width="280" height="40" rx="4" class="or"/><text x="160" y="53" text-anchor="middle">Applications</text>
+  <rect x="20" y="74" width="280" height="104" rx="4" class="ac"/>
+  <text x="160" y="94" text-anchor="middle" class="b">Kernel space</text>
+  <text x="160" y="116" text-anchor="middle">IPC · Scheduling · Memory</text>
+  <text x="160" y="136" text-anchor="middle">File system · Drivers</text>
+  <text x="160" y="156" text-anchor="middle">Networking · System calls</text>
+  <rect x="20" y="184" width="280" height="34" rx="4" class="gr"/><text x="160" y="206" text-anchor="middle">Hardware</text>
+  <text x="500" y="18" text-anchor="middle" class="b">Microkernel</text>
+  <rect x="360" y="28" width="280" height="80" rx="4" class="or"/>
+  <text x="500" y="50" text-anchor="middle">Applications</text>
+  <text x="500" y="72" text-anchor="middle">File system · Drivers</text>
+  <text x="500" y="94" text-anchor="middle">Networking (user-space servers)</text>
+  <rect x="360" y="114" width="280" height="64" rx="4" class="ac"/>
+  <text x="500" y="136" text-anchor="middle" class="b">Kernel space</text>
+  <text x="500" y="158" text-anchor="middle">IPC · Scheduling · Basic memory</text>
+  <rect x="360" y="184" width="280" height="34" rx="4" class="gr"/><text x="500" y="206" text-anchor="middle">Hardware</text>
+</svg>
+<figcaption>Figure 2.6: Monolithic vs microkernel — what lives in kernel space</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Structure</th><th>Kernel size</th><th>Speed</th><th>Reliability / protection</th><th>Extensibility</th><th>Examples</th></tr>
+<tr><td>Simple</td><td>No clear kernel boundary</td><td>Fast</td><td>Very poor: an app can crash the OS</td><td>Poor</td><td>MS-DOS</td></tr>
+<tr><td>Monolithic</td><td>Large</td><td><b>Fastest</b></td><td>Poor: one bug crashes all</td><td>Poor (recompile)</td><td>Traditional UNIX, Linux, BSD</td></tr>
+<tr><td>Layered</td><td>Medium</td><td>Slow (many layers)</td><td>Good</td><td>Moderate</td><td>THE, MULTICS</td></tr>
+<tr><td>Microkernel</td><td><b>Smallest</b></td><td>Slower (IPC overhead)</td><td><b>Best</b>: faults isolated</td><td><b>Best</b> (add in user space)</td><td>Mach, QNX, MINIX 3, L4</td></tr>
+<tr><td>Modular</td><td>Small core + modules</td><td>Fast</td><td>Moderate</td><td>Very good (load at run time)</td><td>Linux, Solaris</td></tr>
+<tr><td>Hybrid</td><td>Medium–large</td><td>Fast</td><td>Good</td><td>Good</td><td>Windows NT/10/11, macOS (XNU)</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert (one-liners)</span>
+<ul>
+<li>Linux → <b>monolithic (modular)</b> · Windows NT/10/11 → <b>hybrid</b> · macOS/iOS → <b>hybrid (XNU, Mach-based)</b> · QNX, MINIX → <b>microkernel</b> · MS-DOS → <b>simple</b> · THE → <b>layered</b>.</li>
+<li>Microkernel components communicate by <b>message passing</b>. The main drawback is <b>performance overhead</b>.</li>
+<li>The famous <b>Tanenbaum–Torvalds debate</b> (1992) was about <b>microkernel (MINIX) vs monolithic (Linux)</b>.</li>
+</ul></div>
+</section>
+
+<!-- 2.4 -->
+<section id="s4">
+<h3><span class="n">2.4</span>User Interfaces: CLI and GUI</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — Where the interface lies</span>
+Besides the kernel ("karta-dharta"), the <b>interface plays an equally important role</b>: <b>Kernel + Interface = Operating System</b>. The OS sits between the user and the hardware, and <b>between the user and the OS</b> there is the <b>interface</b>. It decides <b>how the user will interact with the OS</b>. There are <b>two types</b>: CLI and GUI.</div>
+<figure>
+<svg viewBox="0 0 620 120" role="img" aria-label="User talks to interface (CLI or GUI), interface to kernel, kernel to hardware">
+  <defs><marker id="a24" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="10" y="35" width="100" height="50" rx="6" class="bx"/><text x="60" y="65" text-anchor="middle" class="b">User</text>
+  <rect x="150" y="25" width="140" height="70" rx="6" class="or"/><text x="220" y="52" text-anchor="middle" class="b">Interface</text><text x="220" y="72" text-anchor="middle" class="mut">CLI / GUI (shell)</text>
+  <rect x="330" y="25" width="130" height="70" rx="6" class="ac"/><text x="395" y="65" text-anchor="middle" class="b">Kernel</text>
+  <rect x="500" y="35" width="110" height="50" rx="6" class="gr"/><text x="555" y="65" text-anchor="middle" class="b">Hardware</text>
+  <path d="M110 60 H148 M290 60 H328 M460 60 H498" class="lna" marker-start="url(#a24)" marker-end="url(#a24)"/>
+  <path d="M150 105 H460" class="ln"/><text x="305" y="118" text-anchor="middle" class="mut">Operating System = Interface + Kernel</text>
+</svg>
+<figcaption>Figure 2.7: Interface sits between the user and the kernel</figcaption>
+</figure>
+
+<h4>Command Line Interface (CLI)</h4>
+<ul>
+<li>The user <b>types commands</b> and gets results back as text. Used to run programs and check system requirements and attributes.</li>
+<li>Needs <b>technical knowledge</b>: you have to be a technical person who remembers command syntax.</li>
+<li>Examples: <b>MS-DOS prompt</b>, <b>Windows Command Prompt (cmd)</b>, <b>PowerShell</b>, <b>Linux/UNIX terminal</b> (bash, sh, csh, ksh, zsh).</li>
+</ul>
+
+<h4>Graphical User Interface (GUI)</h4>
+<ul>
+<li><b>User-friendly, icon-based</b>, and not very technical. Install an app, its <b>icon</b> appears, <b>double-click</b> it and it opens. Inside the app you work through further GUI elements.</li>
+<li>Used by most people today. Examples: <b>Windows desktop, macOS Finder, GNOME/KDE on Linux, Android/iOS home screens</b>.</li>
+</ul>
+<div class="box lec"><span class="t">🎓 Lecture's rule of thumb</span>
+A <b>normal / naive user</b> should go for the <b>GUI</b>. A <b>tech-savvy person</b> with good technical knowledge can work comfortably with the <b>CLI</b>.</div>
+
+<figure>
+<svg viewBox="0 0 640 200" role="img" aria-label="Mock CLI terminal versus GUI desktop with icons">
+  <rect x="10" y="10" width="300" height="175" rx="6" style="fill:#0E171D;stroke:var(--line)"/>
+  <circle cx="26" cy="24" r="4" style="fill:#E07A7A"/><circle cx="40" cy="24" r="4" style="fill:#D9A441"/><circle cx="54" cy="24" r="4" style="fill:#7FB79A"/>
+  <text x="22" y="56" style="fill:#7FB79A;font-family:var(--code);font-size:12.5px">user@pc:~$ ls -l</text>
+  <text x="22" y="76" style="fill:#E4ECF1;font-family:var(--code);font-size:12.5px">notes.txt  report.pdf</text>
+  <text x="22" y="96" style="fill:#7FB79A;font-family:var(--code);font-size:12.5px">user@pc:~$ mkdir os</text>
+  <text x="22" y="116" style="fill:#7FB79A;font-family:var(--code);font-size:12.5px">user@pc:~$ cp notes.txt os/</text>
+  <text x="22" y="136" style="fill:#7FB79A;font-family:var(--code);font-size:12.5px">user@pc:~$ _</text>
+  <text x="160" y="178" text-anchor="middle" style="fill:#8AA0AC;font-size:11.5px">CLI — type commands</text>
+  <rect x="330" y="10" width="300" height="175" rx="6" class="ac"/>
+  <rect x="350" y="35" width="44" height="40" rx="6" class="or"/><text x="372" y="92" text-anchor="middle" class="mut">Files</text>
+  <rect x="420" y="35" width="44" height="40" rx="6" class="gr"/><text x="442" y="92" text-anchor="middle" class="mut">Browser</text>
+  <rect x="490" y="35" width="44" height="40" rx="6" class="pu"/><text x="512" y="92" text-anchor="middle" class="mut">Settings</text>
+  <rect x="560" y="35" width="44" height="40" rx="6" class="bx"/><text x="582" y="92" text-anchor="middle" class="mut">Trash</text>
+  <rect x="440" y="105" width="150" height="50" rx="4" class="bx"/><text x="515" y="135" text-anchor="middle" class="mut">window</text>
+  <path d="M420 128 l0 16 l5 -5 l6 9 l3 -2 l-6 -8 l7 0 z" style="fill:var(--ink)"/>
+  <text x="480" y="178" text-anchor="middle" class="mut">GUI — point &amp; click icons</text>
+</svg>
+<figcaption>Figure 2.8: CLI vs GUI</figcaption>
+</figure>
+
+<div class="tw"><table>
+<tr><th>Basis</th><th>CLI</th><th>GUI</th></tr>
+<tr><td>Interaction</td><td>Typed text commands</td><td>Icons, windows, menus, pointer (mouse/touch)</td></tr>
+<tr><td>Ease of use</td><td>Hard: must remember commands</td><td><b>Easy</b>, intuitive</td></tr>
+<tr><td>User type</td><td>Technical / expert users, admins</td><td>Naive / general users</td></tr>
+<tr><td>Speed (for experts) <span class="badge">ADDED</span></td><td><b>Faster</b>; repetitive tasks can be <b>scripted</b> (automation)</td><td>Slower for bulk tasks</td></tr>
+<tr><td>Resources <span class="badge">ADDED</span></td><td><b>Low</b> memory and CPU</td><td><b>High</b> memory, CPU and graphics</td></tr>
+<tr><td>Precision / control <span class="badge">ADDED</span></td><td>High (full control, options and flags)</td><td>Limited to what the menus expose</td></tr>
+<tr><td>Remote access <span class="badge">ADDED</span></td><td>Easy over a slow link (SSH)</td><td>Needs more bandwidth (RDP, VNC)</td></tr>
+<tr><td>Examples</td><td>MS-DOS, cmd, PowerShell, bash</td><td>Windows, macOS, GNOME, KDE, Android</td></tr>
+</table></div>
+
+<div class="box add"><span class="t">➕ Added for exam — More interface facts</span>
+<ul>
+<li>Galvin lists <b>three</b> UI types: <b>CLI</b>, <b>GUI</b> and <b>batch interface</b> (commands put in files, such as <code>.bat</code> or shell scripts, and executed).</li>
+<li>Also: the <b>touch-screen interface</b> (gestures on mobiles/tablets), <b>voice UI</b> (Siri, Alexa, Google Assistant), <b>menu-driven</b> and <b>form-based</b> interfaces (ATM screens).</li>
+<li>A <b>shell</b> is the program that implements the CLI (the <b>command interpreter</b>). In Windows it is <code>cmd.exe</code> / PowerShell; in UNIX/Linux it is <b>sh (Bourne)</b>, <b>bash (Bourne Again)</b>, <b>csh (C shell)</b>, <b>ksh (Korn)</b> or <b>zsh</b> (the default on macOS).</li>
+<li>Two ways a command interpreter can work: (1) the interpreter itself <b>contains the code</b> for each command; (2) as in UNIX, each command is a <b>separate program file</b> that the shell loads and runs. Option 2 makes new commands easy to add.</li>
+<li><b>WIMP</b> = Windows, Icons, Menus, Pointer, the core GUI elements. The GUI was pioneered at <b>Xerox PARC (Xerox Alto, 1973)</b> and popularised by <b>Apple Macintosh (1984)</b> and <b>Microsoft Windows (1985)</b>.</li>
+<li>In Linux, the GUI is a separate layer: the <b>X Window System / Wayland</b> plus a <b>desktop environment</b> (GNOME, KDE).</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Shell ≠ kernel</b>. The shell is the user-facing interpreter; the kernel is the core that talks to hardware. <b>MS-DOS is CLI</b>, not GUI. Windows 1.0–3.x were <b>GUI shells running on top of MS-DOS</b>. <b>bash</b> = "<b>Bourne Again SHell</b>".</div>
+</section>
+
+<!-- Rapid revision -->
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 2</h3>
+<ul>
+<li><b>OS structure</b> = how OS components are arranged, interconnected and interact. It is a trade-off between <b>speed</b>, <b>protection</b> and <b>extensibility</b>.</li>
+<li><b>Simple (MS-DOS)</b>: Apps → System programs → Device drivers → BIOS. Apps can touch I/O <b>directly</b>, so an app failure crashes the OS ("fresher with access to the accounts"). Easy and fast but unsafe. The 8088 had no dual mode.</li>
+<li><b>Monolithic</b>: whole OS in one kernel-space program; <b>fastest</b>, but one bug crashes everything. UNIX, Linux.</li>
+<li><b>Layered</b>: L0 = hardware (innermost) … LN = user interface (outermost); a layer uses <b>only lower layers</b> (company hierarchy). Pro: <b>easy debugging</b>. Con: <b>overhead</b> and hard layer definition. THE OS, MULTICS.</li>
+<li><b>Microkernel</b>: remove non-essentials, keeping <b>IPC + memory management + CPU scheduling</b> in the kernel. Drivers and file system run in <b>user space</b> and use <b>message passing</b>. Pros: extensible, reliable, secure, portable. Con: IPC overhead and complex design. Mach, QNX, MINIX.</li>
+<li><b>Modular</b>: core + <b>loadable kernel modules</b> at run time (Linux <code>insmod</code>). <b>Hybrid</b>: microkernel design with monolithic speed. Windows NT, macOS XNU (Mach + BSD).</li>
+<li><b>Exokernel</b>: only multiplexes hardware. <b>Nanokernel</b>: tiny. <b>VM</b>: a hypervisor; Type 1 bare-metal (ESXi, Hyper-V), Type 2 hosted (VirtualBox).</li>
+<li><b>OS = Kernel + Interface</b>. The interface sits between the user and the OS.</li>
+<li><b>CLI</b>: type commands; needs technical knowledge; fast, scriptable, low resources (cmd, bash, PowerShell). <b>GUI</b>: icons and double-click; user-friendly; more resources (Windows, macOS). Galvin's third type is the <b>batch interface</b>.</li>
+<li>Shells: sh, <b>bash = Bourne Again SHell</b>, csh, ksh, zsh. <b>WIMP</b> = Windows, Icons, Menus, Pointer. The GUI was born at Xerox PARC.</li>
+</ul>
+</div>
+<div class="end">End of Volume 01 — Part 2 · Next: Chapter 3 — System Calls</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="01-Introduction-to-OS.html">← Ch 1: Introduction</a><a href="index.html">☰ All topics</a><a href="03-System-Calls.html">Ch 3: System Calls →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('os-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
