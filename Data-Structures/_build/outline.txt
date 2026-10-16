@@ -1,0 +1,115 @@
+## 1. Introduction to Data Structures
+### 1.1 What is a Data Structure (Refrigerator Analogy)
+### 1.2 Linear vs Non-Linear Data Structures
+## 2. Arrays
+### 2.1 Array Basics (Classroom Example)
+### 2.2 Array Declaration
+### 2.3 Advantages and Disadvantages of Arrays
+### 2.4 1D Array: Size Formula (u − l + 1)
+### 2.5 1D Array: Address Calculation
+### 2.6 2D Array: Column-Major Order Address Calculation (Row-Major vs Column-Major)
+### 2.7 Array Traversal
+### 2.8 Array Insertion (Cinema Queue Example)
+### 2.9 Position vs Index and Insertion Best/Worst Case
+### 2.10 Array Deletion (Milk Queue Example)
+### 2.11 Array Searching (100-Floor Building Example)
+## 3. Array vs Linked List
+### 3.1 Contiguous vs Non-Contiguous Memory
+### 3.2 Random Access vs Sequential Access
+### 3.3 Insertion/Deletion Cost, Static vs Dynamic, Variations and Representation
+## 4. Singly Linked List
+### 4.1 What is a Linked List (Data Field, Link Field, Head)
+### 4.2 Node Structure and Dynamic Allocation (malloc)
+### 4.3 Reading Pointer Expressions (head→data, head→link→link)
+### 4.4 Traversal
+### 4.5 Searching
+### 4.6 Insert at Beginning
+### 4.7 Insert After a Node
+### 4.8 Insert at End
+### 4.9 Delete at Beginning
+### 4.10 Delete After a Node
+### 4.11 Delete at End
+## 5. Doubly Linked List
+### 5.1 Node Structure (prev, data, next) and Two-Way Flexibility
+### 5.2 Insert at Beginning
+### 5.3 Insert After a Node
+### 5.4 Insert at End
+### 5.5 Delete at Beginning
+### 5.6 Delete After a Node
+### 5.7 Delete at End
+## 6. Circular Linked List
+### 6.1 Concept: Last Node Points to Head
+### 6.2 Deleting the Head Node
+## 7. Stack
+### 7.1 LIFO / FILO Concept (Biscuits and Rotis)
+### 7.2 One-End Access, Top of Stack and Implementation (Array / Linked List)
+### 7.3 Push and Pop: Basic Idea
+### 7.4 Push Operation and Overflow (top == n − 1)
+### 7.5 Pop Operation and Underflow (top == −1)
+### 7.6 Example: Sequence of Push/Pop Operations
+## 8. Expression Notation: Infix, Prefix and Postfix (Stack Application)
+### 8.1 Infix, Prefix and Postfix: Operator Position
+### 8.2 Conversion Using an Expression Tree (First/Second/Last Visit)
+### 8.3 Infix to Postfix Using a Stack (Precedence and Associativity)
+### 8.4 Infix to Postfix: Manual Method
+### 8.5 Building the Expression Tree (Weakest Operator as Root)
+### 8.6 Evaluating a Postfix Expression Using a Stack
+### 8.7 Evaluating a Prefix Expression Using a Stack (Right-to-Left Scan)
+## 9. Queue
+### 9.1 FIFO Concept (Water-Park Ride)
+### 9.2 Front/Rear (Head/Tail), Enqueue and Dequeue
+### 9.3 Array Implementation: Overflow, First Insert, Underflow, Single Element
+### 9.4 Limitation of the Linear Queue (Unused Space)
+### 9.5 Circular Queue ((p + 1) mod n)
+### 9.6 Queue Using a Linked List
+## 10. Trees: Introduction and Terminology
+### 10.1 Root, Leaf, Parent, Child and Non-Leaf Nodes
+### 10.2 Path, Ancestor/Descendant, Sibling and Degree
+### 10.3 Depth and Height
+## 11. Binary Tree
+### 11.1 Definition: At Most Two Children
+### 11.2 Levels; Maximum and Minimum Nodes for Height h
+### 11.3 Full Binary Tree
+### 11.4 Complete Binary Tree
+### 11.5 Perfect Binary Tree
+### 11.6 Tree Traversal: Preorder, Inorder and Postorder
+### 11.7 Traversal Example: All Three Orders in One Pass
+### 11.8 Array Representation (Children at 2i and 2i + 1)
+### 11.9 Linked Representation (Left and Right Pointers)
+## 12. Binary Search Tree (BST)
+### 12.1 BST Property and Sorted Inorder
+### 12.2 Searching in a BST
+### 12.3 Insertion and Construction (Compare from the Root)
+### 12.4 Deletion: Leaf, One Child, Two Children (Inorder Predecessor)
+## 13. AVL Tree
+### 13.1 Self-Balancing BST and Balance Factor (−1, 0, +1)
+### 13.2 Single Rotations: Left Rotate (RR Case) and Right Rotate (LL Case)
+### 13.3 Double Rotations: LR and RL
+### 13.4 Construction Example (21, 26, 30, 9, 4, 14, 28, 18, 15, 10, 2, 3, …)
+### 13.5 Deletion in an AVL Tree (13, 12, 16, 19)
+## 14. Heap
+### 14.1 Min Heap and Max Heap (Complete Binary Tree + Heap Property)
+### 14.2 Heapify: Converting a Binary Tree into a Max Heap
+### 14.3 Max Heap Example 2 (Choose the Larger Child)
+### 14.4 Min Heap from the Same Input (Choose the Smaller Child)
+## 15. Threaded Binary Tree
+### 15.1 Single and Double Threading (Inorder Predecessor/Successor)
+## 16. Graphs
+### 16.1 Introduction: Nodes (Vertices), Edges and Cycles
+### 16.2 Types of Graphs: Directed, Undirected, Weighted, Unweighted, Complete, Simple, Multi and Null
+### 16.3 Adjacency Matrix (Undirected and Directed)
+### 16.4 Adjacency List (Avoiding the Sparse Matrix)
+### 16.5 BFS (Breadth First Search) Using a Queue
+### 16.6 DFS (Depth First Search) Using a Stack
+## 17. Hashing
+### 17.1 What is Hashing: Key, Hash Function, Location and Hash Table (Thief Analogy)
+### 17.2 Properties of a Good Hash Function (Easy, Fast, Low Collision)
+### 17.3 Division Method (k mod n)
+### 17.4 Mid-Square Method
+### 17.5 Folding Method
+### 17.6 Collision
+### 17.7 Collision Resolution: Open Hashing vs Closed Hashing
+### 17.8 Separate Chaining (Open Hashing)
+### 17.9 Linear Probing (Closed Hashing) and Primary Clustering
+### 17.10 Quadratic Probing and Secondary Clustering
+### 17.11 Double Hashing (h1 + i·h2) mod n

@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Congestion Control Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="30-UDP.html">← Ch 30: UDP</a><a href="index.html">☰ All topics</a><a href="32-Session-Layer.html">Ch 32: Session Layer →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 31: TCP Congestion Control</h1>
+  <p class="sub">Volume 02 · Part 31 · Built from the one-shot CN lecture transcript (section 31), plus the exam points the lecture skipped. How a TCP sender decides how much to put on the network: slow start, the threshold, congestion avoidance, and what it does when it detects congestion.</p>
+  <ul class="tags"><li>Congestion = Buffers Full</li><li>Congestion Window (cwnd)</li><li>Slow Start: ×2 per RTT</li><li>Threshold = Rwnd / 2</li><li>Congestion Avoidance: +1 per RTT</li><li>Timeout = Severe</li><li>3 Duplicate ACKs = Mild</li><li>Tahoe vs Reno</li><li>AIMD</li><li>min(cwnd, rwnd)</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">31.0</span>What Congestion Means</a></li>
+<li><a href="#s1"><span class="n">31.1</span>Congestion Control Phases and Congestion Detection</a></li>
+<li><a href="#s2"><span class="n">31.2</span>Slow Start Phase</a></li>
+<li><a href="#s3"><span class="n">31.3</span>Threshold and Congestion Avoidance Phase</a></li>
+<li><a href="#s4"><span class="n">31.4</span>Reacting to Congestion: Timeout vs 3 Duplicate ACKs<span class="x">ADDED</span></a></li>
+<li><a href="#s5"><span class="n">31.5</span>Flow Control vs Congestion Control, Other Techniques<span class="x">ADDED</span></a></li>
+<li><a href="#s6"><span class="n">31.6</span>Solved Numericals<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 31</div>
+<h2 class="ch">TCP Congestion Control</h2>
+<p>Flow control (chapter 13, and TCP's window) protects the <b>receiver</b>. Congestion control protects the <b>network</b> in between. A TCP sender doesn't know how much capacity the path has, so it probes. It starts small, grows <b>exponentially</b> (slow start) until a threshold, then grows <b>linearly</b> (congestion avoidance). When packets start getting lost, it cuts back sharply and starts probing again. The size it is allowed to have outstanding is the <b>congestion window (cwnd)</b>, counted in MSS units.</p>
+
+<section id="s0">
+<h3><span class="n">31.0</span>What Congestion Means</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+In the transport layer, talking about TCP without <b>congestion</b> would be wrong; many questions come from it. "The network is congested" works like "the bus is congested": it is <b>full</b>. Every buffer in use on the network is filled to capacity. If any host now dares to send a packet or segment, it is <b>brutally dropped</b> or discarded. When packets in the queue are being cut down like this at a high rate, congestion is <b>severe</b>, and <b>congestion control</b> must come into action.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">31.1</span>Congestion Control Phases and Congestion Detection</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Three phases: <b>slow start</b>, <b>congestion avoidance</b>, and <b>congestion detection</b>. Detection has two cases:<br>
+<b>Case 1: Time-out.</b> The sender sends a packet and starts its timer; the timer runs out and no ACK has come. There is a <b>high possibility of congestion</b>: the packet was very likely dropped by the network.<br>
+<b>Case 2: Three duplicate ACKs.</b> The sender receives three duplicate acknowledgements. There is a <b>low possibility of congestion</b> (not as high as a time-out).</div>
+<div class="box add"><span class="t">➕ Why 3 duplicate ACKs means "mild"</span>
+TCP's ACK is cumulative. If segment 5 is lost but 6, 7 and 8 arrive, the receiver answers each with "ACK 5" again: three <b>duplicate ACKs</b>. So later segments <i>are</i> getting through; only one was lost, and the network is still working. A time-out means <b>nothing</b> came back at all, which is far worse. On 3 duplicate ACKs, TCP resends the missing segment at once, without waiting for the timer: <b>fast retransmit</b>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">31.2</span>Slow Start Phase</h3>
+<figure>
+<svg viewBox="0 0 680 280" role="img" aria-label="Graph of congestion window against RTTs: slow start grows 1, 2, 4, 8, 16 MSS exponentially until the threshold of 16, then congestion avoidance grows linearly by 1 per RTT up to the receiver window of 32, then stays constant">
+  <path d="M60 240 H650 M60 240 V20" class="ln"/>
+  <text x="355" y="272" text-anchor="middle" class="mut">time (RTTs)</text>
+  <text x="20" y="130" class="mut" transform="rotate(-90 20 130)">cwnd (MSS)</text>
+  <g font-size="11" class="mut"><text x="52" y="244" text-anchor="end">0</text><text x="52" y="172" text-anchor="end">16</text><text x="52" y="100" text-anchor="end">32</text></g>
+  <path d="M60 168 H650" style="stroke:var(--alert);stroke-width:1.5;fill:none" class="dash"/><text x="645" y="184" text-anchor="end" style="fill:var(--alert)" class="b" font-size="12">threshold = rwnd / 2 = 16</text>
+  <path d="M60 96 H650" style="stroke:var(--ok);stroke-width:1.5;fill:none" class="dash"/><text x="645" y="90" text-anchor="end" style="fill:var(--ok)" class="b" font-size="12">receiver window = 32</text>
+  <path d="M60 235.5 L84 231 L108 222 L132 204 L156 168" style="stroke:var(--accent);stroke-width:3;fill:none"/>
+  <path d="M156 168 L540 96" style="stroke:var(--add);stroke-width:3;fill:none"/>
+  <path d="M540 96 L640 96" style="stroke:var(--ok);stroke-width:3;fill:none"/>
+  <g style="fill:var(--accent)"><circle cx="60" cy="235.5" r="3.5"/><circle cx="84" cy="231" r="3.5"/><circle cx="108" cy="222" r="3.5"/><circle cx="132" cy="204" r="3.5"/><circle cx="156" cy="168" r="3.5"/></g>
+  <text x="172" y="212" style="fill:var(--accent)" class="b" font-size="12">slow start</text><text x="172" y="226" class="mut" font-size="11">1, 2, 4, 8, 16 (×2 per RTT)</text>
+  <text x="360" y="150" style="fill:var(--add)" class="b" font-size="12">congestion avoidance: +1 per RTT</text><text x="360" y="164" class="mut" font-size="11">17, 18, … 32</text>
+  <text x="590" y="116" text-anchor="middle" style="fill:var(--ok)" class="b" font-size="12">constant</text>
+</svg>
+<figcaption>Figure 31.1: cwnd growth with rwnd = 32 MSS (no losses)</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Plot the <b>congestion window (cwnd)</b> in MSS on one axis and time on the other. In slow start the window begins at <b>1 MSS</b> (= 2⁰): only one segment fits. After <b>1 round trip</b> it becomes <b>2 MSS</b> (2¹); in general after n round trips it is <b>2ⁿ</b> MSS: 1 → 2 → 4 → 8 → 16 …, growing <b>exponentially</b>. It can't grow for ever; there is a limit.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Slow" start isn't slow at all; it <b>doubles every RTT</b>. It is called slow only because it <b>starts</b> from a single segment instead of a full window. Strictly, cwnd grows by 1 MSS for <b>every ACK</b> received, which doubles it each round trip.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">31.3</span>Threshold and Congestion Avoidance Phase</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The limit is the <b>threshold</b>: <b>receiver window size ÷ 2</b>. When cwnd grows to half the receiver's window (its buffer size), slow start ends and the <b>congestion avoidance</b> phase begins.<br>
+In congestion avoidance cwnd no longer doubles; it grows <b>linearly</b>, only <b>+1 per RTT</b> (+1, +1, +1 …).<br>
+Up to what? The <b>full receiver window</b>. Congestion avoidance takes you from half the receiver window to the full receiver window one step at a time. Then it stops, and cwnd stays <b>constant</b> at the receiver window size from then on.</div>
+<div class="formula">Slow start           : cwnd = 1, 2, 4, 8 …  (×2 per RTT)        while cwnd &lt; threshold
+Threshold (initial)  : rwnd / 2
+Congestion avoidance : cwnd = threshold + 1, + 2 …  (+1 per RTT)  until cwnd = rwnd
+Data the sender may send = min(cwnd, rwnd)</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">31.4</span>Reacting to Congestion: Timeout vs 3 Duplicate ACKs <span class="badge">ADDED</span></h3>
+<figure>
+<svg viewBox="0 0 680 270" role="img" aria-label="cwnd graph with congestion at 20 MSS: after a timeout, threshold becomes 10 and cwnd drops to 1 and slow starts again; after three duplicate ACKs with TCP Reno, threshold becomes 10 and cwnd drops to 10 then grows linearly">
+  <path d="M50 230 H660 M50 230 V20" class="ln"/>
+  <text x="355" y="262" text-anchor="middle" class="mut">time (RTTs)</text>
+  <g font-size="11" class="mut"><text x="44" y="234" text-anchor="end">0</text><text x="44" y="190" text-anchor="end">10</text><text x="44" y="150" text-anchor="end">20</text></g>
+  <path d="M50 226 L72 222 L94 214 L116 198 L138 166 L160 162 L182 158 L204 154 L226 150" style="stroke:var(--accent);stroke-width:3;fill:none"/>
+  <text x="232" y="140" class="b" style="fill:var(--bad)" font-size="12">congestion at cwnd = 20</text>
+  <path d="M226 150 L226 226 L248 222 L270 214 L292 198 L314 190 L336 186 L358 182 L380 178" style="stroke:var(--alert);stroke-width:2.5;fill:none"/>
+  <text x="672" y="210" text-anchor="end" style="fill:var(--alert)" class="b" font-size="12">Timeout (Tahoe &amp; Reno): ssthresh 10, cwnd 1</text><text x="672" y="224" text-anchor="end" class="mut" font-size="11">slow start 1, 2, 4, 8 → 10 → +1 …</text>
+  <path d="M226 150 L226 190 L248 186 L270 182 L292 178 L314 174 L336 170 L358 166 L380 162" style="stroke:var(--ok);stroke-width:2.5;fill:none" class="dash"/>
+  <text x="672" y="118" text-anchor="end" style="fill:var(--ok)" class="b" font-size="12">3 dup ACKs (Reno): ssthresh 10, cwnd 10</text><text x="672" y="132" text-anchor="end" class="mut" font-size="11">fast recovery → +1 per RTT</text>
+  <path d="M50 190 H660" style="stroke:var(--muted);stroke-width:1;fill:none" class="dash"/>
+</svg>
+<figcaption>Figure 31.2: The two reactions to congestion</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Event</th><th>Meaning</th><th>New threshold</th><th>New cwnd</th><th>Next phase</th></tr>
+<tr><td><b>Timeout</b></td><td>strong congestion</td><td>cwnd / 2</td><td><b>1 MSS</b></td><td>slow start</td></tr>
+<tr><td><b>3 duplicate ACKs</b>, TCP <b>Tahoe</b></td><td>mild</td><td>cwnd / 2</td><td><b>1 MSS</b></td><td>slow start</td></tr>
+<tr><td><b>3 duplicate ACKs</b>, TCP <b>Reno</b></td><td>mild</td><td>cwnd / 2</td><td><b>= new threshold</b> (half)</td><td>congestion avoidance (fast recovery)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ AIMD: the big picture</span>
+In congestion avoidance TCP does <b>Additive Increase</b> (+1 MSS per RTT), and on loss <b>Multiplicative Decrease</b> (halve). The result is the well-known <b>sawtooth</b> graph of cwnd. AIMD is what makes many TCP flows share a link fairly. The first congestion-control TCP was <b>Tahoe</b> (1988: slow start, congestion avoidance, fast retransmit); <b>Reno</b> added <b>fast recovery</b>. Today's default in Linux is <b>CUBIC</b>; Google uses <b>BBR</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The new threshold is half of <b>cwnd at the moment congestion was detected</b>, not half of the old threshold and not half the receiver window (rwnd ÷ 2 is only the lecture's <b>initial</b> threshold). Also note: if slow start would overshoot the threshold (8 → 16 with threshold 10), cwnd is capped at the threshold and congestion avoidance takes over from there.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">31.5</span>Flow Control vs Congestion Control, Other Techniques <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th></th><th>Flow control</th><th>Congestion control</th></tr>
+<tr><td>Protects</td><td>the <b>receiver</b> (its buffer)</td><td>the <b>network</b> (routers' buffers)</td></tr>
+<tr><td>Window</td><td>receiver window <b>rwnd</b> (advertised in the TCP header)</td><td>congestion window <b>cwnd</b> (kept by the sender)</td></tr>
+<tr><td>Who decides</td><td>the receiver tells the sender</td><td>the sender infers from losses / delays</td></tr>
+<tr><td>Scope</td><td>end to end, one pair</td><td>the whole path, all flows</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ General congestion-control techniques</span>
+<b>Open loop (prevention):</b> retransmission, window, acknowledgement, discarding and admission policies; traffic shaping with the <b>leaky bucket</b> (smooth constant output) and <b>token bucket</b> (allows bursts up to the saved tokens). <b>Closed loop (removal):</b> back-pressure, <b>choke packets</b> (e.g. ICMP source quench, ch 25), implicit signalling (TCP noticing losses), explicit signalling (<b>ECN</b> bits set by routers). Router queue policies: tail drop, <b>RED</b> (Random Early Detection).</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">31.6</span>Solved Numericals <span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Solved numericals</span>
+<b>Q1.</b> Receiver window = 64 KB, MSS = 2 KB, no losses. Initial threshold, and how many RTTs until the full window is reached?<br>
+rwnd = 32 MSS → threshold = <b>16 MSS (32 KB)</b>. Slow start: 1 → 2 → 4 → 8 → 16 takes <b>4 RTTs</b>. Congestion avoidance: 16 → 32 takes <b>16 RTTs</b>. Total <b>20 RTTs</b>.<br><br>
+<b>Q2.</b> cwnd = 20 MSS when a <b>timeout</b> occurs. New threshold and cwnd over the next 6 RTTs?<br>
+Threshold = <b>10</b>, cwnd = 1 → 2 → 4 → 8 → <b>10</b> (capped at the threshold) → 11 → 12.<br><br>
+<b>Q3.</b> Same, but <b>3 duplicate ACKs</b> with TCP Reno?<br>
+Threshold = <b>10</b>, cwnd = <b>10</b> → 11 → 12 → 13 … (linear).<br><br>
+<b>Q4.</b> With threshold 8 MSS, starting from cwnd 1, what is cwnd after 6 RTTs? 1 → 2 → 4 → 8 → 9 → 10 → <b>11 MSS</b>.<br><br>
+<b>Q5.</b> cwnd = 12 KB, rwnd = 8 KB. How much may the sender transmit? min(12, 8) = <b>8 KB</b>.<br><br>
+<b>Q6.</b> Which event indicates more severe congestion: timeout or 3 duplicate ACKs? <b>Timeout</b>.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Remember three words: <b>exponential</b> (slow start), <b>linear</b> (congestion avoidance), <b>halve</b> (on congestion). And: slow start begins at <b>1 MSS</b>; timeout → back to <b>1</b>; 3 dup ACKs → <b>fast retransmit</b> (Reno: fast recovery to half).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 31</h3>
+<ul>
+<li>Congestion = network buffers full ("bus is congested") → packets brutally dropped.</li>
+<li>Phases: <b>slow start</b>, <b>congestion avoidance</b>, <b>congestion detection</b>.</li>
+<li>Detection: <b>timeout</b> = high possibility of congestion; <b>3 duplicate ACKs</b> = low possibility (fast retransmit).</li>
+<li>Slow start: cwnd = 1 MSS, then ×2 per RTT (2ⁿ): 1, 2, 4, 8, 16 … until the <b>threshold = rwnd / 2</b>.</li>
+<li>Congestion avoidance: <b>+1 MSS per RTT</b> from rwnd/2 up to the full rwnd, then constant.</li>
+<li>On timeout: threshold = cwnd/2, cwnd = 1 → slow start. On 3 dup ACKs: threshold = cwnd/2; Tahoe cwnd = 1, Reno cwnd = threshold.</li>
+<li>Send window = <b>min(cwnd, rwnd)</b>. AIMD → sawtooth. Flow control protects the receiver; congestion control protects the network.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 31 · Next: Chapter 32 — Session Layer</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="30-UDP.html">← Ch 30: UDP</a><a href="index.html">☰ All topics</a><a href="32-Session-Layer.html">Ch 32: Session Layer →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

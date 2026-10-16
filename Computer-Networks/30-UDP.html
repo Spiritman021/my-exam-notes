@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN UDP Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="29-TCP.html">← Ch 29: TCP</a><a href="index.html">☰ All topics</a><a href="31-TCP-Congestion-Control.html">Ch 31: TCP Congestion Control →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 30: User Datagram Protocol (UDP)</h1>
+  <p class="sub">Volume 02 · Part 30 · Built from the one-shot CN lecture transcript (section 30), plus the exam points the lecture skipped. TCP's lightweight sibling: no handshake, no sequence numbers, no acknowledgements, just ports, a length and an optional checksum in an 8-byte header.</p>
+  <ul class="tags"><li>Connectionless</li><li>Unreliable</li><li>No Ordering</li><li>Fast · Low Overhead</li><li>Header 8 Bytes</li><li>Length = Header + Data</li><li>Optional Checksum</li><li>Pseudo-header</li><li>Message-oriented</li><li>DNS · DHCP · Games · Video</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">30.0</span>What UDP Is</a></li>
+<li><a href="#s1"><span class="n">30.1</span>UDP Use Cases: Simple Queries, Broadcast, Gaming and Multimedia</a></li>
+<li><a href="#s2"><span class="n">30.2</span>UDP Port Delivery and Header Format</a></li>
+<li><a href="#s3"><span class="n">30.3</span>TCP vs UDP Comparison</a></li>
+<li><a href="#s4"><span class="n">30.4</span>Checksum &amp; Pseudo-header, Applications, Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 30</div>
+<h2 class="ch">User Datagram Protocol (UDP)</h2>
+<p>Everything TCP does to be reliable (handshake, numbering every byte, acknowledging, retransmitting, flow and congestion control) costs time. UDP skips all of it. It adds just enough to IP to reach the right <b>process</b> (port numbers) and optionally detect corruption (a checksum). If a datagram is lost, duplicated or arrives out of order, UDP does nothing; the application deals with it, or doesn't care. That makes UDP ideal when <b>speed matters more than perfection</b>, or when the exchange is a single short question and answer.</p>
+
+<section id="s0">
+<h3><span class="n">30.0</span>What UDP Is</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>UDP = User Datagram Protocol.</b> It is <b>connectionless</b>: no need to set up a connection first. None of TCP's phases (establish with the three-way handshake → transfer → terminate) are required. Naturally it is <b>unreliable</b> compared with TCP, since all those mechanisms are missing.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">30.1</span>UDP Use Cases: Simple Queries, Broadcast, Gaming and Multimedia</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>The exam-hall pen.</b> A tense Computer Networks exam; one student's pen is running out. He asks the neighbour "<b>pen hai?</b>" The expected answer is simply <b>yes or no</b>: no time to waste. That is <b>UDP</b>.<br>
+Now do it the <b>TCP</b> way: first build the relationship, establish the connection: "What's your name? Which class? Which village? Oh, I'm from nearby too! What does your father do? All well at home?" Request, response, acknowledgement, connection made. Then: "Pen hai?" "No, I don't have one." "You wasted all my time for that?!" UDP needs none of these formalities.<br>
+<b>Broadcast.</b> To broadcast data to every host, should a station first set up a connection with each one, then broadcast, then terminate each connection? TCP would be very expensive here. UDP: no connection, just broadcast, done.<br>
+<b>Gaming and multimedia.</b> Where <b>speed</b> is the requirement ("quick, yes or no, I have 5 minutes left to write an answer"), UDP is used.</div>
+<div class="box add"><span class="t">➕ Why games and video prefer UDP</span>
+In live voice, video or games, a <b>late packet is useless</b>: retransmitting a lost video frame would only freeze the picture while waiting for it. Applications would rather skip it and carry on. TCP's in-order delivery causes <b>head-of-line blocking</b>: one lost segment holds up everything behind it.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">30.2</span>UDP Port Delivery and Header Format</h3>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="UDP header: source port 16 bits, destination port 16 bits, length 16 bits, checksum 16 bits; 8 bytes total, followed by data">
+  <g font-size="12"><text x="40" y="18" class="mut">0</text><text x="340" y="18" class="mut">16</text><text x="630" y="18" class="mut">31</text></g>
+  <rect x="40" y="26" width="300" height="40" class="ac"/><text x="190" y="44" text-anchor="middle" class="b" font-size="12">Source port</text><text x="190" y="59" text-anchor="middle" class="mut">16</text>
+  <rect x="340" y="26" width="300" height="40" class="ac"/><text x="490" y="44" text-anchor="middle" class="b" font-size="12">Destination port</text><text x="490" y="59" text-anchor="middle" class="mut">16</text>
+  <rect x="40" y="66" width="300" height="40" class="gr"/><text x="190" y="84" text-anchor="middle" class="b" font-size="12">Length (header + data)</text><text x="190" y="99" text-anchor="middle" class="mut">16</text>
+  <rect x="340" y="66" width="300" height="40" class="pu"/><text x="490" y="84" text-anchor="middle" class="b" font-size="12">Checksum (optional in IPv4)</text><text x="490" y="99" text-anchor="middle" class="mut">16</text>
+  <rect x="40" y="106" width="600" height="26" class="bx dash"/><text x="340" y="124" text-anchor="middle" font-size="12">Data</text>
+  <text x="340" y="146" text-anchor="middle" class="mut">2 rows × 4 bytes = 8-byte fixed header</text>
+</svg>
+<figcaption>Figure 30.1: UDP header (always 8 bytes)</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Network layer below, application layer above; at the transport layer both TCP and UDP live. A datagram arrives for <b>destination port X</b>; the application layer has processes on ports X, Y, Z. UDP simply hands the data to <b>process X</b> and its story ends there: no SYN, no FIN, no acknowledgement, no sequence numbers, none of the TCP header machinery.<br>
+The header holds only:
+<ul><li><b>Source port</b>: 16 bits (which process sent it)</li>
+<li><b>Destination port</b>: 16 bits</li>
+<li><b>Length</b>: 16 bits, the length of <b>header + data</b> (not just the header)</li>
+<li><b>Checksum</b>: 16 bits, <b>optional</b>. Not using it? Put all <b>16 zeros</b>. Using it? Compute it over the data, the UDP header and the <b>pseudo IP header</b>.</li></ul>
+Total header = 2 + 2 + 2 + 2 = <b>8 bytes</b>.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">30.3</span>TCP vs UDP Comparison</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The "<b>mahayuddh</b>" (great war) between TCP and UDP, point by point:</div>
+<div class="tw"><table>
+<tr><th>Point</th><th>TCP</th><th>UDP</th></tr>
+<tr><td>Connection</td><td>connection-oriented</td><td>connectionless</td></tr>
+<tr><td>Reliability</td><td>more reliable</td><td>less reliable / unreliable</td></tr>
+<tr><td>Ordering</td><td>in-order delivery</td><td>no ordering (out of order possible)</td></tr>
+<tr><td>Speed</td><td>slow</td><td>fast</td></tr>
+<tr><td>Error checking (checksum)</td><td>mandatory</td><td>optional (IPv4)</td></tr>
+<tr><td>Header length</td><td>variable, 20–60 bytes</td><td>fixed, 8 bytes</td></tr>
+<tr><td>Data model</td><td>byte-stream protocol</td><td>message (datagram) protocol</td></tr>
+<tr><td>Overhead</td><td>establish / transfer / terminate phases</td><td>none of those phases</td></tr>
+<tr><td>Acknowledgement / retransmission <span class="badge">ADDED</span></td><td>yes</td><td>no</td></tr>
+<tr><td>Flow &amp; congestion control <span class="badge">ADDED</span></td><td>yes (window, slow start)</td><td>no</td></tr>
+<tr><td>Broadcast / multicast <span class="badge">ADDED</span></td><td>no (one-to-one only)</td><td>yes</td></tr>
+<tr><td>Typical apps <span class="badge">ADDED</span></td><td>HTTP/HTTPS, FTP, SMTP, SSH, Telnet</td><td>DNS, DHCP, TFTP, SNMP, RIP, NTP, VoIP, streaming, games</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ "Message-oriented" explained</span>
+UDP <b>preserves message boundaries</b>: each <code>send()</code> of 100 bytes arrives as one 100-byte datagram (or not at all). TCP is a <b>byte stream</b>: two sends of 100 bytes may arrive as one read of 200 bytes, or 150 + 50; the application must find its own boundaries.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">30.4</span>Checksum &amp; Pseudo-header, Applications, Solved Questions <span class="badge">ADDED</span></h3>
+<div class="def"><b>Pseudo-header:</b> not sent on the wire; it is added temporarily, only for computing the checksum: <b>source IP, destination IP, a zero byte, protocol number (17), UDP length</b>. Including the IP addresses lets the receiver detect a datagram that was delivered to the <b>wrong host</b>. TCP uses the same trick (with protocol 6).</div>
+<div class="box trap"><span class="t">⚠️ Exam traps</span>
+<ul><li>UDP checksum is <b>optional in IPv4</b> (all-zeros = not used) but <b>mandatory in IPv6</b> (IPv6 has no header checksum of its own).</li>
+<li>The Length field counts <b>header + data</b>, so its minimum is <b>8</b> (empty datagram). Max data in one UDP datagram over IPv4 = 65 535 − 20 (IP) − 8 (UDP) = <b>65 507 bytes</b>; to fit one Ethernet frame without fragmentation, ≤ <b>1472</b> bytes (1500 − 20 − 8).</li>
+<li>UDP is "unreliable" but <b>not careless</b>: with the checksum on, damaged datagrams are <b>discarded</b> (silently, no retransmission).</li></ul></div>
+<div class="tw"><table>
+<tr><th>Application</th><th>Port</th><th>Why UDP</th></tr>
+<tr><td>DNS</td><td>53</td><td>one short query, one short reply</td></tr>
+<tr><td>DHCP</td><td>67 / 68</td><td>client has no IP yet; uses broadcast</td></tr>
+<tr><td>TFTP</td><td>69</td><td>simple file transfer (does its own ACKs)</td></tr>
+<tr><td>SNMP</td><td>161 / 162</td><td>lightweight network management polling</td></tr>
+<tr><td>NTP</td><td>123</td><td>time sync; a stale reply is useless anyway</td></tr>
+<tr><td>RIP</td><td>520</td><td>periodic routing updates</td></tr>
+<tr><td>VoIP / video (RTP), online games, QUIC (HTTP/3)</td><td>various</td><td>real-time; speed over retransmission</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> A UDP header in hex is <code>CB84 000D 001C 001C</code>. Find source port, destination port, total length, data length, and the direction.<br>
+Source = 0xCB84 = <b>52100</b>; destination = 0x000D = <b>13</b>; length = 0x001C = <b>28</b> bytes; data = 28 − 8 = <b>20</b> bytes. The destination is a well-known port (13 = daytime) and the source an ephemeral port, so it goes from <b>client to server</b>. (The last field, 0x001C, is the checksum.)<br><br>
+<b>Q2.</b> UDP header size? <b>8 bytes</b> (fixed).<br><br>
+<b>Q3.</b> Which transport protocol suits a DNS query? <b>UDP</b>. A file download over HTTP? <b>TCP</b>.<br><br>
+<b>Q4.</b> Is the UDP checksum compulsory? <b>No</b> in IPv4, <b>yes</b> in IPv6.<br><br>
+<b>Q5.</b> UDP Length field = 100. Data bytes? <b>92</b>.<br><br>
+<b>Q6.</b> Which protocol supports broadcast and multicast: TCP or UDP? <b>UDP</b>.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Typical MCQs: "UDP header size?" (<b>8 bytes</b>), "connectionless transport protocol?" (<b>UDP</b>), "DNS uses which transport?" (<b>UDP, port 53</b>), "which is faster, TCP or UDP?" (<b>UDP</b>), "UDP provides flow control?" (<b>no</b>).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 30</h3>
+<ul>
+<li>UDP = User Datagram Protocol: <b>connectionless, unreliable, no ordering, fast</b>; none of TCP's three phases.</li>
+<li>"<b>Pen hai?</b>": quick yes/no, no getting-to-know-you handshake. Broadcast without connecting to everyone. Gaming and multimedia want speed.</li>
+<li>UDP just hands data to the destination port's process: no SYN/FIN/ACK/sequence numbers.</li>
+<li>Header = source port 16 + destination port 16 + length 16 (<b>header + data</b>) + checksum 16 (<b>optional</b>; zeros if unused) = <b>8 bytes, fixed</b>.</li>
+<li>Checksum covers the pseudo-header (src/dst IP, protocol 17, length) + header + data; mandatory in IPv6.</li>
+<li>TCP vs UDP: oriented vs less, reliable vs not, ordered vs not, slow vs fast, checksum mandatory vs optional, 20–60 vs 8, byte stream vs message.</li>
+<li>UDP apps: DNS 53, DHCP 67/68, TFTP 69, SNMP 161, NTP 123, RIP 520, VoIP, streaming, games.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 30 · Next: Chapter 31 — TCP Congestion Control</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="29-TCP.html">← Ch 29: TCP</a><a href="index.html">☰ All topics</a><a href="31-TCP-Congestion-Control.html">Ch 31: TCP Congestion Control →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

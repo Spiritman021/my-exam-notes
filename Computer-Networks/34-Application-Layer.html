@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Application Layer Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="33-Presentation-Layer.html">← Ch 33: Presentation Layer</a><a href="index.html">☰ All topics</a><span class="off">Last chapter ✓</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 34: Application Layer</h1>
+  <p class="sub">Volume 02 · Part 34 · Built from the one-shot CN lecture transcript (section 34), plus the exam points the lecture skipped. The layer users actually touch: DNS turning names into addresses, HTTP/HTTPS for the web, FTP/TFTP for files, and SMTP, POP3 and MIME for e-mail.</p>
+  <ul class="tags"><li>Layer 7</li><li>Ports &amp; Transports</li><li>DNS 53</li><li>Iterative vs Recursive</li><li>HTTP 80 · Stateless</li><li>Persistent vs Non-persistent</li><li>HTTPS 443</li><li>FTP 20/21 · Out-of-band</li><li>TFTP 69 · UDP</li><li>SMTP 25 · Push</li><li>POP3 110 · Pull</li><li>MIME</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">34.0</span>The Top Layer</a></li>
+<li><a href="#s1"><span class="n">34.1</span>Application Protocols: Transport Protocols and Port Numbers</a></li>
+<li><a href="#s2"><span class="n">34.2</span>DNS: Components and Hierarchy</a></li>
+<li><a href="#s3"><span class="n">34.3</span>DNS Iterative Resolution</a></li>
+<li><a href="#s4"><span class="n">34.4</span>DNS Recursive Resolution</a></li>
+<li><a href="#s5"><span class="n">34.5</span>HTTP: Stateless, Persistent vs Non-Persistent Connections</a></li>
+<li><a href="#s6"><span class="n">34.6</span>HTTPS</a></li>
+<li><a href="#s7"><span class="n">34.7</span>FTP (File Transfer Protocol)</a></li>
+<li><a href="#s8"><span class="n">34.8</span>TFTP (Trivial File Transfer Protocol)</a></li>
+<li><a href="#s9"><span class="n">34.9</span>SMTP and Mail Transfer (MTA/MAA)</a></li>
+<li><a href="#s10"><span class="n">34.10</span>POP3 (Post Office Protocol)</a></li>
+<li><a href="#s11"><span class="n">34.11</span>MIME (Multipurpose Internet Mail Extensions)</a></li>
+<li><a href="#s12"><span class="n">34.12</span>DNS Records, HTTP Details, IMAP &amp; Solved Numericals<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 34</div>
+<h2 class="ch">Application Layer</h2>
+<p>Every layer below exists to serve this one. The application layer holds the protocols that real programs speak: a browser uses <b>DNS</b> to find a server's address and <b>HTTP(S)</b> to fetch the page; a mail client uses <b>SMTP</b> to send and <b>POP3</b>/IMAP to collect; file tools use <b>FTP</b> or <b>TFTP</b>. For each protocol, exams ask four things: its <b>port</b>, whether it runs over <b>TCP or UDP</b>, whether it is <b>stateful or stateless</b>, and how it works step by step.</p>
+
+<section id="s0">
+<h3><span class="n">34.0</span>The Top Layer</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The application layer is the <b>last layer</b> of this subject and of the OSI model. At the <b>sender</b>, the auspicious beginning (<b>shubh aarambh</b>) happens here: it is the <b>first</b> layer data passes through. At the <b>receiver</b> it is the <b>final</b> layer.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">34.1</span>Application Protocols: Transport Protocols and Port Numbers</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Many protocols run in this layer; the lecturer groups the exam-relevant ones by the transport protocol under them (<b>TCP</b>, <b>UDP</b>, or both, as for <b>Echo</b>) and lists their port numbers. FTP has separate lines (ports) for data and control: 20 and 21. Then Telnet, SMTP (very important), HTTP, POP3, DNS, TFTP, and RIP (the distance-vector routing protocol of ch 27). Questions ask for a protocol's port or its transport protocol; this table answers both.</div>
+<div class="tw"><table>
+<tr><th>Protocol</th><th>Port</th><th>Transport</th><th>Purpose</th></tr>
+<tr><td>Echo</td><td>7</td><td>TCP &amp; UDP</td><td>sends back whatever it receives (testing)</td></tr>
+<tr><td><b>FTP</b></td><td>20 data / 21 control</td><td>TCP</td><td>file transfer</td></tr>
+<tr><td>SSH <span class="badge">ADDED</span></td><td>22</td><td>TCP</td><td>secure remote login</td></tr>
+<tr><td>Telnet</td><td>23</td><td>TCP</td><td>remote login (plain text)</td></tr>
+<tr><td><b>SMTP</b></td><td>25</td><td>TCP</td><td>sending / relaying mail</td></tr>
+<tr><td><b>DNS</b></td><td>53</td><td>UDP (TCP for zone transfers / large replies)</td><td>name → IP address</td></tr>
+<tr><td>DHCP <span class="badge">ADDED</span></td><td>67 / 68</td><td>UDP</td><td>automatic IP configuration</td></tr>
+<tr><td><b>TFTP</b></td><td>69</td><td>UDP</td><td>simple file transfer</td></tr>
+<tr><td><b>HTTP</b></td><td>80</td><td>TCP</td><td>web</td></tr>
+<tr><td><b>POP3</b></td><td>110</td><td>TCP</td><td>downloading mail</td></tr>
+<tr><td>IMAP <span class="badge">ADDED</span></td><td>143</td><td>TCP</td><td>accessing mail on the server</td></tr>
+<tr><td>SNMP <span class="badge">ADDED</span></td><td>161 / 162</td><td>UDP</td><td>network management</td></tr>
+<tr><td><b>HTTPS</b></td><td>443</td><td>TCP</td><td>secure web</td></tr>
+<tr><td>RIP</td><td>520</td><td>UDP</td><td>distance-vector routing</td></tr>
+</table></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">34.2</span>DNS: Components and Hierarchy</h3>
+<figure>
+<svg viewBox="0 0 680 240" role="img" aria-label="DNS tree: root at top; top-level domains com, org, in, edu below; under com the authoritative name server for 5minutesengineering.com; a query goes down the tree and the IP address comes back up">
+  <defs><marker id="dn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="290" y="14" width="100" height="34" rx="17" class="ac"/><text x="340" y="36" text-anchor="middle" class="b">Root ( . )</text>
+  <rect x="80" y="90" width="80" height="30" rx="15" class="bx"/><text x="120" y="110" text-anchor="middle">.org</text>
+  <rect x="220" y="90" width="80" height="30" rx="15" class="gr"/><text x="260" y="110" text-anchor="middle" class="b">.com</text>
+  <rect x="380" y="90" width="80" height="30" rx="15" class="bx"/><text x="420" y="110" text-anchor="middle">.in</text>
+  <rect x="520" y="90" width="80" height="30" rx="15" class="bx"/><text x="560" y="110" text-anchor="middle">.edu</text>
+  <path d="M320 48 L120 90 M330 48 L260 90 M350 48 L420 90 M360 48 L560 90" class="ln"/>
+  <rect x="150" y="166" width="220" height="34" rx="6" class="pu"/><text x="260" y="182" text-anchor="middle" class="b" font-size="12">Authoritative name server</text><text x="260" y="196" text-anchor="middle" class="mut" font-size="11">5minutesengineering.com → IP</text>
+  <path d="M260 120 V166" class="ln"/>
+  <text x="672" y="40" text-anchor="end" style="fill:var(--accent)" class="b" font-size="12">level 1: root servers</text>
+  <text x="620" y="140" text-anchor="end" style="fill:var(--ok)" class="b" font-size="12">level 2: TLD servers</text>
+  <text x="400" y="190" style="fill:var(--add)" class="b" font-size="12">level 3: authoritative</text>
+  <path d="M60 60 V200" class="lna" marker-end="url(#dn)"/><text x="68" y="146" class="mut" font-size="11">query</text><text x="68" y="160" class="mut" font-size="11">goes down</text>
+  <text x="340" y="232" text-anchor="middle" class="mut">question travels top → down; the IP address answer travels bottom → up</text>
+</svg>
+<figcaption>Figure 34.1: The DNS hierarchy</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>DNS (Domain Name System)</b>: input = a <b>domain name</b>; output = its <b>IP address</b>. It works in two fashions: <b>iterative</b> and <b>recursive</b>.<br>
+Components: the <b>DNS resolver</b> (takes the host's domain name in the first step and returns the resolved IP address in the last), the <b>root name server</b>, the <b>TLD (top-level domain) server</b>, and the <b>authoritative name server</b>. Together they form a <b>tree</b>.<br>
+Flow: the browser asks for <code>5minutesengineering.com</code>; the IP isn't known, so the resolver asks the <b>root</b> (every tree starts at the root). Root: "I don't know, but it ends in <b>.com</b>, so ask my child .com." The <b>.com TLD</b> server: "I don't have the IP either, but I know who does": the <b>authoritative name server</b>, which holds the <b>authority</b>: the full record of that domain, including its name-to-IP mapping. The <b>question goes top-down; the answer (IP) comes bottom-up</b>, back through the resolver to the host.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">34.3</span>DNS Iterative Resolution</h3>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Iterative DNS: host asks resolver (1); resolver asks root (2) which refers it to TLD (3); resolver asks TLD (4) which refers it to authoritative (5); resolver asks authoritative (6) which returns the IP (7); resolver answers host (8)">
+  <defs><marker id="it" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker><marker id="ib2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker></defs>
+  <rect x="20" y="96" width="80" height="40" rx="5" class="bx"/><text x="60" y="121" text-anchor="middle" class="b">Host</text>
+  <rect x="180" y="96" width="110" height="40" rx="5" class="ac"/><text x="235" y="121" text-anchor="middle" class="b">DNS resolver</text>
+  <rect x="470" y="14" width="150" height="40" rx="5" class="gr"/><text x="545" y="39" text-anchor="middle" class="b">Root server</text>
+  <rect x="470" y="96" width="150" height="40" rx="5" class="gr"/><text x="545" y="121" text-anchor="middle" class="b">TLD (.com)</text>
+  <rect x="470" y="178" width="150" height="40" rx="5" class="pu"/><text x="545" y="203" text-anchor="middle" class="b">Authoritative</text>
+  <path d="M100 108 H176" class="lna" marker-end="url(#it)"/><text x="138" y="100" text-anchor="middle" font-size="12" class="b">1</text>
+  <path d="M178 126 H104" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ib2)"/><text x="138" y="146" text-anchor="middle" font-size="12" class="b">8</text>
+  <path d="M290 102 L466 30" class="lna" marker-end="url(#it)"/><text x="370" y="56" font-size="12" class="b">2</text>
+  <path d="M470 44 L294 110" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ib2)"/><text x="412" y="88" font-size="12" class="b" style="fill:var(--ok);paint-order:stroke;stroke:var(--surface);stroke-width:4px">3 refer → .com</text>
+  <path d="M290 112 H466" class="lna" marker-end="url(#it)"/><text x="380" y="106" font-size="12" class="b">4</text>
+  <path d="M470 128 H294" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ib2)"/><text x="300" y="158" font-size="12" class="b" style="fill:var(--ok);paint-order:stroke;stroke:var(--surface);stroke-width:4px">5 refer → auth.</text>
+  <path d="M290 132 L466 190" class="lna" marker-end="url(#it)"/><text x="350" y="172" font-size="12" class="b">6</text>
+  <path d="M470 206 L292 140" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#ib2)"/><text x="300" y="214" font-size="12" class="b" style="fill:var(--ok);paint-order:stroke;stroke:var(--surface);stroke-width:4px">7 IP address</text>
+</svg>
+<figcaption>Figure 34.2: Iterative resolution: the resolver does all the running around</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Step 1:</b> the host gives the domain name to the resolver and asks for the IP; <b>step 8:</b> the resolver returns the answer. In between: the resolver doesn't know, so it asks the <b>root</b> (2). Root: "I don't have it, but I see .com, go to my child .com" (3). The resolver goes to the <b>TLD</b> (4): "Right place, but I don't have the IP directly; go to the authoritative name server, which holds that domain's data" (5). The resolver goes to the <b>authoritative</b> server (6), which searches its data, finds the IP and returns it (7). The resolver forwards it to the host (8). Each server only <b>refers</b> the resolver onward; the resolver itself makes every trip.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">34.4</span>DNS Recursive Resolution</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Steps 1 and 8 (host ↔ resolver) stay the same. In iterative mode the resolver had to keep running around: "go there", "not here, go there". In <b>recursive</b> mode the resolver relaxes ("<b>chill karega</b>"). It tells the <b>root</b>: "you don't have it? Fetch it for me (<b>laake do</b>)." Root asks its child <b>.com</b>; .com asks the <b>authoritative</b> server; the IP comes back up authoritative → TLD → root → resolver (step 7) → host. Recursive is best seen as the tree; iterative as the step diagram.</div>
+<div class="tw"><table>
+<tr><th></th><th>Iterative</th><th>Recursive</th></tr>
+<tr><td>Who does the work</td><td>the resolver contacts each server in turn</td><td>each server asks the next one on the resolver's behalf</td></tr>
+<tr><td>Server's reply</td><td>a <b>referral</b> ("ask X")</td><td>the <b>final answer</b> (or an error)</td></tr>
+<tr><td>Load</td><td>light on root/TLD servers</td><td>heavy on the servers doing the chasing</td></tr>
+<tr><td>In practice <span class="badge">ADDED</span></td><td>resolver ↔ root/TLD/authoritative</td><td>host ↔ local resolver (your ISP / 8.8.8.8 does the chasing)</td></tr>
+</table></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">34.5</span>HTTP: Stateless, Persistent vs Non-Persistent Connections</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Nothing new: you see http/https on every website. <b>HTTP</b> works on <b>port 80</b>. It is not reliable on its own, so it uses <b>TCP</b> for reliability.<br>
+<b>Stateless:</b> no information about the user or the session is saved on the server. (Stateful would save it; HTTP doesn't.)<br>
+It uses <b>one port</b> (80) for both data and commands/control: an <b>in-band</b> protocol.<br>
+Two versions differ in connections:<br>
+• <b>HTTP 1.0 = non-persistent:</b> <b>one TCP connection per request–reply</b>. After one exchange the connection is torn down; the next request needs a new connection. Slow, because time goes in making and breaking connections.<br>
+• <b>HTTP 1.1 = persistent:</b> the server <b>leaves the connection open</b> for one or more requests. It closes only when the client asks to close, or on a <b>timeout</b>.<br>
+HTTP has <b>no built-in security</b>.</div>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Non-persistent HTTP: each object needs its own TCP handshake plus request, 2 RTT each. Persistent HTTP: one handshake, then requests back to back on the same connection">
+  <text x="170" y="20" text-anchor="middle" class="b">Non-persistent (HTTP 1.0)</text>
+  <text x="510" y="20" text-anchor="middle" class="b">Persistent (HTTP 1.1)</text>
+  <path d="M340 10 V200" class="ln dash"/>
+  <g font-size="12">
+  <rect x="30" y="34" width="280" height="22" class="pu"/><text x="170" y="50" text-anchor="middle">TCP handshake (1 RTT)</text>
+  <rect x="30" y="56" width="280" height="22" class="gr"/><text x="170" y="72" text-anchor="middle">request page → reply (1 RTT)</text>
+  <rect x="30" y="80" width="280" height="22" class="bx"/><text x="170" y="96" text-anchor="middle" class="mut">close</text>
+  <rect x="30" y="104" width="280" height="22" class="pu"/><text x="170" y="120" text-anchor="middle">TCP handshake again (1 RTT)</text>
+  <rect x="30" y="126" width="280" height="22" class="gr"/><text x="170" y="142" text-anchor="middle">request image 1 → reply (1 RTT)</text>
+  <text x="170" y="170" text-anchor="middle" class="mut">… repeat for every object</text>
+  <text x="170" y="192" text-anchor="middle" class="b" style="fill:var(--bad)">2 RTT per object</text>
+  <rect x="370" y="34" width="280" height="22" class="pu"/><text x="510" y="50" text-anchor="middle">TCP handshake once (1 RTT)</text>
+  <rect x="370" y="56" width="280" height="22" class="gr"/><text x="510" y="72" text-anchor="middle">request page → reply (1 RTT)</text>
+  <rect x="370" y="78" width="280" height="22" class="gr"/><text x="510" y="94" text-anchor="middle">request image 1 → reply (1 RTT)</text>
+  <rect x="370" y="100" width="280" height="22" class="gr"/><text x="510" y="116" text-anchor="middle">request image 2 → reply (1 RTT)</text>
+  <text x="510" y="146" text-anchor="middle" class="mut">… same connection stays open</text>
+  <text x="510" y="170" text-anchor="middle" class="mut">closes on client request or timeout</text>
+  <text x="510" y="192" text-anchor="middle" class="b" style="fill:var(--ok)">1 RTT per object after set-up</text>
+  </g>
+</svg>
+<figcaption>Figure 34.3: Why persistent HTTP is faster</figcaption>
+</figure>
+</section>
+
+<section id="s6">
+<h3><span class="n">34.6</span>HTTPS</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Because HTTP has no security of its own, there is <b>HTTPS</b>: HTTP running <b>over SSL</b>, "HTTP Secure", which protects the crucial security properties of the data. You'll also often read that HTTP is "<b>somewhat a combination of FTP and SMTP</b>": it transfers files like FTP (but on one port, in-band), and its messages look like mail messages (headers + body) like SMTP's.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+HTTPS = HTTP over <b>SSL/TLS</b> (today TLS 1.2/1.3), on port <b>443</b>. It provides <b>confidentiality</b> (encryption), <b>integrity</b> and server <b>authentication</b> (certificates). It does <b>not</b> provide <b>availability</b> (the lecture lists the whole CIA triad); availability is about the service staying up, which encryption doesn't give.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">34.7</span>FTP (File Transfer Protocol)</h3>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="FTP client and server with two TCP connections: a control connection on port 21 that stays open the whole session, and data connections on port 20 opened for each file transfer">
+  <rect x="20" y="40" width="140" height="70" rx="6" class="ac"/><text x="90" y="80" text-anchor="middle" class="b">FTP client</text>
+  <rect x="520" y="40" width="140" height="70" rx="6" class="ac"/><text x="590" y="80" text-anchor="middle" class="b">FTP server</text>
+  <path d="M160 58 H520" style="stroke:var(--accent);stroke-width:3;fill:none"/>
+  <text x="340" y="50" text-anchor="middle" style="fill:var(--accent)" class="b" font-size="12">control connection · port 21 · persistent (commands: USER, PASS, RETR …)</text>
+  <path d="M160 94 H520" style="stroke:var(--ok);stroke-width:3;fill:none" class="dash"/>
+  <text x="340" y="88" text-anchor="middle" style="fill:var(--ok)" class="b" font-size="12">data connection · port 20 · non-persistent (one per file)</text>
+  <text x="340" y="134" text-anchor="middle" class="mut">separate channels for control and data = out-of-band</text>
+</svg>
+<figcaption>Figure 34.4: FTP's two connections</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+As the name says, FTP transfers files. It is <b>not in-band</b>: data and control have <b>separate ports</b> (20 and 21), unlike HTTP, which uses one port for everything. Because they are separate, the <b>data connection is non-persistent</b> while the <b>control connection is persistent</b>.<br>
+FTP is <b>stateful</b>: information about the session is stored (who is logged in, the current directory). HTTP says "not in my case": HTTP stays <b>stateless</b>.</div>
+<div class="box add"><span class="t">➕ FTP extras</span>
+Transfer modes: <b>ASCII</b> (text) and <b>binary</b> (images, programs). Connection modes: <b>active</b> (server opens the data connection from port 20 to the client) and <b>passive</b> (client opens it to a server port; works through firewalls/NAT). Plain FTP sends passwords in clear text; secure versions are <b>FTPS</b> (FTP over TLS) and <b>SFTP</b> (file transfer over SSH, port 22). Anonymous FTP allows public downloads.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">34.8</span>TFTP (Trivial File Transfer Protocol)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A variant that is "trivial" by nature: very simple operations, <b>only read and write</b>. It runs over <b>UDP</b>, port <b>69</b>. If the client needs <b>security</b> or <b>long-distance</b> transfer of files, don't use TFTP; it isn't built for that.</div>
+<div class="tw"><table>
+<tr><th></th><th>FTP</th><th>TFTP</th></tr>
+<tr><td>Transport</td><td>TCP</td><td>UDP</td></tr>
+<tr><td>Port</td><td>20, 21</td><td>69</td></tr>
+<tr><td>Authentication</td><td>username / password</td><td>none</td></tr>
+<tr><td>Commands</td><td>many (list, rename, delete, cd …)</td><td>only read and write</td></tr>
+<tr><td>Reliability</td><td>from TCP</td><td>its own simple stop-and-wait ACKs (512-byte blocks)</td></tr>
+<tr><td>Used for <span class="badge">ADDED</span></td><td>general file transfer</td><td>booting diskless devices, loading router/switch firmware and configs on a LAN</td></tr>
+</table></div>
+</section>
+
+<section id="s9">
+<h3><span class="n">34.9</span>SMTP and Mail Transfer (MTA/MAA)</h3>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="Email path: client 1 to its mail server using SMTP through an MTA client and server (push); mail server 1 to mail server 2 using SMTP (push); client 2 retrieves from its mail server using POP3 through an MAA (pull)">
+  <defs><marker id="ml" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker><marker id="mp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ok)"/></marker></defs>
+  <rect x="10" y="60" width="90" height="50" rx="6" class="bx"/><text x="55" y="82" text-anchor="middle" class="b">Client 1</text><text x="55" y="98" text-anchor="middle" class="mut" font-size="11">sender</text>
+  <rect x="180" y="60" width="120" height="50" rx="6" class="ac"/><text x="240" y="82" text-anchor="middle" class="b">Mail server 1</text><text x="240" y="98" text-anchor="middle" class="mut" font-size="11">e.g. gmail.com</text>
+  <rect x="380" y="60" width="120" height="50" rx="6" class="ac"/><text x="440" y="82" text-anchor="middle" class="b">Mail server 2</text><text x="440" y="98" text-anchor="middle" class="mut" font-size="11">e.g. yahoo.com</text>
+  <rect x="580" y="60" width="90" height="50" rx="6" class="bx"/><text x="625" y="82" text-anchor="middle" class="b">Client 2</text><text x="625" y="98" text-anchor="middle" class="mut" font-size="11">receiver</text>
+  <path d="M100 85 H176" class="lna" marker-end="url(#ml)"/>
+  <path d="M300 85 H376" class="lna" marker-end="url(#ml)"/>
+  <path d="M580 85 H504" style="stroke:var(--ok);stroke-width:2.5;fill:none" marker-end="url(#mp)"/>
+  <text x="138" y="50" text-anchor="middle" class="b" font-size="12" style="fill:var(--accent)">① SMTP</text><text x="138" y="130" text-anchor="middle" class="mut" font-size="11">MTA client → server</text>
+  <text x="338" y="50" text-anchor="middle" class="b" font-size="12" style="fill:var(--accent)">② SMTP</text><text x="338" y="130" text-anchor="middle" class="mut" font-size="11">MTA → MTA</text>
+  <text x="542" y="50" text-anchor="middle" class="b" font-size="12" style="fill:var(--ok)">③ POP3 / IMAP</text><text x="542" y="130" text-anchor="middle" class="mut" font-size="11">MAA (client pulls)</text>
+  <path d="M100 152 H500" class="lna" marker-end="url(#ml)"/><text x="300" y="146" text-anchor="middle" style="fill:var(--accent)" class="b" font-size="12">PUSH (SMTP)</text>
+  <path d="M670 172 H504" style="stroke:var(--ok);stroke-width:2;fill:none" marker-end="url(#mp)"/><text x="600" y="166" text-anchor="middle" style="fill:var(--ok)" class="b" font-size="12">PULL</text>
+</svg>
+<figcaption>Figure 34.5: How an e-mail travels</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>SMTP (Simple Mail Transfer Protocol)</b> supports an <b>asynchronous</b> nature. Unlike a phone call, where the other person must be on the line, mail can be sent while the receiver is <b>offline</b>; it waits on the server, and the receiver logs in later to read it.<br>
+SMTP <b>pushes</b> mail, with the help of an <b>MTA (Message/Mail Transfer Agent)</b>. Client 1's MTA client takes the mail from the client machine and pushes it to its mail server; the two clients may use different mail providers (e.g. Gmail and another), so the mail server's MTA pushes it on to the receiver's mail server. Both steps (① and ②) are handled by <b>SMTP</b>. The MTA has a client side and a server side (inside the mail server). After that the <b>pull</b> process begins, to bring the mail from the server to client 2.</div>
+<div class="box add"><span class="t">➕ SMTP details</span>
+Port <b>25</b> (server to server); <b>587</b> for client submission. Classic commands: <code>HELO</code>/<code>EHLO</code>, <code>MAIL FROM</code>, <code>RCPT TO</code>, <code>DATA</code>, <code>QUIT</code>. SMTP itself handles only <b>7-bit ASCII text</b>; that's why MIME (34.11) exists. Software roles: <b>UA</b> (user agent: Outlook, Thunderbird), <b>MTA</b> (transfer), <b>MAA</b> (access).</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">34.10</span>POP3 (Post Office Protocol)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Who does the pull? <b>POP</b> (Post Office Protocol). It <b>pulls</b> the mails from the server and delivers them to the client, helped by the <b>MAA (Message Access Agent)</b>. So: MTA = <b>transfer</b> = push; MAA = <b>access</b> = pull into client 2. The most popular version is <b>POP3</b>; it runs on <b>TCP</b>, port <b>110</b>.</div>
+<div class="tw"><table>
+<tr><th></th><th>POP3</th><th>IMAP <span class="badge">ADDED</span></th></tr>
+<tr><td>Port</td><td>110 (995 with TLS)</td><td>143 (993 with TLS)</td></tr>
+<tr><td>Mail stored</td><td>downloaded to the device, usually <b>deleted</b> from the server</td><td><b>kept on the server</b>, synced to all devices</td></tr>
+<tr><td>Folders / search on server</td><td>no</td><td>yes</td></tr>
+<tr><td>Multiple devices</td><td>poor</td><td>good (phone + laptop see the same mailbox)</td></tr>
+<tr><td>Offline</td><td>works offline after download</td><td>needs connection (caches copies)</td></tr>
+</table></div>
+</section>
+
+<section id="s11">
+<h3><span class="n">34.11</span>MIME (Multipurpose Internet Mail Extensions)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The last topic of the one-shot. We don't send only text from client 1 to client 2; we also send <b>audio, video, images</b>: <b>non-text data</b>. <b>MIME</b> is "multipurpose": not just the single purpose of text. At the sender, non-text data is <b>converted into text form</b>; at the receiver it is <b>converted back</b> to non-text, so the receiver sees the audio, video or image as a whole without any problem.</div>
+<div class="box add"><span class="t">➕ How MIME does it</span>
+MIME adds headers: <code>MIME-Version</code>, <code>Content-Type</code> (e.g. <code>image/jpeg</code>, <code>text/html</code>, <code>multipart/mixed</code> for attachments), and <code>Content-Transfer-Encoding</code> (e.g. <b>base64</b>, which turns every 3 bytes of binary into 4 printable ASCII characters, about 33% larger). The same Content-Type labels are used by <b>HTTP</b>. <b>S/MIME</b> adds signing and encryption to mail.</div>
+</section>
+
+<section id="s12">
+<h3><span class="n">34.12</span>DNS Records, HTTP Details, IMAP &amp; Solved Numericals <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>DNS record</th><th>Maps</th><th>Example</th></tr>
+<tr><td><b>A</b></td><td>name → IPv4 address</td><td>example.com → 93.184.216.34</td></tr>
+<tr><td><b>AAAA</b></td><td>name → IPv6 address</td><td>→ 2606:2800:…</td></tr>
+<tr><td><b>CNAME</b></td><td>alias → canonical name</td><td>www.example.com → example.com</td></tr>
+<tr><td><b>MX</b></td><td>domain → its mail server</td><td>example.com → mail.example.com</td></tr>
+<tr><td><b>NS</b></td><td>domain → its authoritative name server</td><td></td></tr>
+<tr><td><b>PTR</b></td><td>IP → name (reverse lookup)</td><td></td></tr>
+<tr><td>SOA, TXT</td><td>zone details; free text (SPF, verification)</td><td></td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ HTTP essentials</span>
+<b>Methods:</b> GET (fetch), POST (submit), PUT (replace), DELETE, HEAD (headers only), PATCH, OPTIONS. <b>Status codes:</b> 1xx informational, <b>2xx success</b> (200 OK), <b>3xx redirect</b> (301 moved permanently, 304 not modified), <b>4xx client error</b> (400 bad request, 403 forbidden, <b>404 not found</b>), <b>5xx server error</b> (500 internal error, 503 unavailable). <b>Cookies</b> add state on top of stateless HTTP (login sessions, carts). Versions: HTTP/1.0 non-persistent, <b>HTTP/1.1</b> persistent + pipelining, <b>HTTP/2</b> multiplexed binary frames, <b>HTTP/3</b> over QUIC (UDP). <b>URL</b> = protocol://host:port/path.</div>
+<div class="num"><span class="t">Solved numericals</span>
+<b>Q1.</b> A web page has 1 base HTML file + 10 images, all small (ignore transmission time). How many RTTs to fetch everything?<br>
+• Non-persistent, one at a time: each object needs 2 RTT (handshake + request) → 11 × 2 = <b>22 RTT</b>.<br>
+• Persistent, no pipelining: 1 RTT handshake + 1 RTT per object → 1 + 11 = <b>12 RTT</b>.<br>
+• Persistent with pipelining: handshake 1 + base page 1 + all 10 images together 1 = <b>3 RTT</b>.<br>
+• Non-persistent with 5 parallel connections: base page 2 RTT + two batches of 5 images × 2 RTT = <b>6 RTT</b>.<br><br>
+<b>Q2.</b> In iterative DNS resolution with root → TLD → authoritative and no caching, how many queries does the resolver send? <b>3</b> (one to each server).<br><br>
+<b>Q3.</b> Which protocols are stateless: HTTP, FTP? <b>HTTP</b> stateless, <b>FTP</b> stateful.<br><br>
+<b>Q4.</b> Which mail protocol is push, which pull? <b>SMTP push</b>; <b>POP3/IMAP pull</b>.<br><br>
+<b>Q5.</b> Which DNS record gives the mail server of a domain? <b>MX</b>. Reverse lookup? <b>PTR</b>.<br><br>
+<b>Q6.</b> In-band or out-of-band: HTTP? FTP? <b>HTTP in-band</b> (one port); <b>FTP out-of-band</b> (two ports).</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+High-frequency facts: DNS 53/UDP · HTTP 80 · HTTPS 443 · FTP 20/21 · SMTP 25 · POP3 110 · IMAP 143 · Telnet 23 · SSH 22 · TFTP 69/UDP · DHCP 67/68/UDP · SNMP 161/UDP. HTTP stateless; FTP stateful and out-of-band; SMTP push, POP3 pull; MIME for non-text mail; 404 = not found.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 34</h3>
+<ul>
+<li>Application layer = OSI layer 7: first layer at the sender (shubh aarambh), last at the receiver.</li>
+<li>Know each protocol's port + transport (Echo 7 both; FTP 20/21, Telnet 23, SMTP 25, HTTP 80, POP3 110 on TCP; DNS 53, TFTP 69, RIP 520 on UDP).</li>
+<li><b>DNS</b>: domain name → IP. Resolver, root, TLD, authoritative (holds the mapping). Question top-down, answer bottom-up.</li>
+<li><b>Iterative</b>: resolver runs to each server (referrals; 8 steps). <b>Recursive</b>: resolver "chills", root says "laake do" down the chain.</li>
+<li><b>HTTP</b> 80, over TCP, <b>stateless</b>, in-band. 1.0 = <b>non-persistent</b> (one TCP connection per request, slow); 1.1 = <b>persistent</b> (open until client closes / timeout). No security → <b>HTTPS</b> = HTTP over SSL/TLS, 443.</li>
+<li><b>FTP</b> 20 data (non-persistent) / 21 control (persistent): out-of-band, <b>stateful</b>. <b>TFTP</b>: UDP 69, only read/write, no security.</li>
+<li><b>SMTP</b> 25: asynchronous, <b>push</b> via <b>MTA</b> (client → server → server). <b>POP3</b> 110: <b>pull</b> via <b>MAA</b>. IMAP keeps mail on the server.</li>
+<li><b>MIME</b>: non-text (audio/video/images) → text for mail, and back (base64, Content-Type).</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Computer Networks complete (34 chapters) ✓</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="33-Presentation-Layer.html">← Ch 33: Presentation Layer</a><a href="index.html">☰ All topics</a><span class="off">Last chapter ✓</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

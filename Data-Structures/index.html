@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Structures Notes</title>
+<script src="../assets/embed.js"></script><style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+</style></head>
+<body><button class="themer" id="themer" type="button">Theme</button><div class="wrap">
+<header class="cover"><div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+<h1>Data Structures — Notes Index</h1>
+<p class="sub">Volume 03 · 17 chapters from the one-shot Data Structures lecture, plus exam additions. 2 of 17 chapters ready.</p>
+<div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+<p style="margin-top:12px;font-size:14px"><a href="../Computer-Networks/index.html">← Computer Networks notes</a></p></header>
+<details class="card ready" open><summary><span class="cn">Chapter 1</span><span class="ct"><a href="01-Introduction-to-DS.html">Introduction to Data Structures</a></span><span class="cs">2 subtopics · <a class="open" href="01-Introduction-to-DS.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">1.1</span>What is a Data Structure (Refrigerator Analogy)</li><li><span class="n">1.2</span>Linear vs Non-Linear Data Structures</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 2</span><span class="ct"><a href="02-Arrays.html">Arrays</a></span><span class="cs">11 subtopics · <a class="open" href="02-Arrays.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">2.1</span>Array Basics (Classroom Example)</li><li><span class="n">2.2</span>Array Declaration</li><li><span class="n">2.3</span>Advantages and Disadvantages of Arrays</li><li><span class="n">2.4</span>1D Array: Size Formula (u − l + 1)</li><li><span class="n">2.5</span>1D Array: Address Calculation</li><li><span class="n">2.6</span>2D Array: Column-Major Order Address Calculation (Row-Major vs Column-Major)</li><li><span class="n">2.7</span>Array Traversal</li><li><span class="n">2.8</span>Array Insertion (Cinema Queue Example)</li><li><span class="n">2.9</span>Position vs Index and Insertion Best/Worst Case</li><li><span class="n">2.10</span>Array Deletion (Milk Queue Example)</li><li><span class="n">2.11</span>Array Searching (100-Floor Building Example)</li></ol></details><details class="card"><summary><span class="cn">Chapter 3</span><span class="ct">Array vs Linked List</span><span class="cs">3 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">3.1</span>Contiguous vs Non-Contiguous Memory</li><li><span class="n">3.2</span>Random Access vs Sequential Access</li><li><span class="n">3.3</span>Insertion/Deletion Cost, Static vs Dynamic, Variations and Representation</li></ol></details><details class="card"><summary><span class="cn">Chapter 4</span><span class="ct">Singly Linked List</span><span class="cs">11 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">4.1</span>What is a Linked List (Data Field, Link Field, Head)</li><li><span class="n">4.2</span>Node Structure and Dynamic Allocation (malloc)</li><li><span class="n">4.3</span>Reading Pointer Expressions (head→data, head→link→link)</li><li><span class="n">4.4</span>Traversal</li><li><span class="n">4.5</span>Searching</li><li><span class="n">4.6</span>Insert at Beginning</li><li><span class="n">4.7</span>Insert After a Node</li><li><span class="n">4.8</span>Insert at End</li><li><span class="n">4.9</span>Delete at Beginning</li><li><span class="n">4.10</span>Delete After a Node</li><li><span class="n">4.11</span>Delete at End</li></ol></details><details class="card"><summary><span class="cn">Chapter 5</span><span class="ct">Doubly Linked List</span><span class="cs">7 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">5.1</span>Node Structure (prev, data, next) and Two-Way Flexibility</li><li><span class="n">5.2</span>Insert at Beginning</li><li><span class="n">5.3</span>Insert After a Node</li><li><span class="n">5.4</span>Insert at End</li><li><span class="n">5.5</span>Delete at Beginning</li><li><span class="n">5.6</span>Delete After a Node</li><li><span class="n">5.7</span>Delete at End</li></ol></details><details class="card"><summary><span class="cn">Chapter 6</span><span class="ct">Circular Linked List</span><span class="cs">2 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">6.1</span>Concept: Last Node Points to Head</li><li><span class="n">6.2</span>Deleting the Head Node</li></ol></details><details class="card"><summary><span class="cn">Chapter 7</span><span class="ct">Stack</span><span class="cs">6 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">7.1</span>LIFO / FILO Concept (Biscuits and Rotis)</li><li><span class="n">7.2</span>One-End Access, Top of Stack and Implementation (Array / Linked List)</li><li><span class="n">7.3</span>Push and Pop: Basic Idea</li><li><span class="n">7.4</span>Push Operation and Overflow (top == n − 1)</li><li><span class="n">7.5</span>Pop Operation and Underflow (top == −1)</li><li><span class="n">7.6</span>Example: Sequence of Push/Pop Operations</li></ol></details><details class="card"><summary><span class="cn">Chapter 8</span><span class="ct">Expression Notation: Infix, Prefix and Postfix (Stack Application)</span><span class="cs">7 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">8.1</span>Infix, Prefix and Postfix: Operator Position</li><li><span class="n">8.2</span>Conversion Using an Expression Tree (First/Second/Last Visit)</li><li><span class="n">8.3</span>Infix to Postfix Using a Stack (Precedence and Associativity)</li><li><span class="n">8.4</span>Infix to Postfix: Manual Method</li><li><span class="n">8.5</span>Building the Expression Tree (Weakest Operator as Root)</li><li><span class="n">8.6</span>Evaluating a Postfix Expression Using a Stack</li><li><span class="n">8.7</span>Evaluating a Prefix Expression Using a Stack (Right-to-Left Scan)</li></ol></details><details class="card"><summary><span class="cn">Chapter 9</span><span class="ct">Queue</span><span class="cs">6 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">9.1</span>FIFO Concept (Water-Park Ride)</li><li><span class="n">9.2</span>Front/Rear (Head/Tail), Enqueue and Dequeue</li><li><span class="n">9.3</span>Array Implementation: Overflow, First Insert, Underflow, Single Element</li><li><span class="n">9.4</span>Limitation of the Linear Queue (Unused Space)</li><li><span class="n">9.5</span>Circular Queue ((p + 1) mod n)</li><li><span class="n">9.6</span>Queue Using a Linked List</li></ol></details><details class="card"><summary><span class="cn">Chapter 10</span><span class="ct">Trees: Introduction and Terminology</span><span class="cs">3 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">10.1</span>Root, Leaf, Parent, Child and Non-Leaf Nodes</li><li><span class="n">10.2</span>Path, Ancestor/Descendant, Sibling and Degree</li><li><span class="n">10.3</span>Depth and Height</li></ol></details><details class="card"><summary><span class="cn">Chapter 11</span><span class="ct">Binary Tree</span><span class="cs">9 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">11.1</span>Definition: At Most Two Children</li><li><span class="n">11.2</span>Levels; Maximum and Minimum Nodes for Height h</li><li><span class="n">11.3</span>Full Binary Tree</li><li><span class="n">11.4</span>Complete Binary Tree</li><li><span class="n">11.5</span>Perfect Binary Tree</li><li><span class="n">11.6</span>Tree Traversal: Preorder, Inorder and Postorder</li><li><span class="n">11.7</span>Traversal Example: All Three Orders in One Pass</li><li><span class="n">11.8</span>Array Representation (Children at 2i and 2i + 1)</li><li><span class="n">11.9</span>Linked Representation (Left and Right Pointers)</li></ol></details><details class="card"><summary><span class="cn">Chapter 12</span><span class="ct">Binary Search Tree (BST)</span><span class="cs">4 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">12.1</span>BST Property and Sorted Inorder</li><li><span class="n">12.2</span>Searching in a BST</li><li><span class="n">12.3</span>Insertion and Construction (Compare from the Root)</li><li><span class="n">12.4</span>Deletion: Leaf, One Child, Two Children (Inorder Predecessor)</li></ol></details><details class="card"><summary><span class="cn">Chapter 13</span><span class="ct">AVL Tree</span><span class="cs">5 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">13.1</span>Self-Balancing BST and Balance Factor (−1, 0, +1)</li><li><span class="n">13.2</span>Single Rotations: Left Rotate (RR Case) and Right Rotate (LL Case)</li><li><span class="n">13.3</span>Double Rotations: LR and RL</li><li><span class="n">13.4</span>Construction Example (21, 26, 30, 9, 4, 14, 28, 18, 15, 10, 2, 3, …)</li><li><span class="n">13.5</span>Deletion in an AVL Tree (13, 12, 16, 19)</li></ol></details><details class="card"><summary><span class="cn">Chapter 14</span><span class="ct">Heap</span><span class="cs">4 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">14.1</span>Min Heap and Max Heap (Complete Binary Tree + Heap Property)</li><li><span class="n">14.2</span>Heapify: Converting a Binary Tree into a Max Heap</li><li><span class="n">14.3</span>Max Heap Example 2 (Choose the Larger Child)</li><li><span class="n">14.4</span>Min Heap from the Same Input (Choose the Smaller Child)</li></ol></details><details class="card"><summary><span class="cn">Chapter 15</span><span class="ct">Threaded Binary Tree</span><span class="cs">1 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">15.1</span>Single and Double Threading (Inorder Predecessor/Successor)</li></ol></details><details class="card"><summary><span class="cn">Chapter 16</span><span class="ct">Graphs</span><span class="cs">6 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">16.1</span>Introduction: Nodes (Vertices), Edges and Cycles</li><li><span class="n">16.2</span>Types of Graphs: Directed, Undirected, Weighted, Unweighted, Complete, Simple, Multi and Null</li><li><span class="n">16.3</span>Adjacency Matrix (Undirected and Directed)</li><li><span class="n">16.4</span>Adjacency List (Avoiding the Sparse Matrix)</li><li><span class="n">16.5</span>BFS (Breadth First Search) Using a Queue</li><li><span class="n">16.6</span>DFS (Depth First Search) Using a Stack</li></ol></details><details class="card"><summary><span class="cn">Chapter 17</span><span class="ct">Hashing</span><span class="cs">11 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">17.1</span>What is Hashing: Key, Hash Function, Location and Hash Table (Thief Analogy)</li><li><span class="n">17.2</span>Properties of a Good Hash Function (Easy, Fast, Low Collision)</li><li><span class="n">17.3</span>Division Method (k mod n)</li><li><span class="n">17.4</span>Mid-Square Method</li><li><span class="n">17.5</span>Folding Method</li><li><span class="n">17.6</span>Collision</li><li><span class="n">17.7</span>Collision Resolution: Open Hashing vs Closed Hashing</li><li><span class="n">17.8</span>Separate Chaining (Open Hashing)</li><li><span class="n">17.9</span>Linear Probing (Closed Hashing) and Primary Clustering</li><li><span class="n">17.10</span>Quadratic Probing and Secondary Clustering</li><li><span class="n">17.11</span>Double Hashing (h1 + i·h2) mod n</li></ol></details></div><script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

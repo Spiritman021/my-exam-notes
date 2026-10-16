@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Session Layer Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="31-TCP-Congestion-Control.html">← Ch 31: TCP Congestion Control</a><a href="index.html">☰ All topics</a><a href="33-Presentation-Layer.html">Ch 33: Presentation Layer →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 32: Session Layer</h1>
+  <p class="sub">Volume 02 · Part 32 · Built from the one-shot CN lecture transcript (section 32), plus the exam points the lecture skipped. Layer 5 of OSI: setting up, managing and ending a communication session: who may talk, keeping things in step, saving progress, and taking turns.</p>
+  <ul class="tags"><li>Layer 5 (OSI)</li><li>Session = central entity</li><li>Establish · Maintain · Terminate</li><li>Authentication</li><li>Authorization</li><li>Synchronization</li><li>Checkpoints</li><li>Dialog Control</li><li>Token Management</li><li>NetBIOS · RPC</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">32.0</span>Where the Session Layer Sits</a></li>
+<li><a href="#s1"><span class="n">32.1</span>Session Establishment: Authentication and Authorization</a></li>
+<li><a href="#s2"><span class="n">32.2</span>Synchronization</a></li>
+<li><a href="#s3"><span class="n">32.3</span>Checkpointing</a></li>
+<li><a href="#s4"><span class="n">32.4</span>Dialog Control</a></li>
+<li><a href="#s5"><span class="n">32.5</span>Functions Summary, Protocols &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 32</div>
+<h2 class="ch">Session Layer</h2>
+<p>The transport layer gives two processes a pipe for bytes. The session layer organises the <b>conversation</b> that runs through that pipe. It decides who may start one, keeps related streams in step, places save-points so a broken session can resume instead of restarting, and controls whose turn it is to talk. In the real Internet (TCP/IP) these jobs are done inside applications, so exams ask only a few direct questions on this layer, mostly about its functions.</p>
+
+<section id="s0">
+<h3><span class="n">32.0</span>Where the Session Layer Sits</h3>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="OSI stack: application 7, presentation 6, session 5 highlighted, transport 4, network 3, data link 2, physical 1; session is fifth from the bottom and third from the top">
+  <g font-size="13">
+  <rect x="200" y="10" width="280" height="28" class="bx"/><text x="340" y="29" text-anchor="middle">7 · Application</text>
+  <rect x="200" y="40" width="280" height="28" class="bx"/><text x="340" y="59" text-anchor="middle">6 · Presentation</text>
+  <rect x="200" y="70" width="280" height="30" class="ac"/><text x="340" y="90" text-anchor="middle" class="b">5 · SESSION</text>
+  <rect x="200" y="102" width="280" height="28" class="bx"/><text x="340" y="121" text-anchor="middle">4 · Transport</text>
+  <rect x="200" y="132" width="280" height="28" class="bx"/><text x="340" y="151" text-anchor="middle">3 · Network</text>
+  <rect x="200" y="162" width="280" height="28" class="bx"/><text x="340" y="181" text-anchor="middle">2 · Data link</text>
+  <rect x="200" y="192" width="280" height="28" class="bx"/><text x="340" y="211" text-anchor="middle">1 · Physical</text>
+  </g>
+  <text x="500" y="90" style="fill:var(--accent)" class="b" font-size="12">← 5th from bottom</text>
+  <text x="500" y="106" style="fill:var(--accent)" font-size="12">3rd from top</text>
+  <text x="20" y="80" class="mut" font-size="12">above transport,</text><text x="20" y="96" class="mut" font-size="12">below presentation</text>
+</svg>
+<figcaption>Figure 32.1: The session layer in the OSI model</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Counting from the bottom it is the <b>5th</b> layer; from the top, the <b>3rd</b>: above the transport layer, below the presentation layer.<br>
+A fact first: exams ask <b>very few</b> questions on the session and presentation layers ("ikka-dukka"), as their weightage is low. Still, know the key functional points.<br>
+As the name says, the <b>session</b> is this layer's central entity; everything revolves around it. <b>Creating, initiating, establishing, maintaining, managing and terminating</b> a session is the session layer's job.</div>
+</section>
+
+<section id="s1">
+<h3><span class="n">32.1</span>Session Establishment: Authentication and Authorization</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A client machine wants to access its account data on a server, i.e. establish a <b>communication session</b>. Not just anyone can walk in: you need an account.<br>
+<b>Authentication:</b> first prove you are a valid user: send your <b>credentials</b> (username, password). Only if they are valid do you get the successful login screen / dashboard.<br>
+<b>Authorization:</b> then <b>what</b> you may see and do: your view, permissions and data differ from other users'. An <b>admin</b> has admin-level permissions; you have only <b>user-level</b> permissions. You are authorised for some data and actions, not all of them.<br>
+Once the server responds, the session is open: you send requests, it replies. Establishing this communication is the session layer's job.</div>
+<div class="tw"><table>
+<tr><th></th><th>Authentication</th><th>Authorization</th></tr>
+<tr><td>Question</td><td>"<b>Who</b> are you?"</td><td>"<b>What</b> may you do?"</td></tr>
+<tr><td>Based on</td><td>credentials: password, OTP, biometric, certificate</td><td>roles / permissions (admin, user)</td></tr>
+<tr><td>Order</td><td>first</td><td>after authentication</td></tr>
+</table></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">32.2</span>Synchronization</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Within <b>session management</b>, the first key point is <b>synchronization</b>. Take an <b>audio file</b> (sound only) and a <b>video file</b> (pictures only) to be merged. What I say must match my lips: <b>lip-sync</b>. Imagine a keynote speaker at a meeting whose voice arrives 10 minutes late: is that a good session? No. The session layer prevents this by keeping the streams of a session accurately <b>synchronised</b>.</div>
+<div class="box add"><span class="t">➕ Synchronization points</span>
+In OSI terms, synchronization means inserting <b>sync points</b> into the data stream. <b>Major</b> sync points split the dialogue into units that must be acknowledged before continuing; <b>minor</b> sync points are lighter markers inside a unit. They are also what makes checkpoint recovery (next) possible.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">32.3</span>Checkpointing</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Editing an online document, you notice it <b>saves itself periodically</b> without you pressing Save. In Word you press <b>Ctrl+S</b> after a chunk of work: that is a <b>checkpoint</b> created by hand.<br>
+Why it matters: you've worked on a presentation for 10 days and the system suddenly <b>shuts down</b>. With no checkpoints you start again <b>from scratch</b>. To avoid this overhead, checkpoints save the session's progress at intervals. If a session fails (fault, error, shutdown), the session layer lets it <b>resume from the last checkpoint</b> instead of from the beginning.</div>
+<div class="box add"><span class="t">➕ Classic exam example</span>
+A 2000-page file is being sent with a checkpoint every 100 pages. If the connection breaks at page 523, transfer resumes from page <b>501</b> (after the last checkpoint at 500), so only pages 501–523 are resent, not all 523.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">32.4</span>Dialog Control</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Another popular function: <b>dialog management / dialog control</b>. In a communication session there is an exchange of data (requests and replies). Which direction may data flow, and when? <b>One way at a time</b> (half-duplex) or <b>both ways at once</b> (full-duplex)? The session layer takes care of this for the dialogue.</div>
+<div class="box add"><span class="t">➕ Token management</span>
+For half-duplex dialogues, OSI uses a <b>token</b>: only the side holding the data token may send; it passes the token when its turn ends (like the talking stick in a meeting, or Token Ring in ch 18 at a higher level). This also prevents both sides from attempting a critical operation at the same time.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">32.5</span>Functions Summary, Protocols &amp; Solved Questions <span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Function</th><th>One-line meaning</th></tr>
+<tr><td>Session establishment, maintenance, termination</td><td>open, keep alive, and close a dialogue between applications</td></tr>
+<tr><td>Authentication &amp; authorization</td><td>who you are, and what you may do</td></tr>
+<tr><td>Synchronization</td><td>keep related streams in step; insert sync points</td></tr>
+<tr><td>Checkpointing / recovery</td><td>resume from the last save point after a failure</td></tr>
+<tr><td>Dialog control</td><td>half-duplex or full-duplex turn-taking</td></tr>
+<tr><td>Token management</td><td>only the token holder may perform the operation</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Protocols and the TCP/IP view</span>
+Protocols usually listed at the session layer: <b>NetBIOS</b>, <b>RPC</b> (Remote Procedure Call), <b>PPTP</b>, <b>SOCKS</b>, SMB session set-up, SQL sessions, H.245. In the <b>TCP/IP model</b> there is no separate session layer: its jobs are done by the <b>application</b> (e.g. web logins with <b>session cookies</b>/tokens, TLS session resumption, download managers resuming from a byte offset). The OSI data unit for layers 5–7 is simply "<b>data</b>".</div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> Which OSI layer establishes, manages and terminates sessions? <b>Session layer (layer 5)</b>.<br><br>
+<b>Q2.</b> Which layer inserts checkpoints for recovery? <b>Session layer</b>.<br><br>
+<b>Q3.</b> Dialog control (half/full duplex) is the job of? <b>Session layer</b>.<br><br>
+<b>Q4.</b> Session layer lies between? <b>Transport (4)</b> and <b>presentation (6)</b>.<br><br>
+<b>Q5.</b> Checkpoints every 100 pages; failure at page 750 of 1000. From which page does transfer resume? <b>701</b>.<br><br>
+<b>Q6.</b> Verifying a password is authentication or authorization? <b>Authentication</b>. Allowing only admins to delete records? <b>Authorization</b>.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Pure one-liners: session layer = <b>dialog control + synchronization (checkpoints)</b>; presentation layer = translation, encryption, compression (next chapter); transport = end to end; network = routing. Don't mix up "dialog control" (session) with "flow control" (data link / transport).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 32</h3>
+<ul>
+<li>Session layer = OSI <b>layer 5</b> (5th from bottom, 3rd from top), between transport and presentation; low exam weightage.</li>
+<li>Central entity = <b>session</b>: create, establish, maintain, manage, terminate.</li>
+<li>Establishment: <b>authentication</b> (username/password: who are you) then <b>authorization</b> (admin vs user permissions: what may you do).</li>
+<li><b>Synchronization</b>: audio + video must be lip-synced; sync points (major/minor).</li>
+<li><b>Checkpointing</b>: like auto-save / Ctrl+S; after a crash resume from the last checkpoint, not from scratch.</li>
+<li><b>Dialog control</b>: half-duplex vs full-duplex turn-taking; <b>token management</b>.</li>
+<li>Protocols: NetBIOS, RPC, PPTP, SOCKS. In TCP/IP these jobs live in the application layer.</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 32 · Next: Chapter 33 — Presentation Layer</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="31-TCP-Congestion-Control.html">← Ch 31: TCP Congestion Control</a><a href="index.html">☰ All topics</a><a href="33-Presentation-Layer.html">Ch 33: Presentation Layer →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

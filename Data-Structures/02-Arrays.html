@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Arrays Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="01-Introduction-to-DS.html">← Ch 1: Introduction</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 2: Arrays</h1>
+  <p class="sub">Volume 03 · Part 2 · Built from the one-shot Data Structures lecture transcript (section 2), plus the exam points the lecture skipped. The most basic structure: contiguous, same-type, indexed. Includes the address formulas for 1D and 2D arrays (row-major and column-major), and what traversal, insertion, deletion and search cost.</p>
+  <ul class="tags"><li>Contiguous memory</li><li>Homogeneous</li><li>Index · Random access O(1)</li><li>Size = u − l + 1</li><li>LOC = BA + w(i − l)</li><li>Row-major</li><li>Column-major</li><li>Shifting</li><li>Linear search</li><li>Binary search</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">2.1</span>Array Basics (Classroom Example)</a></li>
+<li><a href="#s2"><span class="n">2.2</span>Array Declaration</a></li>
+<li><a href="#s3"><span class="n">2.3</span>Advantages and Disadvantages of Arrays</a></li>
+<li><a href="#s4"><span class="n">2.4</span>1D Array: Size Formula (u − l + 1)</a></li>
+<li><a href="#s5"><span class="n">2.5</span>1D Array: Address Calculation</a></li>
+<li><a href="#s6"><span class="n">2.6</span>2D Array: Row-Major vs Column-Major Address</a></li>
+<li><a href="#s7"><span class="n">2.7</span>Array Traversal</a></li>
+<li><a href="#s8"><span class="n">2.8</span>Array Insertion (Cinema Queue Example)</a></li>
+<li><a href="#s9"><span class="n">2.9</span>Position vs Index and Insertion Best/Worst Case</a></li>
+<li><a href="#s10"><span class="n">2.10</span>Array Deletion (Milk Queue Example)</a></li>
+<li><a href="#s11"><span class="n">2.11</span>Array Searching (100-Floor Building Example)</a></li>
+<li><a href="#s12"><span class="n">2.12</span>Binary Search, Complexity Table &amp; Solved Numericals<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 2</div>
+<h2 class="ch">Arrays</h2>
+<p>The array is the most fundamental data structure, and other structures (stacks, queues, heaps, hash tables, graph matrices) are often built on top of it. Three properties define it: the elements sit in <b>contiguous</b> memory, they are all of the <b>same type</b>, and each is reached by an <b>index</b>. Contiguity is what makes the address of any element computable in one step. It is also why inserting or deleting in the middle means <b>shifting</b> every element after it.</p>
+
+<section id="s1">
+<h3><span class="n">2.1</span>Array Basics (Classroom Example)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Picture <b>class A</b>, a classroom with <b>10 students</b> on benches numbered <b>100, 101, 102, 103, 104…</b>, each student with a roll number <b>0, 1, 2, 3, 4…</b>. Map it onto an array:
+<ul>
+<li>students = <b>data</b>; bench numbers = <b>memory addresses</b>, allocated in a <b>continuous</b> fashion (contiguous memory locations);</li>
+<li>data is stored in an <b>adjacently attached</b> arrangement, so the array is a <b>linear</b> data structure;</li>
+<li>all elements are of the <b>same type</b>: if it holds characters, every element is a character; if integers, every element is an integer;</li>
+<li>roll numbers = <b>indexes</b>, which give <b>unique identification</b>. Calling "Rakesh" in class makes ten Rakeshes stand up; calling "Akshay" might bring fifty. Calling roll number 6 brings exactly one student. Likewise, an index such as 6 picks exactly one element.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 660 130" role="img" aria-label="Array of 10 elements with contiguous addresses and indexes">
+<text class="mut" x="10" y="30">index</text>
+<text class="mut" x="10" y="72">data</text>
+<text class="mut" x="10" y="114">address</text>
+<g>
+<rect class="ac" x="70" y="50" width="56" height="34"/><rect class="ac" x="126" y="50" width="56" height="34"/><rect class="ac" x="182" y="50" width="56" height="34"/><rect class="ac" x="238" y="50" width="56" height="34"/><rect class="ac" x="294" y="50" width="56" height="34"/><rect class="ac" x="350" y="50" width="56" height="34"/><rect class="ac" x="406" y="50" width="56" height="34"/><rect class="ac" x="462" y="50" width="56" height="34"/><rect class="ac" x="518" y="50" width="56" height="34"/><rect class="ac" x="574" y="50" width="56" height="34"/>
+</g>
+<g text-anchor="middle">
+<text x="98" y="30">0</text><text x="154" y="30">1</text><text x="210" y="30">2</text><text x="266" y="30">3</text><text x="322" y="30">4</text><text x="378" y="30">5</text><text x="434" y="30">6</text><text x="490" y="30">7</text><text x="546" y="30">8</text><text x="602" y="30">9</text>
+<text x="98" y="72">S0</text><text x="154" y="72">S1</text><text x="210" y="72">S2</text><text x="266" y="72">S3</text><text x="322" y="72">S4</text><text x="378" y="72">S5</text><text x="434" y="72">S6</text><text x="490" y="72">S7</text><text x="546" y="72">S8</text><text x="602" y="72">S9</text>
+<text class="mut" x="98" y="114">100</text><text class="mut" x="154" y="114">101</text><text class="mut" x="210" y="114">102</text><text class="mut" x="266" y="114">103</text><text class="mut" x="322" y="114">104</text><text class="mut" x="378" y="114">105</text><text class="mut" x="434" y="114">106</text><text class="mut" x="490" y="114">107</text><text class="mut" x="546" y="114">108</text><text class="mut" x="602" y="114">109</text>
+</g>
+</svg>
+<figcaption>Class A as an array · roll no. = index, bench no. = address</figcaption>
+</figure>
+<div class="def"><b>Array:</b> a finite, ordered collection of elements of the <b>same data type</b>, stored in <b>contiguous</b> memory locations and accessed by an <b>index</b> (subscript).</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">2.2</span>Array Declaration</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+In C the declaration has three parts: the <b>data type</b> of every element, the <b>name</b> of the array, and its <b>size</b> in square brackets (how many elements). For the 10 students as integers:</div>
+<div class="formula">int arr[10];      /* type  name[size] */
+arr[6]            /* the element at index 6 */</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Initialisation:</b> <code>int a[5] = {1, 2, 3};</code> sets the rest to 0. <code>int a[] = {1, 2, 3};</code> gets size 3 from the list.</li>
+<li><b>Memory used</b> = number of elements × size of one element. <code>int a[10]</code> with 4-byte ints takes 40 bytes; <code>char c[10]</code> takes 10 bytes.</li>
+<li>In C the array name holds the <b>base address</b>: <code>a[i]</code> means <code>*(a + i)</code>. That's why C indexes start at <b>0</b>: the first element sits 0 places from the base.</li>
+<li>C does <b>no bounds checking</b>. <code>a[10]</code> on a 10-element array compiles fine and reads or writes outside the array (undefined behaviour). Java throws <code>ArrayIndexOutOfBoundsException</code>.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">2.3</span>Advantages and Disadvantages of Arrays</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Advantages</b>
+<ul>
+<li><b>Random access</b>: no need to start from the beginning. <code>arr[6]</code> goes straight to index 6.</li>
+<li><b>Easy</b> to understand, use and retrieve from.</li>
+</ul>
+<b>Disadvantages</b>
+<ul>
+<li><b>Fixed (static) size</b>: declare size 10, store only 4 values, and the other 6 slots are reserved and wasted. This is the memory-waste point from chapter 1.</li>
+<li><b>Insertion and deletion are costly</b>: removing an element means shifting the rest left; adding one means shifting the rest right (sections 2.8–2.10).</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Advantages</th><th>Disadvantages</th></tr>
+<tr><td>O(1) random access by index</td><td>size fixed at declaration, so memory is wasted or runs out</td></tr>
+<tr><td>simple; little memory overhead (no pointers)</td><td>insert/delete need O(n) shifting</td></tr>
+<tr><td>cache-friendly: neighbours sit next to each other in memory <span class="badge">ADDED</span></td><td>needs one <b>contiguous</b> block, which may be unavailable for large arrays <span class="badge">ADDED</span></td></tr>
+<tr><td>base for stacks, queues, heaps, matrices <span class="badge">ADDED</span></td><td>homogeneous only (one type)</td></tr>
+</table></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">2.4</span>1D Array: Size Formula (u − l + 1)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+For array <code>arr</code> with <b>lower index l</b> (lower bound) and <b>upper index u</b> (upper bound), the number of elements is:</div>
+<div class="formula">Size (length) = u − l + 1</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Indexes 0 to 8: size = 8 − 0 + 1 = <b>9</b>.<br>
+A common doubt is that the +1 is there only because indexing starts at 0. It isn't. Number the same nine cells from 1 to 9: size = 9 − 1 + 1 = <b>9</b>, the same answer. The +1 counts both end-points, so the formula works whatever index you start from (0, 1, 2…).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Bounds can be <b>negative</b> in exam questions (Pascal-style arrays): A[−5 … 10] has 10 − (−5) + 1 = <b>16</b> elements. Subtract carefully, and don't forget the +1.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">2.5</span>1D Array: Address Calculation</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+To find the address of element i you need: the <b>base address</b> BA (address of the first element, here <b>1000</b>), the lower bound <b>l = 0</b>, and the <b>size of one element</b> w in bytes (taken as <b>1 byte</b> for simplicity; it would be 2, 4… depending on the data type).</div>
+<div class="formula">LOC(A[i]) = BA + w × (i − l)</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>i = 0: 1000 + 1 × (0 − 0) = <b>1000</b>, the base address itself.</li>
+<li>i = 1: 1000 + 1 × (1 − 0) = <b>1001</b>; then 1002, 1003 … for each next index.</li>
+<li>i = 8: 1000 + 1 × (8 − 0) = <b>1008</b>.</li>
+</ul></div>
+<div class="num"><span class="t">Solved (added)</span>A[−10 … 30] of 2-byte integers, base address 2000. Address of A[5]?<br>LOC = 2000 + 2 × (5 − (−10)) = 2000 + 2 × 15 = <b>2030</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Multiply by the <b>element size w</b>. With 4-byte ints, A[3] from base 1000 is at 1000 + 4 × 3 = <b>1012</b>, not 1003. Also: if the question says "base address is the address of A[1]", then l = 1, so subtract 1 from i.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">2.6</span>2D Array: Row-Major vs Column-Major Address</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+In 2D arrays the address depends on the <b>order</b> the elements are laid out in memory. Take a 3 × 3 array (rows 0–2, columns 0–2), base 1000, element size 1, and find the address of element <b>[1][2]</b>.
+<ul>
+<li><b>Column-major</b>: lay out the columns one after another. Column 0 = 00, 10, 20; column 1 = 01, 11, 21; column 2 = 02, 12, 22.</li>
+<li>Method: [1][2] is in column 2. Count the elements in the columns <b>before</b> it: 2 columns × 3 entries each (number of rows = 2 − 0 + 1 = 3) = <b>6</b>. Then add the elements before it <b>within</b> its column: i − l<sub>r</sub> = 1 − 0 = <b>1</b> (only 02 comes before 12). Total offset 7, so the address is <b>1007</b>.</li>
+<li>The column-major formula is the row-major one with the terms swapped: j for i, l<sub>c</sub> for l<sub>r</sub>, number of rows for number of columns.</li>
+<li>The same element sits at <b>1005</b> in row-major order (00 01 02 10 11 <b>12</b>…) but at <b>1007</b> in column-major order (00 10 20 01 11 21 02 <b>12</b>…). Neither is wrong; it's the order that differs. Before solving, always check which order the question uses.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 700 250" role="img" aria-label="3 by 3 array laid out in row-major and column-major order">
+<text class="b" x="80" y="18" text-anchor="middle">3 × 3 array</text>
+<g text-anchor="middle">
+<rect class="bx" x="20" y="30" width="40" height="34"/><text x="40" y="52">00</text>
+<rect class="bx" x="60" y="30" width="40" height="34"/><text x="80" y="52">01</text>
+<rect class="bx" x="100" y="30" width="40" height="34"/><text x="120" y="52">02</text>
+<rect class="bx" x="20" y="64" width="40" height="34"/><text x="40" y="86">10</text>
+<rect class="bx" x="60" y="64" width="40" height="34"/><text x="80" y="86">11</text>
+<rect class="or" x="100" y="64" width="40" height="34"/><text x="120" y="86" class="b">12</text>
+<rect class="bx" x="20" y="98" width="40" height="34"/><text x="40" y="120">20</text>
+<rect class="bx" x="60" y="98" width="40" height="34"/><text x="80" y="120">21</text>
+<rect class="bx" x="100" y="98" width="40" height="34"/><text x="120" y="120">22</text>
+</g>
+<text class="b" x="180" y="56">Row-major</text>
+<g text-anchor="middle">
+<rect class="ac" x="180" y="66" width="52" height="30"/><text x="206" y="86">00</text>
+<rect class="ac" x="232" y="66" width="52" height="30"/><text x="258" y="86">01</text>
+<rect class="ac" x="284" y="66" width="52" height="30"/><text x="310" y="86">02</text>
+<rect class="ac" x="336" y="66" width="52" height="30"/><text x="362" y="86">10</text>
+<rect class="ac" x="388" y="66" width="52" height="30"/><text x="414" y="86">11</text>
+<rect class="or" x="440" y="66" width="52" height="30"/><text x="466" y="86" class="b">12</text>
+<rect class="ac" x="492" y="66" width="52" height="30"/><text x="518" y="86">20</text>
+<rect class="ac" x="544" y="66" width="52" height="30"/><text x="570" y="86">21</text>
+<rect class="ac" x="596" y="66" width="52" height="30"/><text x="622" y="86">22</text>
+<text class="mut" x="206" y="112">1000</text><text class="mut" x="466" y="112">1005</text><text class="mut" x="622" y="112">1008</text>
+</g>
+<text class="b" x="180" y="160">Column-major</text>
+<g text-anchor="middle">
+<rect class="gr" x="180" y="170" width="52" height="30"/><text x="206" y="190">00</text>
+<rect class="gr" x="232" y="170" width="52" height="30"/><text x="258" y="190">10</text>
+<rect class="gr" x="284" y="170" width="52" height="30"/><text x="310" y="190">20</text>
+<rect class="gr" x="336" y="170" width="52" height="30"/><text x="362" y="190">01</text>
+<rect class="gr" x="388" y="170" width="52" height="30"/><text x="414" y="190">11</text>
+<rect class="gr" x="440" y="170" width="52" height="30"/><text x="466" y="190">21</text>
+<rect class="gr" x="492" y="170" width="52" height="30"/><text x="518" y="190">02</text>
+<rect class="or" x="544" y="170" width="52" height="30"/><text x="570" y="190" class="b">12</text>
+<rect class="gr" x="596" y="170" width="52" height="30"/><text x="622" y="190">22</text>
+<text class="mut" x="206" y="216">1000</text><text class="mut" x="570" y="216">1007</text><text class="mut" x="622" y="216">1008</text>
+</g>
+<text class="mut" x="414" y="242" text-anchor="middle">same element [1][2] → 1005 (row-major) vs 1007 (column-major)</text>
+</svg>
+<figcaption>Base 1000, 1 byte per element</figcaption>
+</figure>
+<p>With rows l<sub>r</sub>…u<sub>r</sub>, columns l<sub>c</sub>…u<sub>c</sub> and element size w, let <b>R = u<sub>r</sub> − l<sub>r</sub> + 1</b> (number of rows) and <b>C = u<sub>c</sub> − l<sub>c</sub> + 1</b> (number of columns):</p>
+<div class="formula">Row-major:    LOC(A[i][j]) = BA + w × [ (i − lr) × C + (j − lc) ]
+Column-major: LOC(A[i][j]) = BA + w × [ (j − lc) × R + (i − lr) ]
+
+check [1][2], 3×3, BA 1000, w 1:
+  row-major    = 1000 + (1×3 + 2) = 1005
+  column-major = 1000 + (2×3 + 1) = 1007</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Read the formula as a sentence.</b> Row-major means skip (i − l<sub>r</sub>) full rows of C elements each, then move (j − l<sub>c</sub>) along the row. Column-major means skip (j − l<sub>c</sub>) full columns of R elements each, then move (i − l<sub>r</sub>) down the column. Total elements in a 2D array = <b>R × C</b>.<br>
+<b>Which languages use which:</b> C, C++, Java, Python (NumPy default) are <b>row-major</b>; FORTRAN, MATLAB and R are <b>column-major</b>.</div>
+<div class="num"><span class="t">Solved (added)</span>A[1 … 10][1 … 15], base 100, w = 4 bytes. Find A[5][10].<br>
+R = 10, C = 15.<br>
+Row-major: 100 + 4 × [(5 − 1) × 15 + (10 − 1)] = 100 + 4 × 69 = <b>376</b>.<br>
+Column-major: 100 + 4 × [(10 − 1) × 10 + (5 − 1)] = 100 + 4 × 94 = <b>476</b>.</div>
+<div class="num"><span class="t">Solved (added) — negative bounds</span>A[−2 … 2][3 … 7], base 500, w = 2. Find A[1][5].<br>
+R = 5, C = 5, total = 25 elements.<br>
+Row-major: 500 + 2 × [(1 + 2) × 5 + (5 − 3)] = 500 + 2 × 17 = <b>534</b>.<br>
+Column-major: 500 + 2 × [(5 − 3) × 5 + (1 + 2)] = 500 + 2 × 13 = <b>526</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+In row-major the multiplier is the number of <b>columns</b>; in column-major it is the number of <b>rows</b>. Students often swap these. Ask yourself: "how long is one full row (row-major) or one full column (column-major)?" If the order isn't stated, assume <b>row-major</b>, since C is row-major.</div>
+<div class="box trap"><span class="t">⚠️ Lecture slip</span>
+While explaining column-major, the lecturer says "elements before the current <i>row</i>" a few times. The quantity is the elements in the columns before the current <b>column</b>. Also, the transcript is missing the row-major worked example itself, though it states the result (1005); it is filled in above.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">2.7</span>Array Traversal</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Traversing</b> means visiting (touching, scanning) every element once, from start to end. Analogy: a plot of land with houses 1–5. You have good news and sweets (pede), so you go to house 1, then 2, 3, 4, 5. Once all five are visited you go home and the traversal is over.
+<pre class="formula">for (i = 0; i &lt; n; i++)      /* n = 5 houses */
+    printf("%d", arr[i]);</pre>
+Notice from the picture: the plot was big but only five houses were built, so the rest of the land is unused. That is the fixed-size waste again: supply exceeded demand. The reverse can also happen: declare too small an array and you run out of space (demand exceeds supply).</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Traversal is always <b>O(n)</b>: every element is visited exactly once. Sums, averages, max/min, printing and counting are all traversals.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">2.8</span>Array Insertion (Cinema Queue Example)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Insertion looks easy but isn't. You're in a cinema ticket line, second from the front (index 1). A friend arrives and you put him <b>ahead of you</b>, not at the back. Now the friend is at index 1 and you've moved to index 2. Everyone behind you also moves back one (index + 1). Their data can't be lost, so the elements after the insertion point are <b>shifted right</b> to make room, and their indexes change.</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">2.9</span>Position vs Index and Insertion Best/Worst Case</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Position</b> is the human count (1st, 2nd, 3rd…); <b>index</b> starts at 0. In [10, 20, 30], 10 is at position 1 but index 0.</div>
+<div class="formula">position = index + 1        index = position − 1</div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Insert <b>5</b> at index 1 of [10, 20, 30]: 30 moves right, then 20 moves right, then 5 goes into the gap, giving [10, <b>5</b>, 20, 30].
+<ul>
+<li><b>Best case</b>: insert at the <b>end</b> (e.g. 40 after 30). Nothing shifts.</li>
+<li><b>Worst case</b>: insert at <b>index 0</b> (e.g. 1). Every element shifts right, giving [<b>1</b>, 10, 5, 20, 30].</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 620 150" role="img" aria-label="Insert 5 at index 1 shifts 20 and 30 to the right">
+<text class="mut" x="10" y="32">before</text>
+<g text-anchor="middle">
+<rect class="ac" x="80" y="12" width="56" height="32"/><text x="108" y="33">10</text>
+<rect class="ac" x="136" y="12" width="56" height="32"/><text x="164" y="33">20</text>
+<rect class="ac" x="192" y="12" width="56" height="32"/><text x="220" y="33">30</text>
+<rect class="bx" x="248" y="12" width="56" height="32"/>
+</g>
+<path class="lna" d="M220 46 Q248 64 276 46"/><polygon class="aha" points="272,44 280,46 274,52"/>
+<path class="lna" d="M164 46 Q192 64 220 46"/><polygon class="aha" points="216,44 224,46 218,52"/>
+<text class="mut" x="330" y="34">① shift right, last element first</text>
+<text class="mut" x="10" y="112">after</text>
+<g text-anchor="middle">
+<rect class="ac" x="80" y="92" width="56" height="32"/><text x="108" y="113">10</text>
+<rect class="or" x="136" y="92" width="56" height="32"/><text x="164" y="113" class="b">5</text>
+<rect class="ac" x="192" y="92" width="56" height="32"/><text x="220" y="113">20</text>
+<rect class="ac" x="248" y="92" width="56" height="32"/><text x="276" y="113">30</text>
+<text class="mut" x="108" y="140">0</text><text class="mut" x="164" y="140">1</text><text class="mut" x="220" y="140">2</text><text class="mut" x="276" y="140">3</text>
+</g>
+<text class="mut" x="330" y="114">② place 5 at index 1; n becomes 4</text>
+</svg>
+<figcaption>Insertion = shift right, then place</figcaption>
+</figure>
+<div class="formula">/* insert x at index pos; n = current count, capacity must be &gt; n */
+for (i = n - 1; i &gt;= pos; i--)
+    a[i + 1] = a[i];          /* shift right, from the END backwards */
+a[pos] = x;
+n++;</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Shift from the <b>last element backwards</b>. Shifting forwards from pos overwrites the next value before it is copied, so every cell ends up holding a copy of the same element. Inserting at index pos moves <b>n − pos</b> elements; on average that's <b>n/2</b>, which is O(n).</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">2.10</span>Array Deletion (Milk Queue Example)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A line for milk. The person at index 1 (position 2) remembers some work and leaves. Everyone behind steps forward: <b>left shift</b>. Index 2 becomes 1, index 3 becomes 2… Insertion causes a right shift; deletion causes a left shift. Both are the overhead of arrays.<br>
+Delete index 1 from [10, 20, 30, 40, 50]: 20 leaves, then 30, 40 and 50 each move left, giving [10, 30, 40, 50].
+<ul>
+<li><b>Best case</b>: delete the <b>last</b> element. Nothing moves.</li>
+<li><b>Worst case</b>: delete <b>index 0</b>. Every other element moves left.</li>
+</ul>
+Whether inserting or deleting, the end of the array is the best case and the beginning is the worst.</div>
+<div class="formula">/* delete the element at index pos */
+x = a[pos];
+for (i = pos; i &lt; n - 1; i++)
+    a[i] = a[i + 1];          /* shift left, from pos FORWARDS */
+n--;</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Deleting index pos moves <b>n − pos − 1</b> elements. If order <b>doesn't matter</b>, you can delete in O(1): copy the last element into the hole and decrease n.</div>
+</section>
+
+<section id="s11">
+<h3><span class="n">2.11</span>Array Searching (100-Floor Building Example)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A 100-floor building: the floors are positions 1–100 (indexes 0–99). You eat dinner on the 100th floor and walk down the stairs to help digestion. Outside, your expensive watch is gone. You had it at dinner, so you search floor 1, then 2, then 3… up to 100. That is <b>searching</b>: start to end until found.
+<ul>
+<li><b>Best case</b>: found on the <b>first</b> floor.</li>
+<li><b>Worst case</b>: found only on the <b>100th</b> ("80 pe toh jaan chali gayi, 90 pe paani pila do").</li>
+<li><b>Worst of the worst</b>: <b>not found at all</b>, after scanning the whole array.</li>
+</ul></div>
+<div class="formula">/* linear (sequential) search */
+for (i = 0; i &lt; n; i++)
+    if (a[i] == key) return i;     /* found */
+return -1;                         /* not found */</div>
+<div class="tw"><table>
+<tr><th>Linear search</th><th>Comparisons</th><th>Big-O</th></tr>
+<tr><td>Best (first element)</td><td>1</td><td>O(1)</td></tr>
+<tr><td>Average (successful)</td><td>(n + 1)/2</td><td>O(n)</td></tr>
+<tr><td>Worst (last element / absent)</td><td>n</td><td>O(n)</td></tr>
+</table></div>
+</section>
+
+<section id="s12">
+<h3><span class="n">2.12</span>Binary Search, Complexity Table &amp; Solved Numericals<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+If the array is <b>sorted</b>, <b>binary search</b> halves the range each step: compare with the middle element, then keep the left or the right half.</div>
+<div class="formula">low = 0; high = n - 1;
+while (low &lt;= high) {
+    mid = (low + high) / 2;
+    if (a[mid] == key)      return mid;
+    else if (a[mid] &lt; key)  low  = mid + 1;
+    else                    high = mid - 1;
+}
+return -1;</div>
+<div class="num"><span class="t">Trace</span>a = [5, 12, 19, 26, 33, 40, 47], key = 40.<br>
+low 0, high 6 → mid 3 (26) &lt; 40 → low 4.<br>
+low 4, high 6 → mid 5 (<b>40</b>) found in <b>2 comparisons</b>. Linear search would take 6.</div>
+<div class="tw"><table>
+<tr><th>Operation on array of n</th><th>Best</th><th>Worst</th></tr>
+<tr><td>Access a[i]</td><td>O(1)</td><td>O(1)</td></tr>
+<tr><td>Traverse</td><td>O(n)</td><td>O(n)</td></tr>
+<tr><td>Insert</td><td>O(1) at end</td><td>O(n) at index 0</td></tr>
+<tr><td>Delete</td><td>O(1) last</td><td>O(n) index 0</td></tr>
+<tr><td>Linear search</td><td>O(1)</td><td>O(n)</td></tr>
+<tr><td>Binary search (sorted)</td><td>O(1)</td><td>O(log n): at most ⌊log₂ n⌋ + 1 comparisons</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>Binary search needs a <b>sorted</b> array with <b>random access</b>. It's not efficient on a linked list.</li>
+<li>Maximum comparisons for n = 1000: ⌊log₂ 1000⌋ + 1 = 9 + 1 = <b>10</b>.</li>
+<li>"Elements stored in consecutive memory locations" → array.</li>
+<li>"Address of element = base + w(i − l)": asked as a direct numerical almost every year in some form.</li>
+</ul></div>
+<div class="num"><span class="t">Q1</span>Array A[−3 … 12]: how many elements? → 12 − (−3) + 1 = <b>16</b>.</div>
+<div class="num"><span class="t">Q2</span>int A[20] (4 bytes each), base 3000, index from 0. Address of A[7]? → 3000 + 4 × 7 = <b>3028</b>.</div>
+<div class="num"><span class="t">Q3</span>Array of 50 elements: how many shifts to insert at position 1 (index 0)? → all <b>50</b>. At position 50 (index 49)? → 1 (the old last element moves). Appending at index 50 needs <b>0</b>.</div>
+<div class="num"><span class="t">Q4</span>A[1…10][1…15], base 100, w 4: A[5][10] row-major = <b>376</b>, column-major = <b>476</b> (worked in 2.6).</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Beyond 2D:</b> a 3D array A[l1…u1][l2…u2][l3…u3] in row-major order gives LOC = BA + w × [(i − l1) × D2 × D3 + (j − l2) × D3 + (k − l3)], where Dk = uk − lk + 1. A <b>sparse matrix</b> (mostly zeros) is better stored as (row, col, value) triplets or linked lists. <b>Dynamic arrays</b> (C++ vector, Java ArrayList, Python list) remove the fixed-size problem by doubling capacity when full, which makes appending O(1) amortised.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Array = same type, <b>contiguous</b> memory, indexed. Linear and static. Lecture: classroom, benches = addresses, roll numbers = indexes.</li>
+<li><code>int arr[10];</code> → type, name, size. <code>a[i] = *(a + i)</code>; C indexes start at 0; no bounds checking in C.</li>
+<li>Pros: O(1) random access, simple. Cons: fixed size (waste or overflow), O(n) insert/delete.</li>
+<li><b>Size = u − l + 1</b> (true for any starting index; watch negative bounds).</li>
+<li><b>LOC = BA + w(i − l)</b>. Lecture: BA 1000, w 1 → A[1] = 1001, A[8] = 1008.</li>
+<li><b>Row-major</b>: BA + w[(i − lr)·C + (j − lc)]. <b>Column-major</b>: BA + w[(j − lc)·R + (i − lr)]. 3×3, [1][2] → 1005 vs 1007. C is row-major; FORTRAN is column-major.</li>
+<li>Insert: shift right from the end; best at end O(1), worst at index 0 O(n). Delete: shift left; best last, worst index 0.</li>
+<li>Position = index + 1.</li>
+<li>Linear search: best 1, average (n+1)/2, worst n (or not found). Binary search (sorted): O(log n), ≤ ⌊log₂ n⌋ + 1 comparisons.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 2 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="01-Introduction-to-DS.html">← Ch 1: Introduction</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Presentation Layer Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="32-Session-Layer.html">← Ch 32: Session Layer</a><a href="index.html">☰ All topics</a><a href="34-Application-Layer.html">Ch 34: Application Layer →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Computer Networks — Chapter 33: Presentation Layer</h1>
+  <p class="sub">Volume 02 · Part 33 · Built from the one-shot CN lecture transcript (section 33), plus the exam points the lecture skipped. Layer 6 of OSI makes sure data arrives in a form the other side can use: translation between formats, encryption for secrecy and authenticity, and compression to save space.</p>
+  <ul class="tags"><li>Layer 6 (OSI)</li><li>Translation</li><li>Encryption / Decryption</li><li>Plaintext → Ciphertext</li><li>Symmetric (shared key)</li><li>Asymmetric (public + private)</li><li>Confidentiality</li><li>Digital Signature</li><li>Lossless vs Lossy</li><li>ASCII · Unicode · JPEG · MPEG</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">33.0</span>Three Jobs of the Presentation Layer</a></li>
+<li><a href="#s1"><span class="n">33.1</span>Translation</a></li>
+<li><a href="#s2"><span class="n">33.2</span>Encryption and Decryption</a></li>
+<li><a href="#s3"><span class="n">33.3</span>Symmetric and Asymmetric Keys: Confidentiality</a></li>
+<li><a href="#s4"><span class="n">33.4</span>Digital Signature (Authentication)</a></li>
+<li><a href="#s5"><span class="n">33.5</span>Compression: Lossless vs Lossy</a></li>
+<li><a href="#s6"><span class="n">33.6</span>Formats, Algorithms &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 33</div>
+<h2 class="ch">Presentation Layer</h2>
+<p>The application at one end produces data; the application at the other end must understand it. The presentation layer sits just below the application and handles the <b>form</b> of the data, not its meaning. It <b>translates</b> between the two machines' formats, <b>encrypts</b> so outsiders can't read it (and can tell who sent it), and <b>compresses</b> so less has to be sent. Its nickname in exam notes is the "<b>translator</b>" of OSI.</p>
+
+<section id="s0">
+<h3><span class="n">33.0</span>Three Jobs of the Presentation Layer</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The next layer up. Its important functions are <b>translation</b>, <b>encryption</b> and <b>compression</b>. As the name says, it is about <b>presenting</b> information and data in the right way.</div>
+<figure>
+<svg viewBox="0 0 680 120" role="img" aria-label="Presentation layer on the sending side: translate to common format, compress, encrypt; on the receiving side the reverse: decrypt, decompress, translate">
+  <defs><marker id="pr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <text x="20" y="22" class="b">Sender</text>
+  <rect x="20" y="32" width="120" height="36" rx="5" class="bx"/><text x="80" y="55" text-anchor="middle">app data</text>
+  <path d="M140 50 H168" class="lna" marker-end="url(#pr)"/>
+  <rect x="170" y="32" width="140" height="36" rx="5" class="ac"/><text x="240" y="55" text-anchor="middle" class="b">translate</text>
+  <path d="M310 50 H338" class="lna" marker-end="url(#pr)"/>
+  <rect x="340" y="32" width="140" height="36" rx="5" class="gr"/><text x="410" y="55" text-anchor="middle" class="b">compress</text>
+  <path d="M480 50 H508" class="lna" marker-end="url(#pr)"/>
+  <rect x="510" y="32" width="150" height="36" rx="5" class="pu"/><text x="585" y="55" text-anchor="middle" class="b">encrypt</text>
+  <text x="340" y="96" text-anchor="middle" class="mut">receiver does the reverse: decrypt → decompress → translate to its own format</text>
+  <text x="340" y="114" text-anchor="middle" class="mut">(compress before encrypting: encrypted data looks random and won't compress)</text>
+</svg>
+<figcaption>Figure 33.1: The presentation layer's pipeline</figcaption>
+</figure>
+</section>
+
+<section id="s1">
+<h3><span class="n">33.1</span>Translation</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Machines M1 and M2 are exchanging data and want to get work done together, but M1 uses <b>code format C1</b> and M2 uses <b>C2</b>.<br>
+Real-life version: a person from one region speaks language C1, a person from another region speaks C2, and both are put in one team. They must exchange ideas and finish the job, but neither understands the other. You need a <b>translator</b> in between: "this is what he's trying to say", "and this is his reply". That intermediate translation is the presentation layer's job: <b>presenting</b> what M1 says in a format M2 understands and accepts, and vice versa.</div>
+<div class="box add"><span class="t">➕ Concrete examples</span>
+Character codes: <b>ASCII</b> (7-bit), <b>EBCDIC</b> (IBM mainframes), <b>Unicode</b> / UTF-8. Number representation: <b>big-endian vs little-endian</b> byte order. Data structures sent between different systems are encoded in a common syntax such as <b>ASN.1</b> (with BER), <b>XDR</b>, or today JSON/XML. This is called <b>data representation</b> or "syntax and semantics of information exchanged".</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">33.2</span>Encryption and Decryption</h3>
+<figure>
+<svg viewBox="0 0 680 140" role="img" aria-label="Sender encrypts plaintext with a key into ciphertext; an intruder in between sees only ciphertext; receiver decrypts with a key back to plaintext">
+  <defs><marker id="en" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <rect x="20" y="40" width="110" height="40" rx="5" class="gr"/><text x="75" y="58" text-anchor="middle" class="b">Plaintext</text><text x="75" y="73" text-anchor="middle" class="mut">"HELLO"</text>
+  <path d="M130 60 H168" class="lna" marker-end="url(#en)"/>
+  <rect x="170" y="40" width="100" height="40" rx="5" class="ac"/><text x="220" y="65" text-anchor="middle" class="b">Encrypt</text><text x="220" y="30" text-anchor="middle" class="mut">🔑 key</text>
+  <path d="M270 60 H408" class="lna" marker-end="url(#en)"/>
+  <rect x="290" y="40" width="100" height="40" rx="5" class="pu"/><text x="340" y="58" text-anchor="middle" class="b">Ciphertext</text><text x="340" y="73" text-anchor="middle" class="mut">"KHOOR"</text>
+  <text x="340" y="112" text-anchor="middle" style="fill:var(--alert)" class="b">intruder sees only this: meaningless</text>
+  <rect x="410" y="40" width="100" height="40" rx="5" class="ac"/><text x="460" y="65" text-anchor="middle" class="b">Decrypt</text><text x="460" y="30" text-anchor="middle" class="mut">🔑 key</text>
+  <path d="M510 60 H548" class="lna" marker-end="url(#en)"/>
+  <rect x="550" y="40" width="110" height="40" rx="5" class="gr"/><text x="605" y="58" text-anchor="middle" class="b">Plaintext</text><text x="605" y="73" text-anchor="middle" class="mut">"HELLO"</text>
+</svg>
+<figcaption>Figure 33.2: Encryption keeps data meaningless to outsiders</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+I don't want anyone who grabs my data in transit to understand it: they may get hold of it, but must not be able to tell what the sender meant. So at the sender, the <b>plaintext</b> is turned into <b>ciphertext</b> using a <b>key</b>: <b>encryption</b>. At the receiver, the valid user must be able to read it, so the ciphertext is turned back into the original plaintext using a key: <b>decryption</b>. An invalid user must not understand it; the valid user must.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">33.3</span>Symmetric and Asymmetric Keys: Confidentiality</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Symmetric (shared key):</b> sender and receiver have agreed to use the <b>same key</b> for both encryption and decryption.<br>
+<b>Asymmetric:</b> <b>two keys</b>: a <b>public key</b> (as the name says, everyone knows it) and a <b>private key</b> (known only to that station/host).<br>
+<b>Confidentiality with asymmetric keys:</b> on the way from sender to receiver, anyone who intercepts the data must not understand it. The sender encrypts with the <b>receiver's public key</b>; only the <b>receiver's private key</b> can decrypt. An intruder or third party in between doesn't have the receiver's private key, so it can do nothing: the message stays confidential.</div>
+<div class="tw"><table>
+<tr><th></th><th>Symmetric</th><th>Asymmetric (public-key)</th></tr>
+<tr><td>Keys</td><td>one shared secret key</td><td>key pair: public + private</td></tr>
+<tr><td>Speed</td><td>fast</td><td>slow (heavy maths)</td></tr>
+<tr><td>Problem</td><td>how to share the key safely</td><td>speed; needs certificates to trust public keys</td></tr>
+<tr><td>Keys for n users <span class="badge">ADDED</span></td><td><b>n(n − 1) / 2</b></td><td><b>2n</b> (one pair each)</td></tr>
+<tr><td>Algorithms <span class="badge">ADDED</span></td><td>DES, 3DES, <b>AES</b>, Blowfish, RC4</td><td><b>RSA</b>, ECC, Diffie–Hellman (key exchange), DSA</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ How real systems combine them</span>
+<b>TLS/HTTPS</b> uses asymmetric cryptography only to <b>agree on a symmetric session key</b> (key exchange, authenticated with certificates), then encrypts all the bulk data with fast symmetric AES. Many textbooks therefore place <b>SSL/TLS</b> at the presentation layer.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">33.4</span>Digital Signature (Authentication)</h3>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Two uses of a key pair. Confidentiality: encrypt with receiver's public key, decrypt with receiver's private key. Digital signature: encrypt with sender's private key, decrypt with sender's public key">
+  <text x="20" y="22" class="b" style="fill:var(--accent)">Confidentiality</text>
+  <rect x="20" y="34" width="120" height="34" rx="5" class="bx"/><text x="80" y="56" text-anchor="middle">Sender</text>
+  <rect x="290" y="34" width="120" height="34" rx="5" class="pu"/><text x="350" y="56" text-anchor="middle">ciphertext</text>
+  <rect x="540" y="34" width="120" height="34" rx="5" class="bx"/><text x="600" y="56" text-anchor="middle">Receiver</text>
+  <path d="M140 51 H288 M410 51 H538" class="lna"/>
+  <text x="214" y="86" text-anchor="middle" font-size="12">encrypt: <tspan class="b">receiver's PUBLIC</tspan></text>
+  <text x="474" y="86" text-anchor="middle" font-size="12">decrypt: <tspan class="b">receiver's PRIVATE</tspan></text>
+  <path d="M10 104 H670" class="ln dash"/>
+  <text x="20" y="128" class="b" style="fill:var(--ok)">Digital signature (authentication)</text>
+  <rect x="20" y="140" width="120" height="34" rx="5" class="bx"/><text x="80" y="162" text-anchor="middle">Sender</text>
+  <rect x="290" y="140" width="120" height="34" rx="5" class="gr"/><text x="350" y="162" text-anchor="middle">signed msg</text>
+  <rect x="540" y="140" width="120" height="34" rx="5" class="bx"/><text x="600" y="162" text-anchor="middle">Receiver</text>
+  <path d="M140 157 H288 M410 157 H538" class="lna"/>
+  <text x="214" y="192" text-anchor="middle" font-size="12">sign: <tspan class="b">sender's PRIVATE</tspan></text>
+  <text x="474" y="192" text-anchor="middle" font-size="12">verify: <tspan class="b">sender's PUBLIC</tspan></text>
+</svg>
+<figcaption>Figure 33.3: Same key pair, two opposite uses</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The other variant: a <b>digital signature</b>, for <b>authentication</b>. This time the sender does <b>not</b> use the receiver's public key; it encrypts with <b>its own private key</b>. Only the sender knows that key, so the receiver can be sure the message didn't come from any random person ("aira-gaira"); it came from that very sender. The receiver decrypts with the <b>sender's public key</b>. If the original message comes out correctly, it must have been encrypted with the sender's private key: the message is from the <b>authentic sender</b>.</div>
+<div class="box add"><span class="t">➕ What a digital signature really guarantees</span>
+In practice the sender signs a <b>hash</b> (message digest, e.g. SHA-256) of the message, not the whole message. A valid signature gives <b>authentication</b> (who sent it), <b>integrity</b> (not changed: any change breaks the hash) and <b>non-repudiation</b> (the sender can't deny sending it). It does <b>not</b> give confidentiality, since anyone with the public key can verify (read) it. In India, digital signatures have legal validity under the <b>IT Act, 2000</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap: the key-use rule</span>
+<b>Confidentiality</b> → encrypt with the <b>receiver's public</b> key. <b>Signature</b> → sign with the <b>sender's private</b> key. Want both? Sign with your private key, then encrypt with the receiver's public key.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">33.5</span>Compression: Lossless vs Lossy</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Compression is a subject of its own; here is the gist. A huge file of many MB or GB: right-click → <b>Compress</b>, and you get a <b>ZIP</b> file. Two kinds:<br>
+<b>Lossless</b> (also called data compression): <b>no information is lost</b>; after decompressing you get exactly the original. The compression ratio is <b>lower</b>.<br>
+<b>Lossy</b>: sometimes a video is compressed so much you can hardly make out what's happening. The <b>loss of information is clearly visible</b>, because the <b>compression ratio is very high</b>.</div>
+<div class="tw"><table>
+<tr><th></th><th>Lossless</th><th>Lossy</th></tr>
+<tr><td>Information lost?</td><td>none: exact original restored</td><td>some (usually details humans barely notice)</td></tr>
+<tr><td>Compression ratio</td><td>lower</td><td>higher</td></tr>
+<tr><td>Used for</td><td>text, program files, databases, medical images</td><td>photos, music, video, voice calls</td></tr>
+<tr><td>Examples <span class="badge">ADDED</span></td><td>ZIP, RAR, gzip, <b>PNG</b>, GIF, FLAC; Huffman, LZW, run-length encoding</td><td><b>JPEG</b>, <b>MP3</b>, AAC, <b>MPEG</b> / H.264 / H.265</td></tr>
+</table></div>
+<div class="formula">compression ratio = original size / compressed size        e.g. 10 MB → 2 MB  =  5 : 1</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">33.6</span>Formats, Algorithms &amp; Solved Questions <span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Standards usually listed at the presentation layer</span>
+Text: ASCII, EBCDIC, Unicode. Images: <b>JPEG</b>, GIF, PNG, TIFF. Audio/video: <b>MPEG</b>, MP3, MIDI, QuickTime. Data syntax: ASN.1, XDR. Security: SSL/TLS (often placed here). In the <b>TCP/IP model</b> these jobs belong to the <b>application layer</b> (there is no separate presentation layer).</div>
+<div class="tw"><table>
+<tr><th>Goal (CIA + more)</th><th>Provided by</th></tr>
+<tr><td><b>Confidentiality</b></td><td>encryption</td></tr>
+<tr><td><b>Integrity</b></td><td>hash / MAC / digital signature</td></tr>
+<tr><td><b>Availability</b></td><td>redundancy, DoS protection (not cryptography)</td></tr>
+<tr><td><b>Authentication</b></td><td>passwords, certificates, digital signature</td></tr>
+<tr><td><b>Non-repudiation</b></td><td>digital signature</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved questions</span>
+<b>Q1.</b> Which OSI layer does translation, encryption and compression? <b>Presentation (layer 6)</b>.<br><br>
+<b>Q2.</b> Caesar cipher with shift 3: encrypt "HELLO". → <b>KHOOR</b> (a classic symmetric substitution cipher).<br><br>
+<b>Q3.</b> 10 users each need private communication with every other. Keys needed with symmetric crypto? 10 × 9 / 2 = <b>45</b>. With asymmetric? 2 × 10 = <b>20</b>.<br><br>
+<b>Q4.</b> For 100 users? Symmetric <b>4950</b>, asymmetric <b>200</b>.<br><br>
+<b>Q5.</b> A sends a confidential message to B with public-key crypto. Which key does A use? <b>B's public key</b>. Which key does B use? <b>B's private key</b>.<br><br>
+<b>Q6.</b> To verify A's digital signature, B uses? <b>A's public key</b>.<br><br>
+<b>Q7.</b> JPEG compression is lossy or lossless? <b>Lossy</b>. PNG? <b>Lossless</b>. ZIP? <b>Lossless</b>.<br><br>
+<b>Q8.</b> A 50 MB video becomes 5 MB. Compression ratio? <b>10 : 1</b>.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Remember the trio <b>translation, encryption, compression</b> for layer 6; <b>AES/DES = symmetric</b>, <b>RSA = asymmetric</b>; public key encrypts for secrecy, private key signs; JPEG/MP3/MPEG are lossy, ZIP/PNG/GIF lossless.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision — Chapter 33</h3>
+<ul>
+<li>Presentation layer = OSI <b>layer 6</b>: translation, encryption, compression; presents data properly.</li>
+<li><b>Translation</b>: M1 speaks code C1, M2 speaks C2 → a translator between two people from different regions (ASCII ↔ EBCDIC, Unicode, byte order).</li>
+<li><b>Encryption</b>: plaintext + key → ciphertext (meaningless to intruders); <b>decryption</b> at the receiver gives the plaintext back.</li>
+<li><b>Symmetric</b> = one shared key (AES, DES): n(n−1)/2 keys. <b>Asymmetric</b> = public + private (RSA): 2n keys.</li>
+<li>Confidentiality: encrypt with <b>receiver's public</b>, decrypt with <b>receiver's private</b>.</li>
+<li><b>Digital signature</b>: sign with <b>sender's private</b>, verify with <b>sender's public</b> → authentication (+ integrity, non-repudiation).</li>
+<li>Compression: <b>lossless</b> (no info lost, lower ratio: ZIP, PNG) vs <b>lossy</b> (visible loss, high ratio: JPEG, MP3, MPEG).</li>
+</ul>
+</div>
+<div class="end">End of Volume 02 — Part 33 · Next: Chapter 34 — Application Layer</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="32-Session-Layer.html">← Ch 32: Session Layer</a><a href="index.html">☰ All topics</a><a href="34-Application-Layer.html">Ch 34: Application Layer →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
