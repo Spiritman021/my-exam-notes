@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS AVL Tree Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="12-Binary-Search-Tree.html">← Ch 12: Binary Search Tree</a><a href="index.html">☰ All topics</a><a href="14-Heap.html">Ch 14: Heap →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 13: AVL Tree</h1>
+  <p class="sub">Volume 03 · Part 13 · Built from the one-shot Data Structures lecture transcript (section 13), plus the exam points the lecture skipped. The lecture introduces the self-balancing BST and its balance factor, the four rotation cases (LL, RR, LR, RL), the "most popular" construction example that uses every rotation, and a deletion example. These notes verify both examples step by step, then add the height bounds, minimum-node formula, complexity and solved questions.</p>
+  <ul class="tags"><li>Self-balancing BST</li><li>BF = h(left) − h(right)</li><li>BF ∈ {−1, 0, +1}</li><li>LL → right · RR → left</li><li>LR · RL double rotations</li><li>O(log n) guaranteed</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">13.1</span>Self-Balancing BST and Balance Factor (−1, 0, +1)</a></li>
+<li><a href="#s2"><span class="n">13.2</span>Single Rotations: LL (Right Rotate) and RR (Left Rotate)</a></li>
+<li><a href="#s3"><span class="n">13.3</span>Double Rotations: LR and RL</a></li>
+<li><a href="#s4"><span class="n">13.4</span>Construction Example (21, 26, 30, 9, 4, 14, 28, 18, 15, 10, 2, 3, 7)</a></li>
+<li><a href="#s5"><span class="n">13.5</span>Deletion in an AVL Tree (13, 12, 16, 19)</a></li>
+<li><a href="#s6"><span class="n">13.6</span>Height Bounds, Minimum Nodes, Complexity &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 13</div>
+<h2 class="ch">AVL Tree</h2>
+<p>Chapter 12 ended with a problem: insert sorted keys into a BST and it degrades into a linked list with O(n) search. An <b>AVL tree</b> (named after Adelson-Velsky and Landis, 1962) checks the balance after every insert and delete and repairs it with <b>rotations</b>, so the height always stays O(log n). The lecture notes that it is more complex than the trees so far, but many questions are asked on it.</p>
+
+<section id="s1">
+<h3><span class="n">13.1</span>Self-Balancing BST and Balance Factor (−1, 0, +1)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+An AVL tree is an <b>evolved version of the BST</b>. All the BST rules apply, plus one more property: it is <b>self-balancing</b>, i.e. it balances itself. That property adds a term, the <b>balance factor</b>:
+<div class="formula">Balance factor (n) = height(left subtree of n) − height(right subtree of n)
+Allowed values: −1, 0, +1</div>
+<ul>
+<li>A root with one left and one right child: 1 − 1 = <b>0</b> ✔.</li>
+<li>Add a node under the right child: 1 − 2 = <b>−1</b> ✔.</li>
+<li>Left height 3, right height 2: 3 − 2 = <b>+1</b> ✔.</li>
+</ul>
+Those are the three allowed conditions. Anything else (±2) means the balance is broken and must be fixed.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>Use <b>left − right</b>, as the lecture does: a positive BF means left-heavy.</li>
+<li>An empty subtree has height <b>−1</b> when a leaf has height 0. The lecture simply counts the levels on each side, which gives the same differences.</li>
+<li>Every node, not just the root, must have BF in {−1, 0, +1}.</li>
+</ul></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">13.2</span>Single Rotations: LL (Right Rotate) and RR (Left Rotate)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Left rotate (RR problem):</b> A → B was fine: BF(A) = 0 − 1 = −1. Then C was inserted to the <b>right of B</b>. The impact falls on <b>A</b>, whose BF becomes −2 (magnitude 2). The cause: a node was inserted in the <b>right of the right</b>. Fix: <b>rotate left</b>. B moves up; A becomes B's left child and C its right child, and every BF is 0.</li>
+<li><b>Right rotate (LL problem):</b> C was inserted in the <b>left of the left</b> of A, so A is unbalanced. "If there's so much trouble on the left, rotate to the right." B moves up, with C on its left and A on its right.</li>
+</ul>
+In short: an RR problem is neutralised by a left rotation, and an LL problem by a right rotation.</div>
+<figure>
+<svg viewBox="0 0 960 500" role="img" aria-label="Four AVL rotation cases: LL fixed by right rotation, RR by left rotation, LR by left then right rotation, RL by right then left rotation">
+<text class="b" x="230" y="40" text-anchor="middle">LL case → right rotate</text><text class="mut" x="230" y="57" text-anchor="middle">inserted in left of left</text>
+<path class="ln" d="M140 104 L110 164"/>
+<path class="ln" d="M110 164 L80 224"/>
+<circle class="or" cx="140" cy="104" r="16"/><text class="b" x="140" y="109" text-anchor="middle">A</text>
+<circle class="bx" cx="110" cy="164" r="16"/><text class="b" x="110" y="169" text-anchor="middle">B</text>
+<circle class="gr" cx="80" cy="224" r="16"/><text class="b" x="80" y="229" text-anchor="middle">C</text>
+<text class="mut" x="162" y="92">bf +2</text>
+<path class="lna" d="M200 184 L260 184"/><polygon class="aha" points="258,178 268,184 258,190"/>
+<path class="ln" d="M350 134 L305 204"/>
+<path class="ln" d="M350 134 L395 204"/>
+<circle class="ac" cx="350" cy="134" r="16"/><text class="b" x="350" y="139" text-anchor="middle">B</text>
+<circle class="gr" cx="305" cy="204" r="16"/><text class="b" x="305" y="209" text-anchor="middle">C</text>
+<circle class="or" cx="395" cy="204" r="16"/><text class="b" x="395" y="209" text-anchor="middle">A</text>
+<text class="mut" x="372" y="122">bf 0</text>
+<text class="b" x="710" y="40" text-anchor="middle">RR case → left rotate</text><text class="mut" x="710" y="57" text-anchor="middle">inserted in right of right</text>
+<path class="ln" d="M560 104 L590 164"/>
+<path class="ln" d="M590 164 L620 224"/>
+<circle class="or" cx="560" cy="104" r="16"/><text class="b" x="560" y="109" text-anchor="middle">A</text>
+<circle class="bx" cx="590" cy="164" r="16"/><text class="b" x="590" y="169" text-anchor="middle">B</text>
+<circle class="gr" cx="620" cy="224" r="16"/><text class="b" x="620" y="229" text-anchor="middle">C</text>
+<text class="mut" x="582" y="92">bf −2</text>
+<path class="lna" d="M680 184 L740 184"/><polygon class="aha" points="738,178 748,184 738,190"/>
+<path class="ln" d="M830 134 L785 204"/>
+<path class="ln" d="M830 134 L875 204"/>
+<circle class="ac" cx="830" cy="134" r="16"/><text class="b" x="830" y="139" text-anchor="middle">B</text>
+<circle class="bx" cx="785" cy="204" r="16"/><text class="b" x="785" y="209" text-anchor="middle">A</text>
+<circle class="gr" cx="875" cy="204" r="16"/><text class="b" x="875" y="209" text-anchor="middle">C</text>
+<circle class="or" cx="785" cy="204" r="16"/><text class="b" x="785" y="209" text-anchor="middle">A</text>
+<text class="mut" x="852" y="122">bf 0</text>
+<text class="b" x="230" y="275" text-anchor="middle">LR case → left, then right rotate</text><text class="mut" x="230" y="292" text-anchor="middle">inserted in right of left</text>
+<path class="ln" d="M140 339 L90 399"/>
+<path class="ln" d="M90 399 L120 459"/>
+<circle class="or" cx="140" cy="339" r="16"/><text class="b" x="140" y="344" text-anchor="middle">A</text>
+<circle class="bx" cx="90" cy="399" r="16"/><text class="b" x="90" y="404" text-anchor="middle">B</text>
+<circle class="gr" cx="120" cy="459" r="16"/><text class="b" x="120" y="464" text-anchor="middle">C</text>
+<text class="mut" x="162" y="327">bf +2</text>
+<path class="lna" d="M200 419 L260 419"/><polygon class="aha" points="258,413 268,419 258,425"/>
+<path class="ln" d="M350 369 L305 439"/>
+<path class="ln" d="M350 369 L395 439"/>
+<circle class="ac" cx="350" cy="369" r="16"/><text class="b" x="350" y="374" text-anchor="middle">C</text>
+<circle class="bx" cx="305" cy="439" r="16"/><text class="b" x="305" y="444" text-anchor="middle">B</text>
+<circle class="or" cx="395" cy="439" r="16"/><text class="b" x="395" y="444" text-anchor="middle">A</text>
+<text class="mut" x="372" y="357">bf 0</text>
+<text class="b" x="710" y="275" text-anchor="middle">RL case → right, then left rotate</text><text class="mut" x="710" y="292" text-anchor="middle">inserted in left of right</text>
+<path class="ln" d="M560 339 L610 399"/>
+<path class="ln" d="M610 399 L580 459"/>
+<circle class="or" cx="560" cy="339" r="16"/><text class="b" x="560" y="344" text-anchor="middle">A</text>
+<circle class="bx" cx="610" cy="399" r="16"/><text class="b" x="610" y="404" text-anchor="middle">B</text>
+<circle class="gr" cx="580" cy="459" r="16"/><text class="b" x="580" y="464" text-anchor="middle">C</text>
+<text class="mut" x="582" y="327">bf −2</text>
+<path class="lna" d="M680 419 L740 419"/><polygon class="aha" points="738,413 748,419 738,425"/>
+<path class="ln" d="M830 369 L785 439"/>
+<path class="ln" d="M830 369 L875 439"/>
+<circle class="ac" cx="830" cy="369" r="16"/><text class="b" x="830" y="374" text-anchor="middle">C</text>
+<circle class="bx" cx="785" cy="439" r="16"/><text class="b" x="785" y="444" text-anchor="middle">A</text>
+<circle class="bx" cx="875" cy="439" r="16"/><text class="b" x="875" y="444" text-anchor="middle">B</text>
+<circle class="or" cx="785" cy="439" r="16"/><text class="b" x="785" y="444" text-anchor="middle">A</text>
+<text class="mut" x="852" y="357">bf 0</text>
+</svg>
+<figcaption>The four imbalance cases · orange = the unbalanced node A · after the fix the middle key becomes the subtree root with BF 0</figcaption>
+</figure>
+</section>
+
+<section id="s3">
+<h3><span class="n">13.3</span>Double Rotations: LR and RL</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+These two are slightly more complicated.
+<ul>
+<li><b>LR problem:</b> B is A's left child, and C was added to <b>B's right</b>, so A is unbalanced. The node went into A's <b>left</b> subtree, at that subtree's <b>right</b>, so the problem is "LR". Fix with an <b>LR rotation</b>:
+<ul>
+<li>on the R part (the B–C link), apply a <b>left</b> rotation;</li>
+<li>then on the L part (at A), apply a <b>right</b> rotation.</li>
+</ul>
+Result: C on top, B on its left, A on its right.</li>
+<li><b>RL problem:</b> B is A's right child, and C was added to <b>B's left</b>, so A's BF reaches 2 in magnitude. Fix with an <b>RL rotation</b>:
+<ul>
+<li>first a <b>right</b> rotation at B;</li>
+<li>then a <b>left</b> rotation at A.</li>
+</ul>
+Result: C on top, A on its left, B on its right.</li>
+</ul>
+Memory rule: wherever you see an R, apply a left rotation; wherever you see an L, apply a right rotation, starting from the lower one.</div>
+<div class="tw"><table>
+<tr><th>Case</th><th>New node went into…</th><th>BF of unbalanced node / of its child</th><th>Fix</th></tr>
+<tr><td>LL</td><td>left subtree of the left child</td><td>+2 / +1</td><td>single <b>right</b> rotation</td></tr>
+<tr><td>RR</td><td>right subtree of the right child</td><td>−2 / −1</td><td>single <b>left</b> rotation</td></tr>
+<tr><td>LR</td><td>right subtree of the left child</td><td>+2 / −1</td><td><b>left</b> at the child, then <b>right</b> at the node</td></tr>
+<tr><td>RL</td><td>left subtree of the right child</td><td>−2 / +1</td><td><b>right</b> at the child, then <b>left</b> at the node</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+After every rotation, check that the <b>BST property</b> still holds (left &lt; parent &lt; right). If it does, you have very probably rotated correctly; if not, you made a mistake while rotating.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">13.4</span>Construction Example (21, 26, 30, 9, 4, 14, 28, 18, 15, 10, 2, 3, 7)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"The most popular example", because it covers <b>all four</b> rotations. After each insertion, mark the inserted node and the node whose balance broke, read the path from that node to the new one (LL, RR, LR or RL), and apply the matching fix. Keep inserting.</div>
+<div class="tw"><table>
+<tr><th>Insert</th><th>Unbalanced node</th><th>Case</th><th>Fix</th><th>Tree after (preorder)</th></tr>
+<tr><td>21, 26</td><td>—</td><td>—</td><td>—</td><td>21 26</td></tr>
+<tr><td>30</td><td>21 (BF −2)</td><td>RR</td><td>left rotate</td><td>26 21 30</td></tr>
+<tr><td>9</td><td>—</td><td>—</td><td>—</td><td>26 21 9 30</td></tr>
+<tr><td>4</td><td>21</td><td>LL</td><td>right rotate</td><td>26 9 4 21 30</td></tr>
+<tr><td>14</td><td>26 (root)</td><td>LR</td><td>left at 9, right at 26</td><td>21 9 4 14 26 30</td></tr>
+<tr><td>28</td><td>26</td><td>RL</td><td>right at 30, left at 26</td><td>21 9 4 14 28 26 30</td></tr>
+<tr><td>18</td><td>—</td><td>—</td><td>—</td><td>21 9 4 14 18 28 26 30</td></tr>
+<tr><td>15</td><td>14</td><td>RL</td><td>right at 18, left at 14</td><td>21 9 4 15 14 18 28 26 30</td></tr>
+<tr><td>10</td><td>9</td><td>RL</td><td>right at 15, left at 9</td><td>21 14 9 4 10 15 18 28 26 30</td></tr>
+<tr><td>2</td><td>21 (root)</td><td>LL</td><td>right rotate (14 comes up)</td><td>14 9 4 2 10 21 15 18 28 26 30</td></tr>
+<tr><td>3</td><td>4</td><td>LR</td><td>left at 2, right at 4</td><td>14 9 3 2 4 10 21 15 18 28 26 30</td></tr>
+<tr><td>7</td><td>9</td><td>LR</td><td>left at 3, right at 9</td><td>14 4 3 2 9 7 10 21 15 18 28 26 30</td></tr>
+</table></div>
+<figure>
+<svg viewBox="0 0 660 240" style="max-width:650px" role="img" aria-label="Final AVL tree after inserting 21, 26, 30, 9, 4, 14, 28, 18, 15, 10, 2, 3, 7: root 14">
+<path class="ln" d="M80 150 L30 212"/>
+<path class="ln" d="M230 150 L180 212"/>
+<path class="ln" d="M230 150 L280 212"/>
+<path class="ln" d="M130 88 L80 150"/>
+<path class="ln" d="M130 88 L230 150"/>
+<path class="ln" d="M380 150 L430 212"/>
+<path class="ln" d="M580 150 L530 212"/>
+<path class="ln" d="M580 150 L630 212"/>
+<path class="ln" d="M480 88 L380 150"/>
+<path class="ln" d="M480 88 L580 150"/>
+<path class="ln" d="M330 26 L130 88"/>
+<path class="ln" d="M330 26 L480 88"/>
+<circle class="gr" cx="30" cy="212" r="16"/><text class="b" x="30" y="217" text-anchor="middle">2</text>
+<circle class="ac" cx="80" cy="150" r="16"/><text class="b" x="80" y="155" text-anchor="middle">3</text>
+<circle class="gr" cx="180" cy="212" r="16"/><text class="b" x="180" y="217" text-anchor="middle">7</text>
+<circle class="gr" cx="280" cy="212" r="16"/><text class="b" x="280" y="217" text-anchor="middle">10</text>
+<circle class="ac" cx="230" cy="150" r="16"/><text class="b" x="230" y="155" text-anchor="middle">9</text>
+<circle class="ac" cx="130" cy="88" r="16"/><text class="b" x="130" y="93" text-anchor="middle">4</text>
+<circle class="gr" cx="430" cy="212" r="16"/><text class="b" x="430" y="217" text-anchor="middle">18</text>
+<circle class="ac" cx="380" cy="150" r="16"/><text class="b" x="380" y="155" text-anchor="middle">15</text>
+<circle class="gr" cx="530" cy="212" r="16"/><text class="b" x="530" y="217" text-anchor="middle">26</text>
+<circle class="gr" cx="630" cy="212" r="16"/><text class="b" x="630" y="217" text-anchor="middle">30</text>
+<circle class="ac" cx="580" cy="150" r="16"/><text class="b" x="580" y="155" text-anchor="middle">28</text>
+<circle class="ac" cx="480" cy="88" r="16"/><text class="b" x="480" y="93" text-anchor="middle">21</text>
+<circle class="ac" cx="330" cy="26" r="16"/><text class="b" x="330" y="31" text-anchor="middle">14</text>
+</svg>
+<figcaption>Final AVL tree · root 14 · height 3 for 13 keys (a plain BST built from the same keys has height 4)</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Every step above was re-run by program and matches the lecture's narration: RR at 30, LL at 4, LR at 14, RL at 28, RL at 15, RL at 10, LL at 2 ("14 comes up"), LR at 3 and LR at 7. Notice that the unbalanced node is the <b>nearest ancestor</b> of the new node with |BF| = 2. Fixing it rebalances the whole tree, so <b>one</b> (single or double) rotation per insertion is always enough.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">13.5</span>Deletion in an AVL Tree (13, 12, 16, 19)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Delete as in a BST, then <b>check every balance factor</b>, and rotate where one breaks. Starting tree: 19(16(12(9, 13), 17(—, 18)), 24(22, 40(30))).
+<ol>
+<li><b>Delete 13</b> (leaf): check all BFs; all are 0 or ±1, so no problem.</li>
+<li><b>Delete 12</b>: 9 takes its place. Still balanced.</li>
+<li><b>Delete 16</b> (two children): "fasten your seat belts, the weather is about to turn". Replace it with <b>9</b>, the key just before 16. Now node 9 has only a right chain 17 → 18, all in one line: BF −2, an <b>RR</b> problem, so <b>rotate left</b>. That gives 17(9, 18).</li>
+<li><b>Delete 19</b> (the root, two children): replace with <b>18</b>. Final tree: 18, 17, 9, 24, 22, 40, 30, which is correct.</li>
+</ol>
+The balance factor itself tells you the nature of the problem (e.g. −2 in a straight right line = RR).</div>
+<figure>
+<svg viewBox="0 0 560 240" style="max-width:520px" role="img" aria-label="AVL tree before deletions: root 19">
+<path class="ln" d="M80 150 L30 212"/>
+<path class="ln" d="M80 150 L130 212"/>
+<path class="ln" d="M230 150 L280 212"/>
+<path class="ln" d="M180 88 L80 150"/>
+<path class="ln" d="M180 88 L230 150"/>
+<path class="ln" d="M530 150 L480 212"/>
+<path class="ln" d="M430 88 L380 150"/>
+<path class="ln" d="M430 88 L530 150"/>
+<path class="ln" d="M330 26 L180 88"/>
+<path class="ln" d="M330 26 L430 88"/>
+<circle class="gr" cx="30" cy="212" r="16"/><text class="b" x="30" y="217" text-anchor="middle">9</text>
+<circle class="or" cx="130" cy="212" r="16"/><text class="b" x="130" y="217" text-anchor="middle">13</text>
+<circle class="or" cx="80" cy="150" r="16"/><text class="b" x="80" y="155" text-anchor="middle">12</text>
+<circle class="gr" cx="280" cy="212" r="16"/><text class="b" x="280" y="217" text-anchor="middle">18</text>
+<circle class="ac" cx="230" cy="150" r="16"/><text class="b" x="230" y="155" text-anchor="middle">17</text>
+<circle class="or" cx="180" cy="88" r="16"/><text class="b" x="180" y="93" text-anchor="middle">16</text>
+<circle class="gr" cx="380" cy="150" r="16"/><text class="b" x="380" y="155" text-anchor="middle">22</text>
+<circle class="gr" cx="480" cy="212" r="16"/><text class="b" x="480" y="217" text-anchor="middle">30</text>
+<circle class="ac" cx="530" cy="150" r="16"/><text class="b" x="530" y="155" text-anchor="middle">40</text>
+<circle class="ac" cx="430" cy="88" r="16"/><text class="b" x="430" y="93" text-anchor="middle">24</text>
+<circle class="or" cx="330" cy="26" r="16"/><text class="b" x="330" y="31" text-anchor="middle">19</text>
+</svg>
+<figcaption>Before: the keys to delete (13, 12, 16, 19) are in orange</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 360 240" style="max-width:400px" role="img" aria-label="AVL tree after deleting 13, 12, 16, 19: root 18">
+<path class="ln" d="M80 88 L30 150"/>
+<path class="ln" d="M330 150 L280 212"/>
+<path class="ln" d="M230 88 L180 150"/>
+<path class="ln" d="M230 88 L330 150"/>
+<path class="ln" d="M130 26 L80 88"/>
+<path class="ln" d="M130 26 L230 88"/>
+<circle class="gr" cx="30" cy="150" r="16"/><text class="b" x="30" y="155" text-anchor="middle">9</text>
+<circle class="ac" cx="80" cy="88" r="16"/><text class="b" x="80" y="93" text-anchor="middle">17</text>
+<circle class="gr" cx="180" cy="150" r="16"/><text class="b" x="180" y="155" text-anchor="middle">22</text>
+<circle class="gr" cx="280" cy="212" r="16"/><text class="b" x="280" y="217" text-anchor="middle">30</text>
+<circle class="ac" cx="330" cy="150" r="16"/><text class="b" x="330" y="155" text-anchor="middle">40</text>
+<circle class="ac" cx="230" cy="88" r="16"/><text class="b" x="230" y="93" text-anchor="middle">24</text>
+<circle class="ac" cx="130" cy="26" r="16"/><text class="b" x="130" y="31" text-anchor="middle">18</text>
+</svg>
+<figcaption>After deleting 13, 12, 16 (RR fix at 9) and 19 · preorder 18 17 9 24 22 40 30</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>When replacing 16 and 19, the lecture calls 9 and 18 the "inorder <i>successor</i>". They are actually the inorder <b>predecessors</b>, the largest keys in the left subtrees. 9 &lt; 16 and 18 &lt; 19. The successors would be 17 and 22.</li>
+<li>With the successor rule, the intermediate trees differ, but both choices give a valid AVL tree. Follow the rule the question states.</li>
+<li>Unlike insertion, <b>deletion may need rotations at several levels</b>, up to O(log n) of them on the way back to the root.</li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">13.6</span>Height Bounds, Minimum Nodes, Complexity &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Minimum nodes in an AVL tree of height h</span>
+The sparsest AVL tree of height h has one subtree of height h−1 and the other of height h−2:
+<div class="formula">N(h) = N(h−1) + N(h−2) + 1,   N(0) = 1, N(1) = 2
+h :  0  1  2  3  4   5   6
+N :  1  2  4  7  12  20  33</div>
+So the height grows like ~1.44·log₂ n: an AVL tree is <b>never more than about 44 % taller</b> than a perfect tree. The maximum number of nodes is the same as for any binary tree, 2^(h+1) − 1.</div>
+<div class="tw"><table>
+<tr><th>Operation</th><th>BST (worst)</th><th>AVL (worst)</th></tr>
+<tr><td>Search</td><td>O(n)</td><td><b>O(log n)</b></td></tr>
+<tr><td>Insert</td><td>O(n)</td><td>O(log n), at most 1 rotation (single or double)</td></tr>
+<tr><td>Delete</td><td>O(n)</td><td>O(log n), up to O(log n) rotations</td></tr>
+<tr><td>Single rotation</td><td>—</td><td>O(1): only a few pointers change</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ AVL vs red-black</span>
+AVL trees are <b>more strictly balanced</b>, so lookups are faster. Red-black trees allow more imbalance (height ≤ 2 log₂(n+1)) but need fewer rotations, so inserts and deletes are cheaper. Language libraries (C++ <code>map</code>, Java <code>TreeMap</code>) use red-black trees; read-heavy indexes often prefer AVL.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"An AVL tree is a ____ BST" → <b>height-balanced / self-balancing</b>.</li>
+<li>Allowed balance factors: <b>−1, 0, +1</b>; BF = h(left) − h(right).</li>
+<li>Insertion in the left subtree of the left child → <b>LL</b> → single <b>right</b> rotation.</li>
+<li>Worst-case search in an AVL tree → <b>O(log n)</b>.</li>
+<li>Minimum nodes in an AVL tree of height 3 → <b>7</b> (4 → 12).</li>
+</ul></div>
+<div class="num"><span class="t">Q1</span>Insert 10, 20, 30 into an empty AVL tree. What happens? → 30 makes 10's BF −2 (RR), so <b>left rotate</b>. Root 20, children 10 and 30.</div>
+<div class="num"><span class="t">Q2</span>Insert 30, 10, 20. → 20 goes to the right of 10, which is the left of 30: <b>LR</b>. Left rotate at 10, then right rotate at 30. Root <b>20</b>.</div>
+<div class="num"><span class="t">Q3</span>Minimum number of nodes in an AVL tree of height 5? → N(5) = N(4) + N(3) + 1 = 12 + 7 + 1 = <b>20</b>.</div>
+<div class="num"><span class="t">Q4</span>Maximum height of an AVL tree with 12 nodes? → N(4) = 12 ≤ 12 &lt; N(5) = 20, so the maximum height is <b>4</b>. A plain BST could reach 11.</div>
+<div class="num"><span class="t">Q5</span>A node has BF +2 and its left child has BF −1. Which rotation? → <b>LR</b>: left rotation at the child, then right rotation at the node.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>AVL = <b>self-balancing BST</b>. BF = h(left) − h(right) ∈ {−1, 0, +1} at <b>every</b> node.</li>
+<li>Name the case by the path from the unbalanced node towards the new node: <b>LL → right</b>, <b>RR → left</b>, <b>LR → left at child, then right</b>, <b>RL → right at child, then left</b>.</li>
+<li>After any rotation the middle key goes on top; recheck the BST order.</li>
+<li>Lecture example 21, 26, 30, 9, 4, 14, 28, 18, 15, 10, 2, 3, 7: RR, LL, LR, RL, RL, RL, LL, LR, LR. Final root <b>14</b>, height 3.</li>
+<li>Deletion: BST delete, then rebalance (it may cascade). Lecture: deleting 16 causes RR at 9 → 17(9, 18). Final preorder 18 17 9 24 22 40 30. (9 and 18 are predecessors, though the lecture says "successor".)</li>
+<li>Min nodes N(h) = N(h−1) + N(h−2) + 1: 1, 2, 4, 7, 12, 20, 33. Height ≈ 1.44 log₂ n. All operations are O(log n).</li>
+</ul>
+</div>
+<div class="end">End of Chapter 13 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="12-Binary-Search-Tree.html">← Ch 12: Binary Search Tree</a><a href="index.html">☰ All topics</a><a href="14-Heap.html">Ch 14: Heap →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

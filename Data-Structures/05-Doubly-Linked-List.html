@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Doubly Linked List Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="04-Singly-Linked-List.html">← Ch 4: Singly Linked List</a><a href="index.html">☰ All topics</a><a href="06-Circular-Linked-List.html">Ch 6: Circular Linked List →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 5: Doubly Linked List</h1>
+  <p class="sub">Volume 03 · Part 5 · Built from the one-shot Data Structures lecture transcript (section 5), plus the exam points the lecture skipped. The lecture adds a <b>prev</b> pointer to every node, turning the one-way street of chapter 4 into a two-way road, then redoes the three insertions and three deletions. These notes add the edge cases, the pointer-count questions, a singly vs doubly comparison and solved questions.</p>
+  <ul class="tags"><li>prev · data · next</li><li>Two-way traversal</li><li>Insert: beginning · after · end</li><li>Delete: beginning · node p · end</li><li>4 pointers to insert</li><li>O(1) delete of a known node</li><li>XOR list</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">5.1</span>Node Structure (prev, data, next) and Two-Way Flexibility</a></li>
+<li><a href="#s2"><span class="n">5.2</span>Insert at Beginning</a></li>
+<li><a href="#s3"><span class="n">5.3</span>Insert After a Node</a></li>
+<li><a href="#s4"><span class="n">5.4</span>Insert at End</a></li>
+<li><a href="#s5"><span class="n">5.5</span>Delete at Beginning</a></li>
+<li><a href="#s6"><span class="n">5.6</span>Delete a Given Node (p)</a></li>
+<li><a href="#s7"><span class="n">5.7</span>Delete at End</a></li>
+<li><a href="#s8"><span class="n">5.8</span>Singly vs Doubly, Complexity, Edge Cases &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 5</div>
+<h2 class="ch">Doubly Linked List</h2>
+<p>A doubly linked list (DLL) is a singly linked list in which every node also remembers <b>who came before it</b>. That one extra pointer lets you walk <b>backwards</b> and delete a node <b>without hunting for its predecessor</b>. The price is more memory per node and more pointers to fix on every insert and delete.</p>
+
+<section id="s1">
+<h3><span class="n">5.1</span>Node Structure (prev, data, next) and Two-Way Flexibility</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Each node maintains three things: a <b>previous pointer</b>, the <b>data</b> and a <b>next pointer</b>. You can remember the layout as "P-D-N": prev, data, next. Next holds the address of the following node, prev holds the address of the one before.<br>
+More pointers mean more complexity, and the code for some operations gets longer, but <b>flexibility</b> increases too.
+<ul>
+<li>A singly list is a <b>one-way street</b>: to make a U-turn you drive all the way to the junction and come back, which is hard work.</li>
+<li>A doubly list is a <b>two-way road</b>: you can turn around at any point while walking it.</li>
+</ul>
+The <b>first node's prev is NULL</b> (nothing before it), and the <b>last node's next is NULL</b>.</div>
+<figure>
+<svg viewBox="0 0 644 190" role="img" aria-label="Doubly linked list: nodes at 10, 20, 30, each with prev, data and next; first prev and last next are NULL">
+<text class="b" x="20" y="68">head</text>
+<rect class="ac" x="20" y="80" width="56" height="36"/><text x="48" y="103" text-anchor="middle">10</text>
+<g>
+<rect class="pu" x="110" y="80" width="46" height="36"/>
+<text class="mut" x="133.0" y="102" text-anchor="middle">NULL</text>
+<rect class="gr" x="156" y="80" width="46" height="36"/>
+<text x="179.0" y="103" text-anchor="middle">1</text>
+<rect class="pu" x="202" y="80" width="46" height="36"/>
+<text x="225.0" y="103" text-anchor="middle">20</text>
+<text class="mut" x="179.0" y="134" text-anchor="middle">@10</text></g>
+<g>
+<rect class="pu" x="298" y="80" width="46" height="36"/>
+<text x="321.0" y="103" text-anchor="middle">10</text>
+<rect class="gr" x="344" y="80" width="46" height="36"/>
+<text x="367.0" y="103" text-anchor="middle">2</text>
+<rect class="pu" x="390" y="80" width="46" height="36"/>
+<text x="413.0" y="103" text-anchor="middle">30</text>
+<text class="mut" x="367.0" y="134" text-anchor="middle">@20</text></g>
+<g>
+<rect class="pu" x="486" y="80" width="46" height="36"/>
+<text x="509.0" y="103" text-anchor="middle">20</text>
+<rect class="gr" x="532" y="80" width="46" height="36"/>
+<text x="555.0" y="103" text-anchor="middle">3</text>
+<rect class="pu" x="578" y="80" width="46" height="36"/>
+<text class="mut" x="601.0" y="102" text-anchor="middle">NULL</text>
+<text class="mut" x="555.0" y="134" text-anchor="middle">@30</text></g>
+<text class="mut" x="133.0" y="72" text-anchor="middle">prev</text><text class="mut" x="179.0" y="72" text-anchor="middle">data</text><text class="mut" x="225.0" y="72" text-anchor="middle">next</text>
+<path class="lna" d="M76 98.0 L102 98.0"/><polygon class="aha" points="101,93.0 110,98.0 101,103.0"/>
+<path class="lna" d="M248 90 L290 90"/><polygon class="aha" points="289,85 298,90 289,95"/>
+<path class="ln" d="M298 106 L256 106"/><polygon class="ah" points="257,101 248,106 257,111"/>
+<path class="lna" d="M436 90 L478 90"/><polygon class="aha" points="477,85 486,90 477,95"/>
+<path class="ln" d="M486 106 L444 106"/><polygon class="ah" points="445,101 436,106 445,111"/>
+</svg>
+<figcaption>Nodes at 10, 20, 30 · blue arrows = next (forward) · grey arrows = prev (backward)</figcaption>
+</figure>
+<div class="formula">struct node {
+    struct node *prev;
+    int data;
+    struct node *next;
+};</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+For any middle node p, both <code>p-&gt;next-&gt;prev == p</code> and <code>p-&gt;prev-&gt;next == p</code> hold. Every insert and delete exists to keep these two identities true. If one is forgotten, forward and backward traversal give different lists.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">5.2</span>Insert at Beginning</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Head points to the first node. The new node starts with <b>both ends NULL</b>, and its address is <b>5</b>.
+<ol>
+<li><code>new-&gt;next = head;</code> Give head's address to new's next, so the new node can point to what will be the second node.</li>
+<li><code>head-&gt;prev = new;</code> The old first node's prev was NULL; now it gets 5, because the new node will sit before it. The two nodes now point to each other.</li>
+<li><code>head = new;</code> Only head is left; give it the new node's address. "That's the whole game."</li>
+</ol></div>
+<div class="formula">new-&gt;prev = NULL;
+new-&gt;next = head;
+if (head != NULL)          /* list was not empty */
+    head-&gt;prev = new;
+head = new;</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+On an <b>empty list</b>, head is NULL, so <code>head-&gt;prev = new</code> crashes. Guard it with <code>if (head != NULL)</code>. As in chapter 4, <code>head = new</code> must come <b>last</b>; otherwise <code>head-&gt;prev = new</code> would set the new node's prev to itself.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">5.3</span>Insert After a Node</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Put the address of the node we insert after into <b>temp</b>. In the example, temp is at <b>20</b>, its next holds <b>30</b>, and the new node is at <b>5</b>.
+<ol>
+<li><code>new-&gt;next = temp-&gt;next;</code> New's next gets 30, establishing new → 30.</li>
+<li><code>temp-&gt;next-&gt;prev = new;</code> Standing on temp, go to the next node and update its <b>prev</b>, which was 20, to the new node's address 5.</li>
+<li><code>temp-&gt;next = new;</code> Temp's next was 30 and now becomes 5.</li>
+<li><code>new-&gt;prev = temp;</code> "The last nail in the coffin": new's prev, which was NULL, becomes 20.</li>
+</ol>
+Now there is a full two-way connection on both sides of the new node.</div>
+<figure>
+<svg viewBox="0 0 832 190" role="img" aria-label="Insert after node 20: new node at 5 has prev 20 and next 30; node 20 next is 5, node 30 prev is 5">
+<text class="b" x="20" y="68">head</text>
+<rect class="ac" x="20" y="80" width="56" height="36"/><text x="48" y="103" text-anchor="middle">10</text>
+<g>
+<rect class="pu" x="110" y="80" width="46" height="36"/>
+<text class="mut" x="133.0" y="102" text-anchor="middle">NULL</text>
+<rect class="gr" x="156" y="80" width="46" height="36"/>
+<text x="179.0" y="103" text-anchor="middle">1</text>
+<rect class="pu" x="202" y="80" width="46" height="36"/>
+<text x="225.0" y="103" text-anchor="middle">20</text>
+<text class="mut" x="179.0" y="134" text-anchor="middle">@10</text></g>
+<g>
+<rect class="pu" x="298" y="80" width="46" height="36"/>
+<text x="321.0" y="103" text-anchor="middle">10</text>
+<rect class="gr" x="344" y="80" width="46" height="36"/>
+<text x="367.0" y="103" text-anchor="middle">2</text>
+<rect class="pu" x="390" y="80" width="46" height="36"/>
+<text x="413.0" y="103" text-anchor="middle">5</text>
+<text class="mut" x="367.0" y="134" text-anchor="middle">@20</text></g>
+<g>
+<rect class="pu" x="486" y="80" width="46" height="36"/>
+<text x="509.0" y="103" text-anchor="middle">20</text>
+<rect class="or" x="532" y="80" width="46" height="36"/>
+<text x="555.0" y="103" text-anchor="middle">9</text>
+<rect class="pu" x="578" y="80" width="46" height="36"/>
+<text x="601.0" y="103" text-anchor="middle">30</text>
+<text class="mut" x="555.0" y="134" text-anchor="middle">@5</text></g>
+<g>
+<rect class="pu" x="674" y="80" width="46" height="36"/>
+<text x="697.0" y="103" text-anchor="middle">5</text>
+<rect class="gr" x="720" y="80" width="46" height="36"/>
+<text x="743.0" y="103" text-anchor="middle">3</text>
+<rect class="pu" x="766" y="80" width="46" height="36"/>
+<text class="mut" x="789.0" y="102" text-anchor="middle">NULL</text>
+<text class="mut" x="743.0" y="134" text-anchor="middle">@30</text></g>
+<text class="mut" x="133.0" y="72" text-anchor="middle">prev</text><text class="mut" x="179.0" y="72" text-anchor="middle">data</text><text class="mut" x="225.0" y="72" text-anchor="middle">next</text>
+<path class="lna" d="M76 98.0 L102 98.0"/><polygon class="aha" points="101,93.0 110,98.0 101,103.0"/>
+<path class="lna" d="M248 90 L290 90"/><polygon class="aha" points="289,85 298,90 289,95"/>
+<path class="ln" d="M298 106 L256 106"/><polygon class="ah" points="257,101 248,106 257,111"/>
+<path class="lna" d="M436 90 L478 90"/><polygon class="aha" points="477,85 486,90 477,95"/>
+<path class="ln" d="M486 106 L444 106"/><polygon class="ah" points="445,101 436,106 445,111"/>
+<text class="mut" x="461.0" y="156" text-anchor="middle">temp ⇄ new</text>
+<path class="lna" d="M624 90 L666 90"/><polygon class="aha" points="665,85 674,90 665,95"/>
+<path class="ln" d="M674 106 L632 106"/><polygon class="ah" points="633,101 624,106 633,111"/>
+<text class="mut" x="649.0" y="156" text-anchor="middle">new ⇄ old next</text>
+</svg>
+<figcaption>After inserting node @5 after node @20 · four pointer fields changed</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li><b>Step 2 must run before step 3.</b> Once <code>temp-&gt;next = new</code> is done, <code>temp-&gt;next-&gt;prev</code> refers to the <i>new</i> node, and node 30 can no longer be reached from temp. Safe order: fill in the new node's own two pointers first, then fix the neighbours.</li>
+<li>If temp is the <b>last node</b>, temp→next is NULL and step 2 crashes. Guard it with <code>if (temp-&gt;next != NULL)</code>.</li>
+<li>The lecture says the last step as "temp = new→prev", reading the slide backwards. The assignment is <code>new-&gt;prev = temp</code>.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Inserting in the middle of a DLL changes <b>4 pointer fields</b>; a singly list needs only <b>2</b>. A DLL can also insert <b>before</b> a given node p in O(1), using <code>p-&gt;prev</code>, which a singly list cannot.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">5.4</span>Insert at End</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The new node starts with prev and next both NULL.
+<ol>
+<li>Traverse to the <b>last</b> node, then <code>last-&gt;next = new;</code>. The last node's next was NULL and now holds the new node's address.</li>
+<li><code>new-&gt;prev = last;</code> New's prev gets the last node's address (30), so the new node can point backwards.</li>
+</ol>
+The new node's next stays NULL, because it is now the last node. The lecture corrects its own slide here: step 2 is <b>new→prev</b>, not new→next.</div>
+<div class="formula">struct node *last = head;
+while (last-&gt;next != NULL)
+    last = last-&gt;next;
+last-&gt;next = new;
+new-&gt;prev = last;
+new-&gt;next = NULL;</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+This costs O(n) with only head, and <b>O(1) with a tail pointer</b>: <code>tail-&gt;next = new; new-&gt;prev = tail; tail = new;</code>.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">5.5</span>Delete at Beginning</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+List: nodes at 10, 20, 30, with links going both forward and backward. The first node's prev and the last node's next are NULL.
+<ol>
+<li><code>temp = head;</code> Keep the first node in temp so it can be freed later.</li>
+<li><code>head = head-&gt;next;</code> Head now points to the next node (20).</li>
+<li><code>head-&gt;prev = NULL;</code> The new first node's prev still pointed to the old node; set it to NULL. Now the old node's connection is completely cut.</li>
+<li><code>free(temp);</code> "Let it go."</li>
+</ol></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+If the list had only <b>one node</b>, head becomes NULL after step 2, and step 3 (<code>head-&gt;prev</code>) crashes. Guard it with <code>if (head != NULL) head-&gt;prev = NULL;</code>.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">5.6</span>Delete a Given Node (p)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Call the node to delete <b>p</b> (the lecture titles this "delete after a node"). Its neighbours, at 10 and 30, were only "distant relatives"; now we must make them close relatives:
+<ul>
+<li>node 10's next should hold <b>30</b>;</li>
+<li>node 30's prev should hold <b>10</b>.</li>
+</ul>
+<ol>
+<li><code>p-&gt;prev-&gt;next = p-&gt;next;</code> p's prev is node 10; its next field gets p's next, which is 30.</li>
+<li><code>p-&gt;next-&gt;prev = p-&gt;prev;</code> p's next is node 30; its prev field gets p's prev, which is 10.</li>
+<li><code>free(p);</code> Both relations are established, so free p. "No tension at all."</li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 644 190" role="img" aria-label="Delete node p at 20: node 10 next becomes 30 and node 30 prev becomes 10; p is freed">
+<text class="b" x="20" y="68">head</text>
+<rect class="ac" x="20" y="80" width="56" height="36"/><text x="48" y="103" text-anchor="middle">10</text>
+<g>
+<rect class="pu" x="110" y="80" width="46" height="36"/>
+<text class="mut" x="133.0" y="102" text-anchor="middle">NULL</text>
+<rect class="gr" x="156" y="80" width="46" height="36"/>
+<text x="179.0" y="103" text-anchor="middle">1</text>
+<rect class="pu" x="202" y="80" width="46" height="36"/>
+<text x="225.0" y="103" text-anchor="middle">30</text>
+<text class="mut" x="179.0" y="134" text-anchor="middle">@10</text></g>
+<g opacity="0.4">
+<rect class="pu" x="298" y="80" width="46" height="36"/>
+<text x="321.0" y="103" text-anchor="middle">10</text>
+<rect class="bx" x="344" y="80" width="46" height="36"/>
+<text x="367.0" y="103" text-anchor="middle">2</text>
+<rect class="pu" x="390" y="80" width="46" height="36"/>
+<text x="413.0" y="103" text-anchor="middle">30</text>
+<text class="mut" x="367.0" y="134" text-anchor="middle">@20</text></g>
+<g>
+<rect class="pu" x="486" y="80" width="46" height="36"/>
+<text x="509.0" y="103" text-anchor="middle">10</text>
+<rect class="gr" x="532" y="80" width="46" height="36"/>
+<text x="555.0" y="103" text-anchor="middle">3</text>
+<rect class="pu" x="578" y="80" width="46" height="36"/>
+<text class="mut" x="601.0" y="102" text-anchor="middle">NULL</text>
+<text class="mut" x="555.0" y="134" text-anchor="middle">@30</text></g>
+<text class="mut" x="133.0" y="72" text-anchor="middle">prev</text><text class="mut" x="179.0" y="72" text-anchor="middle">data</text><text class="mut" x="225.0" y="72" text-anchor="middle">next</text>
+<path class="lna" d="M76 98.0 L102 98.0"/><polygon class="aha" points="101,93.0 110,98.0 101,103.0"/>
+<path class="lna" d="M242 80 Q375.5 10 509.0 78"/><polygon class="aha" points="503.0,68 510.0,79 514.0,67"/>
+<path class="ln" d="M509.0 116 Q375.5 186 242 118"/><polygon class="ah" points="237,129 241,117 248,128"/>
+<text class="mut" x="375.5" y="22" text-anchor="middle">p→prev→next = p→next</text>
+<text class="mut" x="375.5" y="182" text-anchor="middle">p→next→prev = p→prev</text>
+</svg>
+<figcaption>Deleting p @20 · node 10 and node 30 now point to each other · p (faded) is freed</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam (the big DLL advantage)</span>
+Given only a pointer to p, a DLL deletes it in <b>O(1)</b>, because p→prev gives the predecessor directly. A singly list needs O(n) to find the predecessor. This is why DLLs are used in <b>LRU caches</b>: a hash map finds the node, and the DLL unlinks it instantly.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+If p is the <b>first</b> node, p→prev is NULL. If p is the <b>last</b> node, p→next is NULL. Either line then crashes, so the full code checks both, and updates head when p is first:
+<div class="formula">if (p-&gt;prev != NULL) p-&gt;prev-&gt;next = p-&gt;next;
+else                 head = p-&gt;next;
+if (p-&gt;next != NULL) p-&gt;next-&gt;prev = p-&gt;prev;
+free(p);</div></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">5.7</span>Delete at End</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Walk towards the last node but <b>stop one before it</b>; call that node <b>p</b>.
+<ol>
+<li><code>temp = p-&gt;next;</code> Temp now points to the last node.</li>
+<li><code>p-&gt;next = NULL;</code> Cut the connection, so p is established as the new last node.</li>
+<li><code>free(temp);</code> The last node is deleted.</li>
+</ol>
+"It sounds a bit complicated, but practise a little and it will be set."</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+The lecture's method walks to the second-last node: O(n), exactly like a singly list. A DLL does better: from the <b>last</b> node, <code>last-&gt;prev</code> <i>is</i> the second-last. With a <b>tail pointer</b>, delete at end is <b>O(1)</b>:
+<div class="formula">temp = tail;
+tail = tail-&gt;prev;
+tail-&gt;next = NULL;      /* guard: if tail != NULL */
+free(temp);</div>
+That is the key difference from chapter 4, where delete at end stayed O(n) even with a tail.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">5.8</span>Singly vs Doubly, Complexity, Edge Cases &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Singly linked list</th><th>Doubly linked list</th></tr>
+<tr><td>Pointers per node</td><td>1 (next)</td><td>2 (prev, next)</td></tr>
+<tr><td>Memory per int node (4 B int, 8 B pointer)</td><td>12 B</td><td>20 B</td></tr>
+<tr><td>Traversal</td><td>forward only</td><td>forward and backward</td></tr>
+<tr><td>Delete a node, given only a pointer to it</td><td>O(n) (find predecessor)</td><td><b>O(1)</b></td></tr>
+<tr><td>Insert before a given node</td><td>O(n)</td><td><b>O(1)</b></td></tr>
+<tr><td>Insert / delete at beginning</td><td>O(1)</td><td>O(1)</td></tr>
+<tr><td>Insert at end (with tail)</td><td>O(1)</td><td>O(1)</td></tr>
+<tr><td>Delete at end (with tail)</td><td><b>O(n)</b></td><td><b>O(1)</b></td></tr>
+<tr><td>Search</td><td>O(n)</td><td>O(n)</td></tr>
+<tr><td>Pointer fields changed: insert in middle / delete in middle</td><td>2 / 1</td><td>4 / 2</td></tr>
+<tr><td>Code complexity</td><td>simpler</td><td>more cases to guard</td></tr>
+</table></div>
+
+<div class="box add"><span class="t">➕ Where doubly linked lists are used</span>
+<ul>
+<li>Browser <b>back / forward</b> history; music-player previous / next.</li>
+<li>Editor <b>undo / redo</b>.</li>
+<li><b>LRU cache</b> (hash map + DLL); <b>deque</b> implementation.</li>
+<li>OS process lists and memory free lists, where blocks are removed from the middle.</li>
+</ul></div>
+
+<div class="box add"><span class="t">➕ XOR (memory-efficient) doubly linked list</span>
+Each node stores a single field <code>link = address(prev) XOR address(next)</code> instead of two pointers. Knowing where you came from, <code>next = link XOR prev</code>. It gives two-way traversal with <b>one pointer's worth of memory</b>, but it can't be used with garbage collectors, and debugging is hard. It is a favourite "which list saves memory" option.</div>
+
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"Which list can be traversed in both directions?" → <b>doubly</b> (and circular doubly).</li>
+<li>"Main disadvantage of a DLL?" → <b>extra memory for the prev pointer</b> and more pointer updates.</li>
+<li>"In a DLL, the prev of the first node and the next of the last node are…" → <b>NULL</b>.</li>
+<li>"Deleting a node, given only a pointer to it, is O(1) in…" → <b>doubly linked list</b>.</li>
+<li>"Pointers modified to insert a node between two nodes in a DLL?" → <b>4</b>.</li>
+</ul></div>
+
+<div class="num"><span class="t">Q1</span>Which statements remove node p from the middle of a doubly linked list?<br>(a) <code>p-&gt;prev-&gt;next = p-&gt;next; p-&gt;next-&gt;prev = p-&gt;prev;</code><br>(b) <code>p-&gt;prev = p-&gt;next; p-&gt;next = p-&gt;prev;</code><br>→ <b>(a)</b>. Option (b) changes only p's own fields; the neighbours still point to p.</div>
+<div class="num"><span class="t">Q2</span>A DLL has head and tail pointers and n nodes. Which operation is <i>not</i> O(1)? (a) insert at front (b) delete last (c) delete front (d) delete the node holding value x → <b>(d)</b>: finding x is an O(n) search. Removing it, once found, is O(1).</div>
+<div class="num"><span class="t">Q3</span>Memory to store 500 ints in a DLL (4-byte int, 8-byte pointer)? → 500 × (4 + 8 + 8) = <b>10,000 bytes</b>. A singly list needs 6,000 B and an array 2,000 B.</div>
+<div class="num"><span class="t">Q4</span>Code to insert node q at the front of a non-empty DLL, in a safe order? → <code>q-&gt;prev = NULL; q-&gt;next = head; head-&gt;prev = q; head = q;</code></div>
+<div class="num"><span class="t">Q5</span>Starting from tail, you print each node and move with <code>t = t-&gt;prev</code> until NULL, on the list 1 ⇄ 2 ⇄ 3 ⇄ 4. Output? → <b>4 3 2 1</b>: a DLL prints in reverse without recursion or a stack.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Node = <b>prev · data · next</b>. First node's prev = NULL; last node's next = NULL. A "two-way road" vs the singly list's "one-way street".</li>
+<li>Insert at beginning: <code>new→next = head; head→prev = new; head = new</code>. Guard the empty list.</li>
+<li>Insert after temp: <code>new→next = temp→next; temp→next→prev = new; temp→next = new; new→prev = temp</code>. That is 4 pointer fields, and step 2 must come before step 3.</li>
+<li>Insert at end: <code>last→next = new; new→prev = last</code>. It is <b>prev</b>, not next.</li>
+<li>Delete at beginning: <code>temp = head; head = head→next; head→prev = NULL; free(temp)</code>.</li>
+<li>Delete node p: <code>p→prev→next = p→next; p→next→prev = p→prev; free(p)</code>. That is O(1), the big advantage.</li>
+<li>Delete at end: the lecture stops at the second-last node (O(n)). With a tail: <code>tail = tail→prev; tail→next = NULL</code> is O(1).</li>
+<li>Cost: one more pointer per node (20 B vs 12 B per int). XOR list = one prev⊕next field.</li>
+<li>Uses: back/forward navigation, undo/redo, LRU cache, deque.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 5 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="04-Singly-Linked-List.html">← Ch 4: Singly Linked List</a><a href="index.html">☰ All topics</a><a href="06-Circular-Linked-List.html">Ch 6: Circular Linked List →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

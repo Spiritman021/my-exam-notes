@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Graphs Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="15-Threaded-Binary-Tree.html">← Ch 15: Threaded Binary Tree</a><a href="index.html">☰ All topics</a><a href="17-Hashing.html">Ch 17: Hashing →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 16: Graphs</h1>
+  <p class="sub">Volume 03 · Part 16 · Built from the one-shot Data Structures lecture transcript (section 16), plus the exam points the lecture skipped. The lecture defines vertices, edges and cycles, lists the graph types, represents one graph as an adjacency matrix and an adjacency list, then traces BFS with a queue and DFS with a stack on a 7-vertex graph. These notes re-run both traversals step by step, then add degree formulas, edge-count limits, complexity, BFS vs DFS, spanning trees and solved questions.</p>
+  <ul class="tags"><li>Vertices · Edges · Cycles</li><li>Directed · Undirected · Weighted</li><li>Complete · Simple · Multi · Null</li><li>Adjacency matrix · list</li><li>BFS → queue</li><li>DFS → stack</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">16.1</span>Introduction: Nodes (Vertices), Edges and Cycles</a></li>
+<li><a href="#s2"><span class="n">16.2</span>Types of Graphs</a></li>
+<li><a href="#s3"><span class="n">16.3</span>Adjacency Matrix (Undirected and Directed)</a></li>
+<li><a href="#s4"><span class="n">16.4</span>Adjacency List (Avoiding the Sparse Matrix)</a></li>
+<li><a href="#s5"><span class="n">16.5</span>BFS (Breadth First Search) Using a Queue</a></li>
+<li><a href="#s6"><span class="n">16.6</span>DFS (Depth First Search) Using a Stack</a></li>
+<li><a href="#s7"><span class="n">16.7</span>Degree, Edge Limits, Complexity, Spanning Trees &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 16</div>
+<h2 class="ch">Graphs</h2>
+<p>A tree is a graph with strict rules: one root, one parent per node, no cycles. A <b>graph</b> drops those rules. Any vertex may connect to any other, so a road map, a social network or a computer network fits naturally. With that freedom come cycles, which is why graph traversal must remember which vertices it has already <b>visited</b>.</p>
+
+<section id="s1">
+<h3><span class="n">16.1</span>Introduction: Nodes (Vertices), Edges and Cycles</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A graph also has nodes, but with one special feature: <b>cycles (loops) can form</b> among them. It is a <b>non-linear</b> data structure made of:
+<ul>
+<li><b>nodes</b>, also called <b>vertices</b> (n1, n2, …);</li>
+<li><b>edges</b>, which connect the vertices. They are also called <b>lines</b> or <b>arcs</b>.</li>
+</ul>
+The edges among the nodes can form a circle, a <b>cycle</b>. The key topics ahead are DFS and BFS.</div>
+<div class="def"><b>Graph G = (V, E)</b>: a set V of vertices and a set E of edges, where each edge joins a pair of vertices. |V| = n vertices, |E| = e edges.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">16.2</span>Types of Graphs</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Directed graph</b>: the edge has a direction; it goes from 1 to 2. Use it when the direction matters.</li>
+<li><b>Undirected graph</b>: no direction. You can say 1 is connected to 2 <i>or</i> 2 to 1; it works both ways.</li>
+<li><b>Weighted graph</b>: each edge carries a <b>weight</b> (cost or distance). It is very significant in algorithms that find the <b>shortest path</b> or the least cost.</li>
+<li><b>Unweighted graph</b>: no weights, like the plain undirected example.</li>
+<li><b>Complete graph</b>: <b>every pair</b> of vertices has an edge. Each vertex is connected to all the others.</li>
+<li><b>Simple graph</b>: <b>at most one edge</b> between any pair of vertices.</li>
+<li><b>Multigraph</b>: the opposite. There can be <b>more than one edge</b> between the same pair (e1, e2).</li>
+<li><b>Null graph</b>: only vertices, <b>number of edges = 0</b>. The vertices sit disjoint in space.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 960 190" role="img" aria-label="Graph types: directed, undirected, weighted, complete, multigraph, null graph">
+<text class="b" x="80" y="22" text-anchor="middle">Directed</text>
+<path class="lna" d="M57.0 100.0 L103.0 100.0"/>
+<polygon class="aha" points="103.0,100.0 93.0,105.0 93.0,95.0"/>
+<circle class="ac" cx="40" cy="100" r="17"/><text class="b" x="40" y="105" text-anchor="middle">1</text>
+<circle class="ac" cx="120" cy="100" r="17"/><text class="b" x="120" y="105" text-anchor="middle">2</text>
+<text class="b" x="240" y="22" text-anchor="middle">Undirected</text>
+<path class="ln" d="M217.0 100.0 L263.0 100.0"/>
+<circle class="ac" cx="200" cy="100" r="17"/><text class="b" x="200" y="105" text-anchor="middle">1</text>
+<circle class="ac" cx="280" cy="100" r="17"/><text class="b" x="280" y="105" text-anchor="middle">2</text>
+<text class="b" x="400" y="22" text-anchor="middle">Weighted</text>
+<path class="ln" d="M377.0 100.0 L423.0 100.0"/>
+<circle class="ac" cx="360" cy="100" r="17"/><text class="b" x="360" y="105" text-anchor="middle">1</text>
+<circle class="ac" cx="440" cy="100" r="17"/><text class="b" x="440" y="105" text-anchor="middle">2</text>
+<text class="b" x="400" y="90" text-anchor="middle">5</text>
+<text class="b" x="560" y="22" text-anchor="middle">Complete (K4)</text>
+<path class="ln" d="M538.0 60.0 L582.0 60.0"/>
+<path class="ln" d="M525.0 73.0 L525.0 127.0"/>
+<path class="ln" d="M533.6 69.8 L586.4 130.2"/>
+<path class="ln" d="M586.4 69.8 L533.6 130.2"/>
+<path class="ln" d="M595.0 73.0 L595.0 127.0"/>
+<path class="ln" d="M538.0 140.0 L582.0 140.0"/>
+<circle class="ac" cx="525" cy="60" r="13"/><text class="b" x="525" y="65" text-anchor="middle"></text>
+<circle class="ac" cx="595" cy="60" r="13"/><text class="b" x="595" y="65" text-anchor="middle"></text>
+<circle class="ac" cx="525" cy="140" r="13"/><text class="b" x="525" y="145" text-anchor="middle"></text>
+<circle class="ac" cx="595" cy="140" r="13"/><text class="b" x="595" y="145" text-anchor="middle"></text>
+<text class="b" x="720" y="22" text-anchor="middle">Multigraph</text>
+<path class="ln" d="M693 94 Q720 70 747 94"/><path class="ln" d="M693 106 Q720 130 747 106"/><text class="mut" x="720" y="72" text-anchor="middle">e1</text><text class="mut" x="720" y="140" text-anchor="middle">e2</text>
+<circle class="ac" cx="680" cy="100" r="17"/><text class="b" x="680" y="105" text-anchor="middle">1</text>
+<circle class="ac" cx="760" cy="100" r="17"/><text class="b" x="760" y="105" text-anchor="middle">2</text>
+<text class="b" x="880" y="22" text-anchor="middle">Null (no edges)</text>
+<circle class="ac" cx="840" cy="80" r="17"/><text class="b" x="840" y="85" text-anchor="middle">1</text>
+<circle class="ac" cx="920" cy="80" r="17"/><text class="b" x="920" y="85" text-anchor="middle">2</text>
+<circle class="ac" cx="880" cy="140" r="17"/><text class="b" x="880" y="145" text-anchor="middle">3</text>
+<text class="mut" x="480" y="182" text-anchor="middle">simple graph = no parallel edges and no self-loops (all except the multigraph)</text></svg>
+<figcaption>The lecture's graph types at a glance</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>A <b>self-loop</b> is an edge from a vertex to itself. A simple graph has <b>no self-loops and no parallel edges</b>.</li>
+<li><b>Connected</b>: there is a path between every pair of vertices. In a directed graph, <b>strongly connected</b> means there is a directed path both ways between every pair.</li>
+<li><b>Cyclic vs acyclic</b>: a directed acyclic graph is a <b>DAG</b> (used in scheduling and compilers).</li>
+<li>A <b>tree</b> is a connected, acyclic, undirected graph with exactly n − 1 edges.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">16.3</span>Adjacency Matrix (Undirected and Directed)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Questions are asked on representing a graph as an <b>adjacency matrix</b> or an <b>adjacency list</b>. The matrix looks like the 2-D array seen earlier.
+<ul>
+<li>The graph has 4 vertices and 4 edges, so the matrix is always <b>V × V</b>, here <b>4 × 4</b>. Label the rows and columns 0, 1, 2, 3.</li>
+<li>Wherever an edge exists, write <b>1</b>; a blank or 0 means no edge.</li>
+<li><b>Undirected:</b> count both ways. 0–1 gives a 1 at [0][1] <i>and</i> [1][0].
+<ul>
+<li>1 is connected to 0, 2 and 3;</li>
+<li>2 to 1 and 3;</li>
+<li>3 to 1 and 2;</li>
+<li>2 and 0 are not connected, so that cell is blank.</li>
+</ul></li>
+<li><b>Directed:</b> more selective. There is a 1 only from the source row to the destination column.
+<ul>
+<li>0 → 1 sets [0][1], but not [1][0];</li>
+<li>1 → 2, 1 → 3 and 2 → 3 set their own cells;</li>
+<li>3 has <b>no outgoing edge</b>, so its row is all empty.</li>
+</ul></li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 760 220" style="max-width:700px" role="img" aria-label="Four-vertex graph: undirected edges 0-1, 1-2, 1-3, 2-3 and the directed version 0 to 1, 1 to 2, 1 to 3, 2 to 3">
+<path class="ln" d="M97.0 70.0 L193.0 70.0"/>
+<path class="ln" d="M210.0 87.0 L210.0 173.0"/>
+<path class="ln" d="M225.4 77.1 L324.6 122.9"/>
+<path class="ln" d="M225.4 182.9 L324.6 137.1"/>
+<circle class="ac" cx="80" cy="70" r="17"/><text class="b" x="80" y="75" text-anchor="middle">0</text>
+<circle class="ac" cx="210" cy="70" r="17"/><text class="b" x="210" y="75" text-anchor="middle">1</text>
+<circle class="ac" cx="210" cy="190" r="17"/><text class="b" x="210" y="195" text-anchor="middle">2</text>
+<circle class="ac" cx="340" cy="130" r="17"/><text class="b" x="340" y="135" text-anchor="middle">3</text>
+<text class="b" x="210" y="20" text-anchor="middle">Undirected</text>
+<path class="lna" d="M477.0 70.0 L573.0 70.0"/>
+<polygon class="aha" points="573.0,70.0 563.0,75.0 563.0,65.0"/>
+<path class="lna" d="M590.0 87.0 L590.0 173.0"/>
+<polygon class="aha" points="590.0,173.0 585.0,163.0 595.0,163.0"/>
+<path class="lna" d="M605.4 77.1 L704.6 122.9"/>
+<polygon class="aha" points="704.6,122.9 693.4,123.2 697.6,114.1"/>
+<path class="lna" d="M605.4 182.9 L704.6 137.1"/>
+<polygon class="aha" points="704.6,137.1 697.6,145.9 693.4,136.8"/>
+<circle class="ac" cx="460" cy="70" r="17"/><text class="b" x="460" y="75" text-anchor="middle">0</text>
+<circle class="ac" cx="590" cy="70" r="17"/><text class="b" x="590" y="75" text-anchor="middle">1</text>
+<circle class="ac" cx="590" cy="190" r="17"/><text class="b" x="590" y="195" text-anchor="middle">2</text>
+<circle class="ac" cx="720" cy="130" r="17"/><text class="b" x="720" y="135" text-anchor="middle">3</text>
+<text class="b" x="590" y="20" text-anchor="middle">Directed</text>
+</svg>
+<figcaption>The lecture's 4-vertex graph · undirected and directed versions</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Undirected</th><th>0</th><th>1</th><th>2</th><th>3</th><th></th><th>Directed</th><th>0</th><th>1</th><th>2</th><th>3</th></tr>
+<tr><td><b>0</b></td><td>0</td><td>1</td><td>0</td><td>0</td><td></td><td><b>0</b></td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td><b>1</b></td><td>1</td><td>0</td><td>1</td><td>1</td><td></td><td><b>1</b></td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td><b>2</b></td><td>0</td><td>1</td><td>0</td><td>1</td><td></td><td><b>2</b></td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td><b>3</b></td><td>0</td><td>1</td><td>1</td><td>0</td><td></td><td><b>3</b></td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>The matrix of an <b>undirected</b> graph is <b>symmetric</b> (A[i][j] = A[j][i]), and the number of 1s = 2e. Here 8 ones for 4 edges.</li>
+<li>For a <b>directed</b> graph, the number of 1s = e. Row sum = <b>out-degree</b>; column sum = <b>in-degree</b>.</li>
+<li>For a <b>weighted</b> graph, store the weight instead of 1, and ∞ or 0 for "no edge".</li>
+<li>Space <b>O(V²)</b>, and checking whether edge (u, v) exists is <b>O(1)</b>.</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">16.4</span>Adjacency List (Avoiding the Sparse Matrix)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Why is a second method needed? The matrix <b>wastes a lot of space</b>. It is often a <b>sparse matrix</b>: most entries are empty or 0, and only a few are filled.<br>
+Instead, make an <b>array of the 4 vertices</b> (0–3). From each one, hang a <b>linked list</b> of the vertices it connects to, ending in NULL:</div>
+<div class="formula">0 → 1 → NULL
+1 → 0 → 2 → 3 → NULL
+2 → 1 → 3 → NULL
+3 → 1 → 2 → NULL</div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Adjacency matrix</th><th>Adjacency list</th></tr>
+<tr><td>Space</td><td>O(V²)</td><td><b>O(V + E)</b></td></tr>
+<tr><td>Is (u, v) an edge?</td><td><b>O(1)</b></td><td>O(degree of u)</td></tr>
+<tr><td>List all neighbours of u</td><td>O(V)</td><td>O(degree of u)</td></tr>
+<tr><td>Best for</td><td><b>dense</b> graphs</td><td><b>sparse</b> graphs (most real graphs)</td></tr>
+<tr><td>Add an edge</td><td>O(1)</td><td>O(1)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+In an undirected graph each edge appears <b>twice</b> in the lists, so there are 2e list nodes (8 here). In a directed graph each edge appears once. BFS and DFS cost O(V + E) with lists but O(V²) with a matrix.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">16.5</span>BFS (Breadth First Search) Using a Queue</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"The most important question": graph <b>traversal</b>, meaning visiting all the vertices in a certain fashion. <b>BFS uses a queue</b> and <b>DFS uses a stack</b>. Using these structures during the trace makes it very easy.
+<ul>
+<li>The queue starts <b>empty</b>. Insert the start vertex <b>A</b>.</li>
+<li><b>Dequeue</b> a vertex, write it into the BFS sequence, then <b>enqueue all its neighbours that are not yet visited</b>.</li>
+<li>Neighbours already visited (or already in the queue) are <b>not</b> enqueued again. Example: when B leaves, A is already visited, so only C is added.</li>
+<li>Repeat with whatever is at the <b>front</b>, until the queue is empty.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 660 290" style="max-width:660px" role="img" aria-label="Graph with vertices A to G; edges A-B, A-D, A-E, B-C, B-E, D-E, C-E, C-F, C-G, E-F, F-G">
+<path class="ln" d="M84.0 140.3 L186.0 69.7"/>
+<path class="ln" d="M84.0 159.7 L186.0 230.3"/>
+<path class="ln" d="M87.0 150.0 L313.0 150.0"/>
+<path class="ln" d="M217.0 60.0 L443.0 60.0"/>
+<path class="ln" d="M214.0 69.7 L316.0 140.3"/>
+<path class="ln" d="M446.0 69.7 L344.0 140.3"/>
+<path class="ln" d="M460.0 77.0 L460.0 223.0"/>
+<path class="ln" d="M474.0 69.7 L576.0 140.3"/>
+<path class="ln" d="M214.0 230.3 L316.0 159.7"/>
+<path class="ln" d="M344.0 159.7 L446.0 230.3"/>
+<path class="ln" d="M474.0 230.3 L576.0 159.7"/>
+<circle class="or" cx="70" cy="150" r="19"/><text class="b" x="70" y="155" text-anchor="middle">A</text>
+<circle class="ac" cx="200" cy="60" r="19"/><text class="b" x="200" y="65" text-anchor="middle">B</text>
+<circle class="ac" cx="200" cy="240" r="19"/><text class="b" x="200" y="245" text-anchor="middle">D</text>
+<circle class="ac" cx="330" cy="150" r="19"/><text class="b" x="330" y="155" text-anchor="middle">E</text>
+<circle class="ac" cx="460" cy="60" r="19"/><text class="b" x="460" y="65" text-anchor="middle">C</text>
+<circle class="ac" cx="460" cy="240" r="19"/><text class="b" x="460" y="245" text-anchor="middle">F</text>
+<circle class="ac" cx="590" cy="150" r="19"/><text class="b" x="590" y="155" text-anchor="middle">G</text>
+<text class="mut" x="70" y="192" text-anchor="middle">start</text></svg>
+<figcaption>The lecture's traversal graph · edges A–B, A–D, A–E, B–C, B–E, C–E, C–F, C–G, D–E, E–F, F–G · start at A</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Dequeue</th><th>Enqueue (unvisited neighbours)</th><th>Queue after (front → rear)</th><th>BFS order so far</th></tr>
+<tr><td>A</td><td>B, D, E</td><td>B D E</td><td>A</td></tr>
+<tr><td>B</td><td>C</td><td>D E C</td><td>A B</td></tr>
+<tr><td>D</td><td>—</td><td>E C</td><td>A B D</td></tr>
+<tr><td>E</td><td>F</td><td>C F</td><td>A B D E</td></tr>
+<tr><td>C</td><td>G</td><td>F G</td><td>A B D E C</td></tr>
+<tr><td>F</td><td>—</td><td>G</td><td>A B D E C F</td></tr>
+<tr><td>G</td><td>—</td><td>(empty)</td><td><b>A B D E C F G</b></td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>When A leaves, <b>all</b> of its unvisited neighbours (B, D and E) go into the queue at once. The lecture says "B, D" there and brings E in later; with A–E as an edge, E must be enqueued in the first step.</li>
+<li>BFS visits vertices <b>level by level</b>: distance 0 (A), distance 1 (B, D, E), distance 2 (C, F), distance 3 (G).</li>
+<li>Neighbours are taken in alphabetical order here. A different order gives a different but equally valid BFS, so check the options for one that respects the levels.</li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">16.6</span>DFS (Depth First Search) Using a Stack</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"This method will give you the answer quickly every time."
+<ol>
+<li>First write the <b>neighbour list</b> of every vertex: A: B, D, E; B: A, C, E; C: B, E, F, G; and so on. BFS needs it too.</li>
+<li>Keep a <b>visited</b> list and cross out each vertex as it is visited.</li>
+<li>Push A, then pop it and add it to the sequence. Push its neighbours <b>B, D, E</b> (in that order) and mark them.</li>
+<li>The top is <b>E</b>: pop it. Its unvisited neighbours are C and F, so push C, then F.</li>
+<li>Pop <b>F</b>. Its unvisited neighbour G is pushed. Pop <b>G</b>; everything is now visited.</li>
+<li>Now just pop, pop, pop: C, D, B.</li>
+</ol>
+"Don't forget to cross out what's already visited; I forgot for G just now, and that's how confusion creeps in."</div>
+<div class="tw"><table>
+<tr><th>Pop</th><th>Push (unvisited neighbours)</th><th>Stack after (bottom → top)</th><th>DFS order so far</th></tr>
+<tr><td>A</td><td>B, D, E</td><td>B D E</td><td>A</td></tr>
+<tr><td>E</td><td>C, F</td><td>B D C F</td><td>A E</td></tr>
+<tr><td>F</td><td>G</td><td>B D C G</td><td>A E F</td></tr>
+<tr><td>G</td><td>—</td><td>B D C</td><td>A E F G</td></tr>
+<tr><td>C</td><td>—</td><td>B D</td><td>A E F G C</td></tr>
+<tr><td>D</td><td>—</td><td>B</td><td>A E F G C D</td></tr>
+<tr><td>B</td><td>—</td><td>(empty)</td><td><b>A E F G C D B</b></td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+DFS orders are <b>not unique</b>. The lecture's stack method (push all neighbours, take the top) gives <b>A E F G C D B</b>. The <b>recursive</b> DFS (go to the first unvisited neighbour immediately) on the same graph gives <b>A B C E D F G</b>. Both are correct DFS orders. In an MCQ, check whether each step really goes "as deep as possible" before backtracking.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">16.7</span>Degree, Edge Limits, Complexity, Spanning Trees &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Formulas</span>
+<ul>
+<li><b>Degree</b> of a vertex = the number of edges at it. In a directed graph, in-degree + out-degree.</li>
+<li><b>Handshaking lemma</b>: Σ degrees = <b>2e</b>, so the number of odd-degree vertices is always even. For the lecture graph: 3 + 3 + 4 + 2 + 5 + 3 + 2 = 22 = 2 × 11 edges ✔.</li>
+<li>Max edges in a simple undirected graph on n vertices = <b>n(n − 1)/2</b>, which is the complete graph Kₙ. Directed: n(n − 1).</li>
+<li>Every vertex of Kₙ has degree n − 1.</li>
+<li>A connected graph needs at least <b>n − 1</b> edges. A tree has exactly n − 1.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>BFS</th><th>DFS</th></tr>
+<tr><td>Data structure</td><td><b>queue</b></td><td><b>stack</b> (or recursion)</td></tr>
+<tr><td>Order</td><td>level by level (breadth)</td><td>one branch as deep as possible, then backtrack</td></tr>
+<tr><td>Time</td><td>O(V + E) list / O(V²) matrix</td><td>O(V + E) list / O(V²) matrix</td></tr>
+<tr><td>Shortest path in unweighted graph</td><td><b>yes</b></td><td>no</td></tr>
+<tr><td>Typical uses</td><td>shortest hops, peer-to-peer search, web crawlers, level-order of a tree</td><td>cycle detection, topological sort, connected components, mazes/backtracking</td></tr>
+<tr><td>Tree equivalent</td><td>level-order traversal</td><td>pre-/in-/post-order traversal</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Spanning trees &amp; shortest paths (one-liners)</span>
+<ul>
+<li>A <b>spanning tree</b> of a connected graph uses all n vertices and n − 1 edges, with no cycle. Kₙ has <b>nⁿ⁻²</b> spanning trees (Cayley).</li>
+<li><b>Minimum spanning tree</b>: Kruskal's algorithm (sort edges, add the smallest that doesn't form a cycle) or Prim's (grow from a vertex).</li>
+<li><b>Shortest path</b>: BFS (unweighted), Dijkstra's (non-negative weights), Bellman-Ford (negative weights), Floyd-Warshall (all pairs).</li>
+<li><b>Topological sort</b> (DAG only): a linear order in which every edge goes forward, found with DFS or by repeatedly removing in-degree-0 vertices.</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>BFS uses a <b>queue</b>; DFS uses a <b>stack</b>. Both run in O(V + E).</li>
+<li>Adjacency matrix space O(V²); adjacency list O(V + E). Use a list for sparse graphs.</li>
+<li>Max edges in an undirected simple graph = <b>n(n−1)/2</b>. Sum of degrees = <b>2e</b>.</li>
+<li>Graph with no edges = <b>null graph</b>; every pair connected = <b>complete graph</b>.</li>
+<li>Applications: maps and GPS routes, networks and routing, social networks, dependency resolution, recommendation systems.</li>
+</ul></div>
+<div class="num"><span class="t">Q1</span>Maximum edges in a simple undirected graph with 10 vertices? → 10 × 9 / 2 = <b>45</b>.</div>
+<div class="num"><span class="t">Q2</span>An undirected graph has degrees 3, 3, 2, 2, 2. How many edges? → Σ = 12, so e = 12 / 2 = <b>6</b>.</div>
+<div class="num"><span class="t">Q3</span>In the lecture graph, which vertices does BFS from A reach at distance 2? → <b>C and F</b> (G is at distance 3).</div>
+<div class="num"><span class="t">Q4</span>A graph has 1,000 vertices and 3,000 edges. Matrix or list? → It is sparse (3,000 ≪ 499,500 possible), so use an <b>adjacency list</b>: about 7,000 entries (1,000 heads + 2 × 3,000 list nodes) vs 1,000,000 matrix cells.</div>
+<div class="num"><span class="t">Q5</span>How many spanning trees does K₄ have? → 4⁴⁻² = <b>16</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Graph = vertices + edges (lines/arcs), non-linear, and <b>cycles allowed</b>.</li>
+<li>Types: directed / undirected, weighted (cost, for shortest paths) / unweighted, complete (every pair joined), simple (≤ 1 edge per pair) vs multigraph (parallel edges), null (no edges).</li>
+<li>Adjacency matrix: V × V, 1 = edge. Symmetric if undirected; for directed graphs row → column. O(V²) space, often sparse.</li>
+<li>Adjacency list: array of vertices + a linked list of neighbours. O(V + E) space, better for sparse graphs.</li>
+<li><b>BFS = queue</b>: dequeue, visit, enqueue the unvisited neighbours. The lecture graph from A gives <b>A B D E C F G</b>.</li>
+<li><b>DFS = stack</b>: pop, visit, push the unvisited neighbours. The lecture's method gives <b>A E F G C D B</b> (recursive DFS gives A B C E D F G; both valid).</li>
+<li>Σ degree = 2e. Max edges n(n−1)/2. Spanning tree has n − 1 edges; Kₙ has nⁿ⁻² of them.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 16 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="15-Threaded-Binary-Tree.html">← Ch 15: Threaded Binary Tree</a><a href="index.html">☰ All topics</a><a href="17-Hashing.html">Ch 17: Hashing →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Threaded Binary Tree Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="14-Heap.html">← Ch 14: Heap</a><a href="index.html">☰ All topics</a><a href="16-Graphs.html">Ch 16: Graphs →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 15: Threaded Binary Tree</h1>
+  <p class="sub">Volume 03 · Part 15 · Built from the one-shot Data Structures lecture transcript (section 15), plus the exam points the lecture skipped. The lecture's last tree topic is a short one: reuse the empty child links of leaf nodes as "threads" pointing to the inorder predecessor (single threading) or to both predecessor and successor (double threading). These notes add why it works (n + 1 NULLs), thread flag bits, stack-free inorder traversal, pros and cons, and solved questions.</p>
+  <ul class="tags"><li>NULL links → threads</li><li>Inorder predecessor</li><li>Inorder successor</li><li>Single (one-way) threading</li><li>Double (two-way) threading</li><li>Traversal without stack</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">15.1</span>Single and Double Threading (Inorder Predecessor/Successor)</a></li>
+<li><a href="#s2"><span class="n">15.2</span>Why Threads, Flag Bits, Traversal &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 15</div>
+<h2 class="ch">Threaded Binary Tree</h2>
+<p>In the linked representation of a binary tree (chapter 11), every leaf wastes both its pointer fields on NULL. A <b>threaded binary tree</b> stores something useful there instead: a pointer, called a <b>thread</b>, to the node that comes just before or after it in <b>inorder</b>. You can then walk the tree in order by following pointers, with no stack and no recursion.</p>
+
+<section id="s1">
+<h3><span class="n">15.1</span>Single and Double Threading (Inorder Predecessor/Successor)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+"One last, simple topic left in trees." The <b>leaf nodes</b> aren't using their child links, since they have no children. So why not attach <b>threads</b> there that give us some information? Threads can be <b>single</b> or <b>double</b>.
+<ul>
+<li><b>Single threading:</b> write out the inorder of the tree. Each leaf's thread points to its <b>inorder predecessor</b>, the same predecessor used in BST deletion (chapter 12), now available directly through the thread.
+<ul>
+<li>D's predecessor is <b>B</b>;</li>
+<li>E's is <b>A</b>;</li>
+<li>F's is <b>C</b>;</li>
+<li>H's is <b>G</b>.</li>
+</ul></li>
+<li><b>Double threading:</b> besides the predecessor, the leaf also points to its <b>inorder successor</b>, the element just after it in the inorder sequence. Leaves such as E, F and H then carry both threads.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 320" style="max-width:680px" role="img" aria-label="Tree A(B(G(-,H),D),C(E,F)) with single threads from leaves to inorder predecessor">
+<path class="ln" d="M370 40 L210 115"/>
+<path class="ln" d="M370 40 L530 115"/>
+<path class="ln" d="M210 115 L50 190"/>
+<path class="ln" d="M210 115 L290 190"/>
+<path class="ln" d="M50 190 L130 265"/>
+<path class="ln" d="M530 115 L450 190"/>
+<path class="ln" d="M530 115 L610 190"/>
+<path class="soft dash" d="M118 275 Q60.0 315 60 202"/>
+<circle cx="60" cy="202" r="3.5" class="aha"/>
+<path class="soft dash" d="M278 200 Q220.0 240 220 127"/>
+<circle cx="220" cy="127" r="3.5" class="aha"/>
+<path class="soft dash" d="M438 200 Q380.0 240 380 52"/>
+<circle cx="380" cy="52" r="3.5" class="aha"/>
+<path class="soft dash" d="M598 200 Q540.0 240 540 127"/>
+<circle cx="540" cy="127" r="3.5" class="aha"/>
+<circle class="ac" cx="50" cy="190" r="17"/><text class="b" x="50" y="195" text-anchor="middle">G</text>
+<circle class="gr" cx="130" cy="265" r="17"/><text class="b" x="130" y="270" text-anchor="middle">H</text>
+<circle class="ac" cx="210" cy="115" r="17"/><text class="b" x="210" y="120" text-anchor="middle">B</text>
+<circle class="gr" cx="290" cy="190" r="17"/><text class="b" x="290" y="195" text-anchor="middle">D</text>
+<circle class="ac" cx="370" cy="40" r="17"/><text class="b" x="370" y="45" text-anchor="middle">A</text>
+<circle class="gr" cx="450" cy="190" r="17"/><text class="b" x="450" y="195" text-anchor="middle">E</text>
+<circle class="ac" cx="530" cy="115" r="17"/><text class="b" x="530" y="120" text-anchor="middle">C</text>
+<circle class="gr" cx="610" cy="190" r="17"/><text class="b" x="610" y="195" text-anchor="middle">F</text>
+<text class="mut" x="20" y="306">inorder: G H B D A E C F</text>
+<path class="soft dash" d="M300 302 L330 302"/><text class="mut" x="336" y="306">→ inorder predecessor</text>
+</svg>
+<figcaption>Single threading (lecture's version) · each leaf's thread goes to its inorder predecessor · inorder G H B D A E C F</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 680 320" style="max-width:680px" role="img" aria-label="Tree A(B(G(-,H),D),C(E,F)) with double threads from leaves to inorder predecessor and successor">
+<path class="ln" d="M370 40 L210 115"/>
+<path class="ln" d="M370 40 L530 115"/>
+<path class="ln" d="M210 115 L50 190"/>
+<path class="ln" d="M210 115 L290 190"/>
+<path class="ln" d="M50 190 L130 265"/>
+<path class="ln" d="M530 115 L450 190"/>
+<path class="ln" d="M530 115 L610 190"/>
+<path class="soft dash" d="M118 275 Q60.0 315 60 202"/>
+<circle cx="60" cy="202" r="3.5" class="aha"/>
+<path class="soft dash" d="M278 200 Q220.0 240 220 127"/>
+<circle cx="220" cy="127" r="3.5" class="aha"/>
+<path class="soft dash" d="M438 200 Q380.0 240 380 52"/>
+<circle cx="380" cy="52" r="3.5" class="aha"/>
+<path class="soft dash" d="M598 200 Q540.0 240 540 127"/>
+<circle cx="540" cy="127" r="3.5" class="aha"/>
+<path class="lna dash" d="M142 275 Q200.0 315 200 127"/>
+<circle cx="200" cy="127" r="3.5" class="aha"/>
+<path class="lna dash" d="M302 200 Q360.0 240 360 52"/>
+<circle cx="360" cy="52" r="3.5" class="aha"/>
+<path class="lna dash" d="M462 200 Q520.0 240 520 127"/>
+<circle cx="520" cy="127" r="3.5" class="aha"/>
+<path class="lna dash" d="M612 230 L628 252"/><text class="mut" x="600" y="270" text-anchor="middle">F → NULL (last)</text>
+<circle class="ac" cx="50" cy="190" r="17"/><text class="b" x="50" y="195" text-anchor="middle">G</text>
+<circle class="gr" cx="130" cy="265" r="17"/><text class="b" x="130" y="270" text-anchor="middle">H</text>
+<circle class="ac" cx="210" cy="115" r="17"/><text class="b" x="210" y="120" text-anchor="middle">B</text>
+<circle class="gr" cx="290" cy="190" r="17"/><text class="b" x="290" y="195" text-anchor="middle">D</text>
+<circle class="ac" cx="370" cy="40" r="17"/><text class="b" x="370" y="45" text-anchor="middle">A</text>
+<circle class="gr" cx="450" cy="190" r="17"/><text class="b" x="450" y="195" text-anchor="middle">E</text>
+<circle class="ac" cx="530" cy="115" r="17"/><text class="b" x="530" y="120" text-anchor="middle">C</text>
+<circle class="gr" cx="610" cy="190" r="17"/><text class="b" x="610" y="195" text-anchor="middle">F</text>
+<text class="mut" x="20" y="306">inorder: G H B D A E C F</text>
+<path class="soft dash" d="M300 302 L330 302"/><text class="mut" x="336" y="306">→ inorder predecessor</text>
+<path class="lna dash" d="M490 302 L520 302"/><text class="mut" x="526" y="306">→ successor</text>
+</svg>
+<figcaption>Double threading · green = predecessor (left thread), blue = successor (right thread) · F is last in inorder, so its successor thread is NULL (or points to a header node); G is first, so it has no predecessor</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Leaf</th><th>H</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><td>Inorder predecessor (left thread)</td><td>G</td><td>B</td><td>A</td><td>C</td></tr>
+<tr><td>Inorder successor (right thread)</td><td>B</td><td>A</td><td>C</td><td>— (last)</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>Strictly, threads replace <b>every NULL link</b>, not just those of leaves. G has an empty <b>left</b> link (its only child H is on the right), so in a fully threaded tree that link also becomes a thread. G is first in inorder, so it points to NULL or the header.</li>
+<li>Textbooks most often define a <b>one-way (single) threaded</b> tree as <b>right-threaded</b>: NULL right links point to the inorder <b>successor</b>. The lecture's single threading uses the predecessor (left-threaded); both exist. Read which side the question means.</li>
+</ul></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">15.2</span>Why Threads, Flag Bits, Traversal &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Why it's worth doing</span>
+A binary tree with n nodes has 2n link fields but only n − 1 edges, so <b>n + 1 links are NULL</b>, more than half. Threading turns that waste into navigation. Here n = 8, so there are 9 NULL links available for threads.</div>
+<div class="box add"><span class="t">➕ Telling a thread from a child: flag bits</span>
+A pointer alone can't say whether it leads to a real child or is a thread, so each node carries two <b>boolean flags</b>:
+<div class="formula">struct tnode {
+    struct tnode *left;   int lthread;   /* 1 = left is a thread (to predecessor) */
+    int data;
+    struct tnode *right;  int rthread;   /* 1 = right is a thread (to successor)  */
+};</div>
+Many implementations add a <b>header (dummy) node</b>, so that the first node's left thread and the last node's right thread point to it instead of NULL.</div>
+<div class="box add"><span class="t">➕ Inorder traversal with no stack or recursion</span>
+<ol>
+<li>Start at the leftmost node.</li>
+<li>Visit it.</li>
+<li>If its right link is a <b>thread</b>, follow it: that is the successor.</li>
+<li>Otherwise, go to the right child and then as far left as possible.</li>
+<li>Repeat until you run out of nodes.</li>
+</ol>
+This takes <b>O(n)</b> time and <b>O(1)</b> extra space, compared with O(h) stack space for a normal traversal. Finding a node's inorder successor or predecessor also becomes fast.</div>
+<div class="tw"><table>
+<tr><th>Pros</th><th>Cons</th></tr>
+<tr><td>Uses the n + 1 wasted NULL links</td><td>Extra flag bits per node</td></tr>
+<tr><td>Inorder traversal without stack or recursion</td><td>Insertion and deletion are more complex (threads must be repaired)</td></tr>
+<tr><td>Quick access to inorder predecessor/successor</td><td>Mostly helps inorder; pre- and postorder gain less</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"In a threaded binary tree, NULL pointers are replaced by…" → <b>pointers (threads) to inorder predecessor/successor</b>.</li>
+<li>"Number of NULL links in a binary tree with n nodes" → <b>n + 1</b>.</li>
+<li>"Main advantage" → <b>traversal without a stack/recursion</b>.</li>
+<li>"How to distinguish a thread from a link?" → a <b>flag (tag) bit</b> per pointer.</li>
+<li>One-way threading = one side (usually right → successor); two-way = both sides.</li>
+</ul></div>
+<div class="num"><span class="t">Q1</span>A binary tree has 20 nodes. How many threads can a fully (double) threaded version have? → NULL links = 20 + 1 = <b>21</b>, all become threads. With a header node, the first and last of them point to the header.</div>
+<div class="num"><span class="t">Q2</span>In the lecture tree (inorder G H B D A E C F), where does E's right thread point? → To its inorder successor, <b>C</b>.</div>
+<div class="num"><span class="t">Q3</span>Which traversal does threading speed up most directly? → <b>Inorder</b>.</div>
+<div class="num"><span class="t">Q4</span>Why can't you drop the flag bits? → Without them, a right pointer to C could be either a real child or a thread, so traversal wouldn't know whether to "go left as far as possible" or "visit directly".</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Threaded binary tree: NULL child links become <b>threads</b> to inorder neighbours.</li>
+<li><b>Single</b>: one thread per node. The lecture uses the inorder <b>predecessor</b>; many books use right threads to the <b>successor</b>. <b>Double</b>: both.</li>
+<li>Lecture tree (inorder G H B D A E C F): predecessors D→B, E→A, F→C, H→G. Successors H→B, D→A, E→C, F→none.</li>
+<li>n nodes ⇒ <b>n + 1 NULL links</b> available. Flag bits (lthread/rthread) tell a thread from a child. A header node avoids NULL ends.</li>
+<li>Benefit: inorder traversal in O(n) time with <b>no stack/recursion</b>. Cost: flags and more complex insert/delete.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 15 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="14-Heap.html">← Ch 14: Heap</a><a href="index.html">☰ All topics</a><a href="16-Graphs.html">Ch 16: Graphs →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

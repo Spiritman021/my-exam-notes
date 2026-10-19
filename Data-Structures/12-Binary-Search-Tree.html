@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Binary Search Tree Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="11-Binary-Tree.html">← Ch 11: Binary Tree</a><a href="index.html">☰ All topics</a><a href="13-AVL-Tree.html">Ch 13: AVL Tree →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 12: Binary Search Tree</h1>
+  <p class="sub">Volume 03 · Part 12 · Built from the one-shot Data Structures lecture transcript (section 12), plus the exam points the lecture skipped. The lecture states the BST rule (left &lt; parent &lt; right), shows that inorder comes out sorted, traces two searches, builds a tree by insertion (and the "why can't 50 go there?" trap), then covers the three deletion cases. These notes add complexity (and why skewed trees motivate AVL), successor vs predecessor, min/max, counting BSTs and a full worked question.</p>
+  <ul class="tags"><li>left &lt; root &lt; right</li><li>Inorder = sorted</li><li>Search: go left / go right</li><li>Insert from the root</li><li>Delete: leaf · 1 child · 2 children</li><li>Inorder predecessor / successor</li><li>O(log n) vs O(n)</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">12.1</span>BST Property and Sorted Inorder</a></li>
+<li><a href="#s2"><span class="n">12.2</span>Searching in a BST</a></li>
+<li><a href="#s3"><span class="n">12.3</span>Insertion and Construction (Compare from the Root)</a></li>
+<li><a href="#s4"><span class="n">12.4</span>Deletion: Leaf, One Child, Two Children</a></li>
+<li><a href="#s5"><span class="n">12.5</span>Complexity, Min/Max, Successor, Counting &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 12</div>
+<h2 class="ch">Binary Search Tree (BST)</h2>
+<p>A BST is a binary tree with one ordering rule at <b>every</b> node. Because of that rule, each comparison throws away an entire subtree, which is binary search done on a tree instead of an array. The lecture says many questions are asked on this variation: build a tree from a sequence, give its traversals, delete a node.</p>
+
+<section id="s1">
+<h3><span class="n">12.1</span>BST Property and Sorted Inorder</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+If the tree concepts so far are clear, the BST is very simple, because it follows <b>one rule</b>:
+<ul>
+<li>the parent's <b>left</b> child is always <b>less than</b> the parent;</li>
+<li>its <b>right</b> child is always <b>greater than</b> the parent.</li>
+</ul>
+Example: parent 10, left 8 (&lt; 10), right 12 (&gt; 10). The rule holds <b>from the root down to the leaves</b>.<br>
+<b>Benefit:</b> the <b>inorder traversal</b> of a BST gives the numbers in <b>sorted</b> (ascending) order. It is also asked the other way: if the inorder comes out sorted, the tree is a BST.</div>
+<div class="def"><b>Binary search tree</b>: a binary tree in which, for every node, <b>all</b> keys in the left subtree are smaller than the node's key and <b>all</b> keys in the right subtree are larger. Both subtrees are themselves BSTs.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The rule is about <b>whole subtrees</b>, not just the immediate children. A tree in which every parent is bigger than its left child and smaller than its right child can still fail to be a BST (see 12.3). Checking "inorder is strictly increasing" is the reliable test.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">12.2</span>Searching in a BST</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+It is a binary tree, but it helps searching a lot, which is why it is called a binary <i>search</i> tree. Always start at the <b>root</b>:
+<ul>
+<li><b>Find 13:</b> 13 &gt; 10, go <b>right</b>. 13 &gt; 12, go right. 13 &lt; 15, go <b>left</b>: found 13.</li>
+<li><b>Find 9:</b> 9 &lt; 10, go left to 8. 9 &gt; 8, go right: found 9.</li>
+</ul>
+In an ordinary tree you would check every option and every subtree. Here there is no need: if the key is greater, it can only be on the right, so "don't even try the left, don't waste time". The left subtree of 10 is never searched for 13, because 13 can't be there.</div>
+<figure>
+<svg viewBox="0 0 346 250" style="max-width:520px" role="img" aria-label="BST with root 10: left 8 with right child 9; right 12 with right child 15, whose left child is 13. Search path for 13 highlighted">
+<path class="ln" d="M30 92 L86 156"/>
+<path class="lna" d="M310 156 L254 220"/>
+<path class="lna" d="M198 92 L310 156"/>
+<path class="ln" d="M142 28 L30 92"/>
+<path class="lna" d="M142 28 L198 92"/>
+<circle class="gr" cx="86" cy="156" r="16"/><text class="b" x="86" y="161" text-anchor="middle">9</text>
+<circle class="bx" cx="30" cy="92" r="16"/><text class="b" x="30" y="97" text-anchor="middle">8</text>
+<circle class="or" cx="254" cy="220" r="16"/><text class="b" x="254" y="225" text-anchor="middle">13</text>
+<circle class="ac" cx="310" cy="156" r="16"/><text class="b" x="310" y="161" text-anchor="middle">15</text>
+<circle class="ac" cx="198" cy="92" r="16"/><text class="b" x="198" y="97" text-anchor="middle">12</text>
+<circle class="ac" cx="142" cy="28" r="16"/><text class="b" x="142" y="33" text-anchor="middle">10</text>
+</svg>
+<figcaption>Search path for 13: 10 → 12 → 15 → 13 · the whole left subtree of 10 is skipped</figcaption>
+</figure>
+<div class="formula">struct node* search(struct node *t, int key) {
+    while (t != NULL &amp;&amp; t-&gt;data != key)
+        t = (key &lt; t-&gt;data) ? t-&gt;left : t-&gt;right;
+    return t;            /* NULL if not found */
+}</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>The number of comparisons = the depth of the node + 1. Searching for 13 takes 4 comparisons (10, 12, 15, 13).</li>
+<li>An <b>unsuccessful</b> search ends at a NULL link, which is exactly where that key would be <b>inserted</b>.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">12.3</span>Insertion and Construction (Compare from the Root)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Build a BST</b> by inserting <b>50, 40, 30, 60, 80, 20, 70</b>, each time comparing from the root:
+<ul>
+<li>50 becomes the root.</li>
+<li>40 &lt; 50 → left of 50.</li>
+<li>30 &lt; 50, &lt; 40 → left of 40.</li>
+<li>60 &gt; 50 → right of 50.</li>
+<li>80 &gt; 50, &gt; 60 → right of 60.</li>
+<li>20 &lt; 50, &lt; 40, &lt; 30 → left of 30.</li>
+<li>70 &gt; 50, &gt; 60, &lt; 80 → left of 80.</li>
+</ul>
+<b>The trap students fall into:</b> in a tree with root 60, 80 on its right and some node as 80's left child, why can't <b>50</b> be that left child? Locally 50 &lt; 80, so it looks fine. But you must check <b>globally, all the way up</b>: that position is in 60's <b>right</b> subtree, so it must be &gt; 60, and 50 isn't.<br>
+If you always insert by <b>comparing from the top down</b>, you can never make this mistake.</div>
+<figure>
+<svg viewBox="0 0 402 250" style="max-width:480px" role="img" aria-label="BST built by inserting 50, 40, 30, 60, 80, 20, 70">
+<path class="ln" d="M86 156 L30 220"/>
+<path class="ln" d="M142 92 L86 156"/>
+<path class="ln" d="M366 156 L310 220"/>
+<path class="ln" d="M254 92 L366 156"/>
+<path class="ln" d="M198 28 L142 92"/>
+<path class="ln" d="M198 28 L254 92"/>
+<circle class="gr" cx="30" cy="220" r="16"/><text class="b" x="30" y="225" text-anchor="middle">20</text>
+<circle class="bx" cx="86" cy="156" r="16"/><text class="b" x="86" y="161" text-anchor="middle">30</text>
+<circle class="bx" cx="142" cy="92" r="16"/><text class="b" x="142" y="97" text-anchor="middle">40</text>
+<circle class="gr" cx="310" cy="220" r="16"/><text class="b" x="310" y="225" text-anchor="middle">70</text>
+<circle class="bx" cx="366" cy="156" r="16"/><text class="b" x="366" y="161" text-anchor="middle">80</text>
+<circle class="bx" cx="254" cy="92" r="16"/><text class="b" x="254" y="97" text-anchor="middle">60</text>
+<circle class="bx" cx="198" cy="28" r="16"/><text class="b" x="198" y="33" text-anchor="middle">50</text>
+</svg>
+<figcaption>BST after inserting 50, 40, 30, 60, 80, 20, 70 · inorder 20 30 40 50 60 70 80 (sorted)</figcaption>
+</figure>
+<div class="formula">struct node* insert(struct node *t, int key) {
+    if (t == NULL) return newNode(key);          /* found the empty spot */
+    if (key &lt; t-&gt;data) t-&gt;left  = insert(t-&gt;left,  key);
+    else               t-&gt;right = insert(t-&gt;right, key);
+    return t;
+}</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>A new key is <b>always inserted as a leaf</b>.</li>
+<li>The <b>first</b> key inserted is the root forever, unless it is deleted.</li>
+<li>The same set of keys in a different <b>order</b> gives a <b>different</b> tree.</li>
+<li>Inserting keys in sorted order (10, 20, 30, …) builds a <b>skewed</b> tree, which is effectively a linked list.</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">12.4</span>Deletion: Leaf, One Child, Two Children</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The tree has root 8: left 4 (children 2 and 6, with 6's children 5 and 7), and right 10 → 14 → 13.
+<ol>
+<li><b>Leaf</b> (7, or 13): just delete it. There is no impact on the tree; this is the <b>easiest</b> case.</li>
+<li><b>One child</b> (14, whose only child is 13): you can't simply free 14 and lose 13, because that's stored information. <b>Replace 14 with its child</b> and connect 13 to 10. The BST rule is preserved: 13 &lt; 14 but still &gt; 10, so it is 10's right child.</li>
+<li><b>Two children</b> (4): take the <b>inorder</b> sequence, which is always sorted for a BST (2, 4, 5, 6, …). Replace the node with its <b>inorder predecessor</b>, the value just before it, which is <b>2</b>. Now 2's right child is 6, and 6's left child is 5. No rule is broken.</li>
+<li><b>Deleting the root 8</b> (two children): the inorder is 2, 5, 6, <b>8</b>, 10, 13, so the predecessor is <b>6</b>. 6 becomes the root, with 2 on its left and 10 on its right; 5 becomes 2's right child, and 13 stays 10's right child.</li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 1000 300" role="img" aria-label="BST deletion in four steps: original tree rooted at 8; after deleting leaf 7 and one-child node 14; after deleting 4 replaced by inorder predecessor 2; after deleting root 8 replaced by inorder predecessor 6">
+<path class="ln" d="M99.0 186 L73.0 244"/>
+<path class="ln" d="M99.0 186 L125.0 244"/>
+<path class="ln" d="M47.0 128 L21.0 186"/>
+<path class="ln" d="M47.0 128 L99.0 186"/>
+<path class="ln" d="M229.0 186 L203.0 244"/>
+<path class="ln" d="M177.0 128 L229.0 186"/>
+<path class="ln" d="M151.0 70 L47.0 128"/>
+<path class="ln" d="M151.0 70 L177.0 128"/>
+<circle class="gr" cx="21.0" cy="186" r="14"/><text class="b" x="21.0" y="191" text-anchor="middle">2</text>
+<circle class="gr" cx="73.0" cy="244" r="14"/><text class="b" x="73.0" y="249" text-anchor="middle">5</text>
+<circle class="or" cx="125.0" cy="244" r="14"/><text class="b" x="125.0" y="249" text-anchor="middle">7</text>
+<circle class="bx" cx="99.0" cy="186" r="14"/><text class="b" x="99.0" y="191" text-anchor="middle">6</text>
+<circle class="bx" cx="47.0" cy="128" r="14"/><text class="b" x="47.0" y="133" text-anchor="middle">4</text>
+<circle class="gr" cx="203.0" cy="244" r="14"/><text class="b" x="203.0" y="249" text-anchor="middle">13</text>
+<circle class="or" cx="229.0" cy="186" r="14"/><text class="b" x="229.0" y="191" text-anchor="middle">14</text>
+<circle class="bx" cx="177.0" cy="128" r="14"/><text class="b" x="177.0" y="133" text-anchor="middle">10</text>
+<circle class="bx" cx="151.0" cy="70" r="14"/><text class="b" x="151.0" y="75" text-anchor="middle">8</text>
+<text class="b" x="125" y="22" text-anchor="middle">Original</text><text class="mut" x="125" y="40" text-anchor="middle">delete 7 and 14 next</text>
+<path class="ln" d="M375.0 186 L349.0 244"/>
+<path class="ln" d="M323.0 128 L297.0 186"/>
+<path class="ln" d="M323.0 128 L375.0 186"/>
+<path class="ln" d="M427.0 128 L453.0 186"/>
+<path class="ln" d="M401.0 70 L323.0 128"/>
+<path class="ln" d="M401.0 70 L427.0 128"/>
+<circle class="gr" cx="297.0" cy="186" r="14"/><text class="b" x="297.0" y="191" text-anchor="middle">2</text>
+<circle class="gr" cx="349.0" cy="244" r="14"/><text class="b" x="349.0" y="249" text-anchor="middle">5</text>
+<circle class="bx" cx="375.0" cy="186" r="14"/><text class="b" x="375.0" y="191" text-anchor="middle">6</text>
+<circle class="or" cx="323.0" cy="128" r="14"/><text class="b" x="323.0" y="133" text-anchor="middle">4</text>
+<circle class="gr" cx="453.0" cy="186" r="14"/><text class="b" x="453.0" y="191" text-anchor="middle">13</text>
+<circle class="bx" cx="427.0" cy="128" r="14"/><text class="b" x="427.0" y="133" text-anchor="middle">10</text>
+<circle class="bx" cx="401.0" cy="70" r="14"/><text class="b" x="401.0" y="75" text-anchor="middle">8</text>
+<text class="b" x="375" y="22" text-anchor="middle">After deleting 7, 14</text><text class="mut" x="375" y="40" text-anchor="middle">7 leaf · 14 one child → 13</text>
+<path class="ln" d="M612.0 186 L586.0 244"/>
+<path class="ln" d="M560.0 128 L612.0 186"/>
+<path class="ln" d="M664.0 128 L690.0 186"/>
+<path class="ln" d="M638.0 70 L560.0 128"/>
+<path class="ln" d="M638.0 70 L664.0 128"/>
+<circle class="gr" cx="586.0" cy="244" r="14"/><text class="b" x="586.0" y="249" text-anchor="middle">5</text>
+<circle class="bx" cx="612.0" cy="186" r="14"/><text class="b" x="612.0" y="191" text-anchor="middle">6</text>
+<circle class="bx" cx="560.0" cy="128" r="14"/><text class="b" x="560.0" y="133" text-anchor="middle">2</text>
+<circle class="gr" cx="690.0" cy="186" r="14"/><text class="b" x="690.0" y="191" text-anchor="middle">13</text>
+<circle class="bx" cx="664.0" cy="128" r="14"/><text class="b" x="664.0" y="133" text-anchor="middle">10</text>
+<circle class="or" cx="638.0" cy="70" r="14"/><text class="b" x="638.0" y="75" text-anchor="middle">8</text>
+<text class="b" x="625" y="22" text-anchor="middle">After deleting 4</text><text class="mut" x="625" y="40" text-anchor="middle">replaced by predecessor 2</text>
+<path class="ln" d="M823.0 128 L849.0 186"/>
+<path class="ln" d="M901.0 128 L927.0 186"/>
+<path class="ln" d="M875.0 70 L823.0 128"/>
+<path class="ln" d="M875.0 70 L901.0 128"/>
+<circle class="gr" cx="849.0" cy="186" r="14"/><text class="b" x="849.0" y="191" text-anchor="middle">5</text>
+<circle class="bx" cx="823.0" cy="128" r="14"/><text class="b" x="823.0" y="133" text-anchor="middle">2</text>
+<circle class="gr" cx="927.0" cy="186" r="14"/><text class="b" x="927.0" y="191" text-anchor="middle">13</text>
+<circle class="bx" cx="901.0" cy="128" r="14"/><text class="b" x="901.0" y="133" text-anchor="middle">10</text>
+<circle class="bx" cx="875.0" cy="70" r="14"/><text class="b" x="875.0" y="75" text-anchor="middle">6</text>
+<text class="b" x="875" y="22" text-anchor="middle">After deleting 8</text><text class="mut" x="875" y="40" text-anchor="middle">replaced by predecessor 6</text>
+</svg>
+<figcaption>Deletion walk-through from the lecture · orange = the node(s) deleted in the next step</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Predecessor or successor:</b> for two children you may use either the <b>inorder predecessor</b> (largest key in the left subtree, its rightmost node) or the <b>inorder successor</b> (smallest key in the right subtree, its leftmost node). Most textbooks and GATE-style answers use the <b>successor</b> unless the question says otherwise. The lecture uses the predecessor.</li>
+<li>The predecessor or successor has <b>at most one child</b>, so removing it from its old place is always case 1 or case 2.</li>
+<li>With the successor rule, deleting 8 from the original tree would put <b>10</b> at the root.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Read whether the question says "predecessor" or "successor". The two give <b>different trees</b>, and both are valid BSTs, so each answer has a trap option built from the other rule.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">12.5</span>Complexity, Min/Max, Successor, Counting &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Operation</th><th>Balanced BST (h ≈ log n)</th><th>Skewed BST (h = n − 1)</th></tr>
+<tr><td>Search</td><td>O(log n)</td><td>O(n)</td></tr>
+<tr><td>Insert</td><td>O(log n)</td><td>O(n)</td></tr>
+<tr><td>Delete</td><td>O(log n)</td><td>O(n)</td></tr>
+<tr><td>Find min / max</td><td>O(log n)</td><td>O(n)</td></tr>
+<tr><td>Inorder (sorted output)</td><td>O(n)</td><td>O(n)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Why AVL exists</span>
+Every operation costs <b>O(h)</b>. The height can be anywhere from log₂ n (balanced) to n − 1 (skewed, e.g. sorted input). Self-balancing trees such as <b>AVL</b> (chapter 13) and red-black trees keep h = O(log n) always.</div>
+<div class="box add"><span class="t">➕ More facts</span>
+<ul>
+<li><b>Minimum</b> = keep going left; <b>maximum</b> = keep going right.</li>
+<li><b>Sorting with a BST</b> (tree sort): insert everything, then do an inorder walk. That is O(n log n) on average and O(n²) in the worst case.</li>
+<li>Number of distinct BSTs with n distinct keys = <b>Catalan</b> C(n): 1, 2, 5, 14, 42.</li>
+<li>A BST can be rebuilt from its <b>preorder alone</b> (or postorder alone), because the inorder is just the sorted keys.</li>
+<li>Duplicates: either disallow them, or consistently send equal keys to one side (here, the right).</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"Which traversal of a BST gives sorted output?" → <b>inorder</b>.</li>
+<li>"Worst-case search time in a BST?" → <b>O(n)</b>. Average → O(log n).</li>
+<li>"Where is a new key inserted?" → as a <b>leaf</b>.</li>
+<li>"Smallest element in a BST?" → the leftmost node.</li>
+<li>Delete with two children → replace with the inorder successor (or predecessor).</li>
+</ul></div>
+<p><b>Worked question</b>: insert <b>45, 15, 79, 90, 10, 55, 12, 20, 50</b> into an empty BST.</p>
+<figure>
+<svg viewBox="0 0 514 250" style="max-width:560px" role="img" aria-label="BST from inserting 45, 15, 79, 90, 10, 55, 12, 20, 50">
+<path class="ln" d="M30 156 L86 220"/>
+<path class="ln" d="M142 92 L30 156"/>
+<path class="ln" d="M142 92 L198 156"/>
+<path class="ln" d="M366 156 L310 220"/>
+<path class="ln" d="M422 92 L366 156"/>
+<path class="ln" d="M422 92 L478 156"/>
+<path class="ln" d="M254 28 L142 92"/>
+<path class="ln" d="M254 28 L422 92"/>
+<circle class="gr" cx="86" cy="220" r="16"/><text class="b" x="86" y="225" text-anchor="middle">12</text>
+<circle class="bx" cx="30" cy="156" r="16"/><text class="b" x="30" y="161" text-anchor="middle">10</text>
+<circle class="gr" cx="198" cy="156" r="16"/><text class="b" x="198" y="161" text-anchor="middle">20</text>
+<circle class="bx" cx="142" cy="92" r="16"/><text class="b" x="142" y="97" text-anchor="middle">15</text>
+<circle class="gr" cx="310" cy="220" r="16"/><text class="b" x="310" y="225" text-anchor="middle">50</text>
+<circle class="bx" cx="366" cy="156" r="16"/><text class="b" x="366" y="161" text-anchor="middle">55</text>
+<circle class="gr" cx="478" cy="156" r="16"/><text class="b" x="478" y="161" text-anchor="middle">90</text>
+<circle class="bx" cx="422" cy="92" r="16"/><text class="b" x="422" y="97" text-anchor="middle">79</text>
+<circle class="bx" cx="254" cy="28" r="16"/><text class="b" x="254" y="33" text-anchor="middle">45</text>
+</svg>
+<figcaption>BST for 45, 15, 79, 90, 10, 55, 12, 20, 50 · height 3</figcaption>
+</figure>
+<div class="formula">Inorder   : 10 12 15 20 45 50 55 79 90    (sorted ✔)
+Preorder  : 45 15 10 12 20 79 55 50 90
+Postorder : 12 10 20 15 50 55 90 79 45
+Height    : 3   (45 → 15 → 10 → 12, or 45 → 79 → 55 → 50)
+Leaves    : 12, 20, 50, 90</div>
+<div class="num"><span class="t">Q1</span>In the tree above, how many comparisons does a search for 50 take? → 45, 79, 55, 50 = <b>4</b>.</div>
+<div class="num"><span class="t">Q2</span>Delete 45 (the root) using the inorder <b>successor</b>. → The successor is <b>50</b> (leftmost in the right subtree). 50 becomes the root, and 55 loses its left child.</div>
+<div class="num"><span class="t">Q3</span>Is a tree with inorder 10, 20, 15, 30 a BST? → <b>No</b>. The inorder isn't sorted (20 &gt; 15).</div>
+<div class="num"><span class="t">Q4</span>Keys 1 to 7 are inserted in ascending order. What is the height? → Skewed, so the height is <b>6</b>. Inserted in the order 4, 2, 6, 1, 3, 5, 7, the height is <b>2</b> (perfect).</div>
+<div class="num"><span class="t">Q5</span>How many different BSTs can be built from the keys {1, 2, 3}? → C(3) = <b>5</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>BST rule: <b>left subtree &lt; node &lt; right subtree</b>, at every node and for the whole subtree. Inorder ⇒ <b>sorted</b>.</li>
+<li>Search from the root: key smaller → left, larger → right. Lecture: 13 found via 10 → 12 → 15 → 13; 9 via 10 → 8 → 9.</li>
+<li>Insert by comparing from the root; a new key becomes a leaf. 50, 40, 30, 60, 80, 20, 70 gives 50(40(30(20)), 60(—, 80(70))).</li>
+<li>Check globally: a node in 60's right subtree must be &gt; 60, so 50 can't be the left child of 80 there.</li>
+<li>Delete: leaf → remove. One child → replace it with the child. Two children → replace with the inorder <b>predecessor</b> (lecture) or <b>successor</b> (common in books).</li>
+<li>Cost O(h): O(log n) balanced, O(n) skewed (sorted input), hence AVL. Min = leftmost, max = rightmost. Number of BSTs = Catalan.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 12 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="11-Binary-Tree.html">← Ch 11: Binary Tree</a><a href="index.html">☰ All topics</a><a href="13-AVL-Tree.html">Ch 13: AVL Tree →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

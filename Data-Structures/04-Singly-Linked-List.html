@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Singly Linked List Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="03-Array-vs-Linked-List.html">← Ch 3: Array vs Linked List</a><a href="index.html">☰ All topics</a><a href="05-Doubly-Linked-List.html">Ch 5: Doubly Linked List →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 4: Singly Linked List</h1>
+  <p class="sub">Volume 03 · Part 4 · Built from the one-shot Data Structures lecture transcript (section 4), plus the exam points the lecture skipped. The lecture builds the node in C, reads pointer chains like <code>head-&gt;link-&gt;link</code>, then walks through traversal, search and the three cases each of insertion and deletion. These notes add edge cases, a complexity table, reversal, the middle-node trick and output-prediction questions.</p>
+  <ul class="tags"><li>Node = data + link</li><li>struct · malloc · free</li><li>head-&gt;link-&gt;data</li><li>Traversal · Search</li><li>Insert: beginning · after · end</li><li>Delete: beginning · after · end</li><li>Reverse · Middle</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">4.1</span>What is a Linked List (Data Field, Link Field, Head)</a></li>
+<li><a href="#s2"><span class="n">4.2</span>Node Structure and Dynamic Allocation (malloc)</a></li>
+<li><a href="#s3"><span class="n">4.3</span>Reading Pointer Expressions</a></li>
+<li><a href="#s4"><span class="n">4.4</span>Traversal</a></li>
+<li><a href="#s5"><span class="n">4.5</span>Searching</a></li>
+<li><a href="#s6"><span class="n">4.6</span>Insert at Beginning</a></li>
+<li><a href="#s7"><span class="n">4.7</span>Insert After a Node</a></li>
+<li><a href="#s8"><span class="n">4.8</span>Insert at End</a></li>
+<li><a href="#s9"><span class="n">4.9</span>Delete at Beginning</a></li>
+<li><a href="#s10"><span class="n">4.10</span>Delete After a Node</a></li>
+<li><a href="#s11"><span class="n">4.11</span>Delete at End</a></li>
+<li><a href="#s12"><span class="n">4.12</span>Edge Cases, Complexity, Reverse, Middle &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 4</div>
+<h2 class="ch">Singly Linked List</h2>
+<p>A singly linked list is a chain of <b>nodes</b>. Each node holds one piece of data and the address of the next node, and the chain runs in <b>one direction only</b>. Every operation in this chapter is the same game: change a few pointers in the right order, and never lose your grip on the rest of the list.</p>
+
+<section id="s1">
+<h3><span class="n">4.1</span>What is a Linked List (Data Field, Link Field, Head)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A linked list is "a list of elements which are <b>linked to each other</b>", because they sit in <b>non-contiguous</b> memory locations: one element here, the next somewhere else, the third somewhere else again, yet all connected.<br>
+In a <b>singly</b> linked list every node has two parts:
+<ul>
+<li><b>data field</b>: the value;</li>
+<li><b>link field</b>: the <b>address of the next node</b>.</li>
+</ul>
+The <b>head</b> contains the <b>address of the first node</b>. If the first node is at address 10, head holds 10, i.e. head points to the first node.</div>
+<figure>
+<svg viewBox="0 0 588 150" role="img" aria-label="Singly linked list: head holds 10, nodes at 10, 20, 30 with data 1,2,3, last link NULL">
+<text class="b" x="20" y="58">head</text>
+<rect class="ac" x="20" y="70" width="56" height="36"/><text x="48" y="93" text-anchor="middle">10</text>
+<g>
+<rect class="gr" x="110" y="70" width="55" height="36"/><text x="137.5" y="93" text-anchor="middle">1</text>
+<rect class="pu" x="165" y="70" width="55" height="36"/><text x="192.5" y="93" text-anchor="middle">20</text>
+<text class="mut" x="165.0" y="124" text-anchor="middle">@10</text></g>
+<g>
+<rect class="gr" x="266" y="70" width="55" height="36"/><text x="293.5" y="93" text-anchor="middle">2</text>
+<rect class="pu" x="321" y="70" width="55" height="36"/><text x="348.5" y="93" text-anchor="middle">30</text>
+<text class="mut" x="321.0" y="124" text-anchor="middle">@20</text></g>
+<g>
+<rect class="gr" x="422" y="70" width="55" height="36"/><text x="449.5" y="93" text-anchor="middle">3</text>
+<rect class="pu" x="477" y="70" width="55" height="36"/><text class="mut" x="504.5" y="92" text-anchor="middle">NULL</text>
+<text class="mut" x="477.0" y="124" text-anchor="middle">@30</text></g>
+<path class="lna" d="M76 88.0 L102 88.0"/><polygon class="aha" points="101,83.0 110,88.0 101,93.0"/>
+<path class="lna" d="M220 88.0 L258 88.0"/><polygon class="aha" points="257,83.0 266,88.0 257,93.0"/>
+<path class="lna" d="M376 88.0 L414 88.0"/><polygon class="aha" points="413,83.0 422,88.0 413,93.0"/>
+</svg>
+<figcaption>The lecture's running example · nodes at addresses 10, 20, 30 · data 1, 2, 3</figcaption>
+</figure>
+<div class="def"><b>Singly linked list</b>: a linear collection of nodes, each holding data and a pointer to the next node; the head pointer gives the first node and the last node's pointer is NULL. An <b>empty list</b> is simply <code>head == NULL</code>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">4.2</span>Node Structure and Dynamic Allocation (malloc)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A node is defined with a <b>structure</b> named <code>node</code>. It has an integer <code>data</code> field and a <code>struct node *</code> link: the link points to <b>another node of the same structure</b>, which is why the struct refers to itself.<br>
+Because a linked list is dynamic, a node is created with <b>dynamic memory allocation</b> using <code>malloc</code>, passing the <b>size of a node</b>. <code>malloc</code> returns the <b>address</b> of the new node, and that address is caught in the <b>head</b> pointer.<br>
+Example: the new node gets address 10, so head = 10. The node is empty at first, so we write 5 into the data of the node head points to, and put <b>NULL</b> in its link, because a brand-new node has no next node yet.</div>
+<div class="formula">struct node {
+    int data;
+    struct node *link;      /* self-referential: points to a node */
+};
+
+struct node *head;
+head = (struct node *) malloc(sizeof(struct node));
+head-&gt;data = 5;
+head-&gt;link = NULL;</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>A struct that contains a pointer to its own type is a <b>self-referential structure</b>; that is the textbook name for a linked-list node.</li>
+<li><code>malloc</code> takes memory from the <b>heap</b> and returns <code>void *</code> (cast to <code>struct node *</code>). It returns <b>NULL</b> if no memory is available; that condition is called <b>overflow</b> for a linked list.</li>
+<li><code>free(p)</code> gives the memory back. Forgetting it causes a <b>memory leak</b>; using <code>p</code> after freeing it is a <b>dangling pointer</b>.</li>
+<li><code>-&gt;</code> is shorthand: <code>p-&gt;data</code> is the same as <code>(*p).data</code>.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">4.3</span>Reading Pointer Expressions</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+If you can <b>read</b> these expressions on the example list, the rest of the chapter becomes easy. Read each arrow as "go to the node this address points to":
+<ul>
+<li><code>head-&gt;data</code>: the data of the node head points to → <b>1</b>.</li>
+<li><code>head-&gt;link</code> → <b>20</b>.</li>
+<li><code>head-&gt;link-&gt;data</code>: follow head's link (20) to the second node, read its data → <b>2</b>. Read the other way, <code>head-&gt;link-&gt;data = 2</code> <i>writes</i> 2 into that field.</li>
+<li><code>head-&gt;link-&gt;link</code> → <b>30</b>.</li>
+<li><code>head-&gt;link-&gt;link-&gt;data</code> → <b>3</b>.</li>
+<li><code>head-&gt;link-&gt;link-&gt;link</code> → <b>NULL</b>: the end of the list.</li>
+</ul>
+All of this uses only the one head pointer.</div>
+<div class="tw"><table>
+<tr><th>Expression</th><th>Meaning</th><th>Value</th></tr>
+<tr><td><code>head</code></td><td>address of node 1</td><td>10</td></tr>
+<tr><td><code>head-&gt;data</code></td><td>data of node 1</td><td>1</td></tr>
+<tr><td><code>head-&gt;link</code></td><td>address of node 2</td><td>20</td></tr>
+<tr><td><code>head-&gt;link-&gt;data</code></td><td>data of node 2</td><td>2</td></tr>
+<tr><td><code>head-&gt;link-&gt;link</code></td><td>address of node 3</td><td>30</td></tr>
+<tr><td><code>head-&gt;link-&gt;link-&gt;data</code></td><td>data of node 3</td><td>3</td></tr>
+<tr><td><code>head-&gt;link-&gt;link-&gt;link</code></td><td>link of node 3</td><td>NULL</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Count the arrows: <b>k links</b> take you to node <b>k+1</b>. One more <code>-&gt;link</code> past NULL, e.g. <code>head-&gt;link-&gt;link-&gt;link-&gt;data</code>, dereferences NULL and <b>crashes</b> (segmentation fault). It is not "0" or "garbage".</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">4.4</span>Traversal</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Traversal is the most basic operation, and it is <b>sequential</b>: one node after another.
+<ul>
+<li>Copy head into a second pointer, <code>current</code>, so head keeps pointing to the first node.</li>
+<li>Loop <b>while <code>current != NULL</code></b>: print <code>current-&gt;data</code>, then move ahead with <code>current = current-&gt;next</code>.</li>
+<li>"Next" and "link" are the same field; both names are common. A doubly linked list has two links, <i>prev</i> and <i>next</i>.</li>
+</ul>
+On 1 → 2 → 3 → 4 it prints 1, 2, 3, 4. After the last node, current becomes NULL and the loop stops: "the entire list has been traversed". This snippet is the base of almost every later operation.</div>
+<div class="formula">void traverse(struct node *head) {
+    struct node *current = head;
+    while (current != NULL) {
+        printf("%d ", current-&gt;data);
+        current = current-&gt;next;
+    }
+}</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li><code>while (current != NULL)</code> visits <b>every</b> node.</li>
+<li><code>while (current-&gt;next != NULL)</code> stops <b>at</b> the last node without processing it, so it prints one fewer. It also crashes on an empty list.</li>
+<li>That second form is exactly what you want when you need a pointer <b>to</b> the last node (insert at end, 4.8).</li>
+</ul>
+In the lecture, "until current's next is NULL" is said aloud, but the code uses <code>current != NULL</code>; go by the code.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Never traverse by moving <b>head</b> itself (<code>head = head-&gt;next</code>). After the loop, head is NULL and the whole list is lost (leaked). That is why a separate <code>current</code> pointer is used.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">4.5</span>Searching</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Search is the traversal snippet with one <b>if block</b> added. Search is given a <b>key</b>, and at each node we check whether <code>current-&gt;data == key</code>:
+<ul>
+<li>if it matches, return "found";</li>
+<li>if not, move on with <code>current = current-&gt;link</code>;</li>
+<li>if the loop ends at NULL without a match, return "not found".</li>
+</ul>
+<b>Best case</b>: the key is in the first node. <b>Worst case</b>: it is in the last node, or absent, so all n nodes are visited: <b>O(n)</b>, because access is sequential.<br>
+One improvement is to keep a <b>tail pointer</b> as well as head, so you don't have to traverse as much. The traditional list keeps only the head pointer, and the lecture continues with that.</div>
+<div class="formula">int search(struct node *head, int key) {
+    struct node *current = head;
+    while (current != NULL) {
+        if (current-&gt;data == key)
+            return 1;          /* found */
+        current = current-&gt;link;
+    }
+    return 0;                  /* not found */
+}</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Search is <b>O(n) even if the list is sorted</b>. Binary search needs the middle element in O(1), which a linked list can't give (chapter 3). A sorted list only lets you stop early once you pass the key; the worst case is still O(n).</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">4.6</span>Insert at Beginning</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Insertion has three important variations: <b>at the beginning</b>, <b>after a node</b> and <b>at the end</b>. All three are asked in exams.<br>
+List: head = 10 → nodes 10, 20, 30. The new node is at address <b>5</b>, and it should become the first node.
+<ol>
+<li><code>new-&gt;next = head;</code> Head holds 10. Once the new node is first, the old first node becomes the second, so the new node's next must hold its address, 10. The new node's next is no longer NULL.</li>
+<li><code>head = new;</code> The new pointer holds 5. Give 5 to head, and head now points to the new node.</li>
+</ol>
+The old first node has shifted to second place, but <b>no node actually moved</b>, unlike an array. Only pointers were exchanged, which is why linked-list insert and delete are fast.</div>
+<figure>
+<svg viewBox="0 0 744 150" role="img" aria-label="Insert at beginning: new node at 5 points to old first node 10; head now holds 5">
+<text class="b" x="20" y="58">head</text>
+<rect class="ac" x="20" y="70" width="56" height="36"/><text x="48" y="93" text-anchor="middle">5</text>
+<g>
+<rect class="or" x="110" y="70" width="55" height="36"/><text x="137.5" y="93" text-anchor="middle">0</text>
+<rect class="pu" x="165" y="70" width="55" height="36"/><text x="192.5" y="93" text-anchor="middle">10</text>
+<text class="mut" x="165.0" y="124" text-anchor="middle">@5</text></g>
+<g>
+<rect class="gr" x="266" y="70" width="55" height="36"/><text x="293.5" y="93" text-anchor="middle">1</text>
+<rect class="pu" x="321" y="70" width="55" height="36"/><text x="348.5" y="93" text-anchor="middle">20</text>
+<text class="mut" x="321.0" y="124" text-anchor="middle">@10</text></g>
+<g>
+<rect class="gr" x="422" y="70" width="55" height="36"/><text x="449.5" y="93" text-anchor="middle">2</text>
+<rect class="pu" x="477" y="70" width="55" height="36"/><text x="504.5" y="93" text-anchor="middle">30</text>
+<text class="mut" x="477.0" y="124" text-anchor="middle">@20</text></g>
+<g>
+<rect class="gr" x="578" y="70" width="55" height="36"/><text x="605.5" y="93" text-anchor="middle">3</text>
+<rect class="pu" x="633" y="70" width="55" height="36"/><text class="mut" x="660.5" y="92" text-anchor="middle">NULL</text>
+<text class="mut" x="633.0" y="124" text-anchor="middle">@30</text></g>
+<path class="lna" d="M76 88.0 L102 88.0"/><polygon class="aha" points="101,83.0 110,88.0 101,93.0"/>
+<path class="lna" d="M220 88.0 L258 88.0"/><polygon class="aha" points="257,83.0 266,88.0 257,93.0"/>
+<text class="mut" x="243.0" y="62" text-anchor="middle">① new→next = head</text>
+<path class="lna" d="M376 88.0 L414 88.0"/><polygon class="aha" points="413,83.0 422,88.0 413,93.0"/>
+<path class="lna" d="M532 88.0 L570 88.0"/><polygon class="aha" points="569,83.0 578,88.0 569,93.0"/>
+</svg>
+<figcaption>After inserting node @5 at the beginning · new node in orange · ② then sets head = new (5)</figcaption>
+</figure>
+<div class="formula">new = (struct node *) malloc(sizeof(struct node));
+new-&gt;data = x;
+new-&gt;next = head;     /* step 1 */
+head = new;           /* step 2 */</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>The order matters.</b> If you write <code>head = new;</code> first, the address 10 is overwritten and the rest of the list is <b>lost</b>. <code>new-&gt;next = head</code> would then make the new node point to itself. The rule for every insertion: <b>connect the new node first, then redirect the old pointer.</b></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Insert at beginning is <b>O(1)</b>. It also works on an empty list: head is NULL, so new→next becomes NULL and head becomes new. It is the cheapest insertion, and it is how a <b>stack</b> is built on a linked list (push = insert at beginning).</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">4.7</span>Insert After a Node</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Insert the new node right after a given node; call that node <b>prev</b>, because it will be just before the new one. Prev is at address <b>20</b>, its next holds <b>30</b>, and the new node is at <b>25</b>.
+<ol>
+<li><code>new-&gt;next = prev-&gt;next;</code> After insertion the new node must point to node 30, and that address sits in prev's next, so copy it: the new node's link becomes 30.</li>
+<li><code>prev-&gt;next = new;</code> Give the new node's address, 25, to prev's next. Now 20 → 25 → 30.</li>
+</ol>
+The connection is now 20 → 25 → 30, and the node is inserted.</div>
+<figure>
+<svg viewBox="0 0 744 150" role="img" aria-label="Insert after node at 20: new node at 25 gets link 30, node 20 now links to 25">
+<text class="b" x="20" y="58">head</text>
+<rect class="ac" x="20" y="70" width="56" height="36"/><text x="48" y="93" text-anchor="middle">10</text>
+<g>
+<rect class="gr" x="110" y="70" width="55" height="36"/><text x="137.5" y="93" text-anchor="middle">1</text>
+<rect class="pu" x="165" y="70" width="55" height="36"/><text x="192.5" y="93" text-anchor="middle">20</text>
+<text class="mut" x="165.0" y="124" text-anchor="middle">@10</text></g>
+<g>
+<rect class="gr" x="266" y="70" width="55" height="36"/><text x="293.5" y="93" text-anchor="middle">2</text>
+<rect class="pu" x="321" y="70" width="55" height="36"/><text x="348.5" y="93" text-anchor="middle">25</text>
+<text class="mut" x="321.0" y="124" text-anchor="middle">@20</text></g>
+<g>
+<rect class="or" x="422" y="70" width="55" height="36"/><text x="449.5" y="93" text-anchor="middle">9</text>
+<rect class="pu" x="477" y="70" width="55" height="36"/><text x="504.5" y="93" text-anchor="middle">30</text>
+<text class="mut" x="477.0" y="124" text-anchor="middle">@25</text></g>
+<g>
+<rect class="gr" x="578" y="70" width="55" height="36"/><text x="605.5" y="93" text-anchor="middle">3</text>
+<rect class="pu" x="633" y="70" width="55" height="36"/><text class="mut" x="660.5" y="92" text-anchor="middle">NULL</text>
+<text class="mut" x="633.0" y="124" text-anchor="middle">@30</text></g>
+<path class="lna" d="M76 88.0 L102 88.0"/><polygon class="aha" points="101,83.0 110,88.0 101,93.0"/>
+<path class="lna" d="M220 88.0 L258 88.0"/><polygon class="aha" points="257,83.0 266,88.0 257,93.0"/>
+<path class="lna" d="M376 88.0 L414 88.0"/><polygon class="aha" points="413,83.0 422,88.0 413,93.0"/>
+<text class="mut" x="399.0" y="62" text-anchor="middle">② prev→next = new</text>
+<path class="lna" d="M532 88.0 L570 88.0"/><polygon class="aha" points="569,83.0 578,88.0 569,93.0"/>
+<text class="mut" x="555.0" y="62" text-anchor="middle">① new→next = prev→next</text>
+</svg>
+<figcaption>After inserting node @25 after node @20 · steps ① then ②</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Swap the two lines and you get <code>prev-&gt;next = new; new-&gt;next = prev-&gt;next;</code>. The second line now reads the <i>new</i> value, so new→next = new: a <b>self-loop</b>, and node 30 onwards is lost. MCQs love to ask "what is wrong with this code?" (In the lecture the old value in prev's next is said once as "35"; it is 30.)</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+With a pointer to prev, this is <b>O(1)</b>. Inserting at a <b>position k</b> or <b>after a value</b> first needs a traversal to find prev: <b>O(n)</b>. A singly list can insert <i>after</i> a node easily, but not <i>before</i> it: there is no back pointer to the previous node.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">4.8</span>Insert at End</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+This one is simple. The list is 10 → 20 → 30, and the new node is at <b>35</b> with its link NULL.
+<ul>
+<li>To insert after 30 you must <b>go all the way to the last node</b>, traversing the whole list.</li>
+<li>Give the new node's address to the last node's next: <code>last-&gt;next = new</code>. Node 30's link becomes 35 instead of NULL.</li>
+<li>Nothing else is needed: the new node's link is already NULL, which marks it as the last node.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 744 150" role="img" aria-label="Insert at end: last node 30 now links to new node 35, whose link is NULL">
+<text class="b" x="20" y="58">head</text>
+<rect class="ac" x="20" y="70" width="56" height="36"/><text x="48" y="93" text-anchor="middle">10</text>
+<g>
+<rect class="gr" x="110" y="70" width="55" height="36"/><text x="137.5" y="93" text-anchor="middle">1</text>
+<rect class="pu" x="165" y="70" width="55" height="36"/><text x="192.5" y="93" text-anchor="middle">20</text>
+<text class="mut" x="165.0" y="124" text-anchor="middle">@10</text></g>
+<g>
+<rect class="gr" x="266" y="70" width="55" height="36"/><text x="293.5" y="93" text-anchor="middle">2</text>
+<rect class="pu" x="321" y="70" width="55" height="36"/><text x="348.5" y="93" text-anchor="middle">30</text>
+<text class="mut" x="321.0" y="124" text-anchor="middle">@20</text></g>
+<g>
+<rect class="gr" x="422" y="70" width="55" height="36"/><text x="449.5" y="93" text-anchor="middle">3</text>
+<rect class="pu" x="477" y="70" width="55" height="36"/><text x="504.5" y="93" text-anchor="middle">35</text>
+<text class="mut" x="477.0" y="124" text-anchor="middle">@30</text></g>
+<g>
+<rect class="or" x="578" y="70" width="55" height="36"/><text x="605.5" y="93" text-anchor="middle">4</text>
+<rect class="pu" x="633" y="70" width="55" height="36"/><text class="mut" x="660.5" y="92" text-anchor="middle">NULL</text>
+<text class="mut" x="633.0" y="124" text-anchor="middle">@35</text></g>
+<path class="lna" d="M76 88.0 L102 88.0"/><polygon class="aha" points="101,83.0 110,88.0 101,93.0"/>
+<path class="lna" d="M220 88.0 L258 88.0"/><polygon class="aha" points="257,83.0 266,88.0 257,93.0"/>
+<path class="lna" d="M376 88.0 L414 88.0"/><polygon class="aha" points="413,83.0 422,88.0 413,93.0"/>
+<path class="lna" d="M532 88.0 L570 88.0"/><polygon class="aha" points="569,83.0 578,88.0 569,93.0"/>
+<text class="mut" x="555.0" y="62" text-anchor="middle">last→next = new</text>
+</svg>
+<figcaption>After inserting node @35 at the end</figcaption>
+</figure>
+<div class="formula">new-&gt;data = x;
+new-&gt;next = NULL;
+if (head == NULL) {          /* empty list */
+    head = new;
+} else {
+    struct node *last = head;
+    while (last-&gt;next != NULL)   /* stop AT the last node */
+        last = last-&gt;next;
+    last-&gt;next = new;
+}</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Insert at end costs <b>O(n)</b> with only a head pointer, because of the walk. With a <b>tail pointer</b> it is <b>O(1)</b>: <code>tail-&gt;next = new; tail = new;</code>. That is how a <b>queue</b> is built on a linked list (enqueue at tail, dequeue at head).</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">4.9</span>Delete at Beginning</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Deletion adds one fundamental step: keep a <b>delete pointer</b> (<code>del</code>) on the node being removed, so that its memory can be released with <b>free()</b>. "As the name, so the work": free it, it's of no use any more.<br>
+To delete the first node (head = 10):
+<ol>
+<li><code>del = head;</code> del also points to node 10.</li>
+<li><code>head = del-&gt;link;</code> del's link holds 20, so head becomes 20 and now points to the second node.</li>
+<li><code>free(del);</code> Nothing points to node 10 any more, so free it.</li>
+</ol></div>
+<div class="formula">if (head != NULL) {
+    struct node *del = head;
+    head = del-&gt;link;      /* head = 20 */
+    free(del);             /* node 10 released */
+}</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Calling <code>free(head)</code> <i>before</i> <code>head = head-&gt;link</code> reads a freed node. That is <b>undefined behaviour</b>, even if it seems to work. Save the address, unlink, then free. Deleting from an empty list (head == NULL) is <b>underflow</b>.</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">4.10</span>Delete After a Node</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+To delete the node that comes after a given node <b>prev</b>:
+<ol>
+<li><code>del = prev-&gt;link;</code> Prev's link holds the address of the node to delete, 20. Give it to del (you can also call it <i>temp</i>).</li>
+<li><code>prev-&gt;link = del-&gt;link;</code> del's link holds 30. Put 30 into prev's link, because once 20 is gone, prev must point to 30.</li>
+<li><code>free(del);</code> The connection to node 20 is cut, so free it.</li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 588 150" role="img" aria-label="Delete after node 10: node 10 now links straight to 30, node 20 is freed">
+<text class="b" x="20" y="58">head</text>
+<rect class="ac" x="20" y="70" width="56" height="36"/><text x="48" y="93" text-anchor="middle">10</text>
+<g>
+<rect class="gr" x="110" y="70" width="55" height="36"/><text x="137.5" y="93" text-anchor="middle">1</text>
+<rect class="pu" x="165" y="70" width="55" height="36"/><text x="192.5" y="93" text-anchor="middle">30</text>
+<text class="mut" x="165.0" y="124" text-anchor="middle">@10</text></g>
+<g opacity="0.45">
+<rect class="bx" x="266" y="70" width="55" height="36"/><text x="293.5" y="93" text-anchor="middle">2</text>
+<rect class="pu" x="321" y="70" width="55" height="36"/><text x="348.5" y="93" text-anchor="middle">30</text>
+<text class="mut" x="321.0" y="124" text-anchor="middle">@20</text></g>
+<g>
+<rect class="gr" x="422" y="70" width="55" height="36"/><text x="449.5" y="93" text-anchor="middle">3</text>
+<rect class="pu" x="477" y="70" width="55" height="36"/><text class="mut" x="504.5" y="92" text-anchor="middle">NULL</text>
+<text class="mut" x="477.0" y="124" text-anchor="middle">@30</text></g>
+<path class="lna" d="M76 88.0 L102 88.0"/><polygon class="aha" points="101,83.0 110,88.0 101,93.0"/>
+<path class="lna" d="M192.5 70 Q317.25 2 442 68"/><polygon class="aha" points="436,58 443,69 447,57"/>
+<text class="mut" x="317.25" y="10" text-anchor="middle">prev→next = del→next</text>
+</svg>
+<figcaption>Deleting node @20 · node 10 now links straight to 30 · node 20 (faded) is freed</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+With prev in hand this is <b>O(1)</b>. Deleting a node <b>by value</b> means walking with <i>two</i> pointers (prev and current) until current holds the key: <b>O(n)</b>. The node to delete is unlinked through its <b>predecessor</b>; you need prev, not just the node itself.</div>
+</section>
+
+<section id="s11">
+<h3><span class="n">4.11</span>Delete at End</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+To delete the last node, the node before it becomes "prev". Its link holds the address of the last node (say 30); <b>replace it with NULL</b>. The connection is cut, so <b>free</b> the last node.<br>
+"By simply playing with pointers you keep the structure intact while inserting and deleting, without taking extra load. That is the speciality of the linked list."</div>
+<div class="formula">if (head-&gt;next == NULL) {          /* only one node */
+    free(head);
+    head = NULL;
+} else {
+    struct node *prev = head;
+    while (prev-&gt;next-&gt;next != NULL)  /* stop at second-last */
+        prev = prev-&gt;next;
+    free(prev-&gt;next);
+    prev-&gt;next = NULL;
+}</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Delete at end is <b>O(n) even with a tail pointer</b>. The tail pointer finds the last node instantly, but you must change the <b>second-last</b> node's link to NULL, and a singly list has no way back to it except walking from head. (A doubly linked list fixes this, in chapter 5.) Compare: insert at end with a tail pointer is O(1).</div>
+</section>
+
+<section id="s12">
+<h3><span class="n">4.12</span>Edge Cases, Complexity, Reverse, Middle &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Operation</th><th>Head only</th><th>Head + tail</th><th>Key step</th></tr>
+<tr><td>Traverse / count / print</td><td>O(n)</td><td>O(n)</td><td><code>while (cur != NULL)</code></td></tr>
+<tr><td>Search</td><td>O(n)</td><td>O(n)</td><td>compare each node with key</td></tr>
+<tr><td>Insert at beginning</td><td>O(1)</td><td>O(1)</td><td><code>new→next = head; head = new</code></td></tr>
+<tr><td>Insert after given node</td><td>O(1)</td><td>O(1)</td><td><code>new→next = prev→next; prev→next = new</code></td></tr>
+<tr><td>Insert at end</td><td>O(n)</td><td><b>O(1)</b></td><td><code>last→next = new</code></td></tr>
+<tr><td>Insert at position k</td><td>O(n)</td><td>O(n)</td><td>walk to node k−1</td></tr>
+<tr><td>Delete at beginning</td><td>O(1)</td><td>O(1)</td><td><code>del = head; head = del→next; free</code></td></tr>
+<tr><td>Delete after given node</td><td>O(1)</td><td>O(1)</td><td><code>prev→next = del→next; free</code></td></tr>
+<tr><td>Delete at end</td><td>O(n)</td><td><b>O(n)</b></td><td>need second-last node</td></tr>
+<tr><td>Reverse</td><td>O(n) time, O(1) space</td><td>—</td><td>three pointers</td></tr>
+</table></div>
+
+<div class="box add"><span class="t">➕ Edge cases every operation must handle</span>
+<ul>
+<li><b>Empty list</b> (head == NULL): delete = underflow; insert at end must set head itself.</li>
+<li><b>One node</b>: deleting it must set head = NULL; the "second-last" loop would crash.</li>
+<li><b>Operation at the first node</b>: changes <b>head</b>, so a C function must receive <code>struct node **head</code> or return the new head.</li>
+<li><b>Key not present</b>: search returns not found; delete-by-value does nothing.</li>
+</ul></div>
+
+<p><b>Reverse a singly linked list</b> (the most asked coding question). Walk once, turning every arrow backwards with three pointers:</p>
+<div class="formula">struct node *prev = NULL, *cur = head, *nxt;
+while (cur != NULL) {
+    nxt = cur-&gt;next;     /* save the rest */
+    cur-&gt;next = prev;    /* reverse this arrow */
+    prev = cur;          /* move prev ahead */
+    cur = nxt;           /* move cur ahead */
+}
+head = prev;             /* old last node is the new head */</div>
+<p><b>Find the middle in one pass</b>: move <i>slow</i> one step and <i>fast</i> two steps. When fast reaches the end, slow is at the middle. On 10 → 20 → 30 → 40 → 50, slow stops at <b>30</b>. The same slow/fast idea (Floyd's <b>tortoise and hare</b>) detects a <b>loop</b>: if the list has a cycle, fast eventually meets slow.</p>
+
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"A node of a linked list is an example of a …" → <b>self-referential structure</b>.</li>
+<li>"Which function allocates a node / releases it?" → <b>malloc()</b> / <b>free()</b>; memory comes from the <b>heap</b>.</li>
+<li>"Cheapest insertion in a singly linked list?" → <b>at the beginning</b>, O(1).</li>
+<li>"Which operation depends on list length even with head and tail pointers?" → <b>deleting the last node</b>.</li>
+<li>"Linked list with no nodes" → head = <b>NULL</b>. "Delete from an empty list" → <b>underflow</b>. "malloc fails" → <b>overflow</b>.</li>
+<li>Applications: implementing stacks and queues, polynomial representation, sparse matrices, adjacency lists of graphs, dynamic memory (free lists).</li>
+</ul></div>
+
+<div class="num"><span class="t">Q1</span>On the lecture's list (head = 10; nodes 10, 20, 30 with data 1, 2, 3), what is <code>head-&gt;link-&gt;link-&gt;data</code>? → Two links take you to node 3 → <b>3</b>.</div>
+<div class="num"><span class="t">Q2</span>Which code correctly inserts node <code>p</code> after node <code>q</code>?<br>(a) <code>q-&gt;next = p; p-&gt;next = q-&gt;next;</code><br>(b) <code>p-&gt;next = q-&gt;next; q-&gt;next = p;</code><br>→ <b>(b)</b>. Option (a) makes p point to itself and loses the rest of the list.</div>
+<div class="num"><span class="t">Q3</span>What does this print for the list 1 → 2 → 3 → 4 → 5 → 6?
+<div class="formula">void fun(struct node *h) {
+    if (h == NULL) return;
+    printf("%d ", h-&gt;data);
+    if (h-&gt;next != NULL) fun(h-&gt;next-&gt;next);
+    printf("%d ", h-&gt;data);
+}</div>
+→ It prints on the way down, skipping every other node (1, 3, 5), then prints again while returning (5, 3, 1): <b>1 3 5 5 3 1</b>.</div>
+<div class="num"><span class="t">Q4</span>A singly linked list has n nodes, with pointers to the first and last node. Which of these takes O(n)? (a) insert at front (b) insert at end (c) delete front (d) delete last → <b>(d)</b>: the second-last node must be found by walking from head.</div>
+<div class="num"><span class="t">Q5</span>Minimum number of pointer fields changed to insert a node in the middle of a singly linked list? → <b>2</b>: the new node's next and the predecessor's next.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Node = <b>data + link</b> (self-referential struct). <b>head</b> holds the first node's address; the last link is <b>NULL</b>; empty list ⇔ head == NULL.</li>
+<li>Create with <code>malloc(sizeof(struct node))</code> (heap) and release with <code>free()</code>. A new node's link starts as NULL.</li>
+<li>Reading: k × <code>-&gt;link</code> from head reaches node k+1. On the lecture list, head→link→link→data = 3, and three links reach NULL.</li>
+<li>Traverse with a copy, <code>cur = head; while (cur != NULL) cur = cur→next;</code>. Never move head itself.</li>
+<li>Search is O(n), best case the first node, even if the list is sorted.</li>
+<li>Insert at beginning: <code>new→next = head; head = new</code> (O(1)). Insert after: <code>new→next = prev→next; prev→next = new</code>. <b>Connect the new node first.</b></li>
+<li>Insert at end: walk to the last node, <code>last→next = new</code>. O(n), or O(1) with a tail pointer.</li>
+<li>Delete: keep <b>del</b>, unlink, then <code>free(del)</code>. Beginning: <code>head = del→next</code>. After: <code>prev→next = del→next</code>. End: second-last→next = NULL, which is <b>O(n) even with a tail</b>.</li>
+<li>Reverse with prev/cur/next in O(n) time and O(1) space. Slow/fast pointers find the middle and detect loops.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 4 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="03-Array-vs-Linked-List.html">← Ch 3: Array vs Linked List</a><a href="index.html">☰ All topics</a><a href="05-Doubly-Linked-List.html">Ch 5: Doubly Linked List →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

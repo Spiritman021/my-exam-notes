@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Trees Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="09-Queue.html">← Ch 9: Queue</a><a href="index.html">☰ All topics</a><a href="11-Binary-Tree.html">Ch 11: Binary Tree →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 10: Trees — Introduction and Terminology</h1>
+  <p class="sub">Volume 03 · Part 10 · Built from the one-shot Data Structures lecture transcript (section 10), plus the exam points the lecture skipped. The lecture opens the non-linear half of the course with one example tree and the vocabulary every later chapter uses: root, leaf, parent, child, path, ancestor, sibling, degree, depth and height. These notes add level, edges = n − 1, degree of a tree, forest, the leaf-count formula and solved questions.</p>
+  <ul class="tags"><li>Non-linear · hierarchical</li><li>Root · Leaf · Internal</li><li>Parent · Child · Sibling</li><li>Path · Ancestor · Descendant</li><li>Degree</li><li>Depth (root → node)</li><li>Height (node → deepest leaf)</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">10.1</span>Root, Leaf, Parent, Child and Non-Leaf Nodes</a></li>
+<li><a href="#s2"><span class="n">10.2</span>Path, Ancestor/Descendant, Sibling and Degree</a></li>
+<li><a href="#s3"><span class="n">10.3</span>Depth and Height</a></li>
+<li><a href="#s4"><span class="n">10.4</span>Level, Edges, Forest, Counting Formulas &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 10</div>
+<h2 class="ch">Trees: Introduction and Terminology</h2>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Now we come to the main and biggest data structure, on which there is a lot to discuss: the <b>tree</b>. It belongs to the <b>non-linear</b> category: data is arranged <b>hierarchically</b>, in <b>multiple levels</b>. It has many basic terms, and we go through them one by one on a single example tree.</div>
+<figure>
+<svg viewBox="0 0 700 320" style="max-width:700px" role="img" aria-label="Tree with root A; A has children B and C; B has children D and E; C has child F; F has children G and H. Path A to H highlighted.">
+<path class="ln dash" d="M30 40 L600 40" opacity="0.35"/><text class="mut" x="610" y="44">depth 0</text>
+<path class="ln dash" d="M30 120 L600 120" opacity="0.35"/><text class="mut" x="610" y="124">depth 1</text>
+<path class="ln dash" d="M30 200 L600 200" opacity="0.35"/><text class="mut" x="610" y="204">depth 2</text>
+<path class="ln dash" d="M30 280 L600 280" opacity="0.35"/><text class="mut" x="610" y="284">depth 3</text>
+<path class="ln" d="M300 40 L170 120"/>
+<path class="lna" d="M300 40 L430 120"/>
+<path class="ln" d="M170 120 L100 200"/>
+<path class="ln" d="M170 120 L240 200"/>
+<path class="lna" d="M430 120 L430 200"/>
+<path class="ln" d="M430 200 L360 280"/>
+<path class="lna" d="M430 200 L500 280"/>
+<circle class="ac" cx="300" cy="40" r="20"/><text class="b" x="300" y="45" text-anchor="middle">A</text>
+<circle class="ac" cx="170" cy="120" r="20"/><text class="b" x="170" y="125" text-anchor="middle">B</text>
+<circle class="ac" cx="430" cy="120" r="20"/><text class="b" x="430" y="125" text-anchor="middle">C</text>
+<circle class="gr" cx="100" cy="200" r="20"/><text class="b" x="100" y="205" text-anchor="middle">D</text>
+<circle class="gr" cx="240" cy="200" r="20"/><text class="b" x="240" y="205" text-anchor="middle">E</text>
+<circle class="ac" cx="430" cy="200" r="20"/><text class="b" x="430" y="205" text-anchor="middle">F</text>
+<circle class="gr" cx="360" cy="280" r="20"/><text class="b" x="360" y="285" text-anchor="middle">G</text>
+<circle class="gr" cx="500" cy="280" r="20"/><text class="b" x="500" y="285" text-anchor="middle">H</text>
+<text class="mut" x="300" y="14" text-anchor="middle">root</text>
+<text class="mut" x="470" y="160">path A → C → F → H</text>
+</svg>
+<figcaption>The lecture's example tree · internal nodes in blue, leaves in green · highlighted path A → C → F → H</figcaption>
+</figure>
+<div class="def"><b>Tree</b>: a finite set of nodes with one special node, the <b>root</b>. The remaining nodes are split into disjoint subtrees, each of which is itself a tree. Every node except the root has <b>exactly one parent</b>, and there are no cycles.</div>
+
+<section id="s1">
+<h3><span class="n">10.1</span>Root, Leaf, Parent, Child and Non-Leaf Nodes</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Root</b>: the top node, here <b>A</b>.</li>
+<li><b>Leaf</b>: a node with <b>no children</b>, the lowest nodes because nothing comes after them: <b>D, E, G, H</b>. F is <i>not</i> a leaf, because it has children.</li>
+<li><b>Parent</b>: a node whose children exist: <b>A, B, C, F</b>. A's children are B and C; B's are D and E; C's is F; F's are G and H.</li>
+<li><b>Child</b>: B and C are children of A; D and E of B; F of C; G and H of F.</li>
+<li><b>Child vs leaf:</b> a child can also be the parent of other children. B is a child of A <i>and</i> the parent of D and E. A leaf can never be a parent.</li>
+<li><b>Non-leaf nodes</b>: put a bar over the leaves; everything else is non-leaf: <b>A, B, C, F</b>.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Leaf = <b>external node</b> = terminal node. Non-leaf = <b>internal node</b> = non-terminal node. The root counts as an internal node whenever it has at least one child. A single-node tree's root is also a leaf.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">10.2</span>Path, Ancestor/Descendant, Sibling and Degree</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Path</b>: the sequence of nodes from a starting node to an end node.
+<ul>
+<li>A to H: <b>A → C → F → H</b>.</li>
+<li>A to D: A → B → D.</li>
+<li>A to E: A → B → E.</li>
+<li>C to G: C → F → G.</li>
+</ul></li>
+<li><b>Ancestor / descendant</b>, on the path A → C → F → H:
+<ul>
+<li>the nodes <b>before</b> C are its <b>ancestors</b>, so A;</li>
+<li>the nodes <b>after</b> C are its <b>descendants</b>, so F and H.</li>
+</ul></li>
+<li><b>Siblings</b>: "a blood relation", children of the <b>same parent</b>.
+<ul>
+<li>D and E are siblings, and so are B and C.</li>
+<li>E and F are <b>not</b> siblings, because E is B's child and F is C's. "You can call them cousins, but not siblings."</li>
+</ul></li>
+<li><b>Degree of a node</b>: how many children it has.
+<ul>
+<li>A has degree 2, B has 2, and D has 0.</li>
+<li>A <b>leaf always has degree 0</b>.</li>
+</ul></li>
+</ul>
+(When naming the descendants, the lecture says "F and A"; it means F and <b>H</b>, the nodes after C on the path.)</div>
+<div class="tw"><table>
+<tr><th>Node</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr>
+<tr><td>Degree</td><td>2</td><td>2</td><td>1</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>A node's ancestors are <i>all</i> the nodes on the path from the root to it. C's descendants are <i>all</i> the nodes below it (F, G, H), not only those on one path.</li>
+<li><b>Degree of a tree</b> = the maximum degree of any node (here 2).</li>
+<li>The <b>length of a path</b> is usually counted in <b>edges</b>: A → C → F → H has length 3.</li>
+<li>In a tree there is exactly <b>one path</b> between any two nodes.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">10.3</span>Depth and Height</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Depth</b> of a node is measured <b>from the root down to that node</b>.
+<ul>
+<li>From A to G is 1, 2, 3 edges, so <b>depth(G) = 3</b>, and the same for H.</li>
+<li>The smallest depth is the root's own: root to root is <b>0</b>.</li>
+</ul></li>
+<li><b>Height</b> is the opposite: measured from the <b>node down to a leaf</b>, under one condition: the <b>deepest</b> leaf, so take the <b>maximum</b>.
+<ul>
+<li>From A, one leaf (D) gives 2 and another (G) gives 3, so <b>height(A) = 3</b>.</li>
+<li><b>height(C) = 2</b>, <b>height(F) = 1</b>, <b>height(E) = 0</b> (it is a leaf).</li>
+</ul></li>
+<li>Always remember: the <b>root's depth is 0</b>, and a <b>leaf's height is 0</b>.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Node</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr>
+<tr><td>Depth (root → node)</td><td>0</td><td>1</td><td>1</td><td>2</td><td>2</td><td>2</td><td>3</td><td>3</td></tr>
+<tr><td>Height (node → deepest leaf)</td><td>3</td><td>1</td><td>2</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li><b>Height of the tree = height of the root = maximum depth of any node</b>; here 3.</li>
+<li>Depth looks <b>up</b> to the root (one fixed answer). Height looks <b>down</b> and takes the <b>max</b> over all leaves.</li>
+<li>Some books count <b>nodes</b> instead of edges, so a single-node tree has height 1, not 0. Check the question's convention; if options look off by one, that's why.</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">10.4</span>Level, Edges, Forest, Counting Formulas &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Term</th><th>Meaning</th><th>In the example</th></tr>
+<tr><td>Level</td><td>the root is level 0 (or 1 in some books); children are one level more than their parent</td><td>G, H at level 3</td></tr>
+<tr><td>Edge</td><td>the link between a parent and a child</td><td>7 edges</td></tr>
+<tr><td>Subtree</td><td>a node together with all its descendants</td><td>C-F-G-H is the subtree rooted at C</td></tr>
+<tr><td>Forest</td><td>a set of disjoint trees; delete the root and you get a forest</td><td>removing A leaves {B-tree, C-tree}</td></tr>
+<tr><td>Degree of tree</td><td>the maximum node degree</td><td>2</td></tr>
+<tr><td>Height of tree</td><td>the height of the root</td><td>3</td></tr>
+<tr><td>Width of a level</td><td>the number of nodes at that level</td><td>level 2: D, E, F = 3</td></tr>
+</table></div>
+
+<div class="box add"><span class="t">➕ Formulas that are asked</span>
+<ul>
+<li>A tree with <b>n nodes has exactly n − 1 edges</b> (every node except the root has one edge to its parent). Example: 8 nodes, 7 edges.</li>
+<li>Sum of all node degrees = number of edges = <b>n − 1</b>. Example: 2+2+1+0+0+2+0+0 = 7.</li>
+<li><b>Leaf count</b> in a general tree, where n<sub>i</sub> is the number of nodes of degree i:
+<div class="formula">leaves n₀ = 1 + Σ (i − 1)·nᵢ   = 1 + n₂ + 2n₃ + 3n₄ + …</div>
+Check: n₂ = 3 (A, B, F) and n₁ = 1 (C), so n₀ = 1 + 3 = <b>4</b> (D, E, G, H) ✔.</li>
+<li>A <b>k-ary</b> tree in which every internal node has exactly k children (full k-ary), with i internal nodes, has <b>(k − 1)i + 1 leaves</b> and <b>ki + 1 nodes</b>.</li>
+</ul></div>
+
+<div class="box add"><span class="t">➕ Tree vs graph &amp; applications</span>
+<ul>
+<li>A tree is a <b>connected, acyclic</b> graph. A graph may have cycles, several paths between nodes, and no root (chapter 16).</li>
+<li>Uses: file systems and folders, organisation charts, the HTML DOM, compiler parse/expression trees (chapter 8), database indexes (B/B+ trees), routing, decision trees, heaps for priority queues (chapter 14).</li>
+<li>A general tree (any number of children) can be stored as a binary tree using the <b>left-child, right-sibling</b> representation.</li>
+</ul></div>
+
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"A node with no children" → <b>leaf / terminal / external</b> node.</li>
+<li>"Nodes with the same parent" → <b>siblings</b>.</li>
+<li>"Number of edges in a tree of n nodes" → <b>n − 1</b>.</li>
+<li>"Depth of the root" → 0. "Height of a leaf" → 0.</li>
+<li>"Tree is a ____ data structure" → <b>non-linear, hierarchical</b>.</li>
+</ul></div>
+
+<div class="num"><span class="t">Q1</span>In the lecture tree, list the ancestors of G and the descendants of B. → Ancestors of G: <b>F, C, A</b>. Descendants of B: <b>D, E</b>.</div>
+<div class="num"><span class="t">Q2</span>A tree has 4 nodes of degree 3, 3 nodes of degree 2, 2 nodes of degree 1, and the rest are leaves. How many leaves? → n₀ = 1 + 2·4 + 1·3 + 0·2 = <b>12</b>. Check: total nodes = 12 + 4 + 3 + 2 = 21, and edges = 4·3 + 3·2 + 2·1 = 20 = 21 − 1 ✔.</div>
+<div class="num"><span class="t">Q3</span>A full 3-ary tree has 10 internal nodes. Leaves and total nodes? → Leaves = (3 − 1)·10 + 1 = <b>21</b>; total = 3·10 + 1 = <b>31</b>.</div>
+<div class="num"><span class="t">Q4</span>A tree has 50 nodes. How many edges? → <b>49</b>.</div>
+<div class="num"><span class="t">Q5</span>Are E and F siblings in the lecture tree? → <b>No</b>. They have different parents (B and C); they are cousins.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Tree = <b>non-linear, hierarchical</b>, with multiple levels. The example is A(B(D, E), C(F(G, H))).</li>
+<li>Root A. Leaves D, E, G, H (no children, degree 0). Parents / non-leaf: A, B, C, F. A child can be a parent; a leaf can't.</li>
+<li>Path A→H = A, C, F, H. Ancestors come before a node on its root path; descendants come after it. Siblings share a parent (E and F are cousins).</li>
+<li>Degree = number of children. Degree of the tree = the maximum degree.</li>
+<li><b>Depth = root → node</b> (root 0). <b>Height = node → deepest leaf</b> (leaf 0). Height of the tree = height of the root = 3.</li>
+<li>n nodes ⇒ n − 1 edges. Leaves n₀ = 1 + Σ(i − 1)nᵢ. A full k-ary tree with i internal nodes has (k−1)i + 1 leaves.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 10 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="09-Queue.html">← Ch 9: Queue</a><a href="index.html">☰ All topics</a><a href="11-Binary-Tree.html">Ch 11: Binary Tree →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

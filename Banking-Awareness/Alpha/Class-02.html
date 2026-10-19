@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banking Alpha Class 2 · BSBD Account, Bank & Types of Deposit</title>
+<script src="../../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+
+.item{border-top:1px solid var(--line);padding:12px 0 4px}
+.item:first-of-type{border-top:0;padding-top:0}
+.item h4{margin:0 0 4px;font-size:16.5px}
+.item ul{margin:4px 0}
+.gk{font-size:13.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:6px 10px;margin:6px 0 4px}
+.gk b{color:var(--ink)}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+.tag.bank{color:var(--lec);border:1px solid var(--lec)}
+.tag.hot{color:var(--alert);border:1px solid var(--alert)}
+.recallbar{position:sticky;top:0;z-index:4;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--alert);border-radius:6px;padding:10px 14px;margin:16px 0;font-size:14px}
+.recallbar button{font:inherit;font-size:13px;background:var(--accent);color:#fff;border:0;border-radius:4px;padding:5px 12px;cursor:pointer}
+.recallbar button.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+.recallbar .hint{color:var(--muted);flex:1;min-width:200px}
+html.recall .item b.k{background:var(--surface-2);color:transparent;border-radius:3px;outline:1px dashed var(--muted);cursor:pointer;user-select:none}
+html.recall .item b.k.shown{color:inherit;background:var(--accent-soft);outline:0}
+.quiz details{border:1px solid var(--line);border-radius:5px;margin:6px 0;background:var(--surface)}
+.quiz summary{cursor:pointer;padding:8px 12px;font-weight:550}
+.quiz details p{margin:0;padding:0 12px 10px 32px;color:var(--accent);font-weight:600}
+.howto ol{margin:6px 0 0}
+.item::after{content:"";display:block;clear:both}
+.item figure.pic{float:right;width:150px;margin:2px 0 8px 16px;text-align:center}
+.item figure.pic img{width:150px;height:110px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px;display:block}
+.item figure.pic figcaption{font-size:11px;letter-spacing:0;text-transform:none;font-weight:500;margin-top:3px;line-height:1.3}
+.item figure.pic figcaption a{color:var(--muted);text-decoration:none}
+@media (max-width:600px){.item figure.pic{width:110px;margin-left:10px}.item figure.pic img{width:110px;height:84px}}
+@media print{.item figure.pic{break-inside:avoid}}
+.gt{position:relative;border-bottom:1.5px dotted var(--accent);cursor:help;outline:0}
+.gt .pop{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:270px;max-width:80vw;padding:10px 12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13px;font-weight:400;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal}
+.gt .pop::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.gt:hover .pop,.gt:focus .pop,.gt:focus-within .pop{display:block}
+.gt .pop img{float:right;width:64px;height:48px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:4px;padding:2px;margin:0 0 4px 8px}
+.gt .pop .pt{display:block;color:var(--accent);font-size:13.5px;margin-bottom:2px}
+.gt .pop .ps{display:block;color:var(--muted);font-size:12.5px;margin-bottom:4px}
+.gt .pop .pl{display:block;clear:both;margin:0;padding:0}
+.gt .pop .pi{display:block;position:relative;padding-left:14px;margin:2px 0}
+.gt .pop .pi::before{content:"";position:absolute;left:3px;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+html.recall .gt .pop{color:var(--ink)}
+html.recall b.k:not(.shown) .gt{border-bottom:0}
+html.recall b.k:not(.shown) .gt .pop{display:none!important}
+@media print{.gt .pop{display:none!important}}
+
+.item h4 .hi{font-weight:500;color:var(--muted);font-size:14px;margin-left:6px}
+.item .src{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--lec);margin:6px 0 0}
+.item figure.pic button.zoom,.gal button.zoom{all:unset;cursor:zoom-in;display:block}
+.item figure.pic button.zoom:focus-visible img,.gal button.zoom:focus-visible img{outline:2px solid var(--accent)}
+.gal{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 4px;clear:none}
+.item .box{display:flow-root}
+.gal figure{margin:0;width:180px;text-align:center}
+.gal img{width:180px;height:120px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px;padding:3px;display:block}
+.gal figcaption,.item figure.pic figcaption{font-size:11.5px;color:var(--muted);line-height:1.3;margin-top:3px;text-transform:none;letter-spacing:0;font-weight:500}
+.item .tw table{margin:6px 0}
+.item th,.item td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+.item th{background:var(--surface-2);font-size:13px}
+.box.add ul{margin:2px 0;padding-left:20px}
+figure.diagram{margin:10px 0;text-align:center}
+figure.diagram svg{width:100%;max-width:640px;height:auto}
+figure.diagram figcaption{font-size:12.5px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:500}
+.sort{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:8px 0}
+.sort .q{border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--surface)}
+.sort .q b{display:block;margin-bottom:6px}
+.sort button{font:inherit;font-size:13px;border:1px solid var(--accent);background:none;color:var(--accent);border-radius:4px;padding:3px 10px;margin-right:6px;cursor:pointer}
+.sort .q.ok{border-color:var(--ok);background:var(--lec-bg)} .sort .q.no{border-color:var(--bad)}
+.sort .fb{font-size:13px;margin-left:4px}
+.flash{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));margin:10px 0}
+.flash button{font:inherit;text-align:left;min-height:96px;border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:6px;background:var(--surface);color:var(--ink);padding:10px 12px;cursor:pointer}
+.flash button .bk{display:none;font-size:13.5px;color:var(--ink)}
+.flash button .fr{font-weight:700;color:var(--accent)}
+.flash button .hint{display:block;font-size:11px;color:var(--muted);margin-top:6px}
+.flash button.on .bk{display:block} .flash button.on .hint{display:none} .flash button.on{border-top-color:var(--ok)}
+.lb{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+.lb[hidden]{display:none}
+.lb img{max-width:min(96vw,1100px);max-height:82vh;background:#fff;border-radius:6px}
+.lb p{color:#fff;margin:10px 0 0;font-size:14px}
+.plan td,.plan th{border:1px solid var(--line);padding:7px 10px;vertical-align:top;text-align:left}
+.plan th{background:var(--surface-2)}
+.plan tr.ready td{background:var(--lec-bg)}
+.plan .st{white-space:nowrap;font-size:13px;font-weight:600}
+.plan .st.soon{color:var(--muted);font-weight:500}
+.tl{list-style:none;margin:10px 0;padding:0 0 0 18px;border-left:3px solid var(--accent)}
+.tl li{position:relative;margin:0 0 10px;padding-left:10px}
+.tl li::before{content:"";position:absolute;left:-27px;top:6px;width:13px;height:13px;border-radius:50%;background:var(--surface);border:3px solid var(--accent)}
+.tl .y{display:inline-block;min-width:116px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.plan .cov{display:block;margin-top:4px;font-size:13px;color:var(--lec)}
+.plan td.n{font-weight:700;color:var(--accent);white-space:nowrap}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Class navigation"><a href="Class-01.html">← Class 1</a><a href="index.html">☰ All classes</a><a href="Class-03.html">Class 3 →</a></nav>
+<header class="cover">
+  <div class="brand">Banking Awareness · Saarthi Alpha 2026 · Class 2 · Fri, 23 Jan 2026</div>
+  <h1>BSBD Account, Bank & Types of Deposit</h1>
+  <p class="sub">No-Frills / BSBD Account (rest of Class 1), Indian Banking System Part 1 – Definition of Bank, Types of Deposit. From the class PDF (Ashish Gautam Sir, Adda247 Warrior Pro Batch) · 12 topics.</p>
+  <div class="legend"><span class="l1">📄 From the class PDF</span><span class="l2">➕ Added for exam</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 Likely question</span></div>
+</header>
+<div class="box lec howto"><span class="t">🎓 How to study this page</span>
+<ol>
+<li><b>Read once.</b> The bullet points are the class PDF; purple ➕ boxes are extra points added for the exam. Click any picture to enlarge it, and hover over a <span style="border-bottom:1.5px dotted var(--accent)">dotted term</span> for a quick fact card.</li>
+<li><b>Turn Recall mode on</b>: the key facts go blank. Say each one, then click to reveal.</li>
+<li><b>Flip the flashcards</b> and take the self-test. Revise tomorrow, in a week and in a month.</li>
+</ol></div>
+<div class="box alert"><span class="t">ℹ️ Note</span>The class plan also lists History of Bank, Nationalisation and Merger of Banks; those slides are not in this PDF.</div>
+<div class="recallbar"><button id="recall" type="button">Recall mode: off</button><button id="revealall" class="ghost" type="button">Reveal all</button><span class="hint">Hides the key facts. Click any blank to reveal it.</span></div>
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#c1"><span class="n">1</span>No-Frills Account → BSBD Account</a></li><li><a href="#c2"><span class="n">2</span>Banking in India – what is a Bank?</a></li><li><a href="#c3"><span class="n">3</span>Types of Deposit</a></li><li><a href="#flash"><span class="n">4</span>Flashcards (7)</a></li><li><a href="#quiz"><span class="n">5</span>Self-test (16 questions)</a></li><li><a href="#rapid"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+<section id="c1"><h3><span class="n">1</span>No-Frills Account → BSBD Account</h3><p class="cs">The bank account built for financial inclusion (continues from Class 1).</p><div class="item"><h4><span class="tag bank">🏦 Banking</span>No-Frills Account<span class="hi">नो-फ्रिल्स खाता</span></h4><ul><li>A no-frills account in India is a <b class="k">basic savings account</b> designed for <b class="k">financial inclusion</b>.</li><li>It is an account with <b class="k">zero or very low minimum balance</b>.</li><li>Introduced by the <b class="k">Reserve Bank of India (<span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span>) in 2005</b>.</li><li>It targets <b class="k">low-income and underserved groups</b>.</li></ul><div class="gal"><figure class="g"><button type="button" class="zoom" data-full="../img/c2-nofrills-icon.jpg" data-cap="No-frills account" aria-label="Enlarge: No-frills account"><img src="../img/c2-nofrills-icon.jpg" alt="No-frills account" loading="lazy"></button><figcaption>No-frills account</figcaption></figure><figure class="g"><button type="button" class="zoom" data-full="../img/c2-field-account.jpg" data-cap="Opening accounts in a village" aria-label="Enlarge: Opening accounts in a village"><img src="../img/c2-field-account.jpg" alt="Opening accounts in a village" loading="lazy"></button><figcaption>Opening accounts in a village</figcaption></figure></div></div><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>2012: renamed Basic Savings Bank Deposit Account (BSBDA)</h4><ul><li>In <b class="k">2012</b>, <span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> renamed “no-frills accounts” to <b class="k">“Basic Savings Bank Deposit Accounts” (BSBDA)</b> to improve financial inclusion.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Two years to keep apart: no-frills account <b>introduced 2005</b>; renamed BSBDA in <b>2012</b>.</div></div><div class="item"><h4><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> Kehta Hai – the BSBD awareness campaign</h4><ul><li><b class="k">RBI Kehta Hai</b> is a <b class="k">public awareness initiative of RBI</b>.</li><li>Its BSBD message: “Don’t want to keep minimum balance in your account? Open BSBD Account.”</li><li>The ad “Banking becomes easy” says: open a BSBD account, no minimum balance required, easy to open with just <b class="k">Aadhaar Card and PAN Card or Form No. 60</b>.</li><li>The ad features cricketers <b>KL Rahul</b> and <b>Umesh Yadav</b> (both captioned “Indian Cricketer and RBI Employee”).</li></ul><div class="gal"><figure class="g"><button type="button" class="zoom" data-full="../img/c2-rbi-kehta-hai.jpg" data-cap="RBI Kehta Hai! – a public awareness initiative of RBI" aria-label="Enlarge: RBI Kehta Hai! – a public awareness initiative of RBI"><img src="../img/c2-rbi-kehta-hai.jpg" alt="RBI Kehta Hai! – a public awareness initiative of RBI" loading="lazy"></button><figcaption>RBI Kehta Hai! – a public awareness initiative of RBI</figcaption></figure><figure class="g"><button type="button" class="zoom" data-full="../img/c2-no-min-balance.jpg" data-cap="“Don’t want to keep minimum balance?”" aria-label="Enlarge: “Don’t want to keep minimum balance?”"><img src="../img/c2-no-min-balance.jpg" alt="“Don’t want to keep minimum balance?”" loading="lazy"></button><figcaption>“Don’t want to keep minimum balance?”</figcaption></figure><figure class="g"><button type="button" class="zoom" data-full="../img/c2-bsbd-ad.jpg" data-cap="BSBD ad: KL Rahul & Umesh Yadav" aria-label="Enlarge: BSBD ad: KL Rahul & Umesh Yadav"><img src="../img/c2-bsbd-ad.jpg" alt="BSBD ad: KL Rahul & Umesh Yadav" loading="lazy"></button><figcaption>BSBD ad: KL Rahul & Umesh Yadav</figcaption></figure></div><div class="box add"><span class="t">➕ Added for exam</span><ul><li><span class="gt" tabindex="0">Form 60<span class="pop" role="tooltip"><b class="pt">Form 60</b><span class="pl"><span class="pi">Declaration filed by a person who does <b>not have a PAN</b></span><span class="pi">Used for financial transactions instead of PAN</span></span></span></span> is the declaration a person gives when they do not have a PAN.</li></ul></div></div><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>BSBD Account – features (<span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> Kehta Hai notice)</h4><ul><li>Can be opened by <b class="k">any individual</b>, irrespective of his/her <b class="k">age or income</b>.</li><li>Can be opened <b class="k">without any initial deposit</b>. No need to maintain a <b class="k">minimum balance</b>.</li><li>A regular savings bank account can be <b class="k">converted into a BSBD account</b> at the request of the customer.</li><li>Basic facilities like an <b class="k">ATM-cum-Debit Card</b> are given <b class="k">free of charge</b>.</li><li>There is <b class="k">no limit on the number of deposits</b>.</li><li>Holders get a maximum of <b class="k">four withdrawals free of charge in a month</b>, counting ATM withdrawals, RTGS / NEFT / clearing / internet debits, standing instructions, EMIs, etc.</li><li>BSBD holders <b class="k">cannot have a regular savings bank account in the same bank</b>.</li></ul><div class="gal"><figure class="g"><button type="button" class="zoom" data-full="../img/c2-bsbd-notice-1.jpg" data-cap="RBI notice on BSBD – part 1" aria-label="Enlarge: RBI notice on BSBD – part 1"><img src="../img/c2-bsbd-notice-1.jpg" alt="RBI notice on BSBD – part 1" loading="lazy"></button><figcaption>RBI notice on BSBD – part 1</figcaption></figure><figure class="g"><button type="button" class="zoom" data-full="../img/c2-bsbd-notice-2.jpg" data-cap="RBI notice on BSBD – part 2" aria-label="Enlarge: RBI notice on BSBD – part 2"><img src="../img/c2-bsbd-notice-2.jpg" alt="RBI notice on BSBD – part 2" loading="lazy"></button><figcaption>RBI notice on BSBD – part 2</figcaption></figure></div></div><div class="item"><figure class="pic"><button type="button" class="zoom" data-full="../img/c2-piggy-laptop.jpg" data-cap="Saving in a basic account" aria-label="Enlarge: Saving in a basic account"><img src="../img/c2-piggy-laptop.jpg" alt="Saving in a basic account" loading="lazy"></button><figcaption>Saving in a basic account</figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>BSBD Account – rules and limits</h4><ul><li>The holder of a BSBD account is <b class="k">not eligible to open any other savings bank account in the same bank</b>.</li><li>If the customer already has a savings account in that bank, it must be <b class="k">closed within 30 days</b> from the date of opening the BSBD account.</li><li>Total <b class="k">credits</b> in such accounts should not exceed <b class="k">₹1 lakh in a year</b>.</li><li>The <b class="k">maximum balance</b> should not exceed <b class="k">₹50,000 at any time</b>.</li><li>Total <b class="k">debits</b> by way of cash withdrawals and transfers will not exceed <b class="k">₹10,000 in a month</b>.</li></ul><div class="tw"><table><thead><tr><th>Limit</th><th>Amount</th><th>Period</th></tr></thead><tbody><tr><td>Total credits (money coming in)</td><td>₹1,00,000</td><td>per year</td></tr><tr><td>Balance at any time</td><td>₹50,000</td><td>any time</td></tr><tr><td>Debits (cash withdrawals + transfers)</td><td>₹10,000</td><td>per month</td></tr><tr><td>Free withdrawals</td><td>4</td><td>per month</td></tr><tr><td>Close other SB account in same bank</td><td>within 30 days</td><td>of opening BSBDA</td></tr></tbody></table></div><div class="box trap"><span class="t">⚠️ Exam trap</span>Watch the wording. In <span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span>’s rules these three ceilings (₹1 lakh a year, ₹50,000 balance, ₹10,000 a month) belong to a <b>Small Account</b>, a BSBD account opened with relaxed (simplified) KYC. Write the numbers as taught; if a question says “Small Account”, these are the figures.</div></div></section>
+<section id="c2"><h3><span class="n">2</span>Banking in India – what is a Bank?</h3><p class="cs">Indian Banking System, Part 1.</p><div class="item"><figure class="pic"><button type="button" class="zoom" data-full="../img/c2-bank-illus.jpg" data-cap="Banking in India" aria-label="Enlarge: Banking in India"><img src="../img/c2-bank-illus.jpg" alt="Banking in India" loading="lazy"></button><figcaption>Banking in India</figcaption></figure><h4><span class="tag bank">🏦 Banking</span>Definition of Bank<span class="hi">बैंक</span></h4><ul><li>A bank is a <b class="k">financial institution</b> which <b class="k">accepts deposits</b> and provides <b class="k">loans & advances</b> and other financial services.</li><li>A bank is a <b class="k">licensed</b> financial institution that accepts money from people and businesses (as deposits) and then <b class="k">uses that money to give loans</b> and other credit facilities.</li></ul><div class="box add"><span class="t">➕ Added for exam</span><ul><li>Legal definition – <b>Banking Regulation Act, 1949, Section 5(b)</b>: “banking” means accepting, for the purpose of lending or investment, deposits of money from the public, repayable on demand or otherwise, and withdrawable by cheque, draft, order or otherwise.</li><li>Banks get their licence from <b><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span></b> under <b>Section 22</b> of the Banking Regulation Act.</li></ul></div></div><div class="item"><figure class="pic"><button type="button" class="zoom" data-full="../img/c2-deposit-bag.jpg" data-cap="Deposits are the bank’s raw material" aria-label="Enlarge: Deposits are the bank’s raw material"><img src="../img/c2-deposit-bag.jpg" alt="Deposits are the bank’s raw material" loading="lazy"></button><figcaption>Deposits are the bank’s raw material</figcaption></figure><h4>Accounts a bank offers</h4><ul><li>Banks offer various accounts where people can park their money safely: <b class="k">savings accounts</b>, <b class="k">current (business) accounts</b> and <b class="k">fixed / term deposits</b>.</li><li>In return the bank may <b class="k">pay interest</b> on these deposits and issue a <b class="k">passbook, cheque book or ATM card</b>.</li></ul></div></section>
+<section id="c3"><h3><span class="n">3</span>Types of Deposit</h3><p class="cs">जमा के प्रकार – the two families of deposit and their four accounts.</p><div class="item"><h4>The deposit family tree</h4><figure class="diagram"><svg viewBox="0 0 640 250" role="img" aria-label="Types of deposit: demand deposit (saving, current) and term deposit (recurring, fixed)">
+<rect class="bx" x="230" y="10" width="180" height="44" rx="6"/><text class="b" x="320" y="38" text-anchor="middle">Types of Deposit</text>
+<path class="ln" d="M320 54 V80 H160 V104 M320 80 H480 V104"/>
+<rect class="bx ac" x="70" y="104" width="180" height="50" rx="6"/><text class="b" x="160" y="126" text-anchor="middle">Demand Deposit</text><text class="mut" x="160" y="145" text-anchor="middle">माँग जमा · any time</text>
+<rect class="bx or" x="390" y="104" width="180" height="50" rx="6"/><text class="b" x="480" y="126" text-anchor="middle">Term Deposit</text><text class="mut" x="480" y="145" text-anchor="middle">मियादी जमा · fixed period</text>
+<path class="ln" d="M160 154 V176 H90 V196 M160 176 H230 V196 M480 176 H410 V196 M480 154 V176 H550 V196"/>
+<rect class="bx" x="30" y="196" width="120" height="44" rx="6"/><text x="90" y="216" text-anchor="middle">Saving A/c</text><text class="mut" x="90" y="233" text-anchor="middle">बचत खाता</text>
+<rect class="bx" x="170" y="196" width="120" height="44" rx="6"/><text x="230" y="216" text-anchor="middle">Current A/c</text><text class="mut" x="230" y="233" text-anchor="middle">चालू खाता</text>
+<rect class="bx" x="350" y="196" width="120" height="44" rx="6"/><text x="410" y="216" text-anchor="middle">Recurring (RD)</text><text class="mut" x="410" y="233" text-anchor="middle">आवर्ती जमा</text>
+<rect class="bx" x="490" y="196" width="120" height="44" rx="6"/><text x="550" y="216" text-anchor="middle">Fixed (FD)</text><text class="mut" x="550" y="233" text-anchor="middle">सावधि जमा</text>
+</svg><figcaption>Then test yourself in the quick check below: is each account demand or term?</figcaption></figure><ul><li><b class="k">Demand Deposit</b> (माँग जमा) → <b class="k">Saving Account</b> (बचत खाता) and <b class="k">Current Account</b> (चालू खाता).</li><li><b class="k">Term Deposit</b> (मियादी जमा) → <b class="k">Recurring Deposit Account</b> (आवर्ती जमा खाता) and <b class="k">Fixed Deposit Account</b> (सावधि जमा खाता).</li></ul><p class="src">Quick check – demand or term?</p><div class="sort"><div class="q" data-a="Demand"><b>Saving Account</b><button type="button" data-v="Demand">Demand</button><button type="button" data-v="Term">Term</button><span class="fb"></span></div><div class="q" data-a="Term"><b>Recurring Deposit</b><button type="button" data-v="Demand">Demand</button><button type="button" data-v="Term">Term</button><span class="fb"></span></div><div class="q" data-a="Demand"><b>Current Account</b><button type="button" data-v="Demand">Demand</button><button type="button" data-v="Term">Term</button><span class="fb"></span></div><div class="q" data-a="Term"><b>Fixed Deposit</b><button type="button" data-v="Demand">Demand</button><button type="button" data-v="Term">Term</button><span class="fb"></span></div></div></div><div class="item"><h4>Demand Deposits<span class="hi">माँग जमा</span></h4><ul><li>These offer <b class="k">high liquidity</b> for everyday use, with <b class="k">no fixed maturity</b>.</li><li>Ideal for <b class="k">transactions</b> but earn <b class="k">lower interest</b>.</li></ul><div class="box add"><span class="t">➕ Added for exam</span><ul><li>A <b>current account</b> is for businesses with many transactions; banks normally pay <b>no interest</b> on it and give an overdraft facility.</li><li>Savings + current deposits together are called <b><span class="gt" tabindex="0">CASA<span class="pop" role="tooltip"><b class="pt">CASA</b><span class="ps">Current Account + Savings Account deposits</span><span class="pl"><span class="pi">Low-cost funds for a bank</span><span class="pi">CASA ratio = CASA ÷ total deposits</span></span></span></span></b> – cheap money for a bank, so a high CASA ratio is good for it.</li></ul></div></div><div class="item"><h4>Term Deposits<span class="hi">सावधि / मियादी जमा</span></h4><ul><li>Term deposits are <b class="k">interest-bearing</b> bank accounts where you deposit a <b class="k">lump sum (FD) or instalments (RD)</b> for a <b class="k">fixed period (term)</b> until maturity.</li><li>They earn <b class="k">higher interest than demand deposits</b>.</li></ul><div class="box add"><span class="t">➕ Added for exam</span><ul><li><b>FD</b> = one lump sum for a fixed term (minimum tenure is usually 7 days). <b>RD</b> = a fixed amount every month for a fixed term.</li><li>Deposits in a bank are insured by <b><span class="gt" tabindex="0">DICGC<span class="pop" role="tooltip"><b class="pt">DICGC</b><span class="ps">Deposit Insurance and Credit Guarantee Corporation</span><span class="pl"><span class="pi">Wholly owned subsidiary of <b>RBI</b></span><span class="pi">Insures bank deposits up to <b>₹5 lakh</b> per depositor per bank</span></span></span></span></b> up to <b>₹5 lakh</b> per depositor per bank (principal + interest).</li></ul></div></div><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>Demand vs Term – the comparison table</h4><div class="tw"><table><thead><tr><th>Feature</th><th>Demand Deposits</th><th>Term Deposits</th></tr></thead><tbody><tr><td>Description</td><td>Deposits that can be <b class="k">withdrawn at any time without prior notice</b>.</td><td>Deposits held at a financial institution that have a <b class="k">fixed term</b> and typically offer higher interest rates than demand deposits.</td></tr><tr><td>Accessibility</td><td>High accessibility with <b class="k">no restrictions</b> on withdrawal timing.</td><td>Restricted by the term of the deposit. <b class="k">Early withdrawal may result in penalties</b>.</td></tr><tr><td>Interest rates</td><td>Generally <b class="k">lower</b> than term deposits.</td><td><b class="k">Higher</b> than demand deposits, to compensate for the lack of accessibility.</td></tr><tr><td>Suited for</td><td>Day-to-day transactions and immediate access to funds.</td><td>Saving money over a longer period for higher interest earnings.</td></tr></tbody></table></div></div><div class="item"><h4>One-glance summary</h4><div class="tw"><table><thead><tr><th>Type</th><th>Examples</th><th>Accessibility</th><th>Interest rate</th></tr></thead><tbody><tr><td>Demand Deposit</td><td>Savings, Current</td><td>Anytime withdrawal</td><td><b class="k">Lower</b></td></tr><tr><td>Term Deposit</td><td>Fixed, Recurring</td><td>Locked till maturity</td><td><b class="k">Higher</b></td></tr></tbody></table></div><div class="box trap"><span class="t">⚠️ Exam trap</span>A <b>Recurring</b> Deposit is a <b>term</b> deposit even though you pay into it every month: the money is locked till maturity. Don’t put RD under demand deposits.</div></div></section>
+<section id="flash"><h3><span class="n">4</span>Flashcards</h3><p class="cs">Say the meaning, then tap the card to check.</p><div class="flash"><button type="button"><span class="fr">No-frills account</span><span class="bk">Basic savings account with zero / very low minimum balance, introduced by RBI in 2005 for financial inclusion.</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">BSBDA</span><span class="bk">Basic Savings Bank Deposit Account – the 2012 name for no-frills accounts.</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">BSBD free withdrawals</span><span class="bk">Maximum 4 free withdrawals a month (ATM, NEFT/RTGS, clearing, internet debits, SI, EMIs).</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">Bank</span><span class="bk">A licensed financial institution that accepts deposits and gives loans & advances and other financial services.</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">Demand deposit</span><span class="bk">Withdrawable any time without notice; high liquidity, lower interest (Savings, Current).</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">Term deposit</span><span class="bk">Locked for a fixed term; higher interest, penalty on early withdrawal (FD, RD).</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">RBI Kehta Hai</span><span class="bk">Public awareness initiative of the RBI.</span><span class="hint">tap to flip</span></button></div></section><section id="quiz" class="quiz"><h3><span class="n">5</span>Self-test</h3><p class="cs">Answer out loud first, then click to check.</p><details><summary>Who introduced no-frills accounts, and when?</summary><p>The Reserve Bank of India, in 2005.</p></details><details><summary>In which year were no-frills accounts renamed, and to what?</summary><p>2012 – Basic Savings Bank Deposit Accounts (BSBDA).</p></details><details><summary>What minimum balance does a BSBD account need?</summary><p>None – zero minimum balance and no initial deposit.</p></details><details><summary>Who can open a BSBD account?</summary><p>Any individual, irrespective of age or income.</p></details><details><summary>How many free withdrawals does a BSBD holder get per month?</summary><p>Maximum four, including ATM withdrawals and RTGS/NEFT/clearing/internet debits, SIs, EMIs.</p></details><details><summary>Is there a limit on the number of deposits in a BSBD account?</summary><p>No.</p></details><details><summary>A customer with a savings account opens a BSBDA in the same bank. What must they do?</summary><p>Close the other savings account within 30 days of opening the BSBDA.</p></details><details><summary>BSBD limits taught in class: total credits per year, maximum balance, debits per month?</summary><p>₹1 lakh a year; ₹50,000 at any time; ₹10,000 a month.</p></details><details><summary>Which documents does the BSBD ad say are enough to open the account?</summary><p>Aadhaar Card and PAN Card, or Form No. 60.</p></details><details><summary>What is “RBI Kehta Hai”?</summary><p>A public awareness initiative of the RBI.</p></details><details><summary>Define a bank.</summary><p>A financial institution that accepts deposits and provides loans & advances and other financial services.</p></details><details><summary>Name the two types of deposit and their examples.</summary><p>Demand deposit (savings, current) and term deposit (fixed, recurring).</p></details><details><summary>Which deposit offers higher liquidity, and which offers higher interest?</summary><p>Demand deposits – higher liquidity; term deposits – higher interest.</p></details><details><summary>What may happen if you withdraw a term deposit early?</summary><p>You may pay a penalty.</p></details><details><summary>Is a Recurring Deposit a demand or term deposit?</summary><p>Term deposit.</p></details><details><summary>What does a bank give a depositor besides interest?</summary><p>A passbook, cheque book or ATM card.</p></details></section><div class="rapid" id="rapid"><h3>⚡ Rapid Revision</h3><ul><li>No-frills account: RBI <b>2005</b>, zero/low balance, for low-income groups → renamed <b>BSBDA in 2012</b>.</li><li>BSBDA: anyone, any age/income · no initial deposit · no minimum balance · free ATM-cum-debit card · unlimited deposits · <b>4 free withdrawals/month</b>.</li><li>BSBDA holder: no other SB account in same bank; close existing one within <b>30 days</b>.</li><li>Limits taught: credits ≤ ₹1 lakh/yr · balance ≤ ₹50,000 · debits ≤ ₹10,000/month.</li><li>RBI Kehta Hai = RBI’s public awareness initiative; BSBD ad: Aadhaar + PAN or Form 60.</li><li>Bank = accepts deposits + gives loans & advances (+ other services); licensed by RBI.</li><li>Demand deposit = Savings + Current: any-time withdrawal, high liquidity, low interest.</li><li>Term deposit = FD + RD: fixed term, higher interest, penalty on early withdrawal.</li></ul></div>
+<p class="end" id="fin">End of Saarthi Alpha · Class 2 · BSBD Account, Bank & Types of Deposit</p>
+<nav class="topnav" aria-label="Class navigation"><a href="Class-01.html">← Class 1</a><a href="index.html">☰ All classes</a><a href="Class-03.html">Class 3 →</a></nav>
+</div>
+<div class="lb" id="lb" hidden><img alt=""><p></p></div>
+<script>
+(function(){
+  var lb=document.getElementById('lb'), im=lb.querySelector('img'), cap=lb.querySelector('p');
+  document.addEventListener('click',function(e){
+    var z=e.target.closest('.zoom');
+    if(z){ im.src=z.dataset.full; cap.textContent=z.dataset.cap||''; lb.hidden=false; return; }
+    if(e.target.closest('#lb')){ lb.hidden=true; return; }
+    var f=e.target.closest('.flash button'); if(f){ f.classList.toggle('on'); return; }
+    var s=e.target.closest('.sort button');
+    if(s){ var q=s.closest('.q'), ok=s.dataset.v===q.dataset.a;
+      q.classList.remove('ok','no'); q.classList.add(ok?'ok':'no');
+      q.querySelector('.fb').textContent=ok?'✓ Correct':'✗ Answer: '+q.dataset.a; }
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') lb.hidden=true; });
+})();
+</script>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('ca-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('ca-notes-theme',nxt);}catch(e){}
+  });
+  var rb=document.getElementById('recall');
+  if(!rb) return;
+  // Recall mode: blank out key facts; click one to reveal it.
+  function setRecall(on){
+    root.classList.toggle('recall',on);
+    rb.textContent='Recall mode: '+(on?'on':'off');
+    document.querySelectorAll('b.k.shown').forEach(function(b){b.classList.remove('shown');});
+  }
+  rb.addEventListener('click',function(){ setRecall(!root.classList.contains('recall')); });
+  document.getElementById('revealall').addEventListener('click',function(){
+    document.querySelectorAll('b.k').forEach(function(b){b.classList.add('shown');});
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('b.k'); if(b && root.classList.contains('recall')) b.classList.toggle('shown');
+  });
+})();
+</script>
+</body>
+</html>

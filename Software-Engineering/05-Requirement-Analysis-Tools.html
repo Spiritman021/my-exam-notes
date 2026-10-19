@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE Requirement Analysis Tools Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="04-Requirement-Engineering.html">← Ch 4: Requirement Engineering and Gathering</a><a href="index.html">☰ All topics</a><a href="06-SRS.html">Ch 6: Software Requirement Specification (SRS) →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Software Engineering — Chapter 5: Requirement Analysis Tools</h1>
+  <p class="sub">Volume 04 · Part 5 · Built from the one-shot Software Engineering lecture transcript (Requirement Analysis section, second half), plus the exam points the lecture skipped. The five tools used to remove conflicts, inconsistencies and gaps from gathered requirements: flowchart, DFD, data dictionary, ER diagram and decision table.</p>
+  <ul class="tags"><li>Flowchart</li><li>DFD</li><li>Context diagram</li><li>DFD levels</li><li>Data dictionary</li><li>ER diagram</li><li>Decision table</li><li>Decision tree</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">5.1</span>Flowchart (Sum of Two Numbers; Pass/Fail Decision)</a></li>
+<li><a href="#s2"><span class="n">5.2</span>Data Flow Diagram: Notation and Valid/Invalid Flows</a></li>
+<li><a href="#s3"><span class="n">5.3</span>DFD Levels (Level 0, 1, 2) — Food Ordering System Example</a></li>
+<li><a href="#s4"><span class="n">5.4</span>Data Dictionary (Marks Out of 100)</a></li>
+<li><a href="#s5"><span class="n">5.5</span>ER Diagram (Student Studies in College)</a></li>
+<li><a href="#s6"><span class="n">5.6</span>Decision Table / Cause-Effect Table (Login Example)</a></li>
+<li><a href="#s7"><span class="n">5.7</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 5</div>
+<h2 class="ch">Requirement Analysis Tools</h2>
+<p>Gathered requirements arrive as a messy pile of notes, interview answers and wish lists. The <b>analysis</b> step (chapter 4) turns that pile into something precise by drawing it. A picture makes gaps and contradictions obvious in a way paragraphs never do. The lecture covers five tools, each showing a different side of the system: <b>control flow</b> (flowchart), <b>data flow</b> (DFD), <b>data meaning</b> (data dictionary), <b>data relationships</b> (ER diagram) and <b>decision logic</b> (decision table).</p>
+
+<section id="s1">
+<h3><span class="n">5.1</span>Flowchart (Sum of Two Numbers; Pass/Fail Decision)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A flowchart shows the <b>flow of control</b>: the order in which steps run and where decisions branch. The lecture's two examples:
+<ul>
+<li><b>Sum of two numbers</b>: Start → read x, y → sum = x + y → print sum → End.</li>
+<li><b>Pass/fail</b>: a decision diamond "marks &lt; 35?". Yes → "Not promoted"; No → "Promoted".</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 640 300" role="img" aria-label="Two flowcharts: sum and pass/fail">
+<g>
+<rect class="gr" x="70" y="10" width="100" height="30" rx="15"/><text x="120" y="30" text-anchor="middle">Start</text>
+<polygon class="bx" points="70,60 190,60 170,92 50,92"/><text x="120" y="81" text-anchor="middle">Read x, y</text>
+<rect class="ac" x="60" y="112" width="120" height="32" rx="2"/><text x="120" y="133" text-anchor="middle">sum = x + y</text>
+<polygon class="bx" points="70,164 190,164 170,196 50,196"/><text x="120" y="185" text-anchor="middle">Print sum</text>
+<rect class="gr" x="70" y="216" width="100" height="30" rx="15"/><text x="120" y="236" text-anchor="middle">End</text>
+<g class="lna"><line x1="120" y1="40" x2="120" y2="60"/><line x1="120" y1="92" x2="120" y2="112"/><line x1="120" y1="144" x2="120" y2="164"/><line x1="120" y1="196" x2="120" y2="216"/></g>
+</g>
+<g>
+<rect class="gr" x="400" y="10" width="100" height="30" rx="15"/><text x="450" y="30" text-anchor="middle">Start</text>
+<polygon class="bx" points="400,60 520,60 500,92 380,92"/><text x="450" y="81" text-anchor="middle">Read marks</text>
+<polygon class="or" points="450,110 520,150 450,190 380,150"/><text x="450" y="155" text-anchor="middle">marks &lt; 35?</text>
+<rect class="ac" x="270" y="210" width="120" height="32" rx="2"/><text x="330" y="231" text-anchor="middle">Not promoted</text>
+<rect class="ac" x="510" y="210" width="110" height="32" rx="2"/><text x="565" y="231" text-anchor="middle">Promoted</text>
+<rect class="gr" x="400" y="262" width="100" height="30" rx="15"/><text x="450" y="282" text-anchor="middle">End</text>
+<g class="lna"><line x1="450" y1="40" x2="450" y2="60"/><line x1="450" y1="92" x2="450" y2="110"/><path d="M380,150 H330 V210"/><path d="M520,150 H565 V210"/><path d="M330,242 V277 H400"/><path d="M565,242 V277 H500"/></g>
+<text class="mut" x="352" y="144">Yes</text><text class="mut" x="535" y="144">No</text>
+</g>
+</svg>
+<figcaption>Oval = start/end · parallelogram = input/output · rectangle = process · diamond = decision</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<div class="tw"><table>
+<tr><th>Symbol</th><th>Meaning</th></tr>
+<tr><td>Oval / rounded rectangle</td><td>Terminal: start or end</td></tr>
+<tr><td>Parallelogram</td><td>Input / output</td></tr>
+<tr><td>Rectangle</td><td>Process (calculation, assignment)</td></tr>
+<tr><td>Diamond</td><td>Decision (yes/no branch)</td></tr>
+<tr><td>Arrow</td><td>Flow line, the direction of control</td></tr>
+<tr><td>Small circle</td><td>On-page connector</td></tr>
+</table></div></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">5.2</span>Data Flow Diagram: Notation and Valid/Invalid Flows</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A DFD shows how <b>data moves</b> through the system: where it comes from, which processes transform it, and where it is stored.
+<div class="tw"><table>
+<tr><th>Element</th><th>Symbol</th><th>Meaning</th></tr>
+<tr><td><b>Process</b></td><td>Circle (bubble)</td><td>A function that transforms input data into output data</td></tr>
+<tr><td><b>External entity</b> (terminator)</td><td>Rectangle</td><td>A source or sink of data outside the system: a customer, a bank</td></tr>
+<tr><td><b>Data store</b></td><td>Two parallel lines (a box without its vertical sides)</td><td>Data at rest: a file or database table</td></tr>
+<tr><td><b>Data flow</b></td><td>Arrow</td><td>Data in motion, labelled with what it carries</td></tr>
+</table></div>
+<h4>Valid and invalid flows</h4>
+A <b>process must sit between</b> any two non-process elements.
+<ul>
+<li><b>Valid:</b> entity ↔ process, process ↔ data store, process → process.</li>
+<li><b>Invalid:</b> entity → entity, entity → data store (an outsider writing straight to the database is dangerous), data store → data store.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 660 200" role="img" aria-label="DFD symbols and valid and invalid flows">
+<g>
+<rect class="bx" x="10" y="20" width="90" height="36" rx="2"/><text x="55" y="43" text-anchor="middle">Entity</text>
+<circle class="ac" cx="200" cy="38" r="30"/><text x="200" y="43" text-anchor="middle">Process</text>
+<line class="ln" x1="290" y1="22" x2="380" y2="22"/><line class="ln" x1="290" y1="54" x2="380" y2="54"/><text x="335" y="43" text-anchor="middle">Data store</text>
+<line class="lna" x1="100" y1="38" x2="170" y2="38"/><polygon class="aha" points="164,33 172,38 164,43"/>
+<line class="lna" x1="230" y1="38" x2="290" y2="38"/><polygon class="aha" points="284,33 292,38 284,43"/>
+<text x="520" y="43" text-anchor="middle">✓ entity → process → store</text>
+</g>
+<g>
+<rect class="bx" x="10" y="100" width="90" height="36" rx="2"/><text x="55" y="123" text-anchor="middle">Entity</text>
+<rect class="bx" x="180" y="100" width="90" height="36" rx="2"/><text x="225" y="123" text-anchor="middle">Entity</text>
+<line class="hard" x1="100" y1="118" x2="180" y2="118"/><text x="140" y="112" text-anchor="middle">✗</text>
+<rect class="bx" x="300" y="100" width="90" height="36" rx="2"/><text x="345" y="123" text-anchor="middle">Entity</text>
+<line class="ln" x1="460" y1="100" x2="550" y2="100"/><line class="ln" x1="460" y1="136" x2="550" y2="136"/><text x="505" y="123" text-anchor="middle">Store</text>
+<line class="hard" x1="390" y1="118" x2="460" y2="118"/><text x="425" y="112" text-anchor="middle">✗</text>
+<text class="mut" x="330" y="170" text-anchor="middle">entity → entity ✗ · entity → store ✗ · store → store ✗ — always pass through a process</text>
+</g>
+</svg>
+<figcaption>DFD notation (Yourdon/DeMarco) and the "process in between" rule</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>A DFD is also called a <b>bubble chart</b> or <b>process model</b>.</li>
+<li>The circle notation is <b>Yourdon–DeMarco</b>; <b>Gane–Sarson</b> notation uses rounded rectangles for processes and open-ended rectangles for data stores.</li>
+<li>A process must have <b>at least one input and one output</b>:
+<ul>
+<li>a process with only inputs is a <b>black hole</b>;</li>
+<li>a process with only outputs is a <b>miracle</b>;</li>
+<li>a process whose inputs can't produce its outputs is a <b>grey hole</b>.</li>
+</ul></li>
+<li>Name processes with a verb ("Generate bill"), and entities, stores and flows with nouns.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A DFD shows <b>data flow, not control flow</b>. It has no loops, decisions or sequence. "When" and "if" belong in flowcharts and decision tables. A DFD does not show the order in which processes run.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">5.3</span>DFD Levels (Level 0, 1, 2) — Food Ordering System Example</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Level 0</b> (context diagram / overview): the whole system as <b>one process</b>, surrounded by its external entities.</li>
+<li><b>Level 1</b>: breaks that process into its <b>major processes</b> (1, 2, 3…) and shows the data stores.</li>
+<li><b>Level 2</b>: breaks one Level-1 process into sub-processes 1.1, 1.2, 1.3.</li>
+<li><b>Level 3</b>: goes further, to 1.1.1 and so on.</li>
+</ul>
+<b>Worked example: Food Ordering System.</b>
+<ul>
+<li><b>Level 0</b>: entities <b>Customer</b>, <b>Kitchen</b> and <b>Manager</b>. The customer sends an <i>order</i> and receives a <i>bill</i>; the system sends a <i>food order</i> to the kitchen and a <i>report</i> to the manager.</li>
+<li><b>Level 1</b>: processes <b>1 Order Processing</b> and <b>2 Generate Report</b>, with data stores <b>D1 Inventory</b> and <b>D2 Orders</b>.</li>
+<li><b>Level 2</b> (of process 1): <b>1.1 Receive Order</b>, which sends the food order to the kitchen, and <b>1.2 Generate Bill</b>, which sends the bill to the customer.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 660 190" role="img" aria-label="Level 0 DFD of a food ordering system">
+<circle class="ac" cx="330" cy="95" r="58"/><text x="330" y="90" text-anchor="middle" class="b">0</text><text x="330" y="108" text-anchor="middle">Food Ordering</text><text x="330" y="124" text-anchor="middle">System</text>
+<rect class="bx" x="20" y="77" width="110" height="36" rx="2"/><text x="75" y="100" text-anchor="middle">Customer</text>
+<rect class="bx" x="530" y="20" width="110" height="36" rx="2"/><text x="585" y="43" text-anchor="middle">Kitchen</text>
+<rect class="bx" x="530" y="134" width="110" height="36" rx="2"/><text x="585" y="157" text-anchor="middle">Manager</text>
+<g class="lna"><line x1="130" y1="85" x2="272" y2="85"/><line x1="272" y1="105" x2="130" y2="105"/><line x1="382" y1="70" x2="530" y2="40"/><line x1="382" y1="120" x2="530" y2="150"/></g>
+<polygon class="aha" points="266,80 274,85 266,90"/><polygon class="aha" points="136,100 128,105 136,110"/><polygon class="aha" points="522,37 532,40 524,46"/><polygon class="aha" points="522,144 532,150 522,154"/>
+<text class="mut" x="200" y="78" text-anchor="middle">order</text><text class="mut" x="200" y="122" text-anchor="middle">bill</text>
+<text class="mut" x="455" y="46" text-anchor="middle">food order</text><text class="mut" x="455" y="150" text-anchor="middle">report</text>
+</svg>
+<figcaption>Level 0 · context diagram: one process, three external entities</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 660 230" role="img" aria-label="Level 1 DFD of a food ordering system">
+<rect class="bx" x="10" y="50" width="100" height="36" rx="2"/><text x="60" y="73" text-anchor="middle">Customer</text>
+<rect class="bx" x="550" y="20" width="100" height="36" rx="2"/><text x="600" y="43" text-anchor="middle">Kitchen</text>
+<rect class="bx" x="550" y="180" width="100" height="36" rx="2"/><text x="600" y="203" text-anchor="middle">Manager</text>
+<circle class="ac" cx="250" cy="68" r="46"/><text x="250" y="64" text-anchor="middle" class="b">1</text><text x="250" y="82" text-anchor="middle">Order Processing</text>
+<circle class="ac" cx="420" cy="180" r="42"/><text x="420" y="176" text-anchor="middle" class="b">2</text><text x="420" y="194" text-anchor="middle">Generate Report</text>
+<line class="ln" x1="60" y1="150" x2="200" y2="150"/><line class="ln" x1="60" y1="178" x2="200" y2="178"/><text x="130" y="169" text-anchor="middle">D1 Inventory</text>
+<line class="ln" x1="260" y1="150" x2="330" y2="150"/><line class="ln" x1="260" y1="178" x2="330" y2="178"/><text x="295" y="169" text-anchor="middle">D2 Orders</text>
+<g class="lna"><line x1="110" y1="60" x2="204" y2="60"/><line x1="204" y1="78" x2="110" y2="78"/><line x1="296" y1="58" x2="550" y2="40"/><line x1="230" y1="110" x2="160" y2="150"/><line x1="265" y1="112" x2="290" y2="150"/><line x1="330" y1="166" x2="378" y2="176"/><line x1="462" y1="190" x2="550" y2="198"/></g>
+<text class="mut" x="157" y="54" text-anchor="middle">order</text><text class="mut" x="157" y="94" text-anchor="middle">bill</text>
+<text class="mut" x="430" y="40" text-anchor="middle">food order</text><text class="mut" x="180" y="126">stock</text><text class="mut" x="285" y="132">order record</text>
+<text class="mut" x="505" y="186" text-anchor="middle">report</text>
+</svg>
+<figcaption>Level 1 · major processes and data stores appear</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 660 130" role="img" aria-label="Level 2 DFD of order processing">
+<rect class="bx" x="10" y="44" width="100" height="36" rx="2"/><text x="60" y="67" text-anchor="middle">Customer</text>
+<circle class="pu" cx="230" cy="62" r="42"/><text x="230" y="58" text-anchor="middle" class="b">1.1</text><text x="230" y="76" text-anchor="middle">Receive Order</text>
+<circle class="pu" cx="420" cy="62" r="42"/><text x="420" y="58" text-anchor="middle" class="b">1.2</text><text x="420" y="76" text-anchor="middle">Generate Bill</text>
+<rect class="bx" x="550" y="6" width="100" height="32" rx="2"/><text x="600" y="27" text-anchor="middle">Kitchen</text>
+<g class="lna"><line x1="110" y1="56" x2="188" y2="56"/><line x1="272" y1="62" x2="378" y2="62"/><line x1="262" y1="34" x2="550" y2="22"/><path d="M420,104 V118 H60 V80"/></g>
+<text class="mut" x="150" y="50" text-anchor="middle">order</text><text class="mut" x="325" y="56" text-anchor="middle">order details</text><text class="mut" x="420" y="30" text-anchor="middle">food order</text><text class="mut" x="240" y="114" text-anchor="middle">bill</text>
+</svg>
+<figcaption>Level 2 · process 1 split into 1.1 and 1.2</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Balancing</b>: the data flows entering and leaving a process at one level must match the flows of its child diagram at the next level. In the example, "order" in and "bill" out of process 1 must still appear around 1.1 and 1.2. The context diagram has <b>exactly one process</b> and normally <b>no data stores</b>. Each level shows more detail without changing the system's boundary.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Level 0 DFD" and "context diagram" are the <b>same thing</b>. Level-1 processes are numbered 1, 2, 3; Level-2 processes are numbered 1.1, 1.2. Data stores appear from <b>Level 1</b> onward.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">5.4</span>Data Dictionary (Marks Out of 100)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A <b>data dictionary</b> is a list of <b>every data item in the DFD</b> with its full details, the "kundli" of each data item:
+<ul>
+<li>name and <b>aliases</b> (other names for it);</li>
+<li><b>description</b>;</li>
+<li><b>range of values</b>;</li>
+<li><b>relationships</b> with other items;</li>
+<li><b>type and size</b>.</li>
+</ul>
+Example: for an exam out of 100, the dictionary says <i>marks</i> is an integer from 0 to 100, so values like 105 or −5 are clearly invalid. It <b>removes ambiguity</b> by giving everyone standard terminology: whenever a term's meaning is unclear, look it up.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Standard data-dictionary notation (DeMarco):
+<div class="tw"><table>
+<tr><th>Symbol</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><code>=</code></td><td>is composed of</td><td><code>name = first_name + last_name</code></td></tr>
+<tr><td><code>+</code></td><td>and (sequence)</td><td><code>address = street + city + pin</code></td></tr>
+<tr><td><code>[ | ]</code></td><td>either / or (selection)</td><td><code>payment = [cash | card | UPI]</code></td></tr>
+<tr><td><code>{ }</code></td><td>iteration (repeated 0 or more times)</td><td><code>order = customer_id + {item}</code></td></tr>
+<tr><td><code>( )</code></td><td>optional</td><td><code>name = first + (middle) + last</code></td></tr>
+<tr><td><code>* *</code></td><td>comment</td><td><code>*marks out of 100*</code></td></tr>
+</table></div>
+The data dictionary is the <b>repository</b> that ties DFDs, ER diagrams and the SRS together. It is also called metadata, "data about data".</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">5.5</span>ER Diagram (Student Studies in College)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Covered briefly here; details belong to DBMS.
+<ul>
+<li><b>Entities</b> (rectangles): <i>Student</i>, <i>College</i>.</li>
+<li><b>Attributes</b> (ellipses): name; <b>roll no</b>, the <b>primary key</b>, shown <u>underlined</u>; <b>phone</b>, <b>multivalued</b>, shown as a double ellipse; college id; <b>address</b>, <b>composite</b>, made of street + city.</li>
+<li><b>Relationship</b> (diamond): <i>studies in</i>.</li>
+<li><b>Cardinality</b>: 1:1, M:1 (many students, one college), M:N.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 660 220" role="img" aria-label="ER diagram Student studies in College">
+<rect class="ac" x="120" y="100" width="110" height="40" rx="2"/><text x="175" y="125" text-anchor="middle" class="b">Student</text>
+<polygon class="or" points="330,90 400,120 330,150 260,120"/><text x="330" y="125" text-anchor="middle">studies in</text>
+<rect class="ac" x="430" y="100" width="110" height="40" rx="2"/><text x="485" y="125" text-anchor="middle" class="b">College</text>
+<g class="ln"><line x1="230" y1="120" x2="260" y2="120"/><line x1="400" y1="120" x2="430" y2="120"/></g>
+<text class="mut" x="245" y="112" text-anchor="middle">M</text><text class="mut" x="415" y="112" text-anchor="middle">1</text>
+<ellipse class="bx" cx="60" cy="40" rx="48" ry="18"/><text x="60" y="45" text-anchor="middle" text-decoration="underline">roll_no</text>
+<ellipse class="bx" cx="175" cy="30" rx="40" ry="18"/><text x="175" y="35" text-anchor="middle">name</text>
+<ellipse class="bx" cx="50" cy="190" rx="44" ry="18"/><ellipse class="ln" cx="50" cy="190" rx="38" ry="13"/><text x="50" y="195" text-anchor="middle">phone</text>
+<ellipse class="bx" cx="190" cy="195" rx="48" ry="18"/><text x="190" y="200" text-anchor="middle">address</text>
+<ellipse class="bx" cx="300" cy="200" rx="34" ry="14"/><text x="300" y="204" text-anchor="middle" class="mut">street</text>
+<ellipse class="bx" cx="300" cy="170" rx="30" ry="12"/><text x="300" y="174" text-anchor="middle" class="mut">city</text>
+<ellipse class="bx" cx="485" cy="40" rx="52" ry="18"/><text x="485" y="45" text-anchor="middle" text-decoration="underline">college_id</text>
+<g class="ln"><line x1="85" y1="55" x2="140" y2="100"/><line x1="175" y1="48" x2="175" y2="100"/><line x1="70" y1="174" x2="140" y2="140"/><line x1="190" y1="177" x2="180" y2="140"/><line x1="238" y1="197" x2="266" y2="200"/><line x1="236" y1="188" x2="270" y2="172"/><line x1="485" y1="58" x2="485" y2="100"/></g>
+</svg>
+<figcaption>Underlined = key · double ellipse = multivalued · attribute of attributes = composite</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+The ER model was proposed by <b>Peter Chen (1976)</b>. More notation:
+<ul>
+<li><b>dashed ellipse</b> = derived attribute (age from date of birth);</li>
+<li><b>double rectangle</b> = weak entity;</li>
+<li><b>double diamond</b> = identifying relationship;</li>
+<li><b>double line</b> = total participation.</li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">5.6</span>Decision Table / Cause-Effect Table (Login Example)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A decision table (also called a <b>cause-effect table</b>) lays out <b>if-then-else</b> logic as a grid:
+<ul>
+<li><b>Conditions</b> C1, C2, C3… (causes) in the top rows;</li>
+<li><b>Actions</b> A1, A2… (effects) in the bottom rows;</li>
+<li><b>Rules</b> R1, R2, R3… as columns. Each column says "if these conditions hold, take these actions". For example, if C1 and C3 are true, do A2.</li>
+</ul>
+<b>Login example:</b></div>
+<div class="tw"><table>
+<tr><th></th><th>R1</th><th>R2</th><th>R3</th><th>R4</th></tr>
+<tr><td><b>C1</b>: Username valid?</td><td>F</td><td>T</td><td>F</td><td>T</td></tr>
+<tr><td><b>C2</b>: Password valid?</td><td>F</td><td>F</td><td>T</td><td>T</td></tr>
+<tr><th>Actions</th><th></th><th></th><th></th><th></th></tr>
+<tr><td><b>A1</b>: Show "Invalid"</td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
+<tr><td><b>A2</b>: Log in (home page)</td><td></td><td></td><td></td><td>✓</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>With <b>n</b> independent yes/no conditions, a complete decision table has <b>2ⁿ rules</b>: 2 conditions → 4 rules, 3 conditions → 8. Rules with the same actions can be merged using a "–" (don't care) entry.</li>
+<li>The four parts of a decision table are condition stub, condition entries, action stub and action entries.</li>
+<li>A <b>decision tree</b> shows the same logic as a branching tree, which is easier to read when there are few conditions.</li>
+<li><b>Structured English</b> writes it as IF-THEN-ELSE pseudo-text.</li>
+<li>In testing (chapter 13), decision tables drive <b>decision-table-based testing</b>, and the cause-effect idea becomes the <b>cause-effect graph</b>.</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"How many rules does a decision table with 4 binary conditions have?" → 2⁴ = <b>16</b>. "Which tool is best for complex logic with many combinations of conditions?" → <b>Decision table</b>.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">5.7</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>In a DFD, a data store is represented by: (a) circle (b) rectangle (c) two parallel lines (d) diamond<br><b>Answer: (c) two parallel lines</b> (open-ended box).</div>
+<div class="num"><span class="t">Q2</span>Which of these is NOT a valid DFD flow? (a) Entity → Process (b) Process → Data store (c) Data store → Data store (d) Process → Process<br><b>Answer: (c).</b> Data must pass through a process.</div>
+<div class="num"><span class="t">Q3</span>A Level 0 DFD is also called:<br><b>Answer: the context diagram.</b> It contains one process.</div>
+<div class="num"><span class="t">Q4</span>A repository that stores the meaning, type, range and aliases of every data item is the:<br><b>Answer: data dictionary.</b></div>
+<div class="num"><span class="t">Q5</span>A decision table has 3 binary conditions. How many rules does it have in full?<br><b>Answer: 2³ = 8.</b></div>
+<div class="num"><span class="t">Q6</span>In an ER diagram, a multivalued attribute is shown by a:<br><b>Answer: double ellipse.</b> The primary key is underlined; a derived attribute uses a dashed ellipse.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Flowchart</b> = control flow. Oval start/end · parallelogram I/O · rectangle process · diamond decision.</li>
+<li><b>DFD</b> = data flow (no control). Circle = process · rectangle = external entity · two parallel lines = data store · arrow = data flow.</li>
+<li>Invalid flows: entity→entity, entity→store, store→store. Black hole (inputs only), miracle (outputs only).</li>
+<li>Levels: 0 = context (1 process) → 1 (major processes + stores) → 2 (1.1, 1.2) → 3 (1.1.1). Parent and child levels must <b>balance</b>.</li>
+<li>Food ordering: Customer, Kitchen, Manager → 1 Order Processing, 2 Generate Report, D1 Inventory, D2 Orders → 1.1 Receive Order, 1.2 Generate Bill.</li>
+<li><b>Data dictionary</b> = "kundli" of each data item (name, aliases, description, range, type, size). Notation <code>= + [|] {} ()</code>.</li>
+<li><b>ER</b> (Chen 1976): rectangle entity, ellipse attribute, diamond relationship; underline key, double ellipse multivalued.</li>
+<li><b>Decision table</b> = conditions × rules → actions; 2ⁿ rules for n binary conditions. Login: only valid + valid → log in.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 5 · Volume 04 — Software Engineering</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="04-Requirement-Engineering.html">← Ch 4: Requirement Engineering and Gathering</a><a href="index.html">☰ All topics</a><a href="06-SRS.html">Ch 6: Software Requirement Specification (SRS) →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

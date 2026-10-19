@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Binary Tree Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="10-Trees.html">← Ch 10: Trees</a><a href="index.html">☰ All topics</a><a href="12-Binary-Search-Tree.html">Ch 12: Binary Search Tree →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 11: Binary Tree</h1>
+  <p class="sub">Volume 03 · Part 11 · Built from the one-shot Data Structures lecture transcript (section 11), plus the exam points the lecture skipped. The lecture defines the binary tree, gives the max/min node formulas for height h, separates full, complete and perfect trees, generates preorder, inorder and postorder in a single walk, and shows array (2i, 2i + 1) and linked representations. These notes add level-order traversal, the n₀ = n₂ + 1 property, rebuilding a tree from two traversals, Catalan counts and solved questions.</p>
+  <ul class="tags"><li>≤ 2 children</li><li>Max 2^(h+1) − 1 · Min h + 1</li><li>Full · Complete · Perfect · Skewed</li><li>Pre · In · Post · Level order</li><li>Array: 2i, 2i + 1</li><li>Linked: left · data · right</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">11.1</span>Definition: At Most Two Children</a></li>
+<li><a href="#s2"><span class="n">11.2</span>Levels; Maximum and Minimum Nodes for Height h</a></li>
+<li><a href="#s3"><span class="n">11.3</span>Full Binary Tree</a></li>
+<li><a href="#s4"><span class="n">11.4</span>Complete Binary Tree</a></li>
+<li><a href="#s5"><span class="n">11.5</span>Perfect Binary Tree</a></li>
+<li><a href="#s6"><span class="n">11.6</span>Tree Traversal: Preorder, Inorder and Postorder</a></li>
+<li><a href="#s7"><span class="n">11.7</span>Traversal Example: All Three Orders in One Pass</a></li>
+<li><a href="#s8"><span class="n">11.8</span>Array Representation (Children at 2i and 2i + 1)</a></li>
+<li><a href="#s9"><span class="n">11.9</span>Linked Representation (Left and Right Pointers)</a></li>
+<li><a href="#s10"><span class="n">11.10</span>Properties, Level Order, Rebuilding a Tree &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 11</div>
+<h2 class="ch">Binary Tree</h2>
+<p>The lecture calls it "the most talked-about tree". Limiting every node to two children gives each child a name, <b>left</b> or <b>right</b>. That one restriction gives clean formulas for node counts, a neat array layout (used by heaps), three classic traversals, and the basis for BSTs and AVL trees in the next chapters.</p>
+
+<section id="s1">
+<h3><span class="n">11.1</span>Definition: At Most Two Children</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A binary tree can have <b>at most two children</b> per node: <b>0, 1 or 2</b>. If every node stays in this range, it is a binary tree. A node with <b>three</b> children takes it out of the range, so that is <b>not</b> a binary tree.</div>
+<div class="def"><b>Binary tree</b>: a tree in which every node has at most two children, distinguished as the <b>left child</b> and the <b>right child</b>. It may also be empty.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Left and right are <b>different positions</b>. A root with only a left child and a root with only a right child are two <b>different</b> binary trees, even though as general trees they look the same.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">11.2</span>Levels; Maximum and Minimum Nodes for Height h</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A very popular question: given the <b>height h</b>, what are the maximum and minimum numbers of nodes? Levels are numbered <b>0</b> (root), 1, 2, 3, …
+<ul>
+<li><b>Maximum:</b> fill every level, so every parent has two children. With <b>h = 3</b>, counting gives <b>15</b> nodes.
+<div class="formula">max nodes = 2^(h+1) − 1      h = 3 → 2⁴ − 1 = 16 − 1 = 15</div></li>
+<li><b>Minimum:</b> a <b>skewed</b> tree, where every node has one child. Going down to the left is a <b>left-skewed</b> tree; to the right, <b>right-skewed</b>. With h = 3 there are <b>4</b> nodes.
+<div class="formula">min nodes = h + 1             h = 3 → 3 + 1 = 4</div></li>
+</ul>
+The height of the tree is the height of the root, measured from the bottom leaves up (1, 2, 3).</div>
+<div class="box add"><span class="t">➕ Added for exam (the reverse question)</span>
+Given <b>n nodes</b>:
+<ul>
+<li>the <b>maximum height</b> is n − 1 (skewed);</li>
+<li>the <b>minimum height</b> is <b>⌈log₂(n + 1)⌉ − 1</b>, which is ⌊log₂ n⌋.</li>
+</ul>
+Example: n = 15 → min height 3, max height 14. The maximum number of nodes <b>at level l</b> is <b>2^l</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+If a book counts height in <b>nodes</b> (root at height 1), the formulas shift to <b>2^h − 1</b> (max) and <b>h</b> (min). The lecture uses edges (root at level 0). Check which convention the question uses before choosing an option.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">11.3</span>Full Binary Tree</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+In a <b>full binary tree</b> every node has either <b>0 or 2</b> children; nothing in between. If any node has exactly <b>one</b> child, the tree is not full. A node with three children isn't even a binary tree.
+(The lecture says "with one child it is not a binary tree"; it means not a <i>full</i> binary tree. A one-child node is still allowed in an ordinary binary tree.)</div>
+<figure>
+<svg viewBox="0 0 960 280" role="img" aria-label="Four binary trees: full, complete, perfect and left-skewed">
+<path class="ln" d="M100.0 138 L70.0 198"/>
+<path class="ln" d="M100.0 138 L130.0 198"/>
+<path class="ln" d="M160.0 78 L100.0 138"/>
+<path class="ln" d="M160.0 78 L190.0 138"/>
+<circle class="gr" cx="70.0" cy="198" r="14"/><text class="b" x="70.0" y="203" text-anchor="middle">4</text>
+<circle class="gr" cx="130.0" cy="198" r="14"/><text class="b" x="130.0" y="203" text-anchor="middle">5</text>
+<circle class="ac" cx="100.0" cy="138" r="14"/><text class="b" x="100.0" y="143" text-anchor="middle">2</text>
+<circle class="gr" cx="190.0" cy="138" r="14"/><text class="b" x="190.0" y="143" text-anchor="middle">3</text>
+<circle class="ac" cx="160.0" cy="78" r="14"/><text class="b" x="160.0" y="83" text-anchor="middle">1</text>
+<text class="b" x="130" y="24" text-anchor="middle">Full</text><text class="mut" x="130" y="42" text-anchor="middle">(0 or 2 children)</text>
+<path class="ln" d="M325.0 138 L295.0 198"/>
+<path class="ln" d="M325.0 138 L355.0 198"/>
+<path class="ln" d="M445.0 138 L415.0 198"/>
+<path class="ln" d="M385.0 78 L325.0 138"/>
+<path class="ln" d="M385.0 78 L445.0 138"/>
+<circle class="gr" cx="295.0" cy="198" r="14"/><text class="b" x="295.0" y="203" text-anchor="middle">4</text>
+<circle class="gr" cx="355.0" cy="198" r="14"/><text class="b" x="355.0" y="203" text-anchor="middle">5</text>
+<circle class="ac" cx="325.0" cy="138" r="14"/><text class="b" x="325.0" y="143" text-anchor="middle">2</text>
+<circle class="gr" cx="415.0" cy="198" r="14"/><text class="b" x="415.0" y="203" text-anchor="middle">6</text>
+<circle class="ac" cx="445.0" cy="138" r="14"/><text class="b" x="445.0" y="143" text-anchor="middle">3</text>
+<circle class="ac" cx="385.0" cy="78" r="14"/><text class="b" x="385.0" y="83" text-anchor="middle">1</text>
+<text class="b" x="370" y="24" text-anchor="middle">Complete</text><text class="mut" x="370" y="42" text-anchor="middle">(filled left → right)</text>
+<path class="ln" d="M550.0 138 L520.0 198"/>
+<path class="ln" d="M550.0 138 L580.0 198"/>
+<path class="ln" d="M670.0 138 L640.0 198"/>
+<path class="ln" d="M670.0 138 L700.0 198"/>
+<path class="ln" d="M610.0 78 L550.0 138"/>
+<path class="ln" d="M610.0 78 L670.0 138"/>
+<circle class="gr" cx="520.0" cy="198" r="14"/><text class="b" x="520.0" y="203" text-anchor="middle">4</text>
+<circle class="gr" cx="580.0" cy="198" r="14"/><text class="b" x="580.0" y="203" text-anchor="middle">5</text>
+<circle class="ac" cx="550.0" cy="138" r="14"/><text class="b" x="550.0" y="143" text-anchor="middle">2</text>
+<circle class="gr" cx="640.0" cy="198" r="14"/><text class="b" x="640.0" y="203" text-anchor="middle">6</text>
+<circle class="gr" cx="700.0" cy="198" r="14"/><text class="b" x="700.0" y="203" text-anchor="middle">7</text>
+<circle class="ac" cx="670.0" cy="138" r="14"/><text class="b" x="670.0" y="143" text-anchor="middle">3</text>
+<circle class="ac" cx="610.0" cy="78" r="14"/><text class="b" x="610.0" y="83" text-anchor="middle">1</text>
+<text class="b" x="610" y="24" text-anchor="middle">Perfect</text><text class="mut" x="610" y="42" text-anchor="middle">(all levels full)</text>
+<path class="ln" d="M835.0 198 L805.0 258"/>
+<path class="ln" d="M865.0 138 L835.0 198"/>
+<path class="ln" d="M895.0 78 L865.0 138"/>
+<circle class="gr" cx="805.0" cy="258" r="14"/><text class="b" x="805.0" y="263" text-anchor="middle">4</text>
+<circle class="ac" cx="835.0" cy="198" r="14"/><text class="b" x="835.0" y="203" text-anchor="middle">3</text>
+<circle class="ac" cx="865.0" cy="138" r="14"/><text class="b" x="865.0" y="143" text-anchor="middle">2</text>
+<circle class="ac" cx="895.0" cy="78" r="14"/><text class="b" x="895.0" y="83" text-anchor="middle">1</text>
+<text class="b" x="850" y="24" text-anchor="middle">Left-skewed</text><text class="mut" x="850" y="42" text-anchor="middle">(min nodes)</text>
+</svg>
+<figcaption>Binary tree types · the complete tree's last level is filled from the left; the perfect tree has every level full; a skewed tree has the minimum h + 1 nodes</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+A full binary tree is also called a <b>strict</b> or <b>proper</b> binary tree. With i internal nodes it has <b>i + 1 leaves</b> and <b>2i + 1 nodes</b> in total, so its node count is always <b>odd</b>.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">11.4</span>Complete Binary Tree</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+This one is a bit complicated, but very useful later for the <b>heap</b>, which is also seen in tree form. Nodes may have 0, 1 or 2 children, but at the <b>lowest (leaf) level, filling must go left to right</b>.
+<ul>
+<li>A node with only a <b>left</b> child is fine; one child is allowed.</li>
+<li>If a node has a <b>right</b> child but no left child, the right was filled before the left. That is <b>not complete</b>.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam (the full definition)</span>
+Complete = <b>every level except possibly the last is completely filled</b>, and the last level's nodes are as <b>far left</b> as possible.
+<ul>
+<li>A complete tree with n nodes has height <b>⌊log₂ n⌋</b>.</li>
+<li>It fits an array with <b>no gaps</b>, which is why heaps use it.</li>
+<li>In a complete tree, at most <b>one</b> node has exactly one child, and that child is a left child.</li>
+</ul></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">11.5</span>Perfect Binary Tree</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+In a perfect tree, <b>at every level</b> all the children should be present, "happily playing". A tree whose bottom level is missing children is imbalanced: those nodes should also have had two children each. Only when <b>every level is completely full</b> is it a <b>perfect binary tree</b>.</div>
+<div class="tw"><table>
+<tr><th>Type</th><th>Rule</th><th>Nodes for height h</th></tr>
+<tr><td>Binary</td><td>every node has 0, 1 or 2 children</td><td>h + 1 to 2^(h+1) − 1</td></tr>
+<tr><td>Full / strict</td><td>every node has 0 or 2 children</td><td>2h + 1 to 2^(h+1) − 1</td></tr>
+<tr><td>Complete</td><td>all levels full except the last, which is filled left → right</td><td>2^h to 2^(h+1) − 1</td></tr>
+<tr><td>Perfect</td><td>every internal node has 2 children and all leaves are on the same level</td><td>exactly 2^(h+1) − 1</td></tr>
+<tr><td>Skewed</td><td>every node has one child (all left or all right)</td><td>exactly h + 1</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>Every <b>perfect</b> tree is both full and complete.</li>
+<li>A <b>full</b> tree need not be complete, and a <b>complete</b> tree need not be full.</li>
+<li>Some (mostly older) books use "complete" to mean "perfect" and "almost complete" for the left-filled tree. Use the context.</li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">11.6</span>Tree Traversal: Preorder, Inorder and Postorder</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Traversal is a very basic and important idea. The orders are named after <b>where the root goes</b>, just like prefix, infix and postfix in chapter 8:
+<ul>
+<li><b>Preorder</b>: root first, then left, then right (Root–L–R).</li>
+<li><b>Inorder</b>: root in the middle (L–Root–R).</li>
+<li><b>Postorder</b>: root last (L–R–Root).</li>
+</ul>
+For a tree with root A, left child B and right child C:
+<ul>
+<li>preorder <b>A B C</b>;</li>
+<li>inorder <b>B A C</b>;</li>
+<li>postorder <b>B C A</b>.</li>
+</ul></div>
+<div class="formula">void preorder(struct node *t)  { if (t) { visit(t); preorder(t-&gt;left);  preorder(t-&gt;right); } }
+void inorder(struct node *t)   { if (t) { inorder(t-&gt;left);  visit(t); inorder(t-&gt;right);  } }
+void postorder(struct node *t) { if (t) { postorder(t-&gt;left); postorder(t-&gt;right); visit(t); } }</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">11.7</span>Traversal Example: All Three Orders in One Pass</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Use the same technique as chapter 8. Walk round the tree top to bottom, left to right, and add <b>dummy</b> branches under leaves and missing children. Every node is then met three times:
+<ul>
+<li>the <b>1st</b> meeting (left side) → write it in <b>preorder</b>;</li>
+<li>the <b>2nd</b> (underneath) → <b>inorder</b>;</li>
+<li>the <b>3rd/last</b> (right side; you won't see it again) → <b>postorder</b>.</li>
+</ul>
+One full walk fills in all three lists together.</div>
+<figure>
+<svg viewBox="0 0 610 290" style="max-width:640px" role="img" aria-label="Binary tree: A has children B and C; B has D and E; D has left child H; E has I and J; C has F and G">
+<path class="ln" d="M98 170 L40 240"/>
+<path class="ln" d="M272 170 L214 240"/>
+<path class="ln" d="M272 170 L330 240"/>
+<path class="ln" d="M156 100 L98 170"/>
+<path class="ln" d="M156 100 L272 170"/>
+<path class="ln" d="M504 100 L446 170"/>
+<path class="ln" d="M504 100 L562 170"/>
+<path class="ln" d="M388 30 L156 100"/>
+<path class="ln" d="M388 30 L504 100"/>
+<circle class="gr" cx="40" cy="240" r="16"/><text class="b" x="40" y="245" text-anchor="middle">H</text>
+<circle class="ac" cx="98" cy="170" r="16"/><text class="b" x="98" y="175" text-anchor="middle">D</text>
+<circle class="gr" cx="214" cy="240" r="16"/><text class="b" x="214" y="245" text-anchor="middle">I</text>
+<circle class="gr" cx="330" cy="240" r="16"/><text class="b" x="330" y="245" text-anchor="middle">J</text>
+<circle class="ac" cx="272" cy="170" r="16"/><text class="b" x="272" y="175" text-anchor="middle">E</text>
+<circle class="ac" cx="156" cy="100" r="16"/><text class="b" x="156" y="105" text-anchor="middle">B</text>
+<circle class="gr" cx="446" cy="170" r="16"/><text class="b" x="446" y="175" text-anchor="middle">F</text>
+<circle class="gr" cx="562" cy="170" r="16"/><text class="b" x="562" y="175" text-anchor="middle">G</text>
+<circle class="ac" cx="504" cy="100" r="16"/><text class="b" x="504" y="105" text-anchor="middle">C</text>
+<circle class="ac" cx="388" cy="30" r="16"/><text class="b" x="388" y="35" text-anchor="middle">A</text>
+</svg>
+<figcaption>The lecture's traversal tree · D has only a left child (H)</figcaption>
+</figure>
+<div class="formula">Preorder  (1st visit):  A B D H E I J C F G
+Inorder   (2nd visit):  H D B I E J A F C G
+Postorder (3rd visit):  H D I J E B F G C A</div>
+<div class="box add"><span class="t">➕ Added for exam (quick checks)</span>
+<ul>
+<li>Preorder <b>starts</b> with the root; postorder <b>ends</b> with it.</li>
+<li>In inorder, everything left of the root belongs to its left subtree: H D B I E J | <b>A</b> | F C G.</li>
+<li>The first node in inorder is the <b>leftmost</b> node (H); the last in preorder is usually a leaf.</li>
+</ul></div>
+</section>
+
+<section id="s8">
+<h3><span class="n">11.8</span>Array Representation (Children at 2i and 2i + 1)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A binary tree with 7 nodes gets 7 array cells. Place the nodes level by level, left to right, at indices <b>1 to 7</b>. Then, using only the parent's index <b>i</b>:
+<div class="formula">left child  = 2·i
+right child = 2·i + 1</div>
+<ul>
+<li>i = 1 (the root): left at 2·1 = <b>2</b>, right at 2·1 + 1 = <b>3</b>.</li>
+<li>i = 3: left at <b>6</b>, right at <b>7</b>, matching the tree.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 720 230" style="max-width:720px" role="img" aria-label="Complete binary tree 1 to 7 stored in array indices 1 to 7; node at i has children at 2i and 2i+1">
+<path class="ln" d="M66 92 L20 154"/>
+<path class="ln" d="M66 92 L112 154"/>
+<path class="ln" d="M250 92 L204 154"/>
+<path class="ln" d="M250 92 L296 154"/>
+<path class="ln" d="M158 30 L66 92"/>
+<path class="ln" d="M158 30 L250 92"/>
+<circle class="gr" cx="20" cy="154" r="15"/><text class="b" x="20" y="159" text-anchor="middle">4</text>
+<circle class="gr" cx="112" cy="154" r="15"/><text class="b" x="112" y="159" text-anchor="middle">5</text>
+<circle class="ac" cx="66" cy="92" r="15"/><text class="b" x="66" y="97" text-anchor="middle">2</text>
+<circle class="or" cx="204" cy="154" r="15"/><text class="b" x="204" y="159" text-anchor="middle">6</text>
+<circle class="or" cx="296" cy="154" r="15"/><text class="b" x="296" y="159" text-anchor="middle">7</text>
+<circle class="or" cx="250" cy="92" r="15"/><text class="b" x="250" y="97" text-anchor="middle">3</text>
+<circle class="ac" cx="158" cy="30" r="15"/><text class="b" x="158" y="35" text-anchor="middle">1</text>
+<rect class="gr" x="380" y="90" width="44" height="36"/><text x="402" y="113" text-anchor="middle">1</text><text class="mut" x="402" y="146" text-anchor="middle">[1]</text>
+<rect class="gr" x="424" y="90" width="44" height="36"/><text x="446" y="113" text-anchor="middle">2</text><text class="mut" x="446" y="146" text-anchor="middle">[2]</text>
+<rect class="or" x="468" y="90" width="44" height="36"/><text x="490" y="113" text-anchor="middle">3</text><text class="mut" x="490" y="146" text-anchor="middle">[3]</text>
+<rect class="gr" x="512" y="90" width="44" height="36"/><text x="534" y="113" text-anchor="middle">4</text><text class="mut" x="534" y="146" text-anchor="middle">[4]</text>
+<rect class="gr" x="556" y="90" width="44" height="36"/><text x="578" y="113" text-anchor="middle">5</text><text class="mut" x="578" y="146" text-anchor="middle">[5]</text>
+<rect class="or" x="600" y="90" width="44" height="36"/><text x="622" y="113" text-anchor="middle">6</text><text class="mut" x="622" y="146" text-anchor="middle">[6]</text>
+<rect class="or" x="644" y="90" width="44" height="36"/><text x="666" y="113" text-anchor="middle">7</text><text class="mut" x="666" y="146" text-anchor="middle">[7]</text>
+<text class="mut" x="534" y="70" text-anchor="middle">array, 1-based index</text><text class="mut" x="534" y="180" text-anchor="middle">i = 3 → left 2·3 = 6, right 2·3+1 = 7</text>
+</svg>
+<figcaption>Array representation (1-based) · the children of node 3 sit at indices 6 and 7</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Formula</th><th>1-based (lecture)</th><th>0-based (C arrays)</th></tr>
+<tr><td>Left child of i</td><td>2i</td><td>2i + 1</td></tr>
+<tr><td>Right child of i</td><td>2i + 1</td><td>2i + 2</td></tr>
+<tr><td>Parent of i</td><td>⌊i / 2⌋</td><td>⌊(i − 1) / 2⌋</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The array form is ideal for <b>complete</b> trees (no gaps), but it <b>wastes space</b> on sparse or skewed trees. A right-skewed tree of height h needs an array of size <b>2^(h+1) − 1</b> to hold just h + 1 nodes. For h = 3 that is 15 cells for 4 nodes.</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">11.9</span>Linked Representation (Left and Right Pointers)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Each node has three parts:
+<ul>
+<li><b>data</b> in the centre;</li>
+<li>a <b>left pointer</b> to the left child;</li>
+<li>a <b>right pointer</b> to the right child.</li>
+</ul>
+Every node follows this same structure. If a child doesn't exist (for example C is a leaf), store <b>NULL</b> there: "nothing after this, it's a leaf".</div>
+<div class="formula">struct node {
+    struct node *left;
+    int data;
+    struct node *right;
+};</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+A binary tree with <b>n nodes</b> has 2n pointer fields but only n − 1 edges, so it has <b>n + 1 NULL pointers</b>. Threaded binary trees (chapter 15) put these wasted NULLs to use.</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">11.10</span>Properties, Level Order, Rebuilding a Tree &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Key properties</span>
+<ul>
+<li><b>n₀ = n₂ + 1</b>: in any non-empty binary tree, leaves = (nodes with two children) + 1.</li>
+<li>Max nodes at level l = 2^l; max nodes for height h = 2^(h+1) − 1.</li>
+<li>Minimum height for n nodes = ⌈log₂(n + 1)⌉ − 1.</li>
+<li>n nodes give n − 1 edges and n + 1 NULL links.</li>
+<li>Number of structurally different binary trees with n nodes = <b>Catalan</b> C(n) = (2n)! / ((n+1)! n!), giving 1, 2, 5, 14, 42.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Level-order traversal (BFS)</span>
+Visit level by level, left to right, using a <b>queue</b> (chapter 9): enqueue the root; repeatedly dequeue a node, visit it, and enqueue its children. For the lecture tree: <b>A B C D E F G H I J</b>. Pre-, in- and postorder are depth-first and use a <b>stack</b> (or recursion).</div>
+<div class="box add"><span class="t">➕ Rebuilding a tree from two traversals</span>
+<ul>
+<li><b>Inorder + preorder</b> or <b>inorder + postorder</b> gives a <b>unique</b> tree.</li>
+<li><b>Preorder + postorder</b> alone does <i>not</i> (unless the tree is full).</li>
+</ul>
+<b>Method:</b> take the root from preorder (first) or postorder (last). Find it in inorder: the left part is the left subtree and the right part is the right subtree. Repeat for each part.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>Max nodes in a binary tree of height h: <b>2^(h+1) − 1</b>; min: <b>h + 1</b>.</li>
+<li>Inorder traversal of a <b>BST</b> gives sorted order (chapter 12).</li>
+<li>"Which traversal uses a queue?" → <b>level order</b>.</li>
+<li>Array storage: children of i at <b>2i and 2i + 1</b> (1-based); parent at ⌊i/2⌋.</li>
+<li>A binary tree with 20 leaves has <b>19</b> nodes of degree 2 (n₂ = n₀ − 1).</li>
+</ul></div>
+<div class="num"><span class="t">Q1</span>Preorder <b>A B D E C F</b>, inorder <b>D B E A F C</b>. Find the postorder.
+<div class="formula">Root A (first in preorder). Inorder splits: [D B E] A [F C]
+Left:  preorder B D E, inorder D B E → root B, left D, right E
+Right: preorder C F,   inorder F C   → root C, left F
+Postorder = D E B F C A</div></div>
+<div class="num"><span class="t">Q2</span>Maximum and minimum number of nodes in a binary tree of height 5? → Max 2⁶ − 1 = <b>63</b>; min 5 + 1 = <b>6</b>.</div>
+<div class="num"><span class="t">Q3</span>A binary tree has 10 nodes with two children. How many leaves? → n₀ = n₂ + 1 = <b>11</b>.</div>
+<div class="num"><span class="t">Q4</span>Minimum height of a binary tree with 100 nodes? → ⌈log₂ 101⌉ − 1 = 7 − 1 = <b>6</b>.</div>
+<div class="num"><span class="t">Q5</span>How many different binary tree shapes have 3 nodes? → C(3) = <b>5</b>.</div>
+<div class="num"><span class="t">Q6</span>In the 1-based array representation, where is the parent of the node at index 11? Where are its children? → Parent ⌊11/2⌋ = <b>5</b>; children at <b>22</b> and <b>23</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Binary tree: each node has <b>0, 1 or 2</b> children (left and right are distinct). Three children means not binary.</li>
+<li>Height h: max <b>2^(h+1) − 1</b> (all full; h = 3 → 15), min <b>h + 1</b> (skewed; h = 3 → 4).</li>
+<li>Full = 0 or 2 children. Complete = all levels full except the last, filled left → right (used by heaps). Perfect = every level full. Skewed = one child per node.</li>
+<li>Pre = Root L R, In = L Root R, Post = L R Root. One walk: 1st visit → pre, 2nd → in, 3rd → post.</li>
+<li>Lecture tree: pre <b>ABDHEIJCFG</b>, in <b>HDBIEJAFCG</b>, post <b>HDIJEBFGCA</b>.</li>
+<li>Array (1-based): children at 2i and 2i + 1, parent at ⌊i/2⌋. Wasteful for skewed trees.</li>
+<li>Linked: left · data · right, with NULL for a missing child. n nodes give n + 1 NULLs.</li>
+<li>n₀ = n₂ + 1. Level order uses a queue. Inorder plus pre- or postorder gives a unique tree. Shapes with n nodes = Catalan.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 11 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="10-Trees.html">← Ch 10: Trees</a><a href="index.html">☰ All topics</a><a href="12-Binary-Search-Tree.html">Ch 12: Binary Search Tree →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

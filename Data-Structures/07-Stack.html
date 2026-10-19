@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Stack Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="06-Circular-Linked-List.html">← Ch 6: Circular Linked List</a><a href="index.html">☰ All topics</a><a href="08-Expression-Notation.html">Ch 8: Expression Notation →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 7: Stack</h1>
+  <p class="sub">Volume 03 · Part 7 · Built from the one-shot Data Structures lecture transcript (section 7), plus the exam points the lecture skipped. The lecture explains LIFO with biscuits and rotis, then codes push and pop on an array, with overflow at <code>top == n−1</code> and underflow at <code>top == −1</code>, and traces a push/pop sequence. These notes add the linked-list stack, the full operation set, applications, the "which pop order is possible?" questions and solved numericals.</p>
+  <ul class="tags"><li>LIFO / FILO</li><li>Top of stack</li><li>push · pop · peek</li><li>Overflow: top = n−1</li><li>Underflow: top = −1</li><li>Array vs linked stack</li><li>Valid pop sequences</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">7.1</span>LIFO / FILO Concept (Biscuits and Rotis)</a></li>
+<li><a href="#s2"><span class="n">7.2</span>One-End Access, Top of Stack and Implementation</a></li>
+<li><a href="#s3"><span class="n">7.3</span>Push and Pop: Basic Idea</a></li>
+<li><a href="#s4"><span class="n">7.4</span>Push Operation and Overflow (top == n − 1)</a></li>
+<li><a href="#s5"><span class="n">7.5</span>Pop Operation and Underflow (top == −1)</a></li>
+<li><a href="#s6"><span class="n">7.6</span>Example: Sequence of Push/Pop Operations</a></li>
+<li><a href="#s7"><span class="n">7.7</span>Linked Stack, Applications, Pop-Sequence Questions &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 7</div>
+<h2 class="ch">Stack</h2>
+<p>A stack is a linear list with one rule: <b>you may touch only the top</b>. Every insertion lands on top, and every removal takes the top. That single restriction makes it the structure behind function calls, undo, expression evaluation (chapter 8) and depth-first search. The lecture calls it "very important, very fundamental".</p>
+
+<section id="s1">
+<h3><span class="n">7.1</span>LIFO / FILO Concept (Biscuits and Rotis)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+We see a stack implemented every day.
+<ul>
+<li><b>Biscuits with morning tea:</b> the manufacturer put the bottom biscuit in <b>first</b> and the top one <b>last</b>. While eating, the top biscuit is eaten first and the bottom one last. What went in first comes out last: <b>First In Last Out (FILO)</b>. Equivalently, what went in last comes out first.</li>
+<li><b>Rotis at lunch:</b> mummy puts the latest roti on top of the earlier ones. We take the top roti first, then the one below it, and so on: <b>Last In First Out (LIFO)</b>.</li>
+</ul>
+This nature is a stack, and a stack is a <b>linear data structure</b>.</div>
+<div class="def"><b>Stack</b>: a linear data structure in which insertion (push) and deletion (pop) happen at only one end, called the <b>top</b>. It follows <b>LIFO</b>, which is the same as <b>FILO</b>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">7.2</span>One-End Access, Top of Stack and Implementation</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>Insert and delete, called <b>push and pop</b>, happen <b>from one end only</b>. You open a biscuit packet from one end; open it from both and "all the biscuits will fall". The roti case also opens from one end only.</li>
+<li>So we interact only with the element on <b>top</b>: the <b>Top Of Stack (TOS)</b>. It is the <b>only access point</b>. Pull a biscuit from the middle and it breaks; for an unbroken biscuit only the top is visible and accessible. Treat the elements below as if you don't even know they're there.</li>
+<li>You push onto it (the pushed element becomes the new TOS), and you pop it.</li>
+<li>A stack can be implemented with an <b>array</b> (<b>static</b>) or a <b>linked list</b> (<b>dynamic</b>), the same static vs dynamic nature as in chapter 3.</li>
+<li>Either way, <b>fix one end</b>. In an array, decide one end, and only that end inserts and deletes. In a linked list, use the <b>head (starting) end</b> for both insert and delete, and don't even look at the other end.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+A stack is an <b>Abstract Data Type (ADT)</b>. It is defined by its operations, not by how it is stored:
+<ul>
+<li><code>push(x)</code>, <code>pop()</code>;</li>
+<li><code>peek()</code>/<code>top()</code>, which reads TOS without removing it;</li>
+<li><code>isEmpty()</code>, and <code>isFull()</code> for arrays only.</li>
+</ul>
+All of them are <b>O(1)</b>. Searching for an arbitrary element is not a stack operation.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">7.3</span>Push and Pop: Basic Idea</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Push = insert</b> into the stack; <b>pop = delete</b> from it. The code uses an <b>array</b>, the easiest way to see the stack's nature.
+<ul>
+<li>Push x, then y lands on x, then z lands on y.</li>
+<li>Pop gives <b>z</b> first, then <b>y</b>, then <b>x</b>.</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">7.4</span>Push Operation and Overflow (top == n − 1)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The stack has room for <b>n = 5</b> elements, at indices <b>0 to 4</b>. x, y, z are pushed, so <b>top = 2</b>. Now push <b>a</b>:
+<ul>
+<li><b>Check first:</b> <code>if (top == n − 1)</code>, the top is at the last slot, so nothing more fits. With elements up to index 4, top = 4 = 5 − 1. This is <b>stack overflow</b>: print "stack full", and no push happens.</li>
+<li>Here top is 2, so the condition is false and we continue.</li>
+<li>A new element goes <b>above the existing TOS</b>. First <code>top = top + 1</code> (2 + 1 = 3), moving to the empty slot. Then put a at <code>stack[3]</code>.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 700 290" role="img" aria-label="Array stack of size 5: empty with top -1, three elements with top 2, after push a top 3, full with top 4 equals n minus 1">
+<rect class="bx" x="40" y="193" width="74" height="32"/>
+<text class="mut" x="32" y="213" text-anchor="end">0</text>
+<rect class="bx" x="40" y="161" width="74" height="32"/>
+<text class="mut" x="32" y="181" text-anchor="end">1</text>
+<rect class="bx" x="40" y="129" width="74" height="32"/>
+<text class="mut" x="32" y="149" text-anchor="end">2</text>
+<rect class="bx" x="40" y="97" width="74" height="32"/>
+<text class="mut" x="32" y="117" text-anchor="end">3</text>
+<rect class="bx" x="40" y="65" width="74" height="32"/>
+<text class="mut" x="32" y="85" text-anchor="end">4</text>
+<text class="b" x="77.0" y="22" text-anchor="middle">Empty</text>
+<text class="mut" x="77.0" y="247" text-anchor="middle">top = -1</text>
+<text class="mut" x="77.0" y="267" text-anchor="middle">pop → underflow</text>
+<rect class="gr" x="215" y="193" width="74" height="32"/>
+<text x="252.0" y="214" text-anchor="middle">x</text>
+<text class="mut" x="207" y="213" text-anchor="end">0</text>
+<rect class="gr" x="215" y="161" width="74" height="32"/>
+<text x="252.0" y="182" text-anchor="middle">y</text>
+<text class="mut" x="207" y="181" text-anchor="end">1</text>
+<rect class="gr" x="215" y="129" width="74" height="32"/>
+<text x="252.0" y="150" text-anchor="middle">z</text>
+<text class="mut" x="207" y="149" text-anchor="end">2</text>
+<rect class="bx" x="215" y="97" width="74" height="32"/>
+<text class="mut" x="207" y="117" text-anchor="end">3</text>
+<rect class="bx" x="215" y="65" width="74" height="32"/>
+<text class="mut" x="207" y="85" text-anchor="end">4</text>
+<path class="lna" d="M337 145.0 L297 145.0"/><polygon class="aha" points="298,140.0 289,145.0 298,150.0"/><text class="b" x="303" y="137.0">top</text>
+<text class="b" x="252.0" y="22" text-anchor="middle">x, y, z pushed</text>
+<text class="mut" x="252.0" y="247" text-anchor="middle">top = 2</text>
+<text class="mut" x="252.0" y="267" text-anchor="middle">TOS = z</text>
+<rect class="gr" x="390" y="193" width="74" height="32"/>
+<text x="427.0" y="214" text-anchor="middle">x</text>
+<text class="mut" x="382" y="213" text-anchor="end">0</text>
+<rect class="gr" x="390" y="161" width="74" height="32"/>
+<text x="427.0" y="182" text-anchor="middle">y</text>
+<text class="mut" x="382" y="181" text-anchor="end">1</text>
+<rect class="gr" x="390" y="129" width="74" height="32"/>
+<text x="427.0" y="150" text-anchor="middle">z</text>
+<text class="mut" x="382" y="149" text-anchor="end">2</text>
+<rect class="or" x="390" y="97" width="74" height="32"/>
+<text x="427.0" y="118" text-anchor="middle">a</text>
+<text class="mut" x="382" y="117" text-anchor="end">3</text>
+<rect class="bx" x="390" y="65" width="74" height="32"/>
+<text class="mut" x="382" y="85" text-anchor="end">4</text>
+<path class="lna" d="M512 113.0 L472 113.0"/><polygon class="aha" points="473,108.0 464,113.0 473,118.0"/><text class="b" x="478" y="105.0">top</text>
+<text class="b" x="427.0" y="22" text-anchor="middle">push(a)</text>
+<text class="mut" x="427.0" y="247" text-anchor="middle">top = 3</text>
+<text class="mut" x="427.0" y="267" text-anchor="middle">++top, then store</text>
+<rect class="gr" x="565" y="193" width="74" height="32"/>
+<text x="602.0" y="214" text-anchor="middle">x</text>
+<text class="mut" x="557" y="213" text-anchor="end">0</text>
+<rect class="gr" x="565" y="161" width="74" height="32"/>
+<text x="602.0" y="182" text-anchor="middle">y</text>
+<text class="mut" x="557" y="181" text-anchor="end">1</text>
+<rect class="gr" x="565" y="129" width="74" height="32"/>
+<text x="602.0" y="150" text-anchor="middle">z</text>
+<text class="mut" x="557" y="149" text-anchor="end">2</text>
+<rect class="gr" x="565" y="97" width="74" height="32"/>
+<text x="602.0" y="118" text-anchor="middle">a</text>
+<text class="mut" x="557" y="117" text-anchor="end">3</text>
+<rect class="gr" x="565" y="65" width="74" height="32"/>
+<text x="602.0" y="86" text-anchor="middle">b</text>
+<text class="mut" x="557" y="85" text-anchor="end">4</text>
+<path class="lna" d="M687 81.0 L647 81.0"/><polygon class="aha" points="648,76.0 639,81.0 648,86.0"/><text class="b" x="653" y="73.0">top</text>
+<text class="b" x="602.0" y="22" text-anchor="middle">Full</text>
+<text class="mut" x="602.0" y="247" text-anchor="middle">top = 4</text>
+<text class="mut" x="602.0" y="267" text-anchor="middle">top == n−1 → overflow</text>
+</svg>
+<figcaption>Array stack, n = 5 · empty (top = −1) · after x, y, z (top = 2) · push(a) increments to 3 then stores · full at top = 4 = n − 1</figcaption>
+</figure>
+<div class="formula">void push(int x) {
+    if (top == n - 1) {
+        printf("Stack Overflow");
+        return;
+    }
+    top = top + 1;         /* increment FIRST  */
+    stack[top] = x;        /* then store       */
+}</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>The order is <b>increment, then store</b> (<code>stack[++top] = x</code>). Writing <code>stack[top++] = x</code> with top starting at −1 writes to <code>stack[-1]</code>.</li>
+<li>Some books start with top = 0 ("next free slot"). Then the full test is <b>top == n</b>, the empty test is <b>top == 0</b>, and push is <code>stack[top++] = x</code>. Read which convention a question uses; the lecture's (and IBPS's usual) one is <b>top = −1</b>.</li>
+</ul></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">7.5</span>Pop Operation and Underflow (top == −1)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Initially</b>, with no elements, we set <b>top = −1</b>, because there is no element to point to. top == −1 means the stack is <b>empty</b>. Popping from an empty stack is <b>underflow</b>: "what more will you take out of it?"</li>
+<li>Example: size 4 (indices 0–3), elements x, y, z, top = 2. The top element is removed, z, not y or x:
+<ol><li>copy <code>stack[top]</code> (z) into a variable;</li>
+<li><b>decrement</b> top: 2 − 1 = 1, so TOS is now y;</li>
+<li>return the popped element, so the caller knows what was popped.</li></ol></li>
+<li>Remember: <b>push increments</b> top, and <b>pop decrements</b> it.</li>
+</ul></div>
+<div class="formula">int pop() {
+    if (top == -1) {
+        printf("Stack Underflow");
+        return -1;
+    }
+    int x = stack[top];    /* read FIRST     */
+    top = top - 1;         /* then decrement */
+    return x;
+}</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Pop does not erase the value; z still sits in <code>stack[2]</code>. It is simply outside the stack, because only indices 0..top count, and the next push overwrites it. With top = −1 convention: number of elements = <b>top + 1</b>.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">7.6</span>Example: Sequence of Push/Pop Operations</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Operations: push 1, push 3, pop, push 5, push 10, push 10, pop, pop, pop, pop. Popped values are written as output in order.</div>
+<div class="tw"><table>
+<tr><th>#</th><th>Operation</th><th>Stack (bottom → top)</th><th>top</th><th>Output</th></tr>
+<tr><td>1</td><td>push 1</td><td>1</td><td>0</td><td></td></tr>
+<tr><td>2</td><td>push 3</td><td>1, 3</td><td>1</td><td></td></tr>
+<tr><td>3</td><td>pop</td><td>1</td><td>0</td><td>3</td></tr>
+<tr><td>4</td><td>push 5</td><td>1, 5</td><td>1</td><td></td></tr>
+<tr><td>5</td><td>push 10</td><td>1, 5, 10</td><td>2</td><td></td></tr>
+<tr><td>6</td><td>push 10</td><td>1, 5, 10, 10</td><td>3</td><td></td></tr>
+<tr><td>7</td><td>pop</td><td>1, 5, 10</td><td>2</td><td>10</td></tr>
+<tr><td>8</td><td>pop</td><td>1, 5</td><td>1</td><td>10</td></tr>
+<tr><td>9</td><td>pop</td><td>1</td><td>0</td><td>5</td></tr>
+<tr><td>10</td><td>pop</td><td>(empty)</td><td>−1</td><td>1</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The pop sequence is <b>3, 10, 10, 5, 1</b>. If asked how many elements remain: <b>zero</b>, the stack is empty. Popping 1 from index 0 decremented top to −1, so one more pop would report <b>"stack empty"</b>.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Elements left after a sequence = number of pushes − number of successful pops.</li>
+<li>Maximum stack height reached = the largest top + 1 during the run (here <b>4</b>, after step 6). It is the "minimum array size needed" in MCQs.</li>
+</ul></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">7.7</span>Linked Stack, Applications, Pop-Sequence Questions &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<p><b>Stack using a linked list</b>: push = <b>insert at beginning</b>, pop = <b>delete at beginning</b> (chapter 4). Both are O(1), and the head pointer acts as top. There is no fixed size, so no overflow (until <code>malloc</code> fails), and an empty stack is <code>top == NULL</code>.</p>
+<div class="formula">void push(int x) {
+    struct node *n = malloc(sizeof *n);
+    n-&gt;data = x;
+    n-&gt;next = top;         /* insert at head */
+    top = n;
+}
+
+int pop() {
+    if (top == NULL) return -1;        /* underflow */
+    struct node *t = top;
+    int x = t-&gt;data;
+    top = top-&gt;next;       /* delete at head */
+    free(t);
+    return x;
+}</div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Array stack</th><th>Linked-list stack</th></tr>
+<tr><td>Size</td><td>fixed (n)</td><td>grows dynamically</td></tr>
+<tr><td>Overflow</td><td>top == n − 1</td><td>only when the heap is exhausted</td></tr>
+<tr><td>Underflow / empty</td><td>top == −1</td><td>top == NULL</td></tr>
+<tr><td>Push / pop</td><td>O(1)</td><td>O(1) (at head; never at the tail of a singly list)</td></tr>
+<tr><td>Extra memory</td><td>unused slots</td><td>one pointer per element</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A linked stack must push and pop at the <b>head</b>. Using the tail of a singly list makes pop O(n), because delete at end needs the second-last node (chapter 4).</div>
+
+<div class="box add"><span class="t">➕ Applications of a stack</span>
+<ul>
+<li><b>Function calls and recursion</b>: the call stack holds activation records; too-deep recursion causes a <i>stack overflow</i>.</li>
+<li><b>Expression conversion and evaluation</b>: infix → postfix/prefix, evaluating postfix (chapter 8).</li>
+<li><b>Balanced parentheses</b> check: push on <code>( [ {</code>, pop and match on <code>) ] }</code>.</li>
+<li><b>Undo</b> in editors, browser <b>back</b> button, <b>reversing</b> a string or list.</li>
+<li><b>Backtracking</b> (mazes, N-queens) and <b>DFS</b> of graphs (chapter 16).</li>
+<li>Tower of Hanoi, and converting decimal to binary (push the remainders, then pop them).</li>
+</ul></div>
+
+<p><b>Which pop orders are possible?</b> Push 1, 2, 3, …, n in this order, with pops allowed at any time. A sequence is possible if you can simulate it: before popping x, push everything up to x, and then x must be on top.</p>
+<div class="box add"><span class="t">➕ Quick rule</span>
+After popping some number x, all the numbers <b>smaller than x that are still in the stack must come out in decreasing order</b>. So with input 1, 2, 3, the only impossible output is <b>3, 1, 2</b>: after 3, the 1 and 2 are still stacked with 2 on top. The number of valid orders for n elements is the <b>Catalan number</b> C(n) = (2n)! / ((n+1)! n!), which gives 1, 2, 5, <b>14</b>, 42 for n = 1…5.</div>
+
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>Stack = <b>LIFO</b> (FILO); queue = FIFO (chapter 9).</li>
+<li>Array stack with top = −1: overflow <b>top == MAX − 1</b>, underflow <b>top == −1</b>.</li>
+<li>"Which data structure is used for recursion / function calls?" → <b>stack</b>.</li>
+<li>"…for converting infix to postfix?" → <b>stack</b>. "…for BFS?" → queue. "…for DFS?" → <b>stack</b>.</li>
+<li>Push, pop and peek are all <b>O(1)</b>.</li>
+</ul></div>
+
+<div class="num"><span class="t">Q1</span>Empty stack: push 5, push 8, pop, push 2, push 7, pop, pop, push 4. What is on top, and how many elements are there? → After the pops (8, 7, 2), the stack is 5, 4. Top = <b>4</b>, <b>2 elements</b>.</div>
+<div class="num"><span class="t">Q2</span>1, 2, 3, 4 are pushed in order (pops allowed in between). Which output is impossible? (a) 4 3 2 1 (b) 2 1 4 3 (c) 1 3 2 4 (d) 3 4 1 2 → <b>(d)</b>. After popping 3 and 4, the stack holds 1, 2 with 2 on top, so 1 can't come before 2.</div>
+<div class="num"><span class="t">Q3</span>An array stack has MAX = 10 and top = 9 (top starts at −1). What does push do? → top == MAX − 1, so <b>overflow</b>; no insertion.</div>
+<div class="num"><span class="t">Q4</span>How many different pop sequences are possible when pushing 1, 2, 3, 4 in order? → Catalan C(4) = 8!/(5!·4!) = <b>14</b>.</div>
+<div class="num"><span class="t">Q5</span>For a string read character by character, which structure reverses it most simply? → <b>Stack</b>: push every character, then pop them all.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Stack = <b>LIFO / FILO</b> (biscuits, rotis); a linear structure with <b>one open end, the top</b>. TOS is the only access point.</li>
+<li>Implement with an array (static) or a linked list (dynamic), always inserting and deleting at <b>one end</b> (the head for a list).</li>
+<li>Push: <code>if (top == n−1) overflow; top++; stack[top] = x;</code></li>
+<li>Pop: <code>if (top == −1) underflow; x = stack[top]; top--; return x;</code>. Push increments, pop decrements.</li>
+<li>Empty: top = −1 initially. Count = top + 1.</li>
+<li>Lecture trace: push 1, 3, pop, push 5, 10, 10, pop ×4 gives <b>3 10 10 5 1</b>, and the stack ends empty.</li>
+<li>Linked stack: push = insert at head, pop = delete at head, both O(1), no overflow.</li>
+<li>Pop-order rule: numbers below a popped x come out in decreasing order. For 1, 2, 3 the impossible order is 3 1 2. Count = Catalan (14 for n = 4).</li>
+<li>Uses: recursion, expression conversion/evaluation, parentheses matching, undo, back button, DFS, backtracking.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 7 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="06-Circular-Linked-List.html">← Ch 6: Circular Linked List</a><a href="index.html">☰ All topics</a><a href="08-Expression-Notation.html">Ch 8: Expression Notation →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Queue Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="08-Expression-Notation.html">← Ch 8: Expression Notation</a><a href="index.html">☰ All topics</a><a href="10-Trees.html">Ch 10: Trees: Introduction and Terminology →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 9: Queue</h1>
+  <p class="sub">Volume 03 · Part 9 · Built from the one-shot Data Structures lecture transcript (section 9), plus the exam points the lecture skipped. The lecture explains FIFO with a water-park ride and a bus, then covers the array queue's front/rear conditions, why a linear queue wastes space, how the circular queue fixes it with <code>(p + 1) mod n</code>, and the linked-list queue. These notes add the circular-queue full/empty tests, the element-count formula, deque, priority queue, stack vs queue, and traced numericals.</p>
+  <ul class="tags"><li>FIFO / LILO</li><li>Front · Rear</li><li>Enqueue · Dequeue</li><li>front = rear = −1</li><li>Circular: (p + 1) mod n</li><li>Linked queue</li><li>Deque · Priority queue</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">9.1</span>FIFO Concept (Water-Park Ride)</a></li>
+<li><a href="#s2"><span class="n">9.2</span>Front/Rear (Head/Tail), Enqueue and Dequeue</a></li>
+<li><a href="#s3"><span class="n">9.3</span>Array Implementation: Overflow, First Insert, Underflow, Single Element</a></li>
+<li><a href="#s4"><span class="n">9.4</span>Limitation of the Linear Queue (Unused Space)</a></li>
+<li><a href="#s5"><span class="n">9.5</span>Circular Queue ((p + 1) mod n)</a></li>
+<li><a href="#s6"><span class="n">9.6</span>Queue Using a Linked List</a></li>
+<li><a href="#s7"><span class="n">9.7</span>Circular-Queue Conditions, Deque, Priority Queue &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 9</div>
+<h2 class="ch">Queue</h2>
+<p>A queue is the stack's opposite twin. A stack has one door that is both entry and exit. A queue has <b>two doors</b>: you join at the <b>rear</b> and leave from the <b>front</b>, so whoever came first leaves first. Everything in this chapter is about keeping two indices, front and rear, moving correctly, and the circular queue is the fix for the space a straight array wastes.</p>
+
+<section id="s1">
+<h3><span class="n">9.1</span>FIFO Concept (Water-Park Ride)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A queue is the <b>opposite of a stack</b>. On a water-park slide that "spins you round and throws you straight into the water", the person who entered <b>first</b> falls into the water <b>first</b>. The next one in the line falls next, and so on.<br>
+This arrangement is a <b>queue</b>: <b>First In First Out (FIFO)</b>, or equivalently <b>Last In Last Out (LILO)</b>. "The dialogue 'the line starts where I stand' doesn't work here. This is a queue, get in line!"</div>
+<div class="def"><b>Queue</b>: a linear data structure in which insertion (<b>enqueue</b>) happens at one end, the <b>rear</b>, and deletion (<b>dequeue</b>) happens at the other end, the <b>front</b>. It follows <b>FIFO</b>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">9.2</span>Front/Rear (Head/Tail), Enqueue and Dequeue</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>In a stack only <b>one end</b> was open. In a queue <b>both ends are open</b>. One end is called the <b>head</b>, the other the <b>tail</b>.</li>
+<li>Insert = <b>enqueue</b>; delete = <b>dequeue</b> (for a stack these were push and pop).</li>
+<li><b>The rule:</b> insert from one end, delete from the other. Load from one side, unload from the other. This is the key difference from a stack, where you insert and delete at the same end.</li>
+<li><b>Bus analogy:</b> you board through one door and get off through the other; the boarding door isn't for getting off. The exit door is the <b>front</b> and the boarding door is the <b>rear</b>. Head/front and tail/rear are synonyms.</li>
+<li>Initially the queue is empty, and <b>front = rear = −1</b>, like top = −1 for a stack.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Enqueue happens at the rear; dequeue happens at the front.</b> The words sound reversed to many students, who think "front" is where you insert. Think of a ticket counter: people <i>leave</i> from the front of the line.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">9.3</span>Array Implementation: Overflow, First Insert, Underflow, Single Element</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Array of size <b>n = 5</b> (indices 0–4), with <b>f = r = −1</b> initially. The conditions to keep in mind:
+<ul>
+<li><b>Overflow (full):</b> <code>rear == n − 1</code>. Each insert moves rear ahead. Once rear reaches 5 − 1 = 4, one more insert is <b>overflow</b>.</li>
+<li><b>First element inserted:</b> before it, f = r = −1 (empty). After it, <b>f = r = 0</b>. That is the one moment both point to 0.</li>
+<li><b>Underflow (empty):</b> <b>f = r = −1</b>. Deleting from an empty queue: "will you take the child's life?"</li>
+<li><b>Only one element:</b> <b>front == rear</b>.</li>
+<li><b>Insert moves only rear</b> (incremented); front doesn't budge. <b>Delete moves front</b> towards rear. With 1, 2, 3, 4, 5 in the queue, deleting 1 moves front to 2; delete again and front moves to 3, and so on. The element front points to is always the next one to leave.</li>
+<li>When front and rear meet (one element) and that element is deleted, set <b>f = r = −1</b> again: the queue is empty.</li>
+</ul></div>
+<div class="formula">void enqueue(int x) {
+    if (rear == n - 1) { printf("Overflow"); return; }
+    if (front == -1) front = 0;        /* first element */
+    rear = rear + 1;
+    Q[rear] = x;
+}
+
+int dequeue() {
+    if (front == -1) { printf("Underflow"); return -1; }
+    int x = Q[front];
+    if (front == rear)                 /* last element leaves */
+        front = rear = -1;
+    else
+        front = front + 1;
+    return x;
+}</div>
+<div class="tw"><table>
+<tr><th>Situation</th><th>Condition (linear array queue)</th></tr>
+<tr><td>Empty / underflow on delete</td><td>front == −1 (front = rear = −1)</td></tr>
+<tr><td>Full / overflow on insert</td><td>rear == n − 1</td></tr>
+<tr><td>Exactly one element</td><td>front == rear (≠ −1)</td></tr>
+<tr><td>Number of elements</td><td>rear − front + 1 (when not empty)</td></tr>
+<tr><td>After the first insert</td><td>front = rear = 0</td></tr>
+</table></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">9.4</span>Limitation of the Linear Queue (Unused Space)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Insert 1, 2, 3, 4, 5, so rear reaches index 4. Now dequeue 1 and 2: front moves to index 2 (element 3), and indices 0 and 1 are <b>empty</b>.<br>
+Try to insert: the full condition says <b>rear == n − 1</b>, so it's "full" and <b>insert is not possible because of overflow</b>, "however much space is lying empty". Memory utilisation in this linear queue is poor.</div>
+<figure>
+<svg viewBox="0 0 470 190" style="max-width:620px" role="img" aria-label="Linear queue of size 5: indices 0 and 1 empty after two dequeues, front at 2, rear at 4 equals n minus 1 so insert reports overflow">
+<rect class="bx" x="60" y="60" width="70" height="40"/>
+<text class="mut" x="95.0" y="118" text-anchor="middle">0</text>
+<rect class="bx" x="130" y="60" width="70" height="40"/>
+<text class="mut" x="165.0" y="118" text-anchor="middle">1</text>
+<rect class="gr" x="200" y="60" width="70" height="40"/>
+<text x="235.0" y="86" text-anchor="middle">3</text>
+<text class="mut" x="235.0" y="118" text-anchor="middle">2</text>
+<rect class="gr" x="270" y="60" width="70" height="40"/>
+<text x="305.0" y="86" text-anchor="middle">4</text>
+<text class="mut" x="305.0" y="118" text-anchor="middle">3</text>
+<rect class="gr" x="340" y="60" width="70" height="40"/>
+<text x="375.0" y="86" text-anchor="middle">5</text>
+<text class="mut" x="375.0" y="118" text-anchor="middle">4</text>
+<path class="lna" d="M235.0 160 L235.0 132"/><polygon class="aha" points="230.0,134 235.0,125 240.0,134"/><text class="b" x="235.0" y="178" text-anchor="middle">front</text>
+<path class="lna" d="M375.0 160 L375.0 132"/><polygon class="aha" points="370.0,134 375.0,125 380.0,134"/><text class="b" x="375.0" y="178" text-anchor="middle">rear</text>
+</svg>
+<figcaption>Linear queue after inserting 1–5 and dequeuing 1 and 2 · rear = 4 = n − 1 reports overflow, yet slots 0 and 1 are free</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+This is sometimes called <b>false overflow</b>. One fix is to shift all elements left after each dequeue, but that makes dequeue O(n). The standard fix is the <b>circular queue</b>, which keeps both operations O(1).</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">9.5</span>Circular Queue ((p + 1) mod n)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The solution: make the queue <b>circular</b>, so that after the last index it wraps round to the start and uses the free slots. "The circular queue was born precisely to solve this problem."<br>
+Let <b>p</b> stand for either pointer, rear or front. The old <code>p++</code> becomes:
+<div class="formula">p = (p + 1) mod n</div>
+<ul>
+<li><b>Rear wraps:</b> rear = 4, n = 5 → (4 + 1) mod 5 = 5 mod 5 = <b>0</b>, so the next insert goes into index 0.</li>
+<li><b>Front wraps the same way:</b> say 3 and 4 have left, front points to index 4 (element 5), and 1 and 2 have been inserted at indices 0 and 1, so rear = 1. Delete 5: front = (4 + 1) mod 5 = <b>0</b>, so the next element to dequeue is the <b>1</b> at index 0.</li>
+</ul>
+(The lecture says the formula aloud once as "p + n mod n"; on the board it is <b>(p + 1) mod n</b>.)</div>
+<figure>
+<svg viewBox="0 0 470 190" style="max-width:620px" role="img" aria-label="Circular queue of size 5: front at index 4 holding 5, rear wrapped round to index 1; 1 and 2 stored at indices 0 and 1">
+<path class="lna" d="M375.0 58 Q235.0 -10 95.0 56"/><polygon class="aha" points="89.0,46 95.0,57 101.0,46"/>
+<text class="mut" x="235.0" y="18" text-anchor="middle">rear = (4 + 1) mod 5 = 0</text>
+<rect class="gr" x="60" y="60" width="70" height="40"/>
+<text x="95.0" y="86" text-anchor="middle">1</text>
+<text class="mut" x="95.0" y="118" text-anchor="middle">0</text>
+<rect class="gr" x="130" y="60" width="70" height="40"/>
+<text x="165.0" y="86" text-anchor="middle">2</text>
+<text class="mut" x="165.0" y="118" text-anchor="middle">1</text>
+<rect class="bx" x="200" y="60" width="70" height="40"/>
+<text class="mut" x="235.0" y="118" text-anchor="middle">2</text>
+<rect class="bx" x="270" y="60" width="70" height="40"/>
+<text class="mut" x="305.0" y="118" text-anchor="middle">3</text>
+<rect class="gr" x="340" y="60" width="70" height="40"/>
+<text x="375.0" y="86" text-anchor="middle">5</text>
+<text class="mut" x="375.0" y="118" text-anchor="middle">4</text>
+<path class="lna" d="M375.0 160 L375.0 132"/><polygon class="aha" points="370.0,134 375.0,125 380.0,134"/><text class="b" x="375.0" y="178" text-anchor="middle">front</text>
+<path class="lna" d="M165.0 160 L165.0 132"/><polygon class="aha" points="160.0,134 165.0,125 170.0,134"/><text class="b" x="165.0" y="178" text-anchor="middle">rear</text>
+</svg>
+<figcaption>The lecture's circular example · after 5 is dequeued, front also wraps: (4 + 1) mod 5 = 0</figcaption>
+</figure>
+</section>
+
+<section id="s6">
+<h3><span class="n">9.6</span>Queue Using a Linked List</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Same idea, played with pointers. <b>front</b> (head) points to the first node, and <b>rear</b> (tail) points to the last node, whose next is NULL. Insert at the <b>rear</b>, delete at the <b>front</b>, and no other node can be deleted.
+<ul>
+<li><b>Dequeue</b> (nodes 10 → 20 → 30 → 40):
+<ol><li><code>temp = front;</code> temp gets address 10.</li>
+<li><code>front = front-&gt;next;</code> front changes from 10 to 20.</li>
+<li><code>free(temp);</code></li></ol></li>
+<li><b>Enqueue</b> (rear holds 40; the new node is at 50 with next = NULL):
+<ol><li><code>rear-&gt;next = new;</code> The NULL after 40 becomes 50, so the chain continues.</li>
+<li><code>rear = new;</code> Rear changes from 40 to 50, because the new node is now the last.</li></ol></li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>Enqueue into an <b>empty</b> linked queue must set <b>both</b> front and rear to the new node.</li>
+<li>Dequeuing the <b>last</b> node must set <b>rear = NULL</b> as well, or rear is left pointing at freed memory.</li>
+<li>Do it the other way round (insert at head, delete at tail) and dequeue becomes O(n). A singly list can't delete its tail in O(1) (chapter 4).</li>
+</ul></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">9.7</span>Circular-Queue Conditions, Deque, Priority Queue &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Circular queue (size n, front = rear = −1 when empty)</th><th>Condition</th></tr>
+<tr><td>Empty</td><td>front == −1</td></tr>
+<tr><td>Full</td><td><b>(rear + 1) mod n == front</b></td></tr>
+<tr><td>Next rear / next front</td><td>(rear + 1) mod n / (front + 1) mod n</td></tr>
+<tr><td>Number of elements</td><td>(rear − front + n) mod n + 1 (when not empty)</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap: the other convention</span>
+Many textbooks start with <b>front = rear = 0</b> and keep <b>one slot always empty</b>:
+<ul>
+<li>empty ⇔ <b>front == rear</b>;</li>
+<li>full ⇔ <b>(rear + 1) mod n == front</b>;</li>
+<li>so a circular queue of size n then holds at most <b>n − 1</b> elements.</li>
+</ul>
+If an MCQ says "array of size n, maximum elements?", check which convention it uses (often n − 1).</div>
+
+<p><b>Circular queue trace</b>: n = 5, using the lecture's −1 convention.</p>
+<div class="tw"><table>
+<tr><th>Operation</th><th>Result</th><th>front</th><th>rear</th><th>Array [0..4]</th></tr>
+<tr><td>enqueue 10, 20, 30, 40</td><td></td><td>0</td><td>3</td><td>10 20 30 40 _</td></tr>
+<tr><td>dequeue ×2</td><td>→ 10, 20</td><td>2</td><td>3</td><td>_ _ 30 40 _</td></tr>
+<tr><td>enqueue 50</td><td></td><td>2</td><td>4</td><td>_ _ 30 40 50</td></tr>
+<tr><td>enqueue 60</td><td>rear = (4+1) mod 5 = 0</td><td>2</td><td>0</td><td>60 _ 30 40 50</td></tr>
+<tr><td>enqueue 70</td><td></td><td>2</td><td>1</td><td>60 70 30 40 50</td></tr>
+<tr><td>enqueue 80</td><td>(1+1) mod 5 = 2 = front → <b>overflow</b></td><td>2</td><td>1</td><td>60 70 30 40 50</td></tr>
+<tr><td>dequeue</td><td>→ 30</td><td>3</td><td>1</td><td>60 70 _ 40 50</td></tr>
+</table></div>
+<p>Count check at the end: (1 − 3 + 5) mod 5 + 1 = 3 + 1 = <b>4</b> elements (40, 50, 60, 70) ✔.</p>
+
+<div class="box add"><span class="t">➕ Deque (double-ended queue)</span>
+Insert and delete at <b>both</b> ends: insertFront, insertRear, deleteFront, deleteRear.
+<ul>
+<li><b>Input-restricted deque</b>: insert at one end only, delete at both.</li>
+<li><b>Output-restricted deque</b>: delete at one end only, insert at both.</li>
+<li>A deque can act as a stack (one end only) or as a queue. It is best implemented with a circular array or a doubly linked list.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Priority queue</span>
+Each element has a priority, and the <b>highest-priority element leaves first</b>; ties are broken FIFO.
+<ul>
+<li><b>Ascending</b> (min) and <b>descending</b> (max) priority queues.</li>
+<li>Implementation cost (insert / delete-max): unsorted array O(1) / O(n); sorted list O(n) / O(1); <b>binary heap O(log n) / O(log n)</b> (chapter 14).</li>
+<li>Uses: CPU scheduling by priority, Dijkstra's and Prim's algorithms, Huffman coding, event simulation.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Stack</th><th>Queue</th></tr>
+<tr><td>Order</td><td>LIFO</td><td>FIFO</td></tr>
+<tr><td>Open ends</td><td>one (top)</td><td>two (front, rear)</td></tr>
+<tr><td>Insert / delete names</td><td>push / pop</td><td>enqueue / dequeue</td></tr>
+<tr><td>Pointers</td><td>top</td><td>front and rear</td></tr>
+<tr><td>Empty test (array)</td><td>top == −1</td><td>front == −1</td></tr>
+<tr><td>Full test (array)</td><td>top == n − 1</td><td>rear == n − 1 (linear) / (rear+1) mod n == front (circular)</td></tr>
+<tr><td>Graph traversal</td><td>DFS</td><td>BFS</td></tr>
+<tr><td>Typical uses</td><td>recursion, undo, expressions</td><td>scheduling, printer spool, buffers, BFS</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Queue using two stacks</span>
+Enqueue = push onto S1. Dequeue = if S2 is empty, pop everything from S1 and push it onto S2, then pop S2. Each element moves at most twice, so this is <b>amortised O(1)</b>. Conversely, a stack can be built from two queues.</div>
+
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>Queue = <b>FIFO</b>. Insert at the <b>rear</b>, delete at the <b>front</b>.</li>
+<li>"Which data structure is used for BFS / CPU scheduling / printer spooling / buffering?" → <b>queue</b>. "Round-robin?" → <b>circular queue</b>.</li>
+<li>"Disadvantage of a linear array queue?" → <b>unused space</b> at the front after deletions (false overflow).</li>
+<li>Circular queue full: <b>(rear + 1) % n == front</b>.</li>
+<li>"Elements are removed according to priority" → <b>priority queue</b>, best implemented with a <b>heap</b>.</li>
+</ul></div>
+<div class="num"><span class="t">Q1</span>Empty queue: enqueue A, B, C, dequeue, enqueue D, dequeue. What is at the front? → Removed A, then B, so the queue is C D and the front is <b>C</b>.</div>
+<div class="num"><span class="t">Q2</span>Circular queue, n = 8, front = 6, rear = 2 (wrapped). Number of elements? → (2 − 6 + 8) mod 8 + 1 = 4 + 1 = <b>5</b> (indices 6, 7, 0, 1, 2).</div>
+<div class="num"><span class="t">Q3</span>Circular queue, n = 6, rear = 5. Where does the next element go? → (5 + 1) mod 6 = <b>index 0</b>, provided front ≠ 0.</div>
+<div class="num"><span class="t">Q4</span>Linear queue of size 5: after 5 inserts and 3 deletes, can a new element be inserted? → <b>No</b>. rear = 4 = n − 1, so it overflows, even though 3 slots are free. That is why the circular queue is used.</div>
+<div class="num"><span class="t">Q5</span>Which deque allows insertion at both ends but deletion at only one? → <b>Output-restricted deque</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Queue = <b>FIFO / LILO</b> (water-park slide, bus doors). Two open ends: insert (<b>enqueue</b>) at the <b>rear</b>, delete (<b>dequeue</b>) at the <b>front</b>.</li>
+<li>Array queue: start with f = r = −1. The first insert makes f = r = 0. Insert moves only rear, delete moves only front.</li>
+<li>Conditions: full <b>rear == n−1</b>; empty <b>f = r = −1</b>; one element <b>f == r</b>; deleting the last element resets both to −1.</li>
+<li>Linear queue limitation: freed front slots can't be reused (false overflow).</li>
+<li>Circular queue: <b>p = (p + 1) mod n</b> for both pointers (4 → 0 when n = 5). Full: <b>(rear+1) mod n == front</b>. Count = (r − f + n) mod n + 1.</li>
+<li>Linked queue: dequeue <code>temp = front; front = front→next; free(temp)</code>; enqueue <code>rear→next = new; rear = new</code>. Watch the empty and last-node cases.</li>
+<li>Deque: both ends (input-/output-restricted). Priority queue: highest priority leaves first, using a heap (O(log n)).</li>
+<li>Stack ↔ DFS, recursion. Queue ↔ BFS, scheduling, spooling, buffers.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 9 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="08-Expression-Notation.html">← Ch 8: Expression Notation</a><a href="index.html">☰ All topics</a><a href="10-Trees.html">Ch 10: Trees: Introduction and Terminology →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

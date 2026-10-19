@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE Critical Path Method Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="14-Maintenance-and-Re-engineering.html">← Ch 14: Software Maintenance and Re-engineering</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Software Engineering — Chapter 15: Critical Path Method (CPM)</h1>
+  <p class="sub">Volume 04 · Part 15 · Built from the one-shot Software Engineering lecture transcript (CPM section), plus the exam points the lecture skipped. Critical tasks and the critical path, the six values in each node, forward and backward passes worked step by step on two networks, plus PERT and Gantt charts.</p>
+  <ul class="tags"><li>CPM</li><li>Critical path</li><li>ES · EF · LS · LF</li><li>Float / slack</li><li>Forward pass</li><li>Backward pass</li><li>PERT</li><li>Gantt chart</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">15.1</span>Critical Task and Critical Path</a></li>
+<li><a href="#s2"><span class="n">15.2</span>Node Block: ES, EF, LS, LF, Duration and Float</a></li>
+<li><a href="#s3"><span class="n">15.3</span>Forward and Backward Pass — Worked Example (A → B → C)</a></li>
+<li><a href="#s4"><span class="n">15.4</span>A Branching Network: Finding the Critical Path<span class="x">ADDED</span></a></li>
+<li><a href="#s5"><span class="n">15.5</span>PERT, Gantt Charts and Crashing<span class="x">ADDED</span></a></li>
+<li><a href="#s6"><span class="n">15.6</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 15</div>
+<h2 class="ch">Critical Path Method (CPM)</h2>
+<p>A project is a network of tasks, and some must wait for others. Design can't start before requirements are done; testing can't start before coding. Given each task's duration and dependencies, how soon can the whole project finish, and which tasks have no room to slip? The <b>Critical Path Method</b> answers both questions with two simple passes through the network.</p>
+
+<section id="s1">
+<h3><span class="n">15.1</span>Critical Task and Critical Path</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Critical task</b>: a task that <b>cannot be delayed</b>. Any delay in it delays the whole project.</li>
+<li><b>Critical path</b>: the chain of critical tasks. Its length is the <b>minimum time needed to complete the project</b>.</li>
+</ul>
+<b>Steps:</b> identify the tasks → work out their sequence (dependencies) → estimate each task's time → draw the network → find the critical path.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The critical path is the <b>longest</b> path through the network (by total duration), and its length is the <b>shortest</b> possible project duration. Both words appear in options; they describe the same thing from two angles. Every task on it has <b>zero float</b>. A network can have <b>more than one</b> critical path.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">15.2</span>Node Block: ES, EF, LS, LF, Duration and Float</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Each task is drawn as a <b>node block</b> holding six values:
+<ul>
+<li><b>ES</b> = earliest start, <b>D</b> = duration, <b>EF</b> = earliest finish (top row).</li>
+<li>The <b>task label</b> (middle).</li>
+<li><b>LS</b> = latest start, <b>Float</b> (slack), <b>LF</b> = latest finish (bottom row).</li>
+</ul>
+The <b>forward pass</b> fills ES and EF; the <b>backward pass</b> fills LF, LS and float.</div>
+<figure>
+<svg viewBox="0 0 560 170" role="img" aria-label="CPM node block layout">
+<rect class="bx" x="140" y="10" width="270" height="140" rx="4"/>
+<line class="ln" x1="140" y1="56" x2="410" y2="56"/><line class="ln" x1="140" y1="104" x2="410" y2="104"/>
+<line class="ln" x1="230" y1="10" x2="230" y2="56"/><line class="ln" x1="320" y1="10" x2="320" y2="56"/>
+<line class="ln" x1="230" y1="104" x2="230" y2="150"/><line class="ln" x1="320" y1="104" x2="320" y2="150"/>
+<text x="185" y="38" text-anchor="middle" class="b">ES</text><text x="275" y="38" text-anchor="middle" class="b">D</text><text x="365" y="38" text-anchor="middle" class="b">EF</text>
+<text x="275" y="86" text-anchor="middle" class="b">Task label</text>
+<text x="185" y="132" text-anchor="middle" class="b">LS</text><text x="275" y="132" text-anchor="middle" class="b">Float</text><text x="365" y="132" text-anchor="middle" class="b">LF</text>
+<text class="mut" x="420" y="38">← forward pass</text><text class="mut" x="420" y="132">← backward pass</text>
+</svg>
+<figcaption>The six-value node (activity-on-node notation)</figcaption>
+</figure>
+<div class="formula">Forward pass:   EF = ES + D        ES of a task = max(EF of all its predecessors)   (first task: ES = 0)
+Backward pass:  LS = LF − D        LF of a task = min(LS of all its successors)     (last task: LF = its EF)
+Float (slack):  Float = LS − ES = LF − EF</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Forward pass</b>: when several arrows <b>merge</b> into a task, take the <b>maximum</b> EF, because the task must wait for its slowest predecessor. <b>Backward pass</b>: when a task <b>bursts</b> into several successors, take the <b>minimum</b> LS, because it must finish in time for the most urgent one.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">15.3</span>Forward and Backward Pass — Worked Example (A → B → C)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<div class="tw"><table>
+<tr><th>Task</th><th>Duration (months)</th><th>Predecessor</th></tr>
+<tr><td>A</td><td>2</td><td>—</td></tr>
+<tr><td>B</td><td>3</td><td>A</td></tr>
+<tr><td>C</td><td>5</td><td>B</td></tr>
+</table></div>
+<b>Forward pass:</b> A: ES 0, EF 2 → B: ES 2, EF 5 → C: ES 5, EF 10.<br>
+<b>Backward pass:</b> the last task's LF = its EF = 10. Then LS = LF − D, working backwards, and Float = LF − EF.<br>
+All floats are 0, so <b>A → B → C is the critical path</b>, and the project needs <b>10 months</b>. The critical path is the one with zero slack.</div>
+<figure>
+<svg viewBox="0 0 660 130" role="img" aria-label="Linear CPM network A B C with values">
+<g>
+<rect class="or" x="10" y="20" width="180" height="90" rx="4"/>
+<line class="ln" x1="10" y1="50" x2="190" y2="50"/><line class="ln" x1="10" y1="80" x2="190" y2="80"/>
+<text x="40" y="41" text-anchor="middle">0</text><text x="100" y="41" text-anchor="middle">2</text><text x="160" y="41" text-anchor="middle">2</text>
+<text x="100" y="71" text-anchor="middle" class="b">A</text>
+<text x="40" y="101" text-anchor="middle">0</text><text x="100" y="101" text-anchor="middle" class="b">0</text><text x="160" y="101" text-anchor="middle">2</text>
+</g>
+<g>
+<rect class="or" x="240" y="20" width="180" height="90" rx="4"/>
+<line class="ln" x1="240" y1="50" x2="420" y2="50"/><line class="ln" x1="240" y1="80" x2="420" y2="80"/>
+<text x="270" y="41" text-anchor="middle">2</text><text x="330" y="41" text-anchor="middle">3</text><text x="390" y="41" text-anchor="middle">5</text>
+<text x="330" y="71" text-anchor="middle" class="b">B</text>
+<text x="270" y="101" text-anchor="middle">2</text><text x="330" y="101" text-anchor="middle" class="b">0</text><text x="390" y="101" text-anchor="middle">5</text>
+</g>
+<g>
+<rect class="or" x="470" y="20" width="180" height="90" rx="4"/>
+<line class="ln" x1="470" y1="50" x2="650" y2="50"/><line class="ln" x1="470" y1="80" x2="650" y2="80"/>
+<text x="500" y="41" text-anchor="middle">5</text><text x="560" y="41" text-anchor="middle">5</text><text x="620" y="41" text-anchor="middle">10</text>
+<text x="560" y="71" text-anchor="middle" class="b">C</text>
+<text x="500" y="101" text-anchor="middle">5</text><text x="560" y="101" text-anchor="middle" class="b">0</text><text x="620" y="101" text-anchor="middle">10</text>
+</g>
+<g class="hard"><line x1="190" y1="65" x2="240" y2="65"/><line x1="420" y1="65" x2="470" y2="65"/></g>
+<text class="mut" x="330" y="126" text-anchor="middle">top: ES · D · EF   bottom: LS · Float · LF   (red = critical)</text>
+</svg>
+<figcaption>Lecture example · every float is 0, so the whole chain is critical</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+A purely linear chain is always entirely critical, because there is no alternative route to create slack. CPM becomes interesting when tasks run <b>in parallel</b>, as in the next example.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">15.4</span>A Branching Network: Finding the Critical Path<span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Task</th><th>Duration (weeks)</th><th>Predecessors</th></tr>
+<tr><td>A Requirements</td><td>3</td><td>—</td></tr>
+<tr><td>B Design backend</td><td>4</td><td>A</td></tr>
+<tr><td>C Design UI</td><td>2</td><td>A</td></tr>
+<tr><td>D Code backend</td><td>5</td><td>B</td></tr>
+<tr><td>E Code UI</td><td>3</td><td>C</td></tr>
+<tr><td>F Integrate &amp; test</td><td>2</td><td>D, E</td></tr>
+</table></div>
+<div class="num"><span class="t">Step 1 · Forward pass (ES, EF)</span>
+<div class="formula">A: ES 0,  EF 0+3 = 3
+B: ES 3,  EF 3+4 = 7          C: ES 3,  EF 3+2 = 5
+D: ES 7,  EF 7+5 = 12         E: ES 5,  EF 5+3 = 8
+F: ES max(12, 8) = 12,  EF 12+2 = 14      → project duration = 14 weeks</div></div>
+<div class="num"><span class="t">Step 2 · Backward pass (LF, LS)</span>
+<div class="formula">F: LF 14, LS 14−2 = 12
+D: LF 12, LS 12−5 = 7         E: LF 12, LS 12−3 = 9
+B: LF 7,  LS 7−4 = 3          C: LF 9,  LS 9−2 = 7
+A: LF min(3, 7) = 3,  LS 3−3 = 0</div></div>
+<div class="num"><span class="t">Step 3 · Float = LS − ES</span>
+<div class="tw"><table>
+<tr><th>Task</th><th>ES</th><th>EF</th><th>LS</th><th>LF</th><th>Total float</th><th>Critical?</th></tr>
+<tr><td>A</td><td>0</td><td>3</td><td>0</td><td>3</td><td>0</td><td>✓</td></tr>
+<tr><td>B</td><td>3</td><td>7</td><td>3</td><td>7</td><td>0</td><td>✓</td></tr>
+<tr><td>C</td><td>3</td><td>5</td><td>7</td><td>9</td><td>4</td><td></td></tr>
+<tr><td>D</td><td>7</td><td>12</td><td>7</td><td>12</td><td>0</td><td>✓</td></tr>
+<tr><td>E</td><td>5</td><td>8</td><td>9</td><td>12</td><td>4</td><td></td></tr>
+<tr><td>F</td><td>12</td><td>14</td><td>12</td><td>14</td><td>0</td><td>✓</td></tr>
+</table></div>
+<b>Critical path: A → B → D → F = 3 + 4 + 5 + 2 = 14 weeks.</b> The other path, A → C → E → F, takes only 10 weeks, which is why C and E each have 14 − 10 = 4 weeks of float.</div>
+<figure>
+<svg viewBox="0 0 660 200" role="img" aria-label="Branching CPM network with critical path highlighted">
+<g>
+<rect class="or" x="10" y="80" width="90" height="44" rx="4"/><text x="55" y="100" text-anchor="middle" class="b">A · 3</text><text x="55" y="116" text-anchor="middle" class="mut">0–3 · f0</text>
+<rect class="or" x="150" y="20" width="100" height="44" rx="4"/><text x="200" y="40" text-anchor="middle" class="b">B · 4</text><text x="200" y="56" text-anchor="middle" class="mut">3–7 · f0</text>
+<rect class="ac" x="150" y="140" width="100" height="44" rx="4"/><text x="200" y="160" text-anchor="middle" class="b">C · 2</text><text x="200" y="176" text-anchor="middle" class="mut">3–5 · f4</text>
+<rect class="or" x="310" y="20" width="110" height="44" rx="4"/><text x="365" y="40" text-anchor="middle" class="b">D · 5</text><text x="365" y="56" text-anchor="middle" class="mut">7–12 · f0</text>
+<rect class="ac" x="310" y="140" width="110" height="44" rx="4"/><text x="365" y="160" text-anchor="middle" class="b">E · 3</text><text x="365" y="176" text-anchor="middle" class="mut">5–8 · f4</text>
+<rect class="or" x="490" y="80" width="110" height="44" rx="4"/><text x="545" y="100" text-anchor="middle" class="b">F · 2</text><text x="545" y="116" text-anchor="middle" class="mut">12–14 · f0</text>
+</g>
+<g class="hard"><line x1="100" y1="94" x2="150" y2="48"/><line x1="250" y1="42" x2="310" y2="42"/><line x1="420" y1="48" x2="490" y2="94"/></g>
+<g class="ln"><line x1="100" y1="112" x2="150" y2="156"/><line x1="250" y1="162" x2="310" y2="162"/><line x1="420" y1="156" x2="490" y2="112"/></g>
+<text class="mut" x="610" y="104">end</text>
+</svg>
+<figcaption>Red = critical path (zero float) · blue tasks can slip up to 4 weeks</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Total float</b> (LS − ES) is how long a task can slip <b>without delaying the project</b>. <b>Free float</b> is how long it can slip <b>without delaying the next task's earliest start</b>: free float = ES of the successor − EF of the task.
+<ul>
+<li>Task C: free float = ES(E) − EF(C) = 5 − 5 = <b>0</b>, although its total float is 4. Any slip in C pushes E later, but E has room to absorb it.</li>
+<li>Task E: free float = ES(F) − EF(E) = 12 − 8 = <b>4</b>.</li>
+</ul></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">15.5</span>PERT, Gantt Charts and Crashing<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<h4>PERT (Program Evaluation and Review Technique)</h4>
+PERT was developed for the US Navy's Polaris missile project (1958). It handles <b>uncertain</b> durations with three time estimates per task:
+<div class="formula">o = optimistic, m = most likely, p = pessimistic
+Expected time   te = (o + 4m + p) / 6
+Variance        σ² = ((p − o) / 6)²</div>
+Example: o = 2, m = 4, p = 12 → te = (2 + 16 + 12) / 6 = <b>5</b>; σ = (12 − 2) / 6 ≈ 1.67.
+<div class="tw"><table>
+<tr><th></th><th>CPM</th><th>PERT</th></tr>
+<tr><td>Durations</td><td><b>Deterministic</b> (one known estimate)</td><td><b>Probabilistic</b> (three estimates, beta distribution)</td></tr>
+<tr><td>Focus</td><td>Time–cost trade-off</td><td>Time and uncertainty</td></tr>
+<tr><td>Orientation</td><td>Activity-oriented</td><td>Event-oriented</td></tr>
+<tr><td>Typical use</td><td>Repetitive projects with known durations (construction)</td><td>New research and development projects</td></tr>
+<tr><td>Origin</td><td>DuPont, 1957</td><td>US Navy, 1958</td></tr>
+</table></div>
+<h4>Gantt chart</h4>
+A <b>Gantt chart</b> (Henry Gantt) is a <b>bar chart</b> with tasks on the y-axis and <b>time</b> on the x-axis. It is excellent for showing <b>schedule and progress</b>, but it shows dependencies poorly. Use CPM or PERT for dependencies and a Gantt chart for tracking.
+<h4>Other terms</h4>
+<ul>
+<li><b>Crashing</b>: shortening the project by adding resources to <b>critical</b> tasks. Crashing a non-critical task saves no time.</li>
+<li><b>Fast-tracking</b>: running sequential tasks in parallel.</li>
+<li><b>AON vs AOA</b>: activity-on-node (tasks are boxes, as above) vs activity-on-arrow (tasks are arrows between event circles). AOA sometimes needs <b>dummy activities</b>, with zero duration, to show a dependency.</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Common one-liners:
+<ul>
+<li>"PERT expected time formula?" → <b>(o + 4m + p) / 6</b>.</li>
+<li>"Float of a critical activity?" → <b>0</b>.</li>
+<li>"Which chart shows the schedule as horizontal bars over time?" → <b>Gantt</b>.</li>
+<li>"Reducing project duration by adding resources to critical activities?" → <b>crashing</b>.</li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">15.6</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>The float (slack) of every activity on the critical path is:<br><b>Answer: zero.</b></div>
+<div class="num"><span class="t">Q2</span>A task has ES = 4, D = 3 and LF = 10. Find its EF, LS and float.<br><b>Answer:</b> EF = 4 + 3 = 7; LS = 10 − 3 = 7; float = 7 − 4 = <b>3</b>.</div>
+<div class="num"><span class="t">Q3</span>A PERT activity has o = 3, m = 6, p = 15 days. Find the expected time.<br><b>Answer:</b> (3 + 24 + 15) / 6 = 42 / 6 = <b>7 days</b>.</div>
+<div class="num"><span class="t">Q4</span>Task X depends on P (EF = 6) and Q (EF = 9). What is the ES of X?<br><b>Answer: 9.</b> In the forward pass, take the maximum of the predecessors' EF.</div>
+<div class="num"><span class="t">Q5</span>The critical path is the: (a) shortest path (b) longest path (c) path with the most tasks (d) path with the highest cost<br><b>Answer: (b) longest path</b> (by duration). Its length is the minimum project time.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Critical task</b> = can't be delayed. <b>Critical path</b> = longest chain by duration = minimum project time; every task on it has zero float.</li>
+<li>Node: <b>ES · D · EF</b> on top, label in the middle, <b>LS · Float · LF</b> at the bottom.</li>
+<li>Forward: EF = ES + D; ES = <b>max</b> of the predecessors' EF. Backward: LS = LF − D; LF = <b>min</b> of the successors' LS.</li>
+<li>Float = LS − ES = LF − EF. Free float = ES(next) − EF(this).</li>
+<li>Lecture: A2 → B3 → C5 → 0–2, 2–5, 5–10, all floats 0, critical path = 10 months.</li>
+<li>Branching example: A-B-D-F = 14 (critical); A-C-E-F = 10, so C and E have float 4.</li>
+<li><b>PERT</b>: te = (o + 4m + p) / 6, σ = (p − o) / 6; probabilistic. <b>CPM</b>: deterministic. <b>Gantt</b> = bars over time. <b>Crashing</b> = add resources to critical tasks.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 15 · Volume 04 — Software Engineering</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="14-Maintenance-and-Re-engineering.html">← Ch 14: Software Maintenance and Re-engineering</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

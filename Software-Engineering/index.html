@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Software Engineering Notes</title>
+<script src="../assets/embed.js"></script><style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+</style></head>
+<body><button class="themer" id="themer" type="button">Theme</button><div class="wrap">
+<header class="cover"><div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+<h1>Software Engineering — Notes Index</h1>
+<p class="sub">Volume 04 · 16 chapters from the one-shot Software Engineering lecture, plus exam additions. 15 of 16 chapters ready.</p>
+<div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+<p style="margin-top:12px;font-size:14px"><a href="../Data-Structures/index.html">← Data Structures notes</a></p></header>
+<details class="card ready" open><summary><span class="cn">Chapter 1</span><span class="ct"><a href="01-Introduction-to-SE.html">Introduction to Software Engineering</a></span><span class="cs">6 subtopics · <a class="open" href="01-Introduction-to-SE.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">1.1</span>Meaning of Software Engineering (Building a House)</li><li><span class="n">1.2</span>Characteristics of Software (Engineered, Not Manufactured; Deteriorates, Doesn&#x27;t Wear Out)</li><li><span class="n">1.3</span>Software Myths: Management, Customer and Practitioner (Chinese Whispers)</li><li><span class="n">1.4</span>Software Engineering as a Layered Technology (Tools, Methods, Process, Quality Focus)</li><li><span class="n">1.5</span>Problems and Challenges in Software Development</li><li><span class="n">1.6</span>Software Quality Attributes</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 2</span><span class="ct"><a href="02-SDLC-Models.html">SDLC and Process Models</a></span><span class="cs">9 subtopics · <a class="open" href="02-SDLC-Models.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">2.1</span>SDLC Phases (Planning, Defining, Designing, Building, Testing, Deployment)</li><li><span class="n">2.2</span>Waterfall Model (Real Waterfall; Class 1 to 12)</li><li><span class="n">2.3</span>Iterative Waterfall Model (Feedback Paths)</li><li><span class="n">2.4</span>V-Shaped Model (Verification and Validation)</li><li><span class="n">2.5</span>Prototyping Model (Unclear Requirements)</li><li><span class="n">2.6</span>Incremental Model (House Room by Room)</li><li><span class="n">2.7</span>Evolutionary Model (Iterative + Incremental)</li><li><span class="n">2.8</span>Spiral Model (Four Quadrants, Risk Analysis)</li><li><span class="n">2.9</span>Unified Process (Inception, Elaboration, Construction, Transition, Production)</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 3</span><span class="ct"><a href="03-Agile-and-Scrum.html">Agile Development and Scrum</a></span><span class="cs">5 subtopics · <a class="open" href="03-Agile-and-Scrum.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">3.1</span>Agile Characteristics and Principles</li><li><span class="n">3.2</span>Team X (Waterfall) vs Team Y (Agile) Scenario</li><li><span class="n">3.3</span>Agile vs Evolutionary Model</li><li><span class="n">3.4</span>Scrum Framework: Roles, Product Backlog, Sprint Planning and Sprint Backlog</li><li><span class="n">3.5</span>Sprint, Daily Scrum, PSPI, Sprint Review and Retrospective</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 4</span><span class="ct"><a href="04-Requirement-Engineering.html">Requirement Engineering and Gathering</a></span><span class="cs">7 subtopics · <a class="open" href="04-Requirement-Engineering.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">4.1</span>Goal of Requirement Analysis and Its Challenges</li><li><span class="n">4.2</span>Basic Questions to Ask the Client (Shark Tank)</li><li><span class="n">4.3</span>Requirement Engineering Steps: Gathering, Analysis, Documentation, Review</li><li><span class="n">4.4</span>Interview and Group Discussion</li><li><span class="n">4.5</span>Delphi Technique (Anonymous Written Iterations)</li><li><span class="n">4.6</span>Facilitated Workshop and Quality Function Deployment (QFD)</li><li><span class="n">4.7</span>Role Play and Use Case Approach</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 5</span><span class="ct"><a href="05-Requirement-Analysis-Tools.html">Requirement Analysis Tools</a></span><span class="cs">6 subtopics · <a class="open" href="05-Requirement-Analysis-Tools.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">5.1</span>Flowchart (Sum of Two Numbers; Pass/Fail Decision)</li><li><span class="n">5.2</span>Data Flow Diagram: Notation and Valid/Invalid Flows</li><li><span class="n">5.3</span>DFD Levels (Level 0, 1, 2) — Food Ordering System Example</li><li><span class="n">5.4</span>Data Dictionary (Marks Out of 100)</li><li><span class="n">5.5</span>ER Diagram (Student Studies in College)</li><li><span class="n">5.6</span>Decision Table / Cause-Effect Table (Login Example)</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 6</span><span class="ct"><a href="06-SRS.html">Software Requirement Specification (SRS)</a></span><span class="cs">5 subtopics · <a class="open" href="06-SRS.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">6.1</span>IEEE 830 Standard and SRS Structure</li><li><span class="n">6.2</span>Requirement Review (Re-checking the Exam Paper)</li><li><span class="n">6.3</span>Functional vs Non-Functional Requirements and Goals of Implementation</li><li><span class="n">6.4</span>Characteristics of a Good SRS</li><li><span class="n">6.5</span>Consequences of Not Having an SRS</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 7</span><span class="ct"><a href="07-CMM.html">Capability Maturity Model (CMM)</a></span><span class="cs">6 subtopics · <a class="open" href="07-CMM.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">7.1</span>CMM as a Process-Improvement Framework (Dhoni&#x27;s Process Mindset)</li><li><span class="n">7.2</span>Level 1 Initial (Opening a New Shop)</li><li><span class="n">7.3</span>Level 2 Repeatable (Gym Routine)</li><li><span class="n">7.4</span>Level 3 Defined</li><li><span class="n">7.5</span>Level 4 Managed</li><li><span class="n">7.6</span>Level 5 Optimized (Continuous Improvement)</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 8</span><span class="ct"><a href="08-Software-Design.html">Software Design</a></span><span class="cs">7 subtopics · <a class="open" href="08-Software-Design.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">8.1</span>Design Phase Input/Output: SRS to SDD</li><li><span class="n">8.2</span>Characteristics of a Good Design Document</li><li><span class="n">8.3</span>Interface Design (System as a Black Box)</li><li><span class="n">8.4</span>Architectural Design (Components and Their Interaction)</li><li><span class="n">8.5</span>Detailed Design (Algorithms and Data Structures)</li><li><span class="n">8.6</span>All Three Designs Together (Hostage Rescue Analogy)</li><li><span class="n">8.7</span>Top-Down vs Bottom-Up Design Approach</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 9</span><span class="ct"><a href="09-Coupling-and-Cohesion.html">Modularity, Coupling and Cohesion</a></span><span class="cs">5 subtopics · <a class="open" href="09-Coupling-and-Cohesion.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">9.1</span>Modularity, Fan-In and Fan-Out</li><li><span class="n">9.2</span>Degree of Modularity</li><li><span class="n">9.3</span>Coupling vs Cohesion (Two Neighbouring Houses)</li><li><span class="n">9.4</span>Types of Coupling: Data, Stamp, Control, External, Common, Content (Exam Hall)</li><li><span class="n">9.5</span>Types of Cohesion: Functional to Coincidental</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 10</span><span class="ct"><a href="10-Project-Estimation.html">Project Estimation and Resource Management</a></span><span class="cs">5 subtopics · <a class="open" href="10-Project-Estimation.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">10.1</span>Project Estimation in the Planning Phase (Size, Cost, Duration, Effort)</li><li><span class="n">10.2</span>Size Metrics: LOC and Function Points</li><li><span class="n">10.3</span>Cost Estimation Factors</li><li><span class="n">10.4</span>Resource Management: Advance Allocation, On-Demand Allocation, Reuse</li><li><span class="n">10.5</span>Estimation Techniques: Empirical, Heuristic, Analytical</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 11</span><span class="ct"><a href="11-COCOMO.html">COCOMO Model</a></span><span class="cs">5 subtopics · <a class="open" href="11-COCOMO.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">11.1</span>Project Categories: Organic, Semi-Detached, Embedded</li><li><span class="n">11.2</span>Basic COCOMO: Effort, Development Time, Person-Month and Productivity</li><li><span class="n">11.3</span>Basic COCOMO Worked Example (50 KLOC Semi-Detached)</li><li><span class="n">11.4</span>Intermediate COCOMO: Cost Drivers and EAF</li><li><span class="n">11.5</span>Complete (Detailed) COCOMO: Subsystem-wise Estimation</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 12</span><span class="ct"><a href="12-Software-Testing.html">Software Testing Fundamentals and Levels</a></span><span class="cs">8 subtopics · <a class="open" href="12-Software-Testing.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">12.1</span>Goal of Testing</li><li><span class="n">12.2</span>Verification vs Validation (Building a Car)</li><li><span class="n">12.3</span>Principles of Testing</li><li><span class="n">12.4</span>Unit Testing</li><li><span class="n">12.5</span>Integration Testing: Big Bang, Top-Down (Stubs), Bottom-Up (Drivers)</li><li><span class="n">12.6</span>System Testing</li><li><span class="n">12.7</span>Acceptance Testing: Alpha, Beta, UAT, Regulatory, Business</li><li><span class="n">12.8</span>Non-Functional Testing: Performance, Load, Stress, Scalability (Five-Seater Car)</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 13</span><span class="ct"><a href="13-White-Box-and-Black-Box-Testing.html">White-Box and Black-Box Testing</a></span><span class="cs">5 subtopics · <a class="open" href="13-White-Box-and-Black-Box-Testing.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">13.1</span>White-Box Testing (Transparent Glass of Water)</li><li><span class="n">13.2</span>Statement, Branch and Path Coverage; Data-Flow Testing</li><li><span class="n">13.3</span>Black-Box Testing (Brass Glass)</li><li><span class="n">13.4</span>Cause-Effect Graph, Requirement-Based Testing and Boundary Value Analysis</li><li><span class="n">13.5</span>Regression Testing: Full vs Partial</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 14</span><span class="ct"><a href="14-Maintenance-and-Re-engineering.html">Software Maintenance and Re-engineering</a></span><span class="cs">4 subtopics · <a class="open" href="14-Maintenance-and-Re-engineering.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">14.1</span>Software Maintenance (App Update Notes)</li><li><span class="n">14.2</span>Types: Corrective, Perfective, Adaptive, Preventive</li><li><span class="n">14.3</span>Software Re-engineering (Melody: Something More)</li><li><span class="n">14.4</span>Reverse Engineering, Restructuring/Refactoring and Forward Engineering</li></ol></details><details class="card ready" open><summary><span class="cn">Chapter 15</span><span class="ct"><a href="15-Critical-Path-Method.html">Critical Path Method (CPM)</a></span><span class="cs">3 subtopics · <a class="open" href="15-Critical-Path-Method.html">Open notes →</a></span></summary><ol class="subs"><li><span class="n">15.1</span>Critical Task and Critical Path</li><li><span class="n">15.2</span>Node Block: ES, EF, LS, LF, Duration and Float</li><li><span class="n">15.3</span>Forward and Backward Pass — Worked Example (A → B → C)</li></ol></details><details class="card"><summary><span class="cn">Chapter 16</span><span class="ct">Risk Management</span><span class="cs">5 subtopics · <span class="soon">Coming soon</span></span></summary><ol class="subs"><li><span class="n">16.1</span>What is Risk (Driving Accident); Assessment and Control</li><li><span class="n">16.2</span>Reactive vs Proactive Risk Management</li><li><span class="n">16.3</span>Types of Risk: Budget, Schedule, Technical, Operational, Business</li><li><span class="n">16.4</span>Risk Assessment: Probability × Severity Matrix and Ostrich Approach</li><li><span class="n">16.5</span>Risk Control: Plans A/B/C, Avoid, Transfer, Reduce, Monitor, Mitigate</li></ol></details></div><script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

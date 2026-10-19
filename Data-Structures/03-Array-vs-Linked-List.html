@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Array vs Linked List Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="02-Arrays.html">← Ch 2: Arrays</a><a href="index.html">☰ All topics</a><a href="04-Singly-Linked-List.html">Ch 4: Singly Linked List →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 3: Array vs Linked List</h1>
+  <p class="sub">Volume 03 · Part 3 · Built from the one-shot Data Structures lecture transcript (section 3), plus the exam points the lecture skipped. The lecture stages a six-round "ghamasan yuddh" between the two linear structures; these notes add the rounds exams also score: memory overhead, allocation and binary search.</p>
+  <ul class="tags"><li>Contiguous vs Non-contiguous</li><li>Node = Data + Link</li><li>Head · NULL</li><li>Random vs Sequential access</li><li>Static vs Dynamic</li><li>Singly · Doubly · Circular</li><li>Pointer overhead</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">3.1</span>Contiguous vs Non-Contiguous Memory</a></li>
+<li><a href="#s2"><span class="n">3.2</span>Random Access vs Sequential Access</a></li>
+<li><a href="#s3"><span class="n">3.3</span>Insertion/Deletion Cost, Static vs Dynamic, Variations and Representation</a></li>
+<li><a href="#s4"><span class="n">3.4</span>Full Comparison Table, Memory Numerical &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 3</div>
+<h2 class="ch">Array vs Linked List</h2>
+<p>Both are <b>linear</b>: each element has one predecessor and one successor. They differ in <b>where</b> elements live and <b>how</b> you reach them. An array keeps elements side by side in memory, so it can compute any address. A linked list scatters its nodes and chains them with pointers, so it must follow the chain. Every difference below follows from that single design choice.</p>
+
+<section id="s1">
+<h3><span class="n">3.1</span>Contiguous vs Non-Contiguous Memory</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Round 1.</b> An array's elements get <b>continuous memory locations</b>, one right after another. A linked list's cells can be anywhere: one here, the next in some other location, the third somewhere else. Nothing is continuous.<br>
+A basic singly-linked-list <b>node</b> has two fields: a <b>data field</b> and a <b>link field</b>. The link holds the <b>address of the next node</b>. In memory cells 1–5:
+<ul>
+<li>cell 1 holds data <b>10</b>, link <b>3</b>: "go and check cell 3";</li>
+<li>cell 3 holds data <b>20</b>, link <b>5</b>;</li>
+<li>cell 5 holds data <b>30</b>, link NULL, so the list ends here.</li>
+</ul>
+There are gaps (cells 2 and 4), so the nodes are <b>not contiguous</b>, but they are <b>linked</b>.</div>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Array contiguous cells versus linked list nodes scattered in memory">
+<text class="b" x="10" y="22">Array — contiguous</text>
+<g text-anchor="middle">
+<rect class="ac" x="160" y="8" width="70" height="30"/><text x="195" y="28">10</text>
+<rect class="ac" x="230" y="8" width="70" height="30"/><text x="265" y="28">20</text>
+<rect class="ac" x="300" y="8" width="70" height="30"/><text x="335" y="28">30</text>
+<text class="mut" x="195" y="54">0</text><text class="mut" x="265" y="54">1</text><text class="mut" x="335" y="54">2</text>
+</g>
+<text class="mut" x="390" y="28">address of i-th = base + w·i</text>
+<text class="b" x="10" y="92">Linked list — scattered</text>
+<g text-anchor="middle">
+<rect class="bx" x="40" y="110" width="110" height="46"/><text class="mut" x="95" y="176">cell 1</text>
+<rect class="bx" x="170" y="110" width="110" height="46"/><text class="mut" x="225" y="176">cell 2 (gap)</text>
+<rect class="bx" x="300" y="110" width="110" height="46"/><text class="mut" x="355" y="176">cell 3</text>
+<rect class="bx" x="430" y="110" width="110" height="46"/><text class="mut" x="485" y="176">cell 4 (gap)</text>
+<rect class="bx" x="560" y="110" width="110" height="46"/><text class="mut" x="615" y="176">cell 5</text>
+<rect class="gr" x="48" y="118" width="46" height="30"/><text x="71" y="138">10</text>
+<rect class="pu" x="94" y="118" width="46" height="30"/><text x="117" y="138">3</text>
+<rect class="gr" x="308" y="118" width="46" height="30"/><text x="331" y="138">20</text>
+<rect class="pu" x="354" y="118" width="46" height="30"/><text x="377" y="138">5</text>
+<rect class="gr" x="568" y="118" width="46" height="30"/><text x="591" y="138">30</text>
+<rect class="pu" x="614" y="118" width="46" height="30"/><text x="637" y="138" class="mut">NULL</text>
+</g>
+<path class="lna" d="M117 116 Q220 72 318 116"/><polygon class="aha" points="312,108 322,118 310,116"/>
+<path class="lna" d="M377 116 Q480 72 578 116"/><polygon class="aha" points="572,108 582,118 570,116"/>
+<text class="mut" x="340" y="200" text-anchor="middle">data (green) · link = address of next node (purple)</text>
+</svg>
+<figcaption>Lecture example · nodes in cells 1, 3, 5</figcaption>
+</figure>
+</section>
+
+<section id="s2">
+<h3><span class="n">3.2</span>Random Access vs Sequential Access</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Round 2.</b> An array allows <b>random access</b>: to reach index 5, just use the index and jump straight there.<br>
+A linked list does <b>not</b> allow random access; you can't jump into the middle. A <b>head pointer</b> points to the first node, and from there you follow the links node by node. That is <b>sequential access</b>.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Reaching the k-th element costs <b>O(1)</b> in an array and <b>O(k)</b>, i.e. O(n) in the worst case, in a linked list. So <b>binary search</b> is useless on a plain linked list: finding the middle alone takes O(n).</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">3.3</span>Insertion/Deletion Cost, Static vs Dynamic, Variations and Representation</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Round 3 — insert/delete:</b> in an array they take more time because of heavy <b>shifting</b>. In a linked list only pointers change, so it's quick (shown in chapter 4).</li>
+<li><b>Round 4 — nature:</b> an array is <b>fixed / static</b>, which causes memory problems. A linked list is <b>dynamic</b>: it uses memory better, and changes are "welcomed" and easy to implement.</li>
+<li><b>Round 5 — variations:</b> arrays come as 1D, 2D… multi-dimensional. Linked lists come as <b>singly</b>, <b>doubly</b> and <b>circular</b> (chapters 4–6).</li>
+<li><b>Round 6 — representation</b> (different from access): an array has a <b>sequential</b> representation; a linked list has a <b>linked</b> representation, with nodes joined by links. The <b>last node</b> points to <b>NULL</b>, which marks the end of the list.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Linked-list insertion/deletion is O(1)" is true only once you <b>have a pointer to the place</b>. Inserting at position k or deleting a given value still needs an O(n) walk to find the spot. The real saving is <b>no shifting</b>, not "no work".</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Dynamic, so better memory use" is only half the story. A linked list wastes nothing on <i>unused slots</i>, but every node pays for an extra <b>pointer</b> (and two in a doubly linked list). For small data such as ints, a full array can use <i>less</i> memory than the same list (numerical in 3.4).</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">3.4</span>Full Comparison Table, Memory Numerical &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Array</th><th>Linked list</th></tr>
+<tr><td>Memory layout</td><td>contiguous</td><td>non-contiguous, nodes chained by pointers</td></tr>
+<tr><td>Size</td><td>fixed (static), set at declaration</td><td>grows/shrinks at run time (dynamic)</td></tr>
+<tr><td>Allocation</td><td>compile time (stack / static area)</td><td>run time, <code>malloc</code>/<code>new</code> (heap)</td></tr>
+<tr><td>Access k-th element</td><td>O(1) random access</td><td>O(n) sequential access from head</td></tr>
+<tr><td>Search</td><td>O(n) linear; O(log n) binary if sorted</td><td>O(n) only (no binary search)</td></tr>
+<tr><td>Insert / delete at beginning</td><td>O(n) (shift all)</td><td>O(1)</td></tr>
+<tr><td>Insert / delete at end</td><td>O(1)</td><td>O(n) with head only; O(1) insert with tail pointer</td></tr>
+<tr><td>Extra memory per element</td><td>none</td><td>1 pointer (singly) / 2 (doubly)</td></tr>
+<tr><td>Unused memory</td><td>possible (unused slots)</td><td>none (one node per element)</td></tr>
+<tr><td>Cache locality</td><td>excellent</td><td>poor (nodes far apart)</td></tr>
+<tr><td>Representation</td><td>sequential</td><td>linked; last node → NULL</td></tr>
+<tr><td>Variants</td><td>1D, 2D, multi-D</td><td>singly, doubly, circular (and doubly circular)</td></tr>
+<tr><td>Best when</td><td>size known, frequent access by index, searching</td><td>size unknown, frequent insert/delete at known places</td></tr>
+</table></div>
+<div class="num"><span class="t">Memory numerical</span>Store 1,000 integers (4 bytes each); pointers are 8 bytes.<br>
+Array: 1,000 × 4 = <b>4,000 bytes</b>.<br>
+Singly linked list: 1,000 × (4 + 8) = <b>12,000 bytes</b> (3× the array).<br>
+Doubly linked list: 1,000 × (4 + 8 + 8) = <b>20,000 bytes</b>.<br>
+But if the array were declared for 10,000 ints "to be safe", it would take 40,000 bytes, and the linked list wins.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"Which allows random access?" → <b>array</b>. "Which needs extra memory for pointers?" → <b>linked list</b>.</li>
+<li>"Which is better for frequent insertions and deletions?" → <b>linked list</b>. "For binary search?" → <b>array</b>.</li>
+<li>The pointer that marks the start of a list is the <b>head</b> (also called <i>start</i>/<i>first</i>); the last node's link is <b>NULL</b>.</li>
+<li>Memory for linked-list nodes is allocated from the <b>heap</b>.</li>
+</ul></div>
+<div class="num"><span class="t">Q1</span>Time to access the 50th element of a singly linked list of 100 nodes, starting from head? → 49 link-follows, i.e. <b>O(n)</b>. In an array: <b>O(1)</b>.</div>
+<div class="num"><span class="t">Q2</span>Which operation is faster in a linked list than in an array? (a) access by index (b) binary search (c) insertion at the beginning (d) cache use → <b>(c)</b>.</div>
+<div class="num"><span class="t">Q3</span>Why can't binary search be done efficiently on a linked list? → Finding the middle element needs O(n) traversal; there is <b>no random access</b>.</div>
+<div class="num"><span class="t">Q4</span>A program reads an unknown number of records and frequently deletes from the front. Which structure? → <b>Linked list</b>: dynamic size, and front deletion in O(1).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Lecture's six rounds: <b>contiguous vs non-contiguous</b> · <b>random vs sequential</b> access · insert/delete <b>slow (shifting) vs fast (pointers)</b> · <b>static vs dynamic</b> · variants (1D/2D/multi vs singly/doubly/circular) · <b>sequential vs linked</b> representation.</li>
+<li>Node = <b>data + link</b>; link = address of the next node; <b>head</b> → first node; last link = <b>NULL</b>. Lecture example: 10 in cell 1 → 3, 20 in cell 3 → 5, 30 in cell 5 → NULL.</li>
+<li>Array access O(1), linked-list access O(n); binary search needs an array.</li>
+<li>Linked-list insert/delete is O(1) <b>only at a known node</b>; finding it is O(n).</li>
+<li>Linked list pays for a pointer per node (12 B vs 4 B per int); an array pays for unused slots.</li>
+<li>Linked-list nodes come from the heap (<code>malloc</code>) at run time; arrays are sized at compile time.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 3 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="02-Arrays.html">← Ch 2: Arrays</a><a href="index.html">☰ All topics</a><a href="04-Singly-Linked-List.html">Ch 4: Singly Linked List →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

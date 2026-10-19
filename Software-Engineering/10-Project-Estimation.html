@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE Project Estimation Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="09-Coupling-and-Cohesion.html">← Ch 9: Modularity, Coupling and Cohesion</a><a href="index.html">☰ All topics</a><a href="11-COCOMO.html">Ch 11: COCOMO Model →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Software Engineering — Chapter 10: Project Estimation and Resource Management</h1>
+  <p class="sub">Volume 04 · Part 10 · Built from the one-shot Software Engineering lecture transcript (Estimation and Resource Management sections), plus the exam points the lecture skipped. What gets estimated before a project starts, how size is measured (LOC and function points, with a full FP calculation), what drives cost, how resources are allocated, and the three families of estimation techniques.</p>
+  <ul class="tags"><li>Estimation</li><li>LOC / KLOC</li><li>Function points</li><li>VAF</li><li>Cost factors</li><li>Resource allocation</li><li>Reuse</li><li>Empirical</li><li>Heuristic</li><li>Analytical (Halstead)</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">10.1</span>Project Estimation in the Planning Phase (Size, Cost, Duration, Effort)</a></li>
+<li><a href="#s2"><span class="n">10.2</span>Size Metrics: LOC and Function Points</a></li>
+<li><a href="#s3"><span class="n">10.3</span>Cost Estimation Factors</a></li>
+<li><a href="#s4"><span class="n">10.4</span>Resource Management: Advance Allocation, On-Demand Allocation, Reuse</a></li>
+<li><a href="#s5"><span class="n">10.5</span>Estimation Techniques: Empirical, Heuristic, Analytical</a></li>
+<li><a href="#s6"><span class="n">10.6</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 10</div>
+<h2 class="ch">Project Estimation and Resource Management</h2>
+<p>Before a single line of code is written, the client wants to know how much the project will cost and when it will be ready. Answering that is <b>estimation</b>, done during the <b>planning</b> phase. Everything hangs on one number, the <b>size</b> of the software. From size you derive effort, from effort the duration and team size, and from those the cost. This chapter covers how size is measured and how estimates are made. Chapter 11 turns it into formulas with COCOMO.</p>
+
+<section id="s1">
+<h3><span class="n">10.1</span>Project Estimation in the Planning Phase (Size, Cost, Duration, Effort)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+During planning, before development starts, the team estimates four things:
+<ul>
+<li><b>Size</b>: how big the software is.</li>
+<li><b>Effort</b>: how much work it needs.</li>
+<li><b>Duration</b>: how long it will take.</li>
+<li><b>Cost</b>: how much money it needs.</li>
+</ul>
+<b>The more accurate the estimates, the better the project is completed and managed.</b></div>
+<figure>
+<svg viewBox="0 0 640 110" role="img" aria-label="Estimation chain from size to cost">
+<rect class="ac" x="10" y="30" width="120" height="44" rx="4"/><text x="70" y="50" text-anchor="middle" class="b">Size</text><text x="70" y="66" text-anchor="middle" class="mut">LOC / FP</text>
+<rect class="ac" x="170" y="30" width="120" height="44" rx="4"/><text x="230" y="50" text-anchor="middle" class="b">Effort</text><text x="230" y="66" text-anchor="middle" class="mut">person-months</text>
+<rect class="ac" x="330" y="30" width="120" height="44" rx="4"/><text x="390" y="50" text-anchor="middle" class="b">Duration</text><text x="390" y="66" text-anchor="middle" class="mut">months</text>
+<rect class="gr" x="490" y="30" width="140" height="44" rx="4"/><text x="560" y="50" text-anchor="middle" class="b">Cost</text><text x="560" y="66" text-anchor="middle" class="mut">₹ / $</text>
+<g class="lna"><line x1="130" y1="52" x2="170" y2="52"/><line x1="290" y1="52" x2="330" y2="52"/><line x1="450" y1="52" x2="490" y2="52"/></g>
+<text class="mut" x="320" y="100" text-anchor="middle">size is estimated first; everything else is derived from it</text>
+</svg>
+<figcaption>The estimation chain</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Estimation is uncertain by nature. Barry Boehm's <b>cone of uncertainty</b> shows that early estimates can be off by a factor of <b>4</b> in either direction, and the range narrows as the project proceeds. Good practice is to estimate with <b>more than one technique</b>, re-estimate as you learn more, and use historical data from past projects.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">10.2</span>Size Metrics: LOC and Function Points</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Project size is measured in two main ways:
+<ul>
+<li><b>Lines of code (LOC)</b>, or thousands of lines (<b>KLOC</b>). This is a direct count of the source code.</li>
+<li><b>Function points (FP)</b>. This is an <b>indirect</b> measure, based on the functionality the software provides.</li>
+</ul>
+COCOMO (chapter 11) uses LOC.</div>
+<div class="tw"><table>
+<tr><th></th><th>LOC</th><th>Function points</th></tr>
+<tr><td>Measures</td><td>Physical size of the code</td><td>Functionality delivered to the user</td></tr>
+<tr><td>Type</td><td><b>Direct</b> measure</td><td><b>Indirect</b> measure</td></tr>
+<tr><td>Language-dependent?</td><td><b>Yes</b>: the same program is 100 lines in Python and 400 in C</td><td><b>No</b>: language-independent</td></tr>
+<tr><td>Known early?</td><td>Hard to know before coding</td><td>Can be computed from the SRS</td></tr>
+<tr><td>Problem</td><td>Rewards verbose code; comments and blank lines are ambiguous</td><td>Subjective weights; needs training</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Function Point Analysis</b> was introduced by <b>Allan Albrecht at IBM (1979)</b>. It counts five components:
+<div class="tw"><table>
+<tr><th>Component</th><th>Meaning</th><th>Simple</th><th>Average</th><th>Complex</th></tr>
+<tr><td><b>EI</b>: External Inputs</td><td>Input screens or forms that update data</td><td>3</td><td>4</td><td>6</td></tr>
+<tr><td><b>EO</b>: External Outputs</td><td>Reports and messages with derived data</td><td>4</td><td>5</td><td>7</td></tr>
+<tr><td><b>EQ</b>: External Inquiries</td><td>Input–output pairs that retrieve data without processing it</td><td>3</td><td>4</td><td>6</td></tr>
+<tr><td><b>ILF</b>: Internal Logical Files</td><td>Data groups maintained inside the system</td><td>7</td><td>10</td><td>15</td></tr>
+<tr><td><b>EIF</b>: External Interface Files</td><td>Data referenced from other systems</td><td>5</td><td>7</td><td>10</td></tr>
+</table></div>
+<div class="formula">UFP = Σ (count × weight)           (Unadjusted Function Points)
+VAF = 0.65 + 0.01 × Σ Fi            (Fi = 14 general system characteristics, each rated 0–5)
+FP  = UFP × VAF                      (VAF ranges 0.65 to 1.35)</div>
+The 14 general system characteristics include data communications, distributed processing, performance, heavily used configuration, transaction rate, online data entry, end-user efficiency, online update, complex processing, reusability, installation ease, operational ease, multiple sites, and facilitating change.</div>
+<div class="num"><span class="t">Worked example · function points</span>
+Counts, all of average complexity: EI = 24, EO = 46, EQ = 8, ILF = 4, EIF = 2. All 14 characteristics are rated 3 (average).
+<div class="formula">UFP = 24×4 + 46×5 + 8×4 + 4×10 + 2×7
+    = 96 + 230 + 32 + 40 + 14 = 412
+Σ Fi = 14 × 3 = 42
+VAF = 0.65 + 0.01 × 42 = 1.07
+FP  = 412 × 1.07 ≈ 440.84</div>
+If the team's historical productivity is 10 FP per person-month, effort ≈ 440.84 / 10 ≈ <b>44 person-months</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The VAF constant is <b>0.65</b> and the multiplier is <b>0.01</b>. With every Fi = 0, VAF = 0.65; with every Fi = 5, VAF = 0.65 + 0.70 = <b>1.35</b>. So the adjustment can change the UFP by at most <b>±35%</b>. The highest weight in the table belongs to the <b>ILF</b> (15 for complex).</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">10.3</span>Cost Estimation Factors</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Cost depends on:
+<ul>
+<li>software and hardware <b>size</b> and requirements;</li>
+<li><b>tools and licences</b>;</li>
+<li>the <b>salaries</b> of skilled staff;</li>
+<li><b>travel</b> and <b>communication</b>;</li>
+<li><b>training</b> and <b>support</b>.</li>
+</ul>
+Time and effort estimation lead into <b>COCOMO</b> in three forms: basic, intermediate and complete (chapter 11).</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Effort cost</b> (the salaries of the people working on the project) is usually the <b>largest</b> component of software cost. Hardware, software, travel and training are often smaller. Overheads such as office space, power, networking and HR are added on top of salaries.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">10.4</span>Resource Management: Advance Allocation, On-Demand Allocation, Reuse</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Resources</b> are human resources (technical and support staff), tools, software libraries and hardware. The job is to <b>balance</b> what is available against what the project demands. Three approaches:
+<ol>
+<li><b>Advance allocation</b>: work out beforehand which resources each phase or stage needs, and make them available in time.</li>
+<li><b>On-demand allocation</b>: allocate a resource when it is needed, and <b>deallocate</b> it as soon as it is no longer needed, so someone else can use it.</li>
+<li><b>Reuse</b>: like reusing pages from a senior's assignment that was already checked and approved. Reuse design components, code and test cases, but <b>only when they are compatible</b>. Reuse lowers <b>effort, cost and time</b>.</li>
+</ol></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Pressman pictures project resources as a <b>pyramid</b>: <b>people</b> at the top (the most important resource), <b>reusable software components</b> in the middle, and the <b>environment</b> (hardware and software tools) at the base. Reusable components are classified as:
+<ul>
+<li><b>off-the-shelf</b> (ready to use, from third parties or past projects);</li>
+<li><b>full-experience</b> (needs little modification);</li>
+<li><b>partial-experience</b> (needs substantial modification);</li>
+<li><b>new</b> (built from scratch).</li>
+</ul></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">10.5</span>Estimation Techniques: Empirical, Heuristic, Analytical</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<div class="tw"><table>
+<tr><th>Technique</th><th>How it works</th><th>Examples</th></tr>
+<tr><td><b>Empirical</b></td><td>The most primitive form: an <b>educated guess</b> from experience of similar past projects. Also called <b>common-sense</b> estimation.</td><td><b>Expert judgement</b>; <b>Delphi</b> (group consensus, chapter 4)</td></tr>
+<tr><td><b>Heuristic</b></td><td>Uses <b>mathematical equations</b> relating project parameters: estimate the independent parameter (size) first, then compute the dependent ones (effort, time).</td><td><b>COCOMO</b> (chapter 11)</td></tr>
+<tr><td><b>Analytical</b></td><td>Named in the lecture but not covered.</td><td>—</td></tr>
+</table></div></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Analytical estimation</b> starts from basic assumptions about the problem and derives results scientifically. The standard example is <b>Halstead's Software Science (1977)</b>, which works from counts of operators and operands in the code:
+<div class="formula">n1 = distinct operators     N1 = total operators
+n2 = distinct operands      N2 = total operands
+Vocabulary   n = n1 + n2
+Length       N = N1 + N2
+Est. length  N̂ = n1·log₂n1 + n2·log₂n2
+Volume       V = N · log₂ n        (bits)
+Difficulty   D = (n1 / 2) · (N2 / n2)
+Effort       E = D · V</div>
+Other estimation approaches:
+<ul>
+<li><b>Decomposition</b>: estimate each module or function separately and add the results.</li>
+<li><b>Analogy</b>: compare with a similar finished project.</li>
+<li><b>Putnam's SLIM model</b>: based on the <b>Rayleigh curve</b> of staffing over time.</li>
+<li><b>Planning poker</b>: Agile teams use it to size stories in story points.</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Common one-liners:
+<ul>
+<li>"Delphi is a type of?" → <b>empirical</b> estimation.</li>
+<li>"COCOMO is?" → <b>heuristic</b>.</li>
+<li>"Halstead's software science is?" → <b>analytical</b>.</li>
+<li>"Function points were proposed by?" → <b>Albrecht</b>.</li>
+<li>"Which size measure is language-independent?" → <b>FP</b>.</li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">10.6</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Function point analysis does NOT count: (a) external inputs (b) internal logical files (c) lines of code (d) external inquiries<br><b>Answer: (c) lines of code.</b></div>
+<div class="num"><span class="t">Q2</span>UFP = 300 and the sum of the 14 complexity adjustment values is 30. Find FP.<br><b>Answer:</b> VAF = 0.65 + 0.01 × 30 = 0.95; FP = 300 × 0.95 = <b>285</b>.</div>
+<div class="num"><span class="t">Q3</span>The maximum value of the VAF is:<br><b>Answer: 1.35</b> (all 14 factors rated 5: 0.65 + 0.70).</div>
+<div class="num"><span class="t">Q4</span>Expert judgement and Delphi belong to which category of estimation?<br><b>Answer: Empirical.</b></div>
+<div class="num"><span class="t">Q5</span>Which is the largest cost component in most software projects?<br><b>Answer: Effort (staff salaries).</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Estimate in planning: <b>size → effort → duration → cost</b>. More accurate estimates mean better management.</li>
+<li><b>LOC/KLOC</b> = direct, language-dependent. <b>FP</b> = indirect, language-independent (Albrecht, IBM 1979).</li>
+<li>FP components and average weights: <b>EI 4 · EO 5 · EQ 4 · ILF 10 · EIF 7</b>. FP = UFP × (0.65 + 0.01 ΣFi), 14 factors rated 0–5, VAF from 0.65 to 1.35.</li>
+<li>Cost factors: size, tools and licences, salaries (the largest), travel, communication, training, support.</li>
+<li>Resources: people, tools, libraries, hardware. Allocate in <b>advance</b>, on <b>demand</b> (and deallocate), or <b>reuse</b> (the senior's assignment).</li>
+<li>Techniques: <b>empirical</b> (expert judgement, Delphi) · <b>heuristic</b> (COCOMO) · <b>analytical</b> (Halstead: n = n1 + n2, N = N1 + N2, V = N log₂ n).</li>
+</ul>
+</div>
+<div class="end">End of Chapter 10 · Volume 04 — Software Engineering</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="09-Coupling-and-Cohesion.html">← Ch 9: Modularity, Coupling and Cohesion</a><a href="index.html">☰ All topics</a><a href="11-COCOMO.html">Ch 11: COCOMO Model →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

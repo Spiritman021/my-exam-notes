@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Heap Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="13-AVL-Tree.html">← Ch 13: AVL Tree</a><a href="index.html">☰ All topics</a><a href="15-Threaded-Binary-Tree.html">Ch 15: Threaded Binary Tree →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 14: Heap</h1>
+  <p class="sub">Volume 03 · Part 14 · Built from the one-shot Data Structures lecture transcript (section 14), plus the exam points the lecture skipped. The lecture defines min and max heaps as complete binary trees with a parent–child ordering, then heapifies two binary trees: one into a max heap, and the same input into both a max and a min heap. These notes add the array layout, insert (sift-up), delete-root (sift-down), O(n) build-heap, heap sort, priority queues and solved numericals.</p>
+  <ul class="tags"><li>Complete binary tree</li><li>Max heap: parent ≥ child</li><li>Min heap: parent ≤ child</li><li>Heapify (bottom-up)</li><li>Insert = sift-up · Delete = sift-down</li><li>Heap sort O(n log n)</li><li>Priority queue</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">14.1</span>Min Heap and Max Heap (Complete Binary Tree + Heap Property)</a></li>
+<li><a href="#s2"><span class="n">14.2</span>Heapify: Converting a Binary Tree into a Max Heap</a></li>
+<li><a href="#s3"><span class="n">14.3</span>Max Heap Example 2 (Choose the Larger Child)</a></li>
+<li><a href="#s4"><span class="n">14.4</span>Min Heap from the Same Input (Choose the Smaller Child)</a></li>
+<li><a href="#s5"><span class="n">14.5</span>Array Layout, Insert, Delete, Heap Sort &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 14</div>
+<h2 class="ch">Heap</h2>
+<p>A heap is the tree behind the <b>priority queue</b> from chapter 9. It doesn't keep everything sorted like a BST; it only guarantees that the <b>largest (or smallest) element is at the root</b>. That weaker promise is cheap to maintain: O(log n) per insert or delete, in a plain array with no pointers.</p>
+
+<section id="s1">
+<h3><span class="n">14.1</span>Min Heap and Max Heap (Complete Binary Tree + Heap Property)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A heap is first a <b>complete binary tree</b>, filled level by level from left to right (chapter 11). The "popular example" of a tree that is <i>not</i> complete is one where a <b>right</b> child was filled while its left sibling slot was empty: "if you had to fill, why fill that one? You should have put the left one."<br>
+On top of that comes one property that a BST doesn't have, the <b>parent–child relationship</b>:
+<ul>
+<li><b>Min heap</b>: the parent is always <b>less than</b> its children. Example: 2 &lt; 3, 4; 3 &lt; 5, 6; 4 &lt; 9, 8.</li>
+<li><b>Max heap</b>: the parent is always <b>greater than</b> its children. Example: 50 &gt; 20, 30; 20 &gt; 10, 5; 30 &gt; 15, 18.</li>
+</ul>
+The property must hold <b>throughout the tree</b>, not just at one node or subtree.</div>
+<figure>
+<svg viewBox="0 0 600 220" style="max-width:600px" role="img" aria-label="Min heap with root 2 and max heap with root 50">
+<path class="ln" d="M90.0 128 L60.0 184"/>
+<path class="ln" d="M90.0 128 L120.0 184"/>
+<path class="ln" d="M210.0 128 L180.0 184"/>
+<path class="ln" d="M210.0 128 L240.0 184"/>
+<path class="ln" d="M150.0 72 L90.0 128"/>
+<path class="ln" d="M150.0 72 L210.0 128"/>
+<circle class="gr" cx="60.0" cy="184" r="14"/><text class="b" x="60.0" y="189" text-anchor="middle">5</text>
+<circle class="gr" cx="120.0" cy="184" r="14"/><text class="b" x="120.0" y="189" text-anchor="middle">6</text>
+<circle class="ac" cx="90.0" cy="128" r="14"/><text class="b" x="90.0" y="133" text-anchor="middle">3</text>
+<circle class="gr" cx="180.0" cy="184" r="14"/><text class="b" x="180.0" y="189" text-anchor="middle">9</text>
+<circle class="gr" cx="240.0" cy="184" r="14"/><text class="b" x="240.0" y="189" text-anchor="middle">8</text>
+<circle class="ac" cx="210.0" cy="128" r="14"/><text class="b" x="210.0" y="133" text-anchor="middle">4</text>
+<circle class="or" cx="150.0" cy="72" r="14"/><text class="b" x="150.0" y="77" text-anchor="middle">2</text>
+<text class="b" x="150.0" y="22" text-anchor="middle">Min heap</text><text class="mut" x="150.0" y="40" text-anchor="middle">parent ≤ children · root = min</text>
+<path class="ln" d="M390.0 128 L360.0 184"/>
+<path class="ln" d="M390.0 128 L420.0 184"/>
+<path class="ln" d="M510.0 128 L480.0 184"/>
+<path class="ln" d="M510.0 128 L540.0 184"/>
+<path class="ln" d="M450.0 72 L390.0 128"/>
+<path class="ln" d="M450.0 72 L510.0 128"/>
+<circle class="gr" cx="360.0" cy="184" r="14"/><text class="b" x="360.0" y="189" text-anchor="middle">10</text>
+<circle class="gr" cx="420.0" cy="184" r="14"/><text class="b" x="420.0" y="189" text-anchor="middle">5</text>
+<circle class="ac" cx="390.0" cy="128" r="14"/><text class="b" x="390.0" y="133" text-anchor="middle">20</text>
+<circle class="gr" cx="480.0" cy="184" r="14"/><text class="b" x="480.0" y="189" text-anchor="middle">15</text>
+<circle class="gr" cx="540.0" cy="184" r="14"/><text class="b" x="540.0" y="189" text-anchor="middle">18</text>
+<circle class="ac" cx="510.0" cy="128" r="14"/><text class="b" x="510.0" y="133" text-anchor="middle">30</text>
+<circle class="or" cx="450.0" cy="72" r="14"/><text class="b" x="450.0" y="77" text-anchor="middle">50</text>
+<text class="b" x="450.0" y="22" text-anchor="middle">Max heap</text><text class="mut" x="450.0" y="40" text-anchor="middle">parent ≥ children · root = max</text>
+</svg>
+<figcaption>The lecture's min heap (root 2) and max heap (root 50)</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A heap orders only <b>parent vs child</b>; there is <b>no left–right order</b>. In the max heap above, 10 is on the left and 30 on the right at different levels, and that's fine. So an inorder walk of a heap is <b>not</b> sorted, and searching for an arbitrary key is O(n).</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">14.2</span>Heapify: Converting a Binary Tree into a Max Heap</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Heapify</b> is a famous process: given any binary tree, convert it into a max heap or min heap, as the question asks. The great quality of a heap is that the <b>root gives the maximum</b> (max heap) or the <b>minimum</b> (min heap) of all the data.<br>
+<b>Method:</b> start from the <b>lowest</b> subtrees and work up to the root, checking the heap property at every level.
+<ol>
+<li>Subtree 2 → 5: in a max heap the parent must be bigger, so <b>swap</b>, giving 5 → 2.</li>
+<li>Subtree 9 → (1, 4): 9 is bigger than both. Fine.</li>
+<li>Root 3 with children 9 and 5: "were we making a min heap or a max heap?" Swap 9 and 3.</li>
+<li>3 went down and now sits above 4, a child bigger than its parent. Swap again: 4 goes up, 3 goes down.</li>
+</ol>
+Now every level satisfies the max-heap property.</div>
+<figure>
+<svg viewBox="0 0 560 220" style="max-width:560px" role="img" aria-label="Heapify 3, 9, 2, 1, 4, 5 into a max heap rooted at 9">
+<path class="ln" d="M95.0 128 L65.0 184"/>
+<path class="ln" d="M95.0 128 L125.0 184"/>
+<path class="ln" d="M215.0 128 L185.0 184"/>
+<path class="ln" d="M155.0 72 L95.0 128"/>
+<path class="ln" d="M155.0 72 L215.0 128"/>
+<circle class="gr" cx="65.0" cy="184" r="14"/><text class="b" x="65.0" y="189" text-anchor="middle">1</text>
+<circle class="gr" cx="125.0" cy="184" r="14"/><text class="b" x="125.0" y="189" text-anchor="middle">4</text>
+<circle class="ac" cx="95.0" cy="128" r="14"/><text class="b" x="95.0" y="133" text-anchor="middle">9</text>
+<circle class="gr" cx="185.0" cy="184" r="14"/><text class="b" x="185.0" y="189" text-anchor="middle">5</text>
+<circle class="ac" cx="215.0" cy="128" r="14"/><text class="b" x="215.0" y="133" text-anchor="middle">2</text>
+<circle class="ac" cx="155.0" cy="72" r="14"/><text class="b" x="155.0" y="77" text-anchor="middle">3</text>
+<text class="b" x="140.0" y="22" text-anchor="middle">Input</text><text class="mut" x="140.0" y="40" text-anchor="middle">binary tree</text>
+<path class="ln" d="M375.0 128 L345.0 184"/>
+<path class="ln" d="M375.0 128 L405.0 184"/>
+<path class="ln" d="M495.0 128 L465.0 184"/>
+<path class="ln" d="M435.0 72 L375.0 128"/>
+<path class="ln" d="M435.0 72 L495.0 128"/>
+<circle class="gr" cx="345.0" cy="184" r="14"/><text class="b" x="345.0" y="189" text-anchor="middle">1</text>
+<circle class="gr" cx="405.0" cy="184" r="14"/><text class="b" x="405.0" y="189" text-anchor="middle">3</text>
+<circle class="or" cx="375.0" cy="128" r="14"/><text class="b" x="375.0" y="133" text-anchor="middle">4</text>
+<circle class="gr" cx="465.0" cy="184" r="14"/><text class="b" x="465.0" y="189" text-anchor="middle">2</text>
+<circle class="ac" cx="495.0" cy="128" r="14"/><text class="b" x="495.0" y="133" text-anchor="middle">5</text>
+<circle class="or" cx="435.0" cy="72" r="14"/><text class="b" x="435.0" y="77" text-anchor="middle">9</text>
+<text class="b" x="420.0" y="22" text-anchor="middle">Max heap</text><text class="mut" x="420.0" y="40" text-anchor="middle">after heapify</text>
+</svg>
+<figcaption>Heapify (max) · 3 sinks two levels: 3 ↔ 9, then 3 ↔ 4 · array [3, 9, 2, 1, 4, 5] → [9, 4, 5, 1, 3, 2]</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+This is <b>sift-down</b> (also called percolate down). Whenever a node is swapped down, keep pushing it down until it is larger than both its children or becomes a leaf. Doing this for every internal node from the last one up to the root is the standard <b>build-heap</b>, and it costs only <b>O(n)</b>.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">14.3</span>Max Heap Example 2 (Choose the Larger Child)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Input (level order): 10, 20, 25, 6, 12, 15, 4, 16.
+<ol>
+<li>Lowest: 6 → 16. Swap, so 16 goes up.</li>
+<li>Subtree 20 → (16, 12): fine. Subtree 25 → (15, 4): fine.</li>
+<li>Root 10 is less than <b>both</b> 20 and 25. A new case: which one goes up? Take the <b>maximum</b> of the two, because whatever goes up must be greater than both children. Swap 10 ↔ <b>25</b>.</li>
+<li>10 now sits above 15. A child can't be bigger than its parent, so swap 10 ↔ 15.</li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 900 280" style="max-width:900px" role="img" aria-label="Same input heapified to a max heap rooted at 25 and a min heap rooted at 4">
+<path class="ln" d="M75.0 184 L45.0 240"/>
+<path class="ln" d="M105.0 128 L75.0 184"/>
+<path class="ln" d="M105.0 128 L135.0 184"/>
+<path class="ln" d="M225.0 128 L195.0 184"/>
+<path class="ln" d="M225.0 128 L255.0 184"/>
+<path class="ln" d="M165.0 72 L105.0 128"/>
+<path class="ln" d="M165.0 72 L225.0 128"/>
+<circle class="gr" cx="45.0" cy="240" r="14"/><text class="b" x="45.0" y="245" text-anchor="middle">16</text>
+<circle class="ac" cx="75.0" cy="184" r="14"/><text class="b" x="75.0" y="189" text-anchor="middle">6</text>
+<circle class="gr" cx="135.0" cy="184" r="14"/><text class="b" x="135.0" y="189" text-anchor="middle">12</text>
+<circle class="ac" cx="105.0" cy="128" r="14"/><text class="b" x="105.0" y="133" text-anchor="middle">20</text>
+<circle class="gr" cx="195.0" cy="184" r="14"/><text class="b" x="195.0" y="189" text-anchor="middle">15</text>
+<circle class="gr" cx="255.0" cy="184" r="14"/><text class="b" x="255.0" y="189" text-anchor="middle">4</text>
+<circle class="ac" cx="225.0" cy="128" r="14"/><text class="b" x="225.0" y="133" text-anchor="middle">25</text>
+<circle class="ac" cx="165.0" cy="72" r="14"/><text class="b" x="165.0" y="77" text-anchor="middle">10</text>
+<text class="b" x="150.0" y="22" text-anchor="middle">Input</text><text class="mut" x="150.0" y="40" text-anchor="middle">10 20 25 6 12 15 4 16</text>
+<path class="ln" d="M375.0 184 L345.0 240"/>
+<path class="ln" d="M405.0 128 L375.0 184"/>
+<path class="ln" d="M405.0 128 L435.0 184"/>
+<path class="ln" d="M525.0 128 L495.0 184"/>
+<path class="ln" d="M525.0 128 L555.0 184"/>
+<path class="ln" d="M465.0 72 L405.0 128"/>
+<path class="ln" d="M465.0 72 L525.0 128"/>
+<circle class="gr" cx="345.0" cy="240" r="14"/><text class="b" x="345.0" y="245" text-anchor="middle">6</text>
+<circle class="ac" cx="375.0" cy="184" r="14"/><text class="b" x="375.0" y="189" text-anchor="middle">16</text>
+<circle class="gr" cx="435.0" cy="184" r="14"/><text class="b" x="435.0" y="189" text-anchor="middle">12</text>
+<circle class="ac" cx="405.0" cy="128" r="14"/><text class="b" x="405.0" y="133" text-anchor="middle">20</text>
+<circle class="or" cx="495.0" cy="184" r="14"/><text class="b" x="495.0" y="189" text-anchor="middle">10</text>
+<circle class="gr" cx="555.0" cy="184" r="14"/><text class="b" x="555.0" y="189" text-anchor="middle">4</text>
+<circle class="or" cx="525.0" cy="128" r="14"/><text class="b" x="525.0" y="133" text-anchor="middle">15</text>
+<circle class="or" cx="465.0" cy="72" r="14"/><text class="b" x="465.0" y="77" text-anchor="middle">25</text>
+<text class="b" x="450.0" y="22" text-anchor="middle">Max heap</text><text class="mut" x="450.0" y="40" text-anchor="middle">larger child moves up</text>
+<path class="ln" d="M675.0 184 L645.0 240"/>
+<path class="ln" d="M705.0 128 L675.0 184"/>
+<path class="ln" d="M705.0 128 L735.0 184"/>
+<path class="ln" d="M825.0 128 L795.0 184"/>
+<path class="ln" d="M825.0 128 L855.0 184"/>
+<path class="ln" d="M765.0 72 L705.0 128"/>
+<path class="ln" d="M765.0 72 L825.0 128"/>
+<circle class="gr" cx="645.0" cy="240" r="14"/><text class="b" x="645.0" y="245" text-anchor="middle">20</text>
+<circle class="ac" cx="675.0" cy="184" r="14"/><text class="b" x="675.0" y="189" text-anchor="middle">16</text>
+<circle class="gr" cx="735.0" cy="184" r="14"/><text class="b" x="735.0" y="189" text-anchor="middle">12</text>
+<circle class="or" cx="705.0" cy="128" r="14"/><text class="b" x="705.0" y="133" text-anchor="middle">6</text>
+<circle class="gr" cx="795.0" cy="184" r="14"/><text class="b" x="795.0" y="189" text-anchor="middle">15</text>
+<circle class="gr" cx="855.0" cy="184" r="14"/><text class="b" x="855.0" y="189" text-anchor="middle">25</text>
+<circle class="or" cx="825.0" cy="128" r="14"/><text class="b" x="825.0" y="133" text-anchor="middle">10</text>
+<circle class="or" cx="765.0" cy="72" r="14"/><text class="b" x="765.0" y="77" text-anchor="middle">4</text>
+<text class="b" x="750.0" y="22" text-anchor="middle">Min heap</text><text class="mut" x="750.0" y="40" text-anchor="middle">smaller child moves up</text>
+</svg>
+<figcaption>One input, two heaps · max heap root 25 (array 25 20 15 16 12 10 4 6) · min heap root 4 (array 4 6 10 16 12 15 25 20)</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+When the parent breaks the rule with <b>both</b> children, swap with the <b>larger</b> child (max heap) or the <b>smaller</b> child (min heap). Swapping 10 with 20 here would leave 20 above 25, so the root would still be wrong.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">14.4</span>Min Heap from the Same Input (Choose the Smaller Child)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Same input, now building a <b>min heap</b>, again from the lowest point upwards:
+<ol>
+<li>6 → 16: the parent is smaller. Fine for a min heap.</li>
+<li>20 → (6, 12): 20 must not be the bigger parent, so swap with <b>6</b>. 20 is still bigger than its new child 16, so swap again: <b>6 → 16 → 20</b>.</li>
+<li>25 → (15, 4): 4 goes up, 25 goes down.</li>
+<li>Root 10 with children 6 and 4: two options again. This time choose the <b>minimum</b> (4), because the root must be the smallest. Swap, so 4 is the root and 10 goes to its right.</li>
+</ol>
+"That's why a min heap gives us the minimum element of all the data."</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">14.5</span>Array Layout, Insert, Delete, Heap Sort &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Stored in an array</span>
+A heap is complete, so it fits an array with no gaps. Using 0-based indexing:
+<div class="formula">children of i : 2i + 1, 2i + 2        parent of i : ⌊(i − 1) / 2⌋
+(1-based: 2i, 2i + 1 and ⌊i / 2⌋ — chapter 11)
+leaves        : indices ⌊n/2⌋ … n − 1   (the last ⌈n/2⌉ elements)</div>
+In a max heap the <b>minimum</b> is always one of the leaves.</div>
+
+<div class="box add"><span class="t">➕ Insert (sift-up), O(log n)</span>
+Put the new key in the <b>next free slot</b> (the end of the array, keeping the tree complete). While it is larger than its parent (max heap), swap it upward.<br>
+Insert 10, 20, 15, 30, 40 into an empty max heap:
+<div class="formula">10         → [10]
+20  ↑ swap → [20, 10]
+15         → [20, 10, 15]
+30  ↑↑     → [30, 20, 15, 10]
+40  ↑↑     → [40, 30, 15, 10, 20]</div></div>
+
+<div class="box add"><span class="t">➕ Delete root (sift-down), O(log n)</span>
+You only ever delete the <b>root</b> (the max or min).
+<ol>
+<li>Copy the <b>last</b> element into the root, and shrink the array.</li>
+<li>Sift that element down, swapping it with its larger child (max heap).</li>
+</ol>
+Delete the max from [40, 30, 15, 10, 20]: 20 moves to the root and sinks below 30, giving <b>[30, 20, 15, 10]</b>.</div>
+
+<div class="box add"><span class="t">➕ Heap sort</span>
+<ol>
+<li><b>Build a max heap</b> (O(n)).</li>
+<li>Repeat n − 1 times: swap the root with the last element, shrink the heap by one, and sift down (O(log n)).</li>
+</ol>
+Example: [12, 11, 13, 5, 6, 7] → heap [13, 11, 12, 5, 6, 7] → sorted <b>[5, 6, 7, 11, 12, 13]</b>.
+<ul>
+<li>Time is <b>O(n log n)</b> in best, average and worst case.</li>
+<li>It sorts <b>in place</b> (O(1) extra space).</li>
+<li>It is <b>not stable</b>.</li>
+</ul></div>
+
+<div class="tw"><table>
+<tr><th>Operation (binary heap)</th><th>Time</th></tr>
+<tr><td>Find max (max heap) / min (min heap)</td><td>O(1)</td></tr>
+<tr><td>Insert</td><td>O(log n)</td></tr>
+<tr><td>Delete root (extract max/min)</td><td>O(log n)</td></tr>
+<tr><td>Build heap from n elements (bottom-up heapify)</td><td><b>O(n)</b></td></tr>
+<tr><td>Build heap by n successive inserts</td><td>O(n log n)</td></tr>
+<tr><td>Search for an arbitrary key</td><td>O(n)</td></tr>
+<tr><td>Heap sort</td><td>O(n log n)</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Bottom-up heapify</b> and <b>inserting one by one</b> can give <b>different</b> (both valid) heaps from the same input. For 35, 33, 42, 10, 14, 19, 27, 44, 26, 31:
+<ul>
+<li>one-by-one inserts → <b>[44, 42, 35, 33, 31, 19, 27, 10, 26, 14]</b>;</li>
+<li>bottom-up build-heap → <b>[44, 35, 42, 33, 31, 19, 27, 10, 26, 14]</b>.</li>
+</ul>
+Read the question: "inserted one by one" or "build/heapify the array".</div>
+
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>A heap is a <b>complete</b> binary tree with the heap-order property.</li>
+<li>Max heap → maximum at the <b>root</b>; min heap → minimum at the root.</li>
+<li>Best data structure for a <b>priority queue</b> → <b>heap</b>.</li>
+<li>Heap sort: O(n log n) always, in place, not stable.</li>
+<li>Building a heap from an array: <b>O(n)</b>.</li>
+<li>Uses: priority queues, CPU scheduling, Dijkstra's and Prim's algorithms, k largest/smallest elements, median maintenance, heap sort.</li>
+</ul></div>
+<div class="num"><span class="t">Q1</span>Is [50, 30, 40, 10, 35, 20] a max heap? → Index 1 (30) has children 10 and 35, and 35 &gt; 30, so <b>No</b>.</div>
+<div class="num"><span class="t">Q2</span>Max heap [40, 30, 15, 10, 20]: insert 35. → 35 goes to index 5, whose parent is index 2 (15). Swap. Its new parent 40 is bigger, so stop: <b>[40, 30, 35, 10, 20, 15]</b>.</div>
+<div class="num"><span class="t">Q3</span>In a max heap of 15 distinct elements, where can the smallest element be? → Among the <b>leaves</b>, indices 7–14 (0-based): 8 positions.</div>
+<div class="num"><span class="t">Q4</span>Height of a heap with 100 elements? → ⌊log₂ 100⌋ = <b>6</b>.</div>
+<div class="num"><span class="t">Q5</span>Time to find the minimum element in a <b>max</b> heap? → It must be a leaf, but any of about n/2 leaves could hold it: <b>O(n)</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Heap = <b>complete binary tree</b> (filled left → right) + heap order throughout. Max heap: parent ≥ children (root = max). Min heap: parent ≤ children (root = min).</li>
+<li>Lecture examples: min heap 2(3(5, 6), 4(9, 8)); max heap 50(20(10, 5), 30(15, 18)).</li>
+<li>Heapify bottom-up: fix the lowest subtrees first, then go up. A swapped-down node keeps sinking (3 ↔ 9, then 3 ↔ 4).</li>
+<li>If the parent is out of order with both children, swap with the <b>larger</b> (max heap) or <b>smaller</b> (min heap). The lecture's 10, 20, 25, 6, 12, 15, 4, 16 → max root 25, min root 4.</li>
+<li>Array: children at 2i + 1 and 2i + 2, parent at ⌊(i−1)/2⌋ (0-based). Insert = append and sift up. Delete root = move the last element to the root and sift down. Both O(log n).</li>
+<li>Build heap O(n); heap sort O(n log n), in place, not stable. Heap = priority queue.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 14 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="13-AVL-Tree.html">← Ch 13: AVL Tree</a><a href="index.html">☰ All topics</a><a href="15-Threaded-Binary-Tree.html">Ch 15: Threaded Binary Tree →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,3 +1,6 @@
 .DS_Store
 __pycache__/
 *.pyc
+
+# Source class PDFs (large, paid course material) – keep local only
+assets/*.pdf

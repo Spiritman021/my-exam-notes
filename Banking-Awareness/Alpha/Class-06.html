@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banking Alpha Class 6 · All about RBI</title>
+<script src="../../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+
+.item{border-top:1px solid var(--line);padding:12px 0 4px}
+.item:first-of-type{border-top:0;padding-top:0}
+.item h4{margin:0 0 4px;font-size:16.5px}
+.item ul{margin:4px 0}
+.gk{font-size:13.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:6px 10px;margin:6px 0 4px}
+.gk b{color:var(--ink)}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+.tag.bank{color:var(--lec);border:1px solid var(--lec)}
+.tag.hot{color:var(--alert);border:1px solid var(--alert)}
+.recallbar{position:sticky;top:0;z-index:4;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--alert);border-radius:6px;padding:10px 14px;margin:16px 0;font-size:14px}
+.recallbar button{font:inherit;font-size:13px;background:var(--accent);color:#fff;border:0;border-radius:4px;padding:5px 12px;cursor:pointer}
+.recallbar button.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+.recallbar .hint{color:var(--muted);flex:1;min-width:200px}
+html.recall .item b.k{background:var(--surface-2);color:transparent;border-radius:3px;outline:1px dashed var(--muted);cursor:pointer;user-select:none}
+html.recall .item b.k.shown{color:inherit;background:var(--accent-soft);outline:0}
+.quiz details{border:1px solid var(--line);border-radius:5px;margin:6px 0;background:var(--surface)}
+.quiz summary{cursor:pointer;padding:8px 12px;font-weight:550}
+.quiz details p{margin:0;padding:0 12px 10px 32px;color:var(--accent);font-weight:600}
+.howto ol{margin:6px 0 0}
+.item::after{content:"";display:block;clear:both}
+.item figure.pic{float:right;width:150px;margin:2px 0 8px 16px;text-align:center}
+.item figure.pic img{width:150px;height:110px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px;display:block}
+.item figure.pic figcaption{font-size:11px;letter-spacing:0;text-transform:none;font-weight:500;margin-top:3px;line-height:1.3}
+.item figure.pic figcaption a{color:var(--muted);text-decoration:none}
+@media (max-width:600px){.item figure.pic{width:110px;margin-left:10px}.item figure.pic img{width:110px;height:84px}}
+@media print{.item figure.pic{break-inside:avoid}}
+.gt{position:relative;border-bottom:1.5px dotted var(--accent);cursor:help;outline:0}
+.gt .pop{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:270px;max-width:80vw;padding:10px 12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13px;font-weight:400;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal}
+.gt .pop::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.gt:hover .pop,.gt:focus .pop,.gt:focus-within .pop{display:block}
+.gt .pop img{float:right;width:64px;height:48px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:4px;padding:2px;margin:0 0 4px 8px}
+.gt .pop .pt{display:block;color:var(--accent);font-size:13.5px;margin-bottom:2px}
+.gt .pop .ps{display:block;color:var(--muted);font-size:12.5px;margin-bottom:4px}
+.gt .pop .pl{display:block;clear:both;margin:0;padding:0}
+.gt .pop .pi{display:block;position:relative;padding-left:14px;margin:2px 0}
+.gt .pop .pi::before{content:"";position:absolute;left:3px;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+html.recall .gt .pop{color:var(--ink)}
+html.recall b.k:not(.shown) .gt{border-bottom:0}
+html.recall b.k:not(.shown) .gt .pop{display:none!important}
+@media print{.gt .pop{display:none!important}}
+
+.item h4 .hi{font-weight:500;color:var(--muted);font-size:14px;margin-left:6px}
+.item .src{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--lec);margin:6px 0 0}
+.item figure.pic button.zoom,.gal button.zoom{all:unset;cursor:zoom-in;display:block}
+.item figure.pic button.zoom:focus-visible img,.gal button.zoom:focus-visible img{outline:2px solid var(--accent)}
+.gal{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 4px;clear:none}
+.item .box{display:flow-root}
+.gal figure{margin:0;width:180px;text-align:center}
+.gal img{width:180px;height:120px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px;padding:3px;display:block}
+.gal figcaption,.item figure.pic figcaption{font-size:11.5px;color:var(--muted);line-height:1.3;margin-top:3px;text-transform:none;letter-spacing:0;font-weight:500}
+.item .tw table{margin:6px 0}
+.item th,.item td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+.item th{background:var(--surface-2);font-size:13px}
+.box.add ul{margin:2px 0;padding-left:20px}
+figure.diagram{margin:10px 0;text-align:center}
+figure.diagram svg{width:100%;max-width:640px;height:auto}
+figure.diagram figcaption{font-size:12.5px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:500}
+.sort{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:8px 0}
+.sort .q{border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--surface)}
+.sort .q b{display:block;margin-bottom:6px}
+.sort button{font:inherit;font-size:13px;border:1px solid var(--accent);background:none;color:var(--accent);border-radius:4px;padding:3px 10px;margin-right:6px;cursor:pointer}
+.sort .q.ok{border-color:var(--ok);background:var(--lec-bg)} .sort .q.no{border-color:var(--bad)}
+.sort .fb{font-size:13px;margin-left:4px}
+.flash{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));margin:10px 0}
+.flash button{font:inherit;text-align:left;min-height:96px;border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:6px;background:var(--surface);color:var(--ink);padding:10px 12px;cursor:pointer}
+.flash button .bk{display:none;font-size:13.5px;color:var(--ink)}
+.flash button .fr{font-weight:700;color:var(--accent)}
+.flash button .hint{display:block;font-size:11px;color:var(--muted);margin-top:6px}
+.flash button.on .bk{display:block} .flash button.on .hint{display:none} .flash button.on{border-top-color:var(--ok)}
+.lb{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+.lb[hidden]{display:none}
+.lb img{max-width:min(96vw,1100px);max-height:82vh;background:#fff;border-radius:6px}
+.lb p{color:#fff;margin:10px 0 0;font-size:14px}
+.plan td,.plan th{border:1px solid var(--line);padding:7px 10px;vertical-align:top;text-align:left}
+.plan th{background:var(--surface-2)}
+.plan tr.ready td{background:var(--lec-bg)}
+.plan .st{white-space:nowrap;font-size:13px;font-weight:600}
+.plan .st.soon{color:var(--muted);font-weight:500}
+.tl{list-style:none;margin:10px 0;padding:0 0 0 18px;border-left:3px solid var(--accent)}
+.tl li{position:relative;margin:0 0 10px;padding-left:10px}
+.tl li::before{content:"";position:absolute;left:-27px;top:6px;width:13px;height:13px;border-radius:50%;background:var(--surface);border:3px solid var(--accent)}
+.tl .y{display:inline-block;min-width:116px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.plan .cov{display:block;margin-top:4px;font-size:13px;color:var(--lec)}
+.plan td.n{font-weight:700;color:var(--accent);white-space:nowrap}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Class navigation"><a href="Class-05.html">← Class 5</a><a href="index.html">☰ All classes</a><span class="off">Next class →</span></nav>
+<header class="cover">
+  <div class="brand">Banking Awareness · Saarthi Alpha 2026 · Class 6 · Wed, 11 Feb 2026</div>
+  <h1>All about RBI</h1>
+  <p class="sub">All about RBI – History of RBI, Central & Local Boards, Governors, Subsidiaries, Printing Presses, Mints, RBI Functions, Training Establishments, Institutes Funded by the Bank, Minimum Reserve System. From the class PDF (Ashish Gautam Sir, Adda247 Warrior Pro Batch) · 22 topics.</p>
+  <div class="legend"><span class="l1">📄 From the class PDF</span><span class="l2">➕ Added for exam</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 Likely question</span></div>
+</header>
+<div class="box lec howto"><span class="t">🎓 How to study this page</span>
+<ol>
+<li><b>Read once.</b> The bullet points are the class PDF; purple ➕ boxes are extra points added for the exam. Click any picture to enlarge it, and hover over a <span style="border-bottom:1.5px dotted var(--accent)">dotted term</span> for a quick fact card.</li>
+<li><b>Turn Recall mode on</b>: the key facts go blank. Say each one, then click to reveal.</li>
+<li><b>Flip the flashcards</b> and take the self-test. Revise tomorrow, in a week and in a month.</li>
+</ol></div>
+<div class="box alert"><span class="t">ℹ️ Note</span>The class plan lists “NABARD and PSL Part 1” for Class 6, but this PDF covers <b>All about RBI</b> – the topic planned for Class 5. The PDFs are running one class behind the plan, so this page keeps your numbering.</div>
+<div class="recallbar"><button id="recall" type="button">Recall mode: off</button><button id="revealall" class="ghost" type="button">Reveal all</button><span class="hint">Hides the key facts. Click any blank to reveal it.</span></div>
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#c1"><span class="n">1</span>History of the RBI</a></li><li><a href="#c2"><span class="n">2</span>Central Board & Local Boards</a></li><li><a href="#c3"><span class="n">3</span>Governors of RBI</a></li><li><a href="#c4"><span class="n">4</span>Subsidiaries of RBI</a></li><li><a href="#c5"><span class="n">5</span>Note Printing Presses, Mints & Currency Issue</a></li><li><a href="#c6"><span class="n">6</span>RBI’s Functions</a></li><li><a href="#c7"><span class="n">7</span>Training Establishments & Institutes Funded</a></li><li><a href="#c8"><span class="n">8</span>Minimum Reserve System</a></li><li><a href="#flash"><span class="n">9</span>Flashcards (8)</a></li><li><a href="#quiz"><span class="n">10</span>Self-test (25 questions)</a></li><li><a href="#rapid"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+<section id="c1"><h3><span class="n">1</span>History of the RBI</h3><p class="cs">भारतीय रिज़र्व बैंक – from a Royal Commission to a nationalised central bank.</p><div class="item"><h4>Timeline</h4><ol class="tl">
+<li><span class="y">1920s</span><b>Hilton-Young Commission</b> (Royal Commission on Indian Currency and Finance) set up</li>
+<li><span class="y">1926</span>The commission recommends a <b>central bank</b> for India</li>
+<li><span class="y">1934</span><b>RBI Act, 1934</b> passed → RBI is a <b>statutory body</b></li>
+<li><span class="y">1 Apr 1935</span>RBI starts operations · paid-up capital <b>₹5 crore</b> · central office in <b>Calcutta</b> · Governor Osborne Smith</li>
+<li><span class="y">1937</span>Central office moves permanently to <b>Mumbai</b></li>
+<li><span class="y">1943</span><b>C. D. Deshmukh</b> – first Indian Governor</li>
+<li><span class="y">1 Jan 1949</span>RBI <b>nationalised</b> – privately owned until then</li>
+</ol></div><div class="item"><figure class="pic"><button type="button" class="zoom" data-full="../img/c6-rbi-timeline.jpg" data-cap="RBI history table (slide)" aria-label="Enlarge: RBI history table (slide)"><img src="../img/c6-rbi-timeline.jpg" alt="RBI history table (slide)" loading="lazy"></button><figcaption>RBI history table (slide)</figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>How <span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> came into being</h4><ul><li>The <b class="k">Hilton-Young Commission</b> was the <b class="k">Royal Commission on Indian Currency and Finance</b>, set up by the British Government of India in the 1920s.</li><li>In <b class="k">1926</b>, this commission recommended that the government <b class="k">create a central bank</b> in the country.</li><li>RBI started its operations from <b class="k">1 April 1935</b>.</li><li>It was established via the <b class="k">RBI Act, 1934</b>, so it is also known as a <b class="k">statutory body</b>.</li><li>RBI was established in 1935 with an <b class="k">initial paid-up capital of ₹5 crore</b>.</li><li>Initially the central office was in <b class="k">Calcutta</b>, but it <b class="k">permanently moved to Mumbai in 1937</b>.</li><li>RBI was <b class="k">nationalised on 1 January 1949</b>. Initially it was <b class="k">privately owned</b>, then it was owned by the Government of India.</li></ul><div class="box add"><span class="t">➕ Added for exam</span><ul><li>Nationalisation was done under the <b>Reserve Bank of India (Transfer to Public Ownership) Act, 1948</b>.</li><li>RBI’s emblem shows a <b>tiger and a palm tree</b>. Its financial year has run <b>April–March</b> since 2020-21 (it was July–June before).</li></ul></div></div><div class="item"><figure class="pic"><button type="button" class="zoom" data-full="../img/c6-rbi-offices.jpg" data-cap="RBI offices across India" aria-label="Enlarge: RBI offices across India"><img src="../img/c6-rbi-offices.jpg" alt="RBI offices across India" loading="lazy"></button><figcaption>RBI offices across India</figcaption></figure><h4><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> offices</h4><ul><li>RBI has <b class="k">34 offices</b> (regional offices and sub-offices) across India.</li></ul></div></section>
+<section id="c2"><h3><span class="n">2</span>Central Board & Local Boards</h3><p class="cs">केंद्रीय बोर्ड और स्थानीय बोर्ड – who runs the RBI.</p><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>Central Board of Directors<span class="hi">केंद्रीय निदेशक बोर्ड</span></h4><ul><li>The Reserve Bank’s affairs are governed by a <b class="k">Central Board of Directors</b>.</li><li>The board is <b class="k">appointed by the Government of India</b> in keeping with the <span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> Act.</li><li>Directors are appointed / nominated for a period of <b class="k">four years</b>.</li><li>The Central Board has <b class="k">21 members</b>:</li><li>— <b class="k">Governor – 1</b> · <b class="k">Deputy Governors – maximum 4</b></li><li>— <b class="k">10 Directors nominated by the Government</b> · <b class="k">2 Government officials</b> · <b class="k">4 Directors from the Local Boards</b></li><li>Governor and Deputy Governors are <b class="k">full-time</b>: term <b class="k">up to 5 years</b>, <b class="k">eligible for reappointment</b>.</li></ul><div class="tw"><table><thead><tr><th>Member</th><th>Number</th></tr></thead><tbody><tr><td>Governor</td><td>1</td></tr><tr><td>Deputy Governors (max.)</td><td>4</td></tr><tr><td>Directors nominated by Govt</td><td>10</td></tr><tr><td>Government officials</td><td>2</td></tr><tr><td>Directors from Local Boards</td><td>4</td></tr><tr><td><b>Total</b></td><td><b>21</b></td></tr></tbody></table></div><div class="box add"><span class="t">➕ Added for exam</span><ul><li>The board is appointed under <b>Section 8</b> of the RBI Act, 1934. The two government officials are usually from the Ministry of Finance (e.g. the Secretary, Department of Economic Affairs, and the Secretary, Department of Financial Services).</li></ul></div></div><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>Who is who today</h4><ul><li><b class="k">Governor: Sanjay Malhotra</b> – the <b class="k">26th Governor</b>.</li><li><b class="k">Deputy Governors (4)</b>: <b class="k">T. Rabi Sankar</b>, <b class="k">Swaminathan J</b>, <b class="k">Poonam Gupta</b>, <b class="k">Shirish Chandra Murmu</b>.</li></ul><div class="box add"><span class="t">➕ Added for exam</span><ul><li>Sanjay Malhotra took charge on 11 December 2024, succeeding Shaktikanta Das (25th).</li></ul></div></div><div class="item"><h4>Local Boards<span class="hi">स्थानीय बोर्ड</span></h4><ul><li>Constituted for the <b class="k">Western, Eastern, Northern and Southern Areas</b>.</li><li>They <b class="k">consist of five members each</b>.</li><li>Members are <b class="k">appointed by the Central Government</b> and hold office for a term of <b class="k">four years</b>.</li><li><b class="k">4 Local Boards</b>: <b class="k">Delhi, Mumbai, Chennai, Kolkata</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Two different “4”s: <b>4 Local Boards</b> (Delhi, Mumbai, Chennai, Kolkata) and <b>4 Directors from Local Boards</b> on the Central Board – one from each. Directors serve <b>4 years</b>; Governor/DGs up to <b>5 years</b>.</div></div></section>
+<section id="c3"><h3><span class="n">3</span>Governors of RBI</h3><p class="cs">आरबीआई के गवर्नर – the three firsts.</p><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>The first three Governors</h4><div class="tw"><table><thead><tr><th>No.</th><th>Governor</th><th>Term</th><th>Note</th></tr></thead><tbody><tr><td>1st</td><td><b class="k">Sir Osborne Arkell Smith</b></td><td>1 April 1935 – 30 June 1937</td><td>An <b class="k">Australian banker</b> – the first Governor</td></tr><tr><td>2nd</td><td><b class="k">Sir James Braid Taylor</b></td><td>1 July 1937 – 17 February 1943</td><td>Held office until his <b class="k">death</b></td></tr><tr><td>3rd</td><td><b class="k">Sir Chintaman Dwarakanath Deshmukh</b></td><td>11 August 1943 – 30 June 1949</td><td>Indian civil servant; <b class="k">first Indian Governor</b>, appointed in 1943 by the British Raj</td></tr></tbody></table></div><div class="box add"><span class="t">➕ Added for exam</span><ul><li>C. D. Deshmukh later became India’s Finance Minister. Manmohan Singh (15th Governor) is the only Governor who also became Prime Minister.</li></ul></div><div class="box trap"><span class="t">⚠️ Exam trap</span>C. D. Deshmukh was Governor when <span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> was <b>nationalised</b> (1 January 1949), so he is also the first Governor of the nationalised RBI.</div></div></section>
+<section id="c4"><h3><span class="n">4</span>Subsidiaries of RBI</h3><p class="cs">पूर्ण स्वामित्व वाली सहायक कंपनियाँ – five wholly owned subsidiaries.</p><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>The five wholly owned subsidiaries</h4><ul><li><b class="k"><span class="gt" tabindex="0">DICGC<span class="pop" role="tooltip"><b class="pt">DICGC</b><span class="ps">Deposit Insurance and Credit Guarantee Corporation</span><span class="pl"><span class="pi">Wholly owned subsidiary of <b>RBI</b></span><span class="pi">Insures bank deposits up to <b>₹5 lakh</b> per depositor per bank</span></span></span></span></b> – Deposit Insurance and Credit Guarantee Corporation</li><li><b class="k">BRBNMPL</b> – Bharatiya Reserve Bank Note Mudran Private Limited</li><li><b class="k">ReBIT</b> – Reserve Bank Information Technology Private Limited</li><li><b class="k">IFTAS</b> – Indian Financial Technology and Allied Services</li><li><b class="k">RBIH</b> – Reserve Bank Innovation Hub</li></ul><div class="tw"><table><thead><tr><th>Subsidiary</th><th>Set up</th><th>HQ</th><th>Role</th></tr></thead><tbody><tr><td>DICGC</td><td><b class="k">15 July 1978</b></td><td>Mumbai</td><td>Insures principal + interest up to <b class="k">₹5 lakh</b></td></tr><tr><td>BRBNMPL</td><td><b class="k">3 February 1995</b></td><td><b class="k">Bengaluru</b></td><td>Runs 2 note presses – <b class="k">Mysore</b> (Karnataka) and <b class="k">Salboni</b> (West Bengal)</td></tr><tr><td>ReBIT</td><td><b class="k">2016</b></td><td>Navi Mumbai (as taught)</td><td><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span>’s <b class="k">IT and cyber security</b> needs</td></tr><tr><td>IFTAS</td><td><b class="k">February 2015</b></td><td>Mumbai</td><td>Designs, deploys & supports <b class="k">IT services for RBI, banks and FIs</b></td></tr><tr><td>RBIH</td><td><b class="k">March 2022</b></td><td><b class="k">Bengaluru</b></td><td><b class="k">Section 8 company</b> (Companies Act 2013), <b class="k">₹100 crore</b> initial capital, to nurture financial innovation</td></tr></tbody></table></div><div class="box add"><span class="t">➕ Added for exam</span><ul><li>DICGC was formed by merging the Deposit Insurance Corporation (1962) and the Credit Guarantee Corporation of India (1971). The ₹5 lakh cover applies from 4 February 2020 (it was ₹1 lakh before).</li></ul></div></div></section>
+<section id="c5"><h3><span class="n">5</span>Note Printing Presses, Mints & Currency Issue</h3><p class="cs">नोट मुद्रण प्रेस – who prints, who mints, who issues.</p><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>Four note printing presses<span class="hi">नोट मुद्रण प्रेस</span></h4><ul><li>Indian currency notes are printed at <b class="k">four</b> secure presses managed by <b class="k">SPMCIL and BRBNMPL</b>: Nashik (Maharashtra), Dewas (Madhya Pradesh), Mysore (Karnataka), Salboni (West Bengal).</li><li>Two presses are owned by the <b class="k">Government of India (SPMCIL)</b> and two by the <b class="k">Reserve Bank</b> through its wholly owned subsidiary BRBNMPL.</li><li><b class="k">Government-owned</b>: <b class="k">Nashik</b> (Western India) and <b class="k">Dewas</b> (Central India).</li><li><b class="k">RBI-owned</b>: <b class="k">Mysore</b> (Southern India) and <b class="k">Salboni</b> (Eastern India).</li></ul></div><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>Who issues what</h4><ul><li><b class="k">Government of India</b> issues <b class="k">coins and the ₹1 note</b>.</li><li><b class="k">Reserve Bank of India</b> issues <b class="k">₹2 and above</b> notes.</li><li><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> can issue bank notes up to a <b class="k">maximum denomination of ₹10,000</b> as per the RBI Act, 1934.</li><li>As per the <b class="k">Coinage Act, 2011</b>, coins can be of a <b class="k">maximum denomination of ₹1,000</b>.</li></ul><p class="src">Quick check – who issues it?</p><div class="sort"><div class="q" data-a="Government"><b>₹1 note</b><button type="button" data-v="Government">Government</button><button type="button" data-v="RBI">RBI</button><span class="fb"></span></div><div class="q" data-a="RBI"><b>₹2 note</b><button type="button" data-v="Government">Government</button><button type="button" data-v="RBI">RBI</button><span class="fb"></span></div><div class="q" data-a="Government"><b>₹10 coin</b><button type="button" data-v="Government">Government</button><button type="button" data-v="RBI">RBI</button><span class="fb"></span></div><div class="q" data-a="RBI"><b>₹500 note</b><button type="button" data-v="Government">Government</button><button type="button" data-v="RBI">RBI</button><span class="fb"></span></div><div class="q" data-a="Government"><b>₹1,000 coin (max. under Coinage Act)</b><button type="button" data-v="Government">Government</button><button type="button" data-v="RBI">RBI</button><span class="fb"></span></div><div class="q" data-a="RBI"><b>₹10,000 note (max. under RBI Act)</b><button type="button" data-v="Government">Government</button><button type="button" data-v="RBI">RBI</button><span class="fb"></span></div></div><div class="box add"><span class="t">➕ Added for exam</span><ul><li>The ₹1 note is signed by the <b>Finance Secretary</b>; all other notes by the <b>RBI Governor</b>. RBI issues notes under <b>Section 22</b> of the RBI Act.</li></ul></div><div class="box trap"><span class="t">⚠️ Exam trap</span>Notes up to <b>₹10,000</b> (RBI Act 1934) vs coins up to <b>₹1,000</b> (Coinage Act 2011). Don’t swap the Acts.</div></div><div class="item"><h4>SPMCIL<span class="hi">भारत प्रतिभूति मुद्रण एवं निर्माण निगम</span></h4><ul><li>Security Printing & Minting Corporation of India Ltd is a <b class="k">Central Public Sector Enterprise (CPSE)</b> under the <b class="k">Ministry of Finance</b>.</li><li><b class="k">Founded: 13 January 2006</b> · <b class="k">Headquarters: New Delhi</b>.</li><li>It operates <b class="k">9 production units</b>: <b class="k">4 mints</b>, <b class="k">2 currency note presses</b>, <b class="k">2 security printing presses</b> and <b class="k">1 security paper mill</b>.</li><li>Coins are minted in <b class="k">four mints</b> owned by the Government: <b class="k">Mumbai</b> (Maharashtra), <b class="k">Kolkata</b> (West Bengal), <b class="k">Hyderabad</b> (Telangana), <b class="k">Noida</b> (Uttar Pradesh).</li><li><b class="k">India Security Press (ISP)</b> – Nashik, Maharashtra · <b class="k">Security Printing Press (SPP)</b> – Hyderabad, Telangana · <b class="k">Security Paper Mill</b> – <b class="k">Narmadapuram</b>, Madhya Pradesh.</li></ul><div class="box add"><span class="t">➕ Added for exam</span><ul><li>The two SPMCIL currency note presses are the Currency Note Press, Nashik and the Bank Note Press, Dewas. Narmadapuram was earlier called Hoshangabad.</li></ul></div></div></section>
+<section id="c6"><h3><span class="n">6</span>RBI’s Functions</h3><p class="cs">आरबीआई के कार्य – seven roles.</p><div class="item"><figure class="pic"><button type="button" class="zoom" data-full="../img/c6-functions.jpg" data-cap="RBI’s functions" aria-label="Enlarge: RBI’s functions"><img src="../img/c6-functions.jpg" alt="RBI’s functions" loading="lazy"></button><figcaption>RBI’s functions</figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Seven functions</h4><ul><li><b class="k">Maker of Monetary Policy</b> · <b class="k">Issuer of Currency</b> · <b class="k">Banker to the Government</b> · <b class="k">Banker to Banks</b> · <b class="k">Foreign Exchange Management</b> · <b class="k">Controller of Credit</b> · <b class="k">Lender of Last Resort (LOLR)</b>.</li></ul></div><div class="item"><h4>Maker of Monetary Policy</h4><ul><li>Under the <span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> Act, 1934 (<b class="k">as amended in 2016</b>), RBI conducts monetary policy with the primary objective of <b class="k">price stability</b> while keeping in mind the objective of <b class="k">growth</b>.</li><li><b class="k">Fiscal policy</b> is formulated by the <b class="k">Ministry of Finance</b>, Government of India.</li></ul><div class="box add"><span class="t">➕ Added for exam</span><ul><li>The 2016 amendment brought in flexible inflation targeting (<span class="gt" tabindex="0">CPI<span class="pop" role="tooltip"><b class="pt">CPI</b><span class="ps">Consumer Price Index</span><span class="pl"><span class="pi">Measures retail inflation</span><span class="pi">Released by <b>NSO, MoSPI</b></span><span class="pi">RBI target <b>4%</b> (±2%)</span></span></span></span> 4% ± 2%) and the Monetary Policy Committee – taught in the Monetary Policy classes.</li></ul></div></div><div class="item"><h4>Issuer of Currency</h4><ul><li>The Reserve Bank is the nation’s <b class="k">sole note issuing authority</b>.</li><li>The Government of India is the <b class="k">issuing authority of coins</b> and supplies coins to <span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> on demand.</li><li>RBI <b class="k">puts the coins into circulation</b> on behalf of the Central Government.</li></ul></div><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>Banker to the Government</h4><ul><li><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> is the banker of the <b class="k">Central Government</b>:</li><li>— <b class="k">Section 20</b>: RBI must accept and hold the Central Government’s money.</li><li>— <b class="k">Section 21</b>: RBI can make payments and manage all banking work for the Government.</li><li>RBI is the banker of the <b class="k">State Governments / UTs</b>:</li><li>— <b class="k">Section 21A</b>: RBI acts as banker to State Governments <b class="k">by agreement</b>.</li><li>— All States / UTs use RBI as banker <b class="k">except Sikkim</b>.</li></ul></div><div class="item"><h4>Banker to Banks</h4><ul><li>The current accounts of banks are opened in <b class="k">e-Kuber</b> (the <b class="k">CBS of <span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span></b>).</li><li>RBI gives <b class="k">short-term loans and advances</b> to select banks, when necessary, to facilitate lending to specific sectors and purposes.</li></ul></div><div class="item"><h4>Foreign Exchange Management</h4><ul><li><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> issues licences to banks and other institutions to act as <b class="k">Authorised Dealers</b> in the foreign exchange market.</li><li>RBI is the <b class="k">custodian of the country’s foreign exchange reserves</b> and manages their investment.</li></ul><div class="box add"><span class="t">➕ Added for exam</span><ul><li>RBI manages forex under <b>FEMA, 1999</b> (which replaced FERA, 1973).</li></ul></div></div><div class="item"><h4>Controller of Credit</h4><ul><li><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> uses monetary-policy tools to <b class="k">regulate money supply, control inflation and foster growth</b>.</li><li><b class="k">Quantitative</b> methods: <b class="k">repo rate, CRR</b> · <b class="k">Qualitative / selective</b> measures: <b class="k">margin requirements, moral suasion</b>.</li></ul></div><div class="item"><h4>Lender of Last Resort (LOLR)</h4><ul><li><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> is called the <b class="k">lender of last resort</b> for banks.</li><li>If a bank is <b class="k">healthy but faces a temporary cash shortage</b>, RBI gives <b class="k">emergency funds</b>.</li><li>This help is given <b class="k">when no other bank is willing to lend</b>.</li><li>Purpose: to <b class="k">protect depositors’ money</b>. It <b class="k">prevents the bank from failing</b> and protects the banking system and financial stability.</li></ul></div></section>
+<section id="c7"><h3><span class="n">7</span>Training Establishments & Institutes Funded</h3><p class="cs">प्रशिक्षण संस्थान और बैंक द्वारा वित्तपोषित संस्थान</p><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>Five training establishments</h4><ul><li><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> has <b class="k">five training establishments</b>.</li><li><b class="k">Four</b> are part of the Reserve Bank: <b class="k">RBI Academy</b>, <b class="k">College of Agricultural Banking</b>, <b class="k">Reserve Bank of India Staff College</b> and <b class="k">College of Supervisors</b>.</li><li>One is <b class="k">autonomous</b> (self-governed but connected to RBI): <b class="k">Institute for Development and Research in Banking Technology (IDRBT)</b>.</li></ul><div class="box add"><span class="t">➕ Added for exam</span><ul><li>Locations: RBI Academy – Mumbai · College of Agricultural Banking – Pune · RBI Staff College – Chennai · College of Supervisors – Mumbai · IDRBT – Hyderabad.</li></ul></div></div><div class="item"><figure class="pic"><button type="button" class="zoom" data-full="../img/c6-institutes.jpg" data-cap="Institutes funded by the Bank" aria-label="Enlarge: Institutes funded by the Bank"><img src="../img/c6-institutes.jpg" alt="Institutes funded by the Bank" loading="lazy"></button><figcaption>Institutes funded by the Bank</figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>Institutes funded by the Bank</h4><div class="tw"><table><thead><tr><th>Institute</th><th>Full name</th><th>RBI role</th><th>Main purpose</th></tr></thead><tbody><tr><td><b class="k">CAFRAL</b></td><td>Centre for Advanced Financial Research and Learning</td><td><b class="k">Fully funded by <span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span></b></td><td>Advanced financial research & training of senior bankers</td></tr><tr><td><b class="k">IGIDR</b></td><td>Indira Gandhi Institute of Development Research</td><td><b class="k">Fully funded by RBI</b></td><td>Economic and development research</td></tr><tr><td><b class="k">IIBM</b></td><td>Indian Institute of Bank Management</td><td>RBI is a <b class="k">sponsor</b> along with other banks and FIs</td><td>Training and management development of bank officers</td></tr><tr><td><b class="k">NIBM</b></td><td>National Institute of Bank Management</td><td>RBI is an <b class="k">ordinary member</b> along with other banks and FIs</td><td>Banking education, training and research</td></tr></tbody></table></div><div class="box add"><span class="t">➕ Added for exam</span><ul><li>Locations: CAFRAL – Mumbai · IGIDR – Mumbai · IIBM – Guwahati · NIBM – Pune.</li></ul></div></div></section>
+<section id="c8"><h3><span class="n">8</span>Minimum Reserve System</h3><p class="cs">न्यूनतम भण्डारण प्रणाली – the backing for currency RBI issues.</p><div class="item"><h4><span class="tag hot">🎯 Likely Q</span>Minimum Reserve System</h4><ul><li>Under this system, <span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> should have a <b class="k">minimum reserve of ₹200 crore</b>.</li><li>Of which <b class="k">gold ₹115 crore</b> and <b class="k">₹85 crore in foreign exchange</b>.</li><li>RBI <b class="k">issues currency on the basis of the Minimum Reserve System</b>.</li></ul><div class="box add"><span class="t">➕ Added for exam</span><ul><li>India adopted the Minimum Reserve System in <b>1957</b>, replacing the Proportional Reserve System (1935–1956). The rule is in <b>Section 33</b> of the RBI Act.</li></ul></div><div class="box trap"><span class="t">⚠️ Exam trap</span>₹200 crore = ₹115 crore gold + ₹85 crore forex. Don’t mix with RBI’s ₹5 crore initial paid-up capital.</div></div></section>
+<section id="flash"><h3><span class="n">9</span>Flashcards</h3><p class="cs">Say the meaning, then tap the card to check.</p><div class="flash"><button type="button"><span class="fr">Hilton-Young Commission</span><span class="bk">Royal Commission on Indian Currency and Finance; recommended a central bank in 1926.</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">RBI basics</span><span class="bk">RBI Act 1934 · operations 1 April 1935 · ₹5 crore paid-up · Calcutta → Mumbai 1937 · nationalised 1 Jan 1949.</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">Central Board</span><span class="bk">21 members: Governor 1, DGs max 4, 10 govt-nominated, 2 govt officials, 4 from Local Boards.</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">RBI subsidiaries</span><span class="bk">DICGC, BRBNMPL, ReBIT, IFTAS, RBIH.</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">Note presses</span><span class="bk">Govt (SPMCIL): Nashik, Dewas · RBI (BRBNMPL): Mysore, Salboni.</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">Mints</span><span class="bk">Mumbai, Kolkata, Hyderabad, Noida (all Govt / SPMCIL).</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">LOLR</span><span class="bk">RBI lends emergency funds to a healthy bank short of cash when no other bank will lend.</span><span class="hint">tap to flip</span></button><button type="button"><span class="fr">Minimum Reserve System</span><span class="bk">₹200 crore: ₹115 crore gold + ₹85 crore forex.</span><span class="hint">tap to flip</span></button></div></section><section id="quiz" class="quiz"><h3><span class="n">10</span>Self-test</h3><p class="cs">Answer out loud first, then click to check.</p><details><summary>Which commission recommended a central bank for India, and when?</summary><p>The Hilton-Young Commission (Royal Commission on Indian Currency and Finance), 1926.</p></details><details><summary>Under which Act was RBI set up, and when did it start operations?</summary><p>RBI Act, 1934; 1 April 1935.</p></details><details><summary>What was RBI’s initial paid-up capital?</summary><p>₹5 crore.</p></details><details><summary>Where was RBI’s central office first, and when did it move to Mumbai?</summary><p>Calcutta; 1937.</p></details><details><summary>When was RBI nationalised?</summary><p>1 January 1949.</p></details><details><summary>How many members are on RBI’s Central Board? Break it up.</summary><p>21 – Governor 1, Deputy Governors up to 4, 10 government-nominated directors, 2 government officials, 4 directors from Local Boards.</p></details><details><summary>Term of Central Board directors vs Governor?</summary><p>Directors 4 years; Governor and Deputy Governors up to 5 years, eligible for reappointment.</p></details><details><summary>Name the four Local Boards and their size.</summary><p>Delhi, Mumbai, Chennai, Kolkata – five members each, four-year term.</p></details><details><summary>Who is RBI’s current Governor and which number?</summary><p>Sanjay Malhotra, 26th Governor.</p></details><details><summary>Name the four Deputy Governors.</summary><p>T. Rabi Sankar, Swaminathan J, Poonam Gupta, Shirish Chandra Murmu.</p></details><details><summary>Who was RBI’s first Governor, and his nationality?</summary><p>Sir Osborne Arkell Smith, an Australian banker (1935–37).</p></details><details><summary>Who was the first Indian Governor of RBI?</summary><p>Sir C. D. Deshmukh (11 August 1943 – 30 June 1949).</p></details><details><summary>Name RBI’s five wholly owned subsidiaries.</summary><p>DICGC, BRBNMPL, ReBIT, IFTAS, RBIH.</p></details><details><summary>DICGC: established when, and what cover does it give?</summary><p>15 July 1978; principal + interest up to ₹5 lakh.</p></details><details><summary>Where are RBI’s own note presses?</summary><p>Mysore (Karnataka) and Salboni (West Bengal), via BRBNMPL.</p></details><details><summary>Where are the Government’s note presses?</summary><p>Nashik (Maharashtra) and Dewas (Madhya Pradesh), via SPMCIL.</p></details><details><summary>Name India’s four mints.</summary><p>Mumbai, Kolkata, Hyderabad, Noida.</p></details><details><summary>What is the maximum denomination of a note and of a coin?</summary><p>Note ₹10,000 (RBI Act 1934); coin ₹1,000 (Coinage Act 2011).</p></details><details><summary>When was SPMCIL founded and how many units does it run?</summary><p>13 January 2006; 9 units – 4 mints, 2 currency note presses, 2 security printing presses, 1 security paper mill.</p></details><details><summary>Which sections make RBI banker to the Centre and to the States?</summary><p>Sections 20 and 21 (Centre); Section 21A (States, by agreement).</p></details><details><summary>Which state does not use RBI as its banker?</summary><p>Sikkim.</p></details><details><summary>What is e-Kuber?</summary><p>RBI’s Core Banking Solution, where banks’ current accounts are held.</p></details><details><summary>Which RBI training establishment is autonomous?</summary><p>IDRBT – Institute for Development and Research in Banking Technology.</p></details><details><summary>Which institutes are fully funded by RBI?</summary><p>CAFRAL and IGIDR.</p></details><details><summary>Under the Minimum Reserve System, how much reserve must RBI keep, and in what form?</summary><p>₹200 crore – ₹115 crore gold and ₹85 crore foreign exchange.</p></details></section><div class="rapid" id="rapid"><h3>⚡ Rapid Revision</h3><ul><li>Hilton-Young Commission (1926) → RBI Act 1934 → operations 1 Apr 1935, ₹5 cr capital, Calcutta → Mumbai 1937 → nationalised 1 Jan 1949. Statutory body. 34 offices.</li><li>Central Board 21 = 1 Governor + 4 DGs + 10 nominated + 2 govt officials + 4 from Local Boards; directors 4 yrs, Governor/DG ≤ 5 yrs.</li><li>Local Boards (5 members, 4 yrs): Delhi, Mumbai, Chennai, Kolkata.</li><li>Governor Sanjay Malhotra (26th); DGs T. Rabi Sankar, Swaminathan J, Poonam Gupta, Shirish Chandra Murmu.</li><li>Governors: Osborne Smith (Australian, 1935–37) · James Braid Taylor (1937–43, died in office) · C. D. Deshmukh (first Indian, 1943–49).</li><li>Subsidiaries: DICGC 15 Jul 1978 Mumbai ₹5 lakh · BRBNMPL 3 Feb 1995 Bengaluru (Mysore, Salboni) · ReBIT 2016 · IFTAS Feb 2015 Mumbai · RBIH Mar 2022 Bengaluru ₹100 cr.</li><li>Presses: Govt Nashik + Dewas; RBI Mysore + Salboni. Mints: Mumbai, Kolkata, Hyderabad, Noida. ISP Nashik, SPP Hyderabad, paper mill Narmadapuram. SPMCIL 13 Jan 2006, New Delhi, 9 units.</li><li>Govt: coins + ₹1 note; RBI: ₹2 and above. Max note ₹10,000 (RBI Act 1934); max coin ₹1,000 (Coinage Act 2011).</li><li>Functions: monetary policy · currency · banker to govt (Sec 20, 21, 21A; all but Sikkim) · banker to banks (e-Kuber) · forex · credit control · LOLR.</li><li>Training: RBI Academy, College of Agricultural Banking, RBI Staff College, College of Supervisors + autonomous IDRBT. Funded: CAFRAL & IGIDR fully; IIBM sponsor; NIBM ordinary member.</li><li>Minimum Reserve System: ₹200 cr = ₹115 cr gold + ₹85 cr forex.</li></ul></div>
+<p class="end" id="fin">End of Saarthi Alpha · Class 6 · All about RBI</p>
+<nav class="topnav" aria-label="Class navigation"><a href="Class-05.html">← Class 5</a><a href="index.html">☰ All classes</a><span class="off">Next class →</span></nav>
+</div>
+<div class="lb" id="lb" hidden><img alt=""><p></p></div>
+<script>
+(function(){
+  var lb=document.getElementById('lb'), im=lb.querySelector('img'), cap=lb.querySelector('p');
+  document.addEventListener('click',function(e){
+    var z=e.target.closest('.zoom');
+    if(z){ im.src=z.dataset.full; cap.textContent=z.dataset.cap||''; lb.hidden=false; return; }
+    if(e.target.closest('#lb')){ lb.hidden=true; return; }
+    var f=e.target.closest('.flash button'); if(f){ f.classList.toggle('on'); return; }
+    var s=e.target.closest('.sort button');
+    if(s){ var q=s.closest('.q'), ok=s.dataset.v===q.dataset.a;
+      q.classList.remove('ok','no'); q.classList.add(ok?'ok':'no');
+      q.querySelector('.fb').textContent=ok?'✓ Correct':'✗ Answer: '+q.dataset.a; }
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') lb.hidden=true; });
+})();
+</script>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('ca-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('ca-notes-theme',nxt);}catch(e){}
+  });
+  var rb=document.getElementById('recall');
+  if(!rb) return;
+  // Recall mode: blank out key facts; click one to reveal it.
+  function setRecall(on){
+    root.classList.toggle('recall',on);
+    rb.textContent='Recall mode: '+(on?'on':'off');
+    document.querySelectorAll('b.k.shown').forEach(function(b){b.classList.remove('shown');});
+  }
+  rb.addEventListener('click',function(){ setRecall(!root.classList.contains('recall')); });
+  document.getElementById('revealall').addEventListener('click',function(){
+    document.querySelectorAll('b.k').forEach(function(b){b.classList.add('shown');});
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('b.k'); if(b && root.classList.contains('recall')) b.classList.toggle('shown');
+  });
+})();
+</script>
+</body>
+</html>

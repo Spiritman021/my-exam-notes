@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Expression Notation Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="07-Stack.html">← Ch 7: Stack</a><a href="index.html">☰ All topics</a><a href="09-Queue.html">Ch 9: Queue →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 8: Expression Notation</h1>
+  <p class="sub">Volume 03 · Part 8 · Built from the one-shot Data Structures lecture transcript (section 8), plus the exam points the lecture skipped. The lecture's most important stack application: infix, prefix and postfix. It converts one expression three ways (expression tree, stack, manual), shows how to build the tree, then evaluates postfix and prefix with a stack. These notes add parentheses, the full algorithm, infix → prefix, the ^ right-associativity cases and exam-style numericals.</p>
+  <ul class="tags"><li>Infix · Prefix (Polish) · Postfix (Reverse Polish)</li><li>Expression tree</li><li>1st / 2nd / 3rd visit</li><li>Precedence &amp; associativity</li><li>Stack conversion</li><li>Postfix &amp; prefix evaluation</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">8.1</span>Infix, Prefix and Postfix: Operator Position</a></li>
+<li><a href="#s2"><span class="n">8.2</span>Conversion Using an Expression Tree (First/Second/Last Visit)</a></li>
+<li><a href="#s3"><span class="n">8.3</span>Infix to Postfix Using a Stack (Precedence and Associativity)</a></li>
+<li><a href="#s4"><span class="n">8.4</span>Infix to Postfix: Manual Method</a></li>
+<li><a href="#s5"><span class="n">8.5</span>Building the Expression Tree (Weakest Operator as Root)</a></li>
+<li><a href="#s6"><span class="n">8.6</span>Evaluating a Postfix Expression Using a Stack</a></li>
+<li><a href="#s7"><span class="n">8.7</span>Evaluating a Prefix Expression Using a Stack (Right-to-Left Scan)</a></li>
+<li><a href="#s8"><span class="n">8.8</span>Parentheses, Full Algorithm, Infix → Prefix &amp; Solved Numericals<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 8</div>
+<h2 class="ch">Expression Notation: Infix, Prefix and Postfix</h2>
+<p>An expression has <b>operands</b> (a, b, 5) and <b>operators</b> (+, ×, ^). The only difference between the three notations is <b>where the operator sits</b>. Humans read infix easily, but it needs precedence rules and brackets. Prefix and postfix need <b>neither</b>, so compilers convert to them and evaluate with a single stack. Expect at least one conversion or evaluation numerical in the exam.</p>
+
+<section id="s1">
+<h3><span class="n">8.1</span>Infix, Prefix and Postfix: Operator Position</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+An expression has two main components: the <b>operator</b> and the <b>operand</b>. The names describe the position of the operator:
+<ul>
+<li><b>Infix</b>: the operator is <b>in</b> between the two operands: <code>a + b</code>.</li>
+<li><b>Prefix</b>: the operator comes <b>first (pre)</b>, then the operands: <code>+ a b</code>.</li>
+<li><b>Postfix</b>: the operands come first and the operator <b>last (post)</b>: <code>a b +</code>.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Notation</th><th>Other name</th><th>a + b</th><th>Needs brackets / precedence?</th></tr>
+<tr><td>Infix</td><td>—</td><td><code>a + b</code></td><td>yes</td></tr>
+<tr><td>Prefix</td><td><b>Polish notation</b> (Jan Łukasiewicz)</td><td><code>+ a b</code></td><td>no</td></tr>
+<tr><td>Postfix</td><td><b>Reverse Polish notation (RPN)</b>, also called suffix</td><td><code>a b +</code></td><td>no</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Converting changes only the <b>operator</b> positions. The <b>operands stay in the same left-to-right order</b> in all three forms. If an option reorders the letters (e.g. <code>b a +</code> for a + b), eliminate it at once.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">8.2</span>Conversion Using an Expression Tree (First/Second/Last Visit)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Infix makes sense to a human but is "senseless" to the system; the system finds sense in prefix and postfix. Conversion can be done with a <b>tree</b>, a <b>stack</b> or <b>manually</b>. The lecture recommends the tree, as the easiest.<br>
+<b>Method:</b> Traverse the tree top to bottom, left to right, going round each node, so you pass each node <b>three times</b>:
+<ul>
+<li>the <b>1st</b> visit is on its left side;</li>
+<li>the <b>2nd</b> visit is underneath it (the middle);</li>
+<li>the <b>3rd</b> visit is on its right side.</li>
+</ul>
+Leaves have no children, so draw dummy branches under them so you can still count their three visits.
+<ul>
+<li>Write a node at its <b>2nd</b> visit → <b>infix</b>: <code>a + b * x + y</code>. This checks that the tree is right.</li>
+<li>Write a node at its <b>1st</b> visit → <b>prefix</b>: <code>+ + a * b x y</code>.</li>
+<li>Write a node at its <b>last</b> visit → <b>postfix</b>: <code>a b x * + y +</code>.</li>
+</ul>
+These are the same ideas as <b>inorder, preorder and postorder</b> traversal of a tree, covered later.</div>
+<figure>
+<svg viewBox="0 0 422 286" style="max-width:506px" role="img" aria-label="Expression tree for a + b × x + y: root plus, left subtree a plus b times x, right child y">
+<path class="ln" d="M211.0 174 L155.0 246"/>
+<path class="ln" d="M211.0 174 L267.0 246"/>
+<path class="ln" d="M99.0 102 L43.0 174"/>
+<path class="ln" d="M99.0 102 L211.0 174"/>
+<path class="ln" d="M323.0 30 L99.0 102"/>
+<path class="ln" d="M323.0 30 L379.0 102"/>
+<circle class="gr" cx="43.0" cy="174" r="18"/><text class="b" x="43.0" y="179" text-anchor="middle">a</text>
+<circle class="gr" cx="155.0" cy="246" r="18"/><text class="b" x="155.0" y="251" text-anchor="middle">b</text>
+<circle class="gr" cx="267.0" cy="246" r="18"/><text class="b" x="267.0" y="251" text-anchor="middle">x</text>
+<circle class="ac" cx="211.0" cy="174" r="18"/><text class="b" x="211.0" y="179" text-anchor="middle">×</text>
+<circle class="ac" cx="99.0" cy="102" r="18"/><text class="b" x="99.0" y="107" text-anchor="middle">+</text>
+<circle class="gr" cx="379.0" cy="102" r="18"/><text class="b" x="379.0" y="107" text-anchor="middle">y</text>
+<circle class="ac" cx="323.0" cy="30" r="18"/><text class="b" x="323.0" y="35" text-anchor="middle">+</text>
+</svg>
+<figcaption>Expression tree for a + b × x + y · operators (blue) are internal nodes, operands (green) are leaves</figcaption>
+</figure>
+<div class="formula">Visit rule        Traversal     Result for a + b*x + y
+1st (left side)   preorder   →  + + a * b x y     (prefix)
+2nd (below)       inorder    →  a + b * x + y     (infix)
+3rd (right side)  postorder  →  a b x * + y +     (postfix)</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">8.3</span>Infix to Postfix Using a Stack (Precedence and Associativity)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Most questions say "use a stack to convert this infix to postfix". The rules:
+<ul>
+<li>An <b>operand</b> goes <b>straight to the output</b>, never into the stack.</li>
+<li>An <b>operator</b> goes into the stack, but first apply the pop rule.</li>
+<li><b>Precedence:</b> <code>^</code> (raise to power) is highest, then <code>* /</code>, then <code>+ −</code> (lowest).</li>
+<li><b>Associativity</b> (when equal-precedence operators meet): <code>* /</code> and <code>+ −</code> go <b>left to right</b>; <code>^</code> goes <b>right to left</b>.</li>
+<li><b>Pop rule:</b> if the operator on top is stronger, it "cannot bear the dominance of a weaker one sitting on it". It says "wait, I'll come out first, then you go in". Pop it to the output, then push the newcomer.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Symbol</th><th>Action</th><th>Stack (bottom → top)</th><th>Postfix output</th></tr>
+<tr><td>a</td><td>operand → output</td><td></td><td>a</td></tr>
+<tr><td>+</td><td>stack empty → push</td><td>+</td><td>a</td></tr>
+<tr><td>b</td><td>operand → output</td><td>+</td><td>a b</td></tr>
+<tr><td>*</td><td>* stronger than + → can sit on it, push</td><td>+ *</td><td>a b</td></tr>
+<tr><td>x</td><td>operand → output</td><td>+ *</td><td>a b x</td></tr>
+<tr><td>+</td><td>top * is stronger → pop *. Next + is equal, left-assoc → pop +. Then push +</td><td>+</td><td>a b x * +</td></tr>
+<tr><td>y</td><td>operand → output</td><td>+</td><td>a b x * + y</td></tr>
+<tr><td>end</td><td>pop everything left</td><td></td><td><b>a b x * + y +</b></td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The result <b>a b x * + y +</b> matches the tree method. The lecture's advice: the stack method works, but the <b>tree method is easier</b>.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">8.4</span>Infix to Postfix: Manual Method</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Follow <b>only precedence and associativity</b>, and convert one operator at a time, highest priority first:
+<ol>
+<li><code>a + b * x + y</code>: * is highest, so <code>b*x → b x *</code>. This gives <code>a + [b x *] + y</code>.</li>
+<li>Two +'s: left-associative, so the <b>left +</b> goes first. <code>a</code> and <code>[b x *]</code> are its operands, so write them, then the operator: <code>[a b x * +] + y</code>.</li>
+<li>One + is left, with operands <code>[a b x * +]</code> and <code>y</code>: <b>a b x * + y +</b>.</li>
+</ol>
+"It's your choice, your faith": use whichever method you like. "My job is to put all the options before you."</div>
+<div class="box add"><span class="t">➕ Added for exam (fastest manual trick)</span>
+<b>Fully parenthesise</b> the expression according to precedence. Then move each operator to replace its own <b>closing</b> bracket (postfix) or <b>opening</b> bracket (prefix), and delete the brackets.
+<div class="formula">((a + (b * x)) + y)
+postfix: move each op to its ')'  →  a b x * + y +
+prefix:  move each op to its '('  →  + + a * b x y</div></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">8.5</span>Building the Expression Tree (Weakest Operator as Root)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The tree is built with the same rules <b>in reverse</b>: the <b>weakest operator becomes the root</b>, then you move from weak to strong. Everything to the operator's <b>left</b> becomes its left child, and everything to its <b>right</b> becomes its right child. Expression: <code>a * b / c + d / e * f + g − h * i</code>.
+<ol>
+<li><b>−</b> is the weakest, so it is the root. Left: <code>a*b/c + d/e*f + g</code>. Right: <code>h*i</code>, which becomes × with h and i.</li>
+<li>Left part: two +'s. With left-to-right associativity, the <b>right one</b> is evaluated last, so it is weaker and becomes the node. Left: <code>a*b/c + d/e*f</code>. Right: g.</li>
+<li><code>a*b/c + d/e*f</code>: + is weakest. Left: <code>a*b/c</code>. Right: <code>d/e*f</code>.</li>
+<li><code>a*b/c</code>: × and ÷ are equal, left-to-right, so the right one (<b>÷</b>) is weaker and becomes the node. Left: a*b. Right: c.</li>
+<li><code>d/e*f</code>: the right one (<b>×</b>) is weaker. Left: d/e. Right: f.</li>
+</ol>
+Rule: go from <b>low to high precedence</b>, and break ties with associativity. (The lecture briefly calls × the weaker one in step 4 and then corrects itself to ÷.)</div>
+<figure>
+<svg viewBox="0 0 982 430" style="max-width:940px" role="img" aria-label="Expression tree for a×b÷c + d÷e×f + g − h×i with minus at the root">
+<path class="ln" d="M99.0 318 L43.0 390"/>
+<path class="ln" d="M99.0 318 L155.0 390"/>
+<path class="ln" d="M211.0 246 L99.0 318"/>
+<path class="ln" d="M211.0 246 L267.0 318"/>
+<path class="ln" d="M435.0 318 L379.0 390"/>
+<path class="ln" d="M435.0 318 L491.0 390"/>
+<path class="ln" d="M547.0 246 L435.0 318"/>
+<path class="ln" d="M547.0 246 L603.0 318"/>
+<path class="ln" d="M323.0 174 L211.0 246"/>
+<path class="ln" d="M323.0 174 L547.0 246"/>
+<path class="ln" d="M659.0 102 L323.0 174"/>
+<path class="ln" d="M659.0 102 L715.0 174"/>
+<path class="ln" d="M883.0 102 L827.0 174"/>
+<path class="ln" d="M883.0 102 L939.0 174"/>
+<path class="ln" d="M771.0 30 L659.0 102"/>
+<path class="ln" d="M771.0 30 L883.0 102"/>
+<circle class="gr" cx="43.0" cy="390" r="18"/><text class="b" x="43.0" y="395" text-anchor="middle">a</text>
+<circle class="gr" cx="155.0" cy="390" r="18"/><text class="b" x="155.0" y="395" text-anchor="middle">b</text>
+<circle class="ac" cx="99.0" cy="318" r="18"/><text class="b" x="99.0" y="323" text-anchor="middle">×</text>
+<circle class="gr" cx="267.0" cy="318" r="18"/><text class="b" x="267.0" y="323" text-anchor="middle">c</text>
+<circle class="ac" cx="211.0" cy="246" r="18"/><text class="b" x="211.0" y="251" text-anchor="middle">÷</text>
+<circle class="gr" cx="379.0" cy="390" r="18"/><text class="b" x="379.0" y="395" text-anchor="middle">d</text>
+<circle class="gr" cx="491.0" cy="390" r="18"/><text class="b" x="491.0" y="395" text-anchor="middle">e</text>
+<circle class="ac" cx="435.0" cy="318" r="18"/><text class="b" x="435.0" y="323" text-anchor="middle">÷</text>
+<circle class="gr" cx="603.0" cy="318" r="18"/><text class="b" x="603.0" y="323" text-anchor="middle">f</text>
+<circle class="ac" cx="547.0" cy="246" r="18"/><text class="b" x="547.0" y="251" text-anchor="middle">×</text>
+<circle class="ac" cx="323.0" cy="174" r="18"/><text class="b" x="323.0" y="179" text-anchor="middle">+</text>
+<circle class="gr" cx="715.0" cy="174" r="18"/><text class="b" x="715.0" y="179" text-anchor="middle">g</text>
+<circle class="ac" cx="659.0" cy="102" r="18"/><text class="b" x="659.0" y="107" text-anchor="middle">+</text>
+<circle class="gr" cx="827.0" cy="174" r="18"/><text class="b" x="827.0" y="179" text-anchor="middle">h</text>
+<circle class="gr" cx="939.0" cy="174" r="18"/><text class="b" x="939.0" y="179" text-anchor="middle">i</text>
+<circle class="ac" cx="883.0" cy="102" r="18"/><text class="b" x="883.0" y="107" text-anchor="middle">×</text>
+<circle class="ac" cx="771.0" cy="30" r="18"/><text class="b" x="771.0" y="35" text-anchor="middle">−</text>
+</svg>
+<figcaption>Expression tree for a × b ÷ c + d ÷ e × f + g − h × i · the weakest operator (−) is the root</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>From this tree, postfix = <b>a b * c / d e / f * + g + h i * −</b> and prefix = <b>− + + / * a b c * / d e f g * h i</b>.</li>
+<li>For a <b>left-associative</b> tie, the <b>rightmost</b> operator becomes the root. For <b>^</b> (right-associative), the <b>leftmost</b> ^ does: <code>a ^ b ^ c</code> = a ^ (b ^ c).</li>
+<li>In an expression tree, every <b>leaf is an operand</b> and every <b>internal node is an operator</b>. With binary operators, n operators give n + 1 leaves.</li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">8.6</span>Evaluating a Postfix Expression Using a Stack</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The expression is the same shape as before, with numbers in place of a, b, x, y: postfix <code>1 2 3 * + 5 +</code> (infix 1 + 2 × 3 + 5).
+<ul>
+<li>Scan <b>left to right</b>.</li>
+<li>Push every <b>number</b> into the stack, "without any condition".</li>
+<li>On an <b>operator</b>, pop twice:
+<ul><li>the <b>first pop</b> goes to the operator's <b>right</b>;</li>
+<li>the <b>second pop</b> goes to its <b>left</b>.</li></ul></li>
+<li>Compute, and push the result back.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Symbol</th><th>Action</th><th>Stack (bottom → top)</th></tr>
+<tr><td>1</td><td>push</td><td>1</td></tr>
+<tr><td>2</td><td>push</td><td>1 2</td></tr>
+<tr><td>3</td><td>push</td><td>1 2 3</td></tr>
+<tr><td>*</td><td>pop 3 (right), pop 2 (left): 2 × 3 = 6, push</td><td>1 6</td></tr>
+<tr><td>+</td><td>pop 6 (right), pop 1 (left): 1 + 6 = 7, push</td><td>7</td></tr>
+<tr><td>5</td><td>push</td><td>7 5</td></tr>
+<tr><td>+</td><td>pop 5 (right), pop 7 (left): 7 + 5 = 12, push</td><td><b>12</b></td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Answer <b>12</b>. On the board 5 was first written on the left; the lecture corrects it: 5 belongs on the <b>right</b> and 7 on the <b>left</b>. Check against the infix: 2 × 3 = 6, 6 + 1 = 7, 7 + 5 = 12.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The operand order only matters for <b>− , ÷ and ^</b>, which is exactly where MCQs trap you. In postfix the result is <b>(second pop) op (first pop)</b>: with <code>8 2 /</code>, 2 is popped first, so it is 8 ÷ 2 = 4, not 2 ÷ 8.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">8.7</span>Evaluating a Prefix Expression Using a Stack (Right-to-Left Scan)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Prefix <code>+ + 1 * 2 3 5</code> (the same expression):
+<ul>
+<li>Scan <b>right to left</b> (postfix scanned left to right).</li>
+<li>Push each number unconditionally.</li>
+<li>On an operator the rule is <b>reversed</b>:
+<ul><li>the <b>first pop</b> goes to the <b>left</b> of the operator;</li>
+<li>the <b>second pop</b> goes to its <b>right</b>.</li></ul></li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Symbol (right → left)</th><th>Action</th><th>Stack (bottom → top)</th></tr>
+<tr><td>5</td><td>push</td><td>5</td></tr>
+<tr><td>3</td><td>push</td><td>5 3</td></tr>
+<tr><td>2</td><td>push</td><td>5 3 2</td></tr>
+<tr><td>*</td><td>pop 2 (left), pop 3 (right): 2 × 3 = 6, push</td><td>5 6</td></tr>
+<tr><td>1</td><td>push</td><td>5 6 1</td></tr>
+<tr><td>+</td><td>pop 1 (left), pop 6 (right): 1 + 6 = 7, push</td><td>5 7</td></tr>
+<tr><td>+</td><td>pop 7 (left), pop 5 (right): 7 + 5 = 12, push</td><td><b>12</b></td></tr>
+</table></div>
+<div class="formula">            scan direction    result =
+Postfix     left → right      (2nd pop) op (1st pop)
+Prefix      right → left      (1st pop) op (2nd pop)</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">8.8</span>Parentheses, Full Algorithm, Infix → Prefix &amp; Solved Numericals<span class="badge">ADDED</span></h3>
+<div class="tw"><table>
+<tr><th>Operator</th><th>Precedence</th><th>Associativity</th></tr>
+<tr><td><code>( )</code></td><td>overrides everything</td><td>—</td></tr>
+<tr><td><code>^</code> (power)</td><td>highest (3)</td><td><b>right → left</b></td></tr>
+<tr><td><code>* / %</code></td><td>2</td><td>left → right</td></tr>
+<tr><td><code>+ −</code></td><td>lowest (1)</td><td>left → right</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Full infix → postfix algorithm (with brackets)</span>
+<ol>
+<li><b>Operand</b> → append to output.</li>
+<li><b>'('</b> → push.</li>
+<li><b>')'</b> → pop to output until '(' is found, then discard the pair of brackets (brackets never appear in postfix).</li>
+<li><b>Operator op</b> → while the top is an operator (not '(') and either
+<ul><li>top precedence &gt; op's, or</li>
+<li>it is equal and op is left-associative,</li></ul>
+pop the top to output. Then push op. (For <b>^ meeting ^</b>, don't pop.)</li>
+<li><b>End</b> → pop everything left to output.</li>
+</ol></div>
+<p><b>Worked example</b>: <code>(A + B) * C − (D − E) ^ (F + G)</code></p>
+<div class="tw"><table>
+<tr><th>Symbol</th><th>Stack</th><th>Output</th></tr>
+<tr><td>(</td><td>(</td><td></td></tr>
+<tr><td>A</td><td>(</td><td>A</td></tr>
+<tr><td>+</td><td>( +</td><td>A</td></tr>
+<tr><td>B</td><td>( +</td><td>A B</td></tr>
+<tr><td>)</td><td></td><td>A B +</td></tr>
+<tr><td>*</td><td>*</td><td>A B +</td></tr>
+<tr><td>C</td><td>*</td><td>A B + C</td></tr>
+<tr><td>−</td><td>− (* popped)</td><td>A B + C *</td></tr>
+<tr><td>(</td><td>− (</td><td>A B + C *</td></tr>
+<tr><td>D</td><td>− (</td><td>A B + C * D</td></tr>
+<tr><td>−</td><td>− ( −</td><td>A B + C * D</td></tr>
+<tr><td>E</td><td>− ( −</td><td>A B + C * D E</td></tr>
+<tr><td>)</td><td>−</td><td>A B + C * D E −</td></tr>
+<tr><td>^</td><td>− ^</td><td>A B + C * D E −</td></tr>
+<tr><td>(</td><td>− ^ (</td><td>A B + C * D E −</td></tr>
+<tr><td>F</td><td>− ^ (</td><td>A B + C * D E − F</td></tr>
+<tr><td>+</td><td>− ^ ( +</td><td>A B + C * D E − F</td></tr>
+<tr><td>G</td><td>− ^ ( +</td><td>A B + C * D E − F G</td></tr>
+<tr><td>)</td><td>− ^</td><td>A B + C * D E − F G +</td></tr>
+<tr><td>end</td><td></td><td><b>A B + C * D E − F G + ^ −</b></td></tr>
+</table></div>
+<p>The prefix of the same expression is <b>− * + A B C ^ − D E + F G</b>. The <b>maximum stack size</b> during this conversion was <b>4</b> (− ^ ( +), a common follow-up question.</p>
+
+<div class="box add"><span class="t">➕ Infix → prefix with a stack (reverse trick)</span>
+<ol><li><b>Reverse</b> the infix and swap '(' with ')'.</li>
+<li>Convert to postfix, except that equal precedence does <b>not</b> pop (^ excepted).</li>
+<li><b>Reverse</b> the result.</li></ol>
+In the exam, the tree or bracket method from 8.4 is usually faster.</div>
+
+<div class="box trap"><span class="t">⚠️ Exam trap: ^ and −</span>
+<ul>
+<li><code>a ^ b ^ c</code> = a ^ (b ^ c) → postfix <b>a b c ^ ^</b>, not a b ^ c ^. Numerically, 2 ^ 3 ^ 2 = 2⁹ = <b>512</b>, not 8² = 64.</li>
+<li><code>a − b − c</code> = (a − b) − c → postfix <b>a b − c −</b>, prefix <b>− − a b c</b>.</li>
+<li><code>A + B * C / D − E ^ F ^ G</code> → postfix <b>A B C * D / + E F G ^ ^ −</b>.</li>
+</ul></div>
+
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"Data structure used to convert infix to postfix / to evaluate postfix?" → <b>stack</b> (one stack is enough).</li>
+<li>"Polish notation" = <b>prefix</b>; "Reverse Polish" = <b>postfix</b>.</li>
+<li>"Which notation needs no parentheses?" → <b>prefix and postfix</b>.</li>
+<li>In infix → postfix the stack holds <b>operators</b>. In postfix evaluation it holds <b>operands / intermediate values</b>.</li>
+<li>An inorder/preorder/postorder traversal of an expression tree gives infix/prefix/postfix.</li>
+</ul></div>
+
+<div class="num"><span class="t">Q1</span>Evaluate the postfix <code>6 2 3 + − 3 8 2 / + * 2 ^ 3 +</code>.
+<div class="formula">6 2 3 +   → 2+3 = 5        stack: 6 5
+−         → 6−5 = 1        stack: 1
+3 8 2 /   → 8/2 = 4        stack: 1 3 4
++         → 3+4 = 7        stack: 1 7
+*         → 1*7 = 7        stack: 7
+2 ^       → 7^2 = 49       stack: 49
+3 +       → 49+3 = 52      stack: 52</div>
+→ <b>52</b>. The stack peaked at <b>4</b> entries (1 3 8 2).</div>
+<div class="num"><span class="t">Q2</span>Evaluate the prefix <code>− + * 2 3 5 / ^ 2 3 4</code>. Scan right to left: 4, 3, 2 → ^ gives 2³ = 8 → / gives 8 ÷ 4 = 2 → 5, 3, 2 → * gives 6 → + gives 6 + 5 = 11 → − gives 11 − 2 = <b>9</b>.</div>
+<div class="num"><span class="t">Q3</span>Postfix of <code>a + b * x + y</code>? (a) a b + x * y + (b) a b x * + y + (c) a b x + * y + (d) + + a * b x y → <b>(b)</b>. Option (d) is the prefix.</div>
+<div class="num"><span class="t">Q4</span>Postfix of <code>(A + B) * C − (D − E) ^ (F + G)</code>? → <b>A B + C * D E − F G + ^ −</b> (traced above).</div>
+<div class="num"><span class="t">Q5</span>Convert <code>a * b / c + d / e * f + g − h * i</code> (the lecture's tree) to postfix. → <b>a b * c / d e / f * + g + h i * −</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Infix a+b · prefix (Polish) +ab · postfix (Reverse Polish) ab+. The operand order never changes.</li>
+<li>Tree method: write each node at its <b>1st visit → prefix</b>, <b>2nd → infix</b>, <b>3rd → postfix</b> (pre-, in-, postorder).</li>
+<li>Build the tree with the <b>weakest operator as root</b>; break ties by associativity (left-assoc → the rightmost operator).</li>
+<li>Precedence: <b>^ &gt; * / &gt; + −</b>. ^ is right → left; the others are left → right.</li>
+<li>Stack conversion: operands → output; a stronger or equal (left-assoc) operator on top is popped before the newcomer is pushed; '(' is pushed; ')' pops until '('.</li>
+<li>a + b*x + y → postfix <b>a b x * + y +</b>, prefix <b>+ + a * b x y</b>.</li>
+<li>Postfix evaluation: scan L→R, push numbers; on an operator, <b>2nd pop op 1st pop</b>. 1 2 3 * + 5 + = <b>12</b>.</li>
+<li>Prefix evaluation: scan <b>R→L</b>; <b>1st pop op 2nd pop</b>. + + 1 * 2 3 5 = <b>12</b>.</li>
+<li>Classic: 6 2 3 + − 3 8 2 / + * 2 ^ 3 + = <b>52</b>. a^b^c → abc^^, and 2^3^2 = 512.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 8 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="07-Stack.html">← Ch 7: Stack</a><a href="index.html">☰ All topics</a><a href="09-Queue.html">Ch 9: Queue →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

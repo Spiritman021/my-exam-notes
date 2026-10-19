@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE White-Box and Black-Box Testing Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="12-Software-Testing.html">← Ch 12: Software Testing Fundamentals and Levels</a><a href="index.html">☰ All topics</a><a href="14-Maintenance-and-Re-engineering.html">Ch 14: Software Maintenance and Re-engineering →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Software Engineering — Chapter 13: White-Box and Black-Box Testing</h1>
+  <p class="sub">Volume 04 · Part 13 · Built from the one-shot Software Engineering lecture transcript (White-box, Black-box and Regression Testing sections), plus the exam points the lecture skipped. Testing with the code visible vs testing from the outside, the coverage criteria, cyclomatic complexity with a full worked example, boundary values, equivalence classes and regression testing.</p>
+  <ul class="tags"><li>White-box</li><li>Black-box</li><li>Statement · Branch · Path coverage</li><li>Cyclomatic complexity</li><li>BVA</li><li>Equivalence partitioning</li><li>Cause-effect graph</li><li>Regression</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">13.1</span>White-Box Testing (Transparent Glass of Water)</a></li>
+<li><a href="#s2"><span class="n">13.2</span>Statement, Branch and Path Coverage; Data-Flow Testing</a></li>
+<li><a href="#s2b"><span class="n">13.2a</span>Cyclomatic Complexity (McCabe)<span class="x">ADDED</span></a></li>
+<li><a href="#s3"><span class="n">13.3</span>Black-Box Testing (Brass Glass)</a></li>
+<li><a href="#s4"><span class="n">13.4</span>Cause-Effect Graph, Requirement-Based Testing and Boundary Value Analysis</a></li>
+<li><a href="#s5"><span class="n">13.5</span>Regression Testing: Full vs Partial</a></li>
+<li><a href="#s6"><span class="n">13.6</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 13</div>
+<h2 class="ch">White-Box and Black-Box Testing</h2>
+<p>Chapter 12 covered <i>when</i> to test (the levels). This chapter covers <i>how</i> to design the tests. There are two viewpoints. In <b>white-box</b> testing you can see the code and design tests to exercise its statements, branches and paths. In <b>black-box</b> testing you see only the inputs and outputs and design tests from the requirements. The two are complementary: white-box finds logic errors inside, and black-box finds missing or wrong behaviour as the user sees it.</p>
+
+<section id="s1">
+<h3><span class="n">13.1</span>White-Box Testing (Transparent Glass of Water)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Picture a <b>transparent glass</b> of dirty water. You can <b>see</b> the dirt inside, so you filter it out before drinking. White-box testing works the same way: the tester can see the code.
+<ul>
+<li>Also called <b>glass-box, transparent, structural, clear-box</b> testing.</li>
+<li>Focuses on the <b>internal structure</b> of the code.</li>
+<li>Used mainly at <b>unit and integration</b> level.</li>
+<li>Needs <b>programming-language knowledge</b>.</li>
+</ul>
+The lecture also names some white-box tools, but the transcript garbles them (they appear to be SQLMap, NUnit and Veracode-type tools), so they are left out here.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+White-box testing is done mostly by <b>developers</b>. Other names: <b>logic-driven</b> or <b>code-based</b> testing. Its weakness is that it cannot find <b>missing</b> functionality, because it only tests the code that exists. Typical tools: <b>JUnit, NUnit</b> (unit tests) and <b>JaCoCo, gcov</b> (coverage measurement).</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">13.2</span>Statement, Branch and Path Coverage; Data-Flow Testing</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<div class="tw"><table>
+<tr><th>Technique</th><th>Goal</th></tr>
+<tr><td><b>Statement coverage</b></td><td>Execute <b>every statement</b> at least once.</td></tr>
+<tr><td><b>Branch coverage</b></td><td>Take <b>every branch</b>, conditional and unconditional, at least once (both the true and false outcome of each decision). Also look for invalid or redundant branches.</td></tr>
+<tr><td><b>Data-flow testing</b></td><td>Track how data changes as it moves through the code. If <i>x</i> starts at 5 and ends up 50, trace exactly how. Look for redundant or invalid data use.</td></tr>
+<tr><td><b>Path coverage</b></td><td>Exercise <b>every path</b> from start to end. Look for redundant paths or paths that can be optimised.</td></tr>
+</table></div></div>
+<div class="num"><span class="t">Example · how the criteria differ</span>
+<div class="formula">void f(int a, int b) {
+  if (a &gt; 0)  x = 1;      // decision D1
+  if (b &gt; 0)  y = 1;      // decision D2
+}</div>
+<ul>
+<li><b>Statement coverage</b>: 1 test, (a = 1, b = 1), runs every statement.</li>
+<li><b>Branch coverage</b>: 2 tests, (1, 1) and (0, 0), give D1 and D2 both a true and a false outcome.</li>
+<li><b>Path coverage</b>: 4 tests, (1, 1), (1, 0), (0, 1), (0, 0), cover TT, TF, FT and FF.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Coverage criteria get stronger in this order: <b>statement &lt; branch (decision) &lt; condition &lt; multiple-condition &lt; path</b>. 100% branch coverage <b>guarantees</b> 100% statement coverage, but not the other way round. Full path coverage is often <b>impossible</b> for loops, so <b>basis-path testing</b> (13.2a) tests a manageable set of independent paths instead. Data-flow testing tracks <b>def–use (DU) pairs</b>: where a variable is defined and where that value is used.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"100% statement coverage implies 100% branch coverage" is <b>false</b>. An <code>if</code> with no <code>else</code> can have every statement executed while its false branch is never taken. "100% branch coverage implies 100% statement coverage" is <b>true</b>.</div>
+</section>
+
+<section id="s2b">
+<h3><span class="n">13.2a</span>Cyclomatic Complexity (McCabe)<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Proposed by <b>Thomas McCabe (1976)</b>. Cyclomatic complexity <b>V(G)</b> is the number of <b>linearly independent paths</b> through a program's control-flow graph. It equals the <b>minimum number of test cases</b> needed for basis-path testing, and it is also a measure of code complexity. Three equivalent formulas:
+<div class="formula">V(G) = E − N + 2P        E = edges, N = nodes, P = connected components (1 for one program)
+V(G) = P + 1             P = number of predicate (decision) nodes
+V(G) = R                 R = number of regions in the planar flow graph (outside region included)</div>
+Guideline: V(G) ≤ 10 is fine; above about 10 the module should be split.</div>
+<div class="num"><span class="t">Worked example · GCD by subtraction</span>
+<div class="formula">1  read x, y
+2  while (x != y)
+3     if (x &gt; y)
+4        x = x − y
+      else
+5        y = y − x
+6  print x</div>
+<figure>
+<svg viewBox="0 0 560 290" role="img" aria-label="Control flow graph of the GCD program">
+<circle class="ac" cx="160" cy="30" r="18"/><text x="160" y="35" text-anchor="middle" class="b">1</text>
+<circle class="or" cx="160" cy="100" r="18"/><text x="160" y="105" text-anchor="middle" class="b">2</text>
+<circle class="or" cx="160" cy="170" r="18"/><text x="160" y="175" text-anchor="middle" class="b">3</text>
+<circle class="ac" cx="90" cy="240" r="18"/><text x="90" y="245" text-anchor="middle" class="b">4</text>
+<circle class="ac" cx="230" cy="240" r="18"/><text x="230" y="245" text-anchor="middle" class="b">5</text>
+<circle class="gr" cx="300" cy="100" r="18"/><text x="300" y="105" text-anchor="middle" class="b">6</text>
+<g class="lna"><line x1="160" y1="48" x2="160" y2="82"/><line x1="160" y1="118" x2="160" y2="152"/><line x1="150" y1="185" x2="100" y2="224"/><line x1="170" y1="185" x2="220" y2="224"/><line x1="178" y1="100" x2="282" y2="100"/><path d="M75,230 C30,180 60,110 142,100"/><path d="M248,230 C280,190 250,130 176,108"/></g>
+<text class="mut" x="186" y="140">x != y</text><text class="mut" x="210" y="92">x == y</text>
+<g><text x="350" y="40">Edges E = 7</text><text x="350" y="62">(1-2, 2-3, 2-6, 3-4, 3-5, 4-2, 5-2)</text><text x="350" y="90">Nodes N = 6</text><text x="350" y="118" class="b">V(G) = 7 − 6 + 2 = 3</text><text x="350" y="146">Predicates: 2 (while, if) → 2 + 1 = 3</text><text x="350" y="174">Regions: 3</text></g>
+</svg>
+<figcaption>Control-flow graph · orange nodes are decisions</figcaption>
+</figure>
+Three independent paths, so a minimum of 3 test cases:
+<ul>
+<li>1 → 2 → 6: x = y initially, e.g. (4, 4).</li>
+<li>1 → 2 → 3 → 4 → 2 → 6: x &gt; y, e.g. (8, 4).</li>
+<li>1 → 2 → 3 → 5 → 2 → 6: x &lt; y, e.g. (4, 8).</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Cyclomatic complexity questions give either the code or the edge and node counts. "A flow graph has 10 edges and 8 nodes" → V(G) = 10 − 8 + 2 = <b>4</b>. "A program has 3 if-statements and 1 while loop" → 4 predicates + 1 = <b>5</b>. A <b>switch with k cases</b> counts as k − 1 predicates.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">13.3</span>Black-Box Testing (Brass Glass)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Now picture a <b>brass glass</b> (<i>peetal ka gilaas</i>). You can't see inside, so you drink, and if it tastes dirty you spit it out. You judge only by the <b>output</b>.
+<ul>
+<li>Slogan: "<b>don't poke into internal matters</b>". Inputs and outputs only; internals are hidden.</li>
+<li>Also called <b>outer, external, behavioural</b> or <b>functional</b> testing.</li>
+<li>Little or no <b>programming knowledge</b> is needed.</li>
+<li>Tools: <b>Selenium</b> and others (the other names are garbled in the transcript).</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th></th><th>White-box</th><th>Black-box</th></tr>
+<tr><td>Sees</td><td>Code, logic, structure</td><td>Inputs and outputs only</td></tr>
+<tr><td>Based on</td><td>Implementation</td><td>Requirements / SRS</td></tr>
+<tr><td>Done by</td><td>Developers</td><td>Testers, users</td></tr>
+<tr><td>Coding knowledge</td><td>Required</td><td>Not required</td></tr>
+<tr><td>Level</td><td>Mainly unit and integration</td><td>Mainly system and acceptance</td></tr>
+<tr><td>Finds</td><td>Logic errors, dead code, wrong paths</td><td>Missing features, interface errors, wrong outputs</td></tr>
+<tr><td>Techniques</td><td>Statement, branch, path, data-flow, basis path</td><td>BVA, equivalence partitioning, decision table, cause-effect graph, state transition</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Grey-box testing</b> mixes the two: the tester has <b>partial</b> knowledge of the internals (the database schema or architecture) but tests from the outside. It is common in integration and web-application testing.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">13.4</span>Cause-Effect Graph, Requirement-Based Testing and Boundary Value Analysis</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Cause-effect graph</b>: spitting the water out is the <b>effect</b>; dirt in the water is the <b>cause</b>. The graph maps input conditions (causes) to outputs (effects).</li>
+<li><b>Requirement-based testing</b>: check each feature against the user requirements.</li>
+<li><b>Boundary value analysis (BVA)</b>: for a valid range of <b>1–99</b>, test the boundaries <b>1 and 99</b> and the values just outside them, <b>0 and 100</b>. Valid output is expected at the boundaries and an error just outside them.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 640 120" role="img" aria-label="Boundary values for range 1 to 99">
+<line class="ln" x1="30" y1="60" x2="610" y2="60"/>
+<rect class="gr" x="120" y="48" width="400" height="24" rx="3"/><text x="320" y="65" text-anchor="middle">valid range 1 … 99</text>
+<g>
+<circle class="or" cx="90" cy="60" r="7"/><text x="90" y="96" text-anchor="middle">0 ✗</text>
+<circle class="ac" cx="120" cy="60" r="7"/><text x="120" y="30" text-anchor="middle">1 ✓</text>
+<circle class="ac" cx="150" cy="60" r="6"/><text x="150" y="96" text-anchor="middle" class="mut">2</text>
+<circle class="ac" cx="320" cy="60" r="6"/><text x="320" y="96" text-anchor="middle" class="mut">50 (nominal)</text>
+<circle class="ac" cx="490" cy="60" r="6"/><text x="490" y="96" text-anchor="middle" class="mut">98</text>
+<circle class="ac" cx="520" cy="60" r="7"/><text x="520" y="30" text-anchor="middle">99 ✓</text>
+<circle class="or" cx="550" cy="60" r="7"/><text x="550" y="96" text-anchor="middle">100 ✗</text>
+</g>
+</svg>
+<figcaption>BVA · errors cluster at the edges, so test there</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<h4>Why boundaries?</h4>
+Programmers often slip on <code>&lt;</code> vs <code>&lt;=</code> (off-by-one errors), so defects cluster at the <b>edges</b> of ranges.
+<h4>Counting BVA test cases (n input variables)</h4>
+<ul>
+<li><b>Normal BVA</b>: min, min+, nominal, max−, max for each variable, with the other variables held at nominal → <b>4n + 1</b> tests.</li>
+<li><b>Robust BVA</b>: adds min− and max+ → <b>6n + 1</b>.</li>
+<li><b>Worst-case BVA</b>: every combination of 5 values → <b>5ⁿ</b>.</li>
+</ul>
+<h4>Equivalence class partitioning (ECP)</h4>
+Divide the input domain into classes that the program should treat the same way, and test <b>one value from each class</b>. For the range 1–99 there are three classes: <b>&lt; 1</b> (invalid, e.g. −5), <b>1–99</b> (valid, e.g. 50) and <b>&gt; 99</b> (invalid, e.g. 150). ECP and BVA are usually used <b>together</b>.
+<h4>Other black-box techniques</h4>
+<ul>
+<li><b>Decision-table testing</b> (chapter 5): one test per rule.</li>
+<li><b>State-transition testing</b>: for systems whose behaviour depends on state, such as an ATM card blocked after 3 wrong PINs.</li>
+<li><b>Error guessing</b>: an experienced tester's intuition (empty input, division by zero).</li>
+<li><b>Use-case testing</b>.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+For a single variable with range [1, 99], normal BVA gives 4(1) + 1 = <b>5</b> tests: 1, 2, 50, 98, 99. Robust BVA gives <b>7</b>, adding 0 and 100. With <b>two</b> variables, normal BVA gives 4(2) + 1 = <b>9</b>, not 10, because the all-nominal case is counted once.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">13.5</span>Regression Testing: Full vs Partial</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+After a <b>bug fix, update, enhancement or new feature</b>, check that the <b>existing core functions and behaviour still work unchanged</b>. The new change must not break old features.
+<ul>
+<li><b>Full regression</b>: re-test the <b>whole system</b> after the update.</li>
+<li><b>Partial regression</b>: re-test only the <b>module or part that was updated</b>, and what it affects.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Regression-test strategies: <b>retest-all</b> (full, expensive), <b>regression test selection</b> (only the tests affected by the change) and <b>test-case prioritisation</b> (run the most important first). Because regression suites run again and again, they are the prime candidates for <b>test automation</b> (Selenium, CI pipelines).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Re-testing</b> (confirmation testing) runs the <b>failed test again</b> to confirm that a specific bug is fixed. <b>Regression testing</b> checks that the fix did <b>not break anything else</b>. Re-testing comes first, then regression.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">13.6</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Which of these is a white-box technique? (a) Boundary value analysis (b) Equivalence partitioning (c) Basis path testing (d) Cause-effect graphing<br><b>Answer: (c) Basis path testing.</b> The rest are black-box.</div>
+<div class="num"><span class="t">Q2</span>A control-flow graph has 13 edges and 10 nodes. Find the cyclomatic complexity.<br><b>Answer:</b> V(G) = 13 − 10 + 2 = <b>5</b>.</div>
+<div class="num"><span class="t">Q3</span>An input field accepts ages 18–60. Which values does BVA test?<br><b>Answer:</b> 17, 18, 19, (nominal, e.g. 39), 59, 60, 61. The core boundary checks are <b>17, 18, 60, 61</b>.</div>
+<div class="num"><span class="t">Q4</span>Normal BVA test cases for a function with 3 input variables?<br><b>Answer:</b> 4 × 3 + 1 = <b>13</b>.</div>
+<div class="num"><span class="t">Q5</span>Testing performed after a code change to ensure existing functionality is unaffected is:<br><b>Answer: Regression testing.</b></div>
+<div class="num"><span class="t">Q6</span>Which coverage criterion is the strongest? (a) Statement (b) Branch (c) Path (d) Function<br><b>Answer: (c) Path.</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>White-box</b> (transparent glass; also called glass, structural, clear-box): internal structure, needs code knowledge, unit and integration level, done by developers.</li>
+<li>Coverage: statement &lt; branch &lt; condition &lt; path. 100% branch ⇒ 100% statement (not the reverse). Data-flow = def–use tracking.</li>
+<li><b>Cyclomatic complexity</b> (McCabe 1976) = E − N + 2 = predicates + 1 = regions = number of independent paths = minimum basis-path tests. Keep it ≤ 10.</li>
+<li><b>Black-box</b> (brass glass; "don't poke into internal matters"): I/O only, based on requirements, no code knowledge.</li>
+<li>Techniques: cause-effect graph (dirt → spit), requirement-based, <b>BVA</b> (1–99 → 0, 1, 99, 100; 4n + 1 normal, 6n + 1 robust, 5ⁿ worst-case), <b>ECP</b> (one value per class), decision table, state transition, error guessing.</li>
+<li>Grey-box = partial knowledge of the internals.</li>
+<li><b>Regression</b>: after any change, old features must still work. Full = whole system; partial = changed part. Re-testing ≠ regression.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 13 · Volume 04 — Software Engineering</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="12-Software-Testing.html">← Ch 12: Software Testing Fundamentals and Levels</a><a href="index.html">☰ All topics</a><a href="14-Maintenance-and-Re-engineering.html">Ch 14: Software Maintenance and Re-engineering →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

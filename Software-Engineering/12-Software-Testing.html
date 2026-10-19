@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE Software Testing Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="11-COCOMO.html">← Ch 11: COCOMO Model</a><a href="index.html">☰ All topics</a><a href="13-White-Box-and-Black-Box-Testing.html">Ch 13: White-Box and Black-Box Testing →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Software Engineering — Chapter 12: Software Testing Fundamentals and Levels</h1>
+  <p class="sub">Volume 04 · Part 12 · Built from the one-shot Software Engineering lecture transcript (Software Testing section, first half), plus the exam points the lecture skipped. Why we test, verification vs validation, the principles of testing, the four levels from unit to acceptance, and the non-functional tests that push a system to its limits.</p>
+  <ul class="tags"><li>Verification</li><li>Validation</li><li>Error · Fault · Failure</li><li>Unit</li><li>Integration</li><li>Stubs &amp; drivers</li><li>System</li><li>Alpha / Beta</li><li>UAT</li><li>Load · Stress</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">12.1</span>Goal of Testing</a></li>
+<li><a href="#s2"><span class="n">12.2</span>Verification vs Validation (Building a Car)</a></li>
+<li><a href="#s3"><span class="n">12.3</span>Principles of Testing</a></li>
+<li><a href="#s4"><span class="n">12.4</span>Unit Testing</a></li>
+<li><a href="#s5"><span class="n">12.5</span>Integration Testing: Big Bang, Top-Down (Stubs), Bottom-Up (Drivers)</a></li>
+<li><a href="#s6"><span class="n">12.6</span>System Testing</a></li>
+<li><a href="#s7"><span class="n">12.7</span>Acceptance Testing: Alpha, Beta, UAT, Regulatory, Business</a></li>
+<li><a href="#s8"><span class="n">12.8</span>Non-Functional Testing: Performance, Load, Stress, Scalability (Five-Seater Car)</a></li>
+<li><a href="#s9"><span class="n">12.9</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 12</div>
+<h2 class="ch">Software Testing Fundamentals and Levels</h2>
+<p>Coding is done; now the bugs have to be found before the users find them. Testing is not a single step at the end. It happens at four <b>levels</b>, each matching a design level in the V-model from chapter 2: <b>unit</b> (one module), <b>integration</b> (modules together), <b>system</b> (the whole product) and <b>acceptance</b> (the client's sign-off). On top of these sit <b>non-functional</b> tests that ask not "does it work?" but "does it keep working under pressure?". Chapter 13 covers the <i>techniques</i>, white-box and black-box, used at these levels.</p>
+
+<section id="s1">
+<h3><span class="n">12.1</span>Goal of Testing</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Testing comes after coding. Its goal is to <b>find bugs using minimum cost and time</b>.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Testing is the process of <b>executing a program with the intent of finding errors</b> (Glenford Myers). A <b>good test case</b> has a high probability of finding an as-yet-undiscovered error, and a <b>successful test</b> is one that finds one. The key terms:
+<div class="tw"><table>
+<tr><th>Term</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><b>Error / mistake</b></td><td>A human action that produces a wrong result</td><td>The developer types <code>&gt;</code> instead of <code>&gt;=</code></td></tr>
+<tr><td><b>Fault / defect / bug</b></td><td>The flaw in the code caused by the error</td><td>The wrong condition sitting in the code</td></tr>
+<tr><td><b>Failure</b></td><td>Visible deviation from expected behaviour when the fault executes</td><td>A student with exactly 35 marks is shown "Fail"</td></tr>
+</table></div>
+Chain: <b>error → fault → failure</b>. Not every fault causes a failure: the faulty line may never run.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">12.2</span>Verification vs Validation (Building a Car)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Recall the two arms of the V-model. While a car is being built, each stage is <b>checked</b> as it goes: verification. When it is finished, someone <b>drives</b> it: validation.</div>
+<div class="tw"><table>
+<tr><th></th><th>Verification</th><th>Validation</th></tr>
+<tr><td>Question</td><td><b>"Are we building the product right?"</b></td><td><b>"Are we building the right product?"</b></td></tr>
+<tr><td>When</td><td>Phase by phase, <b>early</b></td><td>After the code is ready</td></tr>
+<tr><td>Code executed?</td><td><b>No</b>: static</td><td><b>Yes</b>: dynamic</td></tr>
+<tr><td>Methods</td><td>Reviews, walkthroughs, inspections, desk checks</td><td>White-box, black-box, user acceptance testing</td></tr>
+<tr><td>Done by</td><td>Developers, the QA team</td><td>The testing team, users</td></tr>
+<tr><td>Aim</td><td><b>Prevent</b> errors</td><td><b>Find</b> errors</td></tr>
+<tr><td>Checks against</td><td>Specifications, design documents</td><td>The user's actual needs</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The lecture puts some unit and integration testing under verification. In the strict textbook sense, anything that <b>executes code</b> is <b>validation</b>, and verification is purely <b>static</b> (reviews, inspections, walkthroughs). These definitions come from <b>Boehm</b>. The IEEE standard for verification and validation is <b>IEEE 1012</b>.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">12.3</span>Principles of Testing</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Testing shows that bugs are present.</b> Skipping it means a bad user experience and bad reviews.</li>
+<li><b>Test early</b> to save time, budget and cost.</li>
+<li>Start with a <b>proper plan</b> (test cases and test design), not at random.</li>
+<li>Test against <b>user requirements</b> first.</li>
+<li><b>Defect clustering</b>: concentrate where bug density is high.</li>
+<li>Test both <b>functional and non-functional</b> requirements.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+The <b>seven principles of testing</b> (ISTQB):
+<ol>
+<li><b>Testing shows the presence of defects, not their absence.</b> You can never prove software bug-free.</li>
+<li><b>Exhaustive testing is impossible.</b> Test by risk and priority instead.</li>
+<li><b>Early testing</b> saves time and money (shift-left).</li>
+<li><b>Defect clustering</b>: most defects sit in a few modules (the <b>Pareto 80/20</b> rule).</li>
+<li><b>Pesticide paradox</b>: running the same tests repeatedly stops finding new bugs, so tests must be reviewed and refreshed.</li>
+<li><b>Testing is context-dependent</b>: a banking app and a game are tested differently.</li>
+<li><b>Absence-of-errors fallacy</b>: a bug-free system that doesn't meet the users' needs is still useless.</li>
+</ol></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"Running the same set of tests repeatedly will eventually find no new defects" → <b>pesticide paradox</b>. "80% of defects are found in 20% of modules" → <b>defect clustering</b>.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">12.4</span>Unit Testing</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Test the software <b>module by module</b>, which is why it is also called <b>module testing</b>. It is <b>early-phase</b> testing.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Unit testing is normally done by the <b>developer</b>, mostly with <b>white-box</b> techniques (chapter 13). It checks the module's interface, local data structures, boundary conditions, independent paths and error-handling paths. Because a unit can't run on its own, it needs <b>drivers</b> and <b>stubs</b> (see 12.5). Typical tools: JUnit (Java), NUnit (.NET), pytest (Python).</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">12.5</span>Integration Testing: Big Bang, Top-Down (Stubs), Bottom-Up (Drivers)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Integration testing checks the <b>interaction, connectivity, data flow and compatibility</b> between modules that have already passed unit testing.
+<ul>
+<li><b>Non-incremental (big bang)</b>: join <b>all modules at once</b> and test. The problem is that you must wait until every module is ready, and when something fails it's hard to tell where.</li>
+<li><b>Incremental, top-down</b>: start from the <b>high-level</b> modules and add lower ones one by one. Lower modules that aren't ready yet are replaced by <b>stubs</b>, dummy programs that simulate the missing sub-modules.</li>
+<li><b>Incremental, bottom-up</b>: start from the <b>low-level</b> modules and work upward. Higher modules that aren't ready yet are replaced by <b>drivers</b>, dummy programs that simulate the caller.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 660 220" role="img" aria-label="Top-down integration with stubs and bottom-up integration with drivers">
+<g>
+<text class="b" x="160" y="16" text-anchor="middle">Top-down</text>
+<rect class="gr" x="110" y="28" width="100" height="32" rx="3"/><text x="160" y="49" text-anchor="middle">Main ✓</text>
+<rect class="gr" x="40" y="96" width="100" height="32" rx="3"/><text x="90" y="117" text-anchor="middle">A ✓</text>
+<rect class="bx dash" x="180" y="96" width="100" height="32" rx="3" style="stroke-dasharray:5 4"/><text x="230" y="117" text-anchor="middle">Stub B</text>
+<rect class="bx" x="20" y="164" width="60" height="30" rx="3" style="stroke-dasharray:5 4"/><text x="50" y="184" text-anchor="middle" class="mut">stub</text>
+<rect class="bx" x="100" y="164" width="60" height="30" rx="3" style="stroke-dasharray:5 4"/><text x="130" y="184" text-anchor="middle" class="mut">stub</text>
+<g class="lna"><line x1="140" y1="60" x2="100" y2="96"/><line x1="180" y1="60" x2="220" y2="96"/><line x1="80" y1="128" x2="55" y2="164"/><line x1="100" y1="128" x2="125" y2="164"/></g>
+<text class="mut" x="160" y="214" text-anchor="middle">stub = dummy <tspan class="b">called</tspan> module (stands in below)</text>
+</g>
+<g>
+<text class="b" x="500" y="16" text-anchor="middle">Bottom-up</text>
+<rect class="bx" x="450" y="28" width="100" height="32" rx="3" style="stroke-dasharray:5 4"/><text x="500" y="49" text-anchor="middle">Driver</text>
+<rect class="gr" x="380" y="96" width="100" height="32" rx="3"/><text x="430" y="117" text-anchor="middle">A ✓</text>
+<rect class="gr" x="520" y="96" width="100" height="32" rx="3"/><text x="570" y="117" text-anchor="middle">B ✓</text>
+<rect class="gr" x="360" y="164" width="60" height="30" rx="3"/><text x="390" y="184" text-anchor="middle">A1 ✓</text>
+<rect class="gr" x="440" y="164" width="60" height="30" rx="3"/><text x="470" y="184" text-anchor="middle">A2 ✓</text>
+<g class="lna"><line x1="480" y1="60" x2="440" y2="96"/><line x1="520" y1="60" x2="560" y2="96"/><line x1="420" y1="128" x2="395" y2="164"/><line x1="440" y1="128" x2="465" y2="164"/></g>
+<text class="mut" x="500" y="214" text-anchor="middle">driver = dummy <tspan class="b">calling</tspan> module (stands in above)</text>
+</g>
+</svg>
+<figcaption>Dashed boxes are temporary stand-ins for modules not yet ready</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th></th><th>Big bang</th><th>Top-down</th><th>Bottom-up</th></tr>
+<tr><td>Order</td><td>All at once</td><td>High → low</td><td>Low → high</td></tr>
+<tr><td>Dummy code</td><td>None</td><td><b>Stubs</b></td><td><b>Drivers</b></td></tr>
+<tr><td>Strength</td><td>No dummy code needed</td><td>A working skeleton early; design flaws found early</td><td>Low-level utilities tested thoroughly; no stubs</td></tr>
+<tr><td>Weakness</td><td>Faults hard to locate; must wait for everything</td><td>Many stubs; low-level bugs found late</td><td>No working program until the end</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Sandwich (hybrid)</b> integration combines both: top-down from the top and bottom-up from the bottom, meeting at a middle layer. It uses both stubs and drivers.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Stub = called</b> (replaces a module <i>below</i>; used in <b>top-down</b>). <b>Driver = caller</b> (replaces a module <i>above</i>; used in <b>bottom-up</b>). Memory aid: "<b>D</b>river <b>D</b>rives from above; <b>S</b>tub <b>S</b>its below."</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">12.6</span>System Testing</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The whole car is ready: test it as a <b>complete system</b>, using only its <b>inputs and outputs</b> and ignoring its internals. It resembles black-box testing. The aim is to verify the <b>overall functionality against the user requirements</b>.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+System testing is done by an <b>independent test team</b> in an environment close to production. It covers both functional and non-functional requirements. Pressman's system-test types:
+<ul>
+<li><b>Recovery testing</b>: force the system to fail and check that it recovers.</li>
+<li><b>Security testing</b>: check its protection against penetration.</li>
+<li><b>Stress testing</b>: demand abnormal quantities of resources.</li>
+<li><b>Performance testing</b>: measure run-time performance.</li>
+<li><b>Deployment (configuration) testing</b>: check it on every target platform.</li>
+</ul></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">12.7</span>Acceptance Testing: Alpha, Beta, UAT, Regulatory, Business</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The <b>final</b> testing phase, deciding whether the product is accepted.
+<div class="tw"><table>
+<tr><th>Type</th><th>Who / where</th><th>Focus</th><th>Lecture example</th></tr>
+<tr><td><b>Alpha</b></td><td>In-house developers and testers, in a <b>controlled</b> environment</td><td>Technical</td><td>The car maker's internal team tests the car on its own track</td></tr>
+<tr><td><b>Beta</b></td><td><b>Real end users</b>, in an <b>uncontrolled</b> environment</td><td>User experience, ease of use</td><td>End users drive the car on open roads</td></tr>
+<tr><td><b>User acceptance (UAT)</b></td><td>The client</td><td>Are the client's original requirements met, and how fully?</td><td>—</td></tr>
+<tr><td><b>Regulatory</b></td><td>Against laws of the target market</td><td>Legal compliance</td><td>A film banned in one country but allowed in another</td></tr>
+<tr><td><b>Business</b></td><td>Against business goals</td><td>Market fit and size</td><td>Shark Tank: "Good product, but there's no market for it"</td></tr>
+</table></div></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Alpha testing happens at the developer's site</b>, with users or testers working under the developer's eye. <b>Beta testing happens at the customer's site</b>, without the developer present. Alpha comes <b>before</b> beta. A "beta version" is a release given to real users for feedback before the final launch.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Other acceptance types: <b>Operational Acceptance Testing (OAT)</b> checks operational readiness (backups, recovery, maintenance). <b>Contract acceptance testing</b> checks the criteria written into the contract. Two quick checks often confused:
+<ul>
+<li><b>Smoke testing</b>: a shallow, wide test of the main functions on a new build, asking "does it even start?"</li>
+<li><b>Sanity testing</b>: a narrow, deep check of one fixed area after a small change.</li>
+</ul></div>
+</section>
+
+<section id="s8">
+<h3><span class="n">12.8</span>Non-Functional Testing: Performance, Load, Stress, Scalability (Five-Seater Car)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Non-functional tests check how well the system works rather than what it does. The lecture's running example is a <b>five-seater car</b>.
+<ul>
+<li><b>Performance testing</b>: measure lag, delay and throughput. Is it fast and responsive?</li>
+<li><b>Load testing</b>: seat <b>five</b> people in the five-seater. Test at the <b>maximum load the system claims</b>, and check that it still runs as efficiently as promised.</li>
+<li><b>Stress testing</b>: squeeze <b>seven or eight</b> people into the five-seater. Push <b>beyond</b> the limit with unrealistic load to see how and when it breaks.</li>
+<li><b>Scalability testing</b>: how easily does the system <b>scale up and down</b> as demand changes?</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 660 200" role="img" aria-label="Normal, load and stress levels against capacity">
+<line class="ln" x1="50" y1="20" x2="50" y2="170"/><line class="ln" x1="50" y1="170" x2="640" y2="170"/>
+<text class="mut" x="40" y="96" text-anchor="middle" transform="rotate(-90 40 96)">users / load</text>
+<line class="hard dash" x1="50" y1="80" x2="640" y2="80"/><text class="mut" x="636" y="74" text-anchor="end">claimed capacity (5 seats)</text>
+<rect class="gr" x="80" y="120" width="140" height="50"/><text x="150" y="150" text-anchor="middle">Normal: 3 people</text>
+<rect class="ac" x="260" y="80" width="140" height="90"/><text x="330" y="130" text-anchor="middle">Load: 5 people</text>
+<rect class="or" x="440" y="40" width="140" height="130"/><text x="510" y="110" text-anchor="middle">Stress: 7–8 people</text>
+<text class="mut" x="330" y="194" text-anchor="middle">load = up to the limit · stress = beyond the limit, until it breaks</text>
+</svg>
+<figcaption>The five-seater car · load vs stress</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<div class="tw"><table>
+<tr><th>Test</th><th>Question it answers</th></tr>
+<tr><td><b>Volume</b></td><td>Does it cope with a <b>huge amount of data</b> (a table of 10 crore rows)?</td></tr>
+<tr><td><b>Endurance / soak</b></td><td>Does it stay stable under normal load for a <b>long time</b> (memory leaks over 48 hours)?</td></tr>
+<tr><td><b>Spike</b></td><td>Does it survive a <b>sudden burst</b> of users (a sale or exam-results day)?</td></tr>
+<tr><td><b>Usability</b></td><td>Can real users perform tasks easily?</td></tr>
+<tr><td><b>Compatibility</b></td><td>Does it work across browsers, devices and operating systems?</td></tr>
+<tr><td><b>Recovery</b></td><td>Does it recover after a crash or power cut?</td></tr>
+</table></div>
+Common tools: <b>JMeter</b> and <b>LoadRunner</b> for performance and load testing.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Load</b> testing stays <b>within</b> the expected maximum and checks that performance holds. <b>Stress</b> testing goes <b>beyond</b> it and checks that the system <b>fails gracefully</b> and recovers. Both are kinds of <b>performance testing</b>.</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">12.9</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>"Are we building the product right?" refers to:<br><b>Answer: Verification.</b> "Are we building the right product?" is validation.</div>
+<div class="num"><span class="t">Q2</span>In top-down integration, the dummy modules that simulate lower-level modules are called:<br><b>Answer: Stubs.</b> Drivers simulate higher-level callers in bottom-up integration.</div>
+<div class="num"><span class="t">Q3</span>Testing done by end users at their own site, without the developer present, is:<br><b>Answer: Beta testing.</b></div>
+<div class="num"><span class="t">Q4</span>Testing a system beyond its normal operational capacity to observe how it fails is:<br><b>Answer: Stress testing.</b></div>
+<div class="num"><span class="t">Q5</span>Which testing principle says that repeating the same tests eventually stops finding new bugs?<br><b>Answer: Pesticide paradox.</b></div>
+<div class="num"><span class="t">Q6</span>Arrange the testing levels in order:<br><b>Answer: Unit → Integration → System → Acceptance.</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Goal: find bugs at minimum cost and time. Error (human) → fault (in code) → failure (visible).</li>
+<li><b>Verification</b> = building it right; static; reviews; prevents errors. <b>Validation</b> = building the right thing; dynamic; executes code; finds errors.</li>
+<li>Principles: defects present (not absent), exhaustive testing impossible, test early, <b>defect clustering</b> (80/20), <b>pesticide paradox</b>, context-dependent, absence-of-errors fallacy.</li>
+<li>Levels: <b>Unit</b> (module, developer) → <b>Integration</b> (big bang · top-down with <b>stubs</b> · bottom-up with <b>drivers</b> · sandwich) → <b>System</b> (whole, I/O only) → <b>Acceptance</b>.</li>
+<li>Acceptance: <b>alpha</b> (developer's site, controlled) · <b>beta</b> (users' site, uncontrolled) · UAT · regulatory (banned film) · business (Shark Tank: no market).</li>
+<li>Five-seater car: <b>load</b> = 5 people (up to the limit) · <b>stress</b> = 7–8 people (beyond it) · scalability = scale up and down. Also volume, soak, spike.</li>
+<li>Smoke = wide and shallow on a new build; sanity = narrow and deep after a fix.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 12 · Volume 04 — Software Engineering</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="11-COCOMO.html">← Ch 11: COCOMO Model</a><a href="index.html">☰ All topics</a><a href="13-White-Box-and-Black-Box-Testing.html">Ch 13: White-Box and Black-Box Testing →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

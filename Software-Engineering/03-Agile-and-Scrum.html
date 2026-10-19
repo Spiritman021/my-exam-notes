@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE Agile and Scrum Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="02-SDLC-Models.html">← Ch 2: SDLC and Process Models</a><a href="index.html">☰ All topics</a><a href="04-Requirement-Engineering.html">Ch 4: Requirement Engineering and Gathering →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Software Engineering — Chapter 3: Agile Development and Scrum</h1>
+  <p class="sub">Volume 04 · Part 3 · Built from the one-shot Software Engineering lecture transcript (Agile section), plus the exam points the lecture skipped. Why Agile beats a rigid plan when requirements change, how it differs from the evolutionary model, and the full Scrum cycle from backlog to retrospective.</p>
+  <ul class="tags"><li>Agile</li><li>Agile Manifesto</li><li>Scrum</li><li>Sprint</li><li>Product Backlog</li><li>Daily Scrum</li><li>Retrospective</li><li>XP</li><li>Kanban</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">3.1</span>Agile Characteristics and Principles</a></li>
+<li><a href="#s2"><span class="n">3.2</span>Team X (Waterfall) vs Team Y (Agile) Scenario</a></li>
+<li><a href="#s3"><span class="n">3.3</span>Agile vs Evolutionary Model</a></li>
+<li><a href="#s4"><span class="n">3.4</span>Scrum Framework: Roles, Product Backlog, Sprint Planning and Sprint Backlog</a></li>
+<li><a href="#s5"><span class="n">3.5</span>Sprint, Daily Scrum, PSPI, Sprint Review and Retrospective</a></li>
+<li><a href="#s6"><span class="n">3.6</span>Other Agile Methods: XP, Kanban and More<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">3.7</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 3</div>
+<h2 class="ch">Agile Development and Scrum</h2>
+<p>The models in chapter 2 assume you can plan most of the project up front. Real clients change their minds, and markets move faster than a year-long plan. <b>Agile</b> answers this by building the product in short iterations, talking to the client constantly and treating change as normal. <b>Scrum</b> is the most widely used way of running an Agile team, and most IT companies today work in sprints.</p>
+
+<section id="s1">
+<h3><span class="n">3.1</span>Agile Characteristics and Principles</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Characteristics:</b> quick and accurate work, <b>agility</b> (speed of response), <b>flexibility</b>, <b>collaboration</b> and teamwork.
+<h4>Principles</h4>
+<ul>
+<li><b>Frequent communication and collaboration</b> are valued over documentation, formality and procedure: <b>action over formality</b>.</li>
+<li>Focus on <b>incremental</b> product solutions: deliver working pieces early.</li>
+<li><b>Value the client's ideas</b> and requirements and act on them immediately.</li>
+<li><b>Accept changes</b> and stay flexible.</li>
+</ul>
+Iteration by iteration, the increments approach the final product.</div>
+<figure>
+<svg viewBox="0 0 660 130" role="img" aria-label="Agile iterations delivering increments">
+<g>
+<rect class="ac" x="10" y="20" width="140" height="40" rx="4"/><text x="80" y="45" text-anchor="middle">Iteration 1</text>
+<rect class="ac" x="180" y="20" width="140" height="40" rx="4"/><text x="250" y="45" text-anchor="middle">Iteration 2</text>
+<rect class="ac" x="350" y="20" width="140" height="40" rx="4"/><text x="420" y="45" text-anchor="middle">Iteration 3</text>
+<rect class="gr" x="520" y="20" width="130" height="40" rx="4"/><text x="585" y="45" text-anchor="middle">Final product</text>
+</g>
+<g class="lna"><line x1="150" y1="40" x2="180" y2="40"/><line x1="320" y1="40" x2="350" y2="40"/><line x1="490" y1="40" x2="520" y2="40"/></g>
+<g><text class="mut" x="80" y="80" text-anchor="middle">plan · design · code · test</text><text class="mut" x="250" y="80" text-anchor="middle">+ client feedback</text><text class="mut" x="420" y="80" text-anchor="middle">+ client feedback</text></g>
+<text class="mut" x="330" y="112" text-anchor="middle">each iteration ends with a working increment the client can see</text>
+</svg>
+<figcaption>Agile · short iterations, each producing working software</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+The <b>Agile Manifesto</b> was written in <b>2001</b> by 17 developers at Snowbird, Utah. Its <b>four values</b> (the item on the left is valued more):
+<div class="tw"><table>
+<tr><th>Valued more</th><th>over</th></tr>
+<tr><td><b>Individuals and interactions</b></td><td>processes and tools</td></tr>
+<tr><td><b>Working software</b></td><td>comprehensive documentation</td></tr>
+<tr><td><b>Customer collaboration</b></td><td>contract negotiation</td></tr>
+<tr><td><b>Responding to change</b></td><td>following a plan</td></tr>
+</table></div>
+The manifesto has <b>12 principles</b>. The most-quoted: satisfy the customer through early and continuous delivery; welcome changing requirements, even late; deliver working software frequently (weeks rather than months); business people and developers work together <b>daily</b>; <b>face-to-face</b> conversation is the most effective communication; <b>working software is the primary measure of progress</b>; sustainable pace; simplicity ("maximising the work not done"); self-organising teams; the team regularly reflects and adjusts.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Agile does <b>not</b> say "no documentation" or "no planning". It values the left-hand items <b>more</b>, while still seeing value in the right-hand items. The primary measure of progress is <b>working software</b>, not documents or hours spent.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">3.2</span>Team X (Waterfall) vs Team Y (Agile) Scenario</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Two teams receive the same project.
+<ul>
+<li><b>Team X</b> follows the traditional waterfall: communication → planning → modeling → construction → deployment.</li>
+<li><b>Team Y</b> follows Agile, in short iterations.</li>
+</ul>
+Mid-project the client changes a requirement. Team X has already planned, designed and partly built around the old requirement, so it must go back to the start, wasting <b>months and money</b>. Team Y simply puts the change into the <b>next iteration</b> and carries on.</div>
+<figure>
+<svg viewBox="0 0 660 170" role="img" aria-label="Waterfall team restarts while agile team absorbs change">
+<text class="b" x="10" y="22">Team X</text>
+<rect class="bx" x="80" y="8" width="90" height="24" rx="3"/><text x="125" y="25" text-anchor="middle">Comm</text>
+<rect class="bx" x="174" y="8" width="90" height="24" rx="3"/><text x="219" y="25" text-anchor="middle">Plan</text>
+<rect class="bx" x="268" y="8" width="90" height="24" rx="3"/><text x="313" y="25" text-anchor="middle">Model</text>
+<rect class="or" x="362" y="8" width="90" height="24" rx="3"/><text x="407" y="25" text-anchor="middle">Build ✗</text>
+<path class="hard" d="M407,34 C407,66 125,66 125,36"/>
+<text class="mut" x="266" y="74" text-anchor="middle">change arrives → restart from scratch</text>
+<text class="b" x="10" y="122">Team Y</text>
+<rect class="ac" x="80" y="108" width="80" height="24" rx="3"/><text x="120" y="125" text-anchor="middle">Iter 1</text>
+<rect class="ac" x="164" y="108" width="80" height="24" rx="3"/><text x="204" y="125" text-anchor="middle">Iter 2</text>
+<rect class="gr" x="248" y="108" width="110" height="24" rx="3"/><text x="303" y="125" text-anchor="middle">Iter 3 + change</text>
+<rect class="ac" x="362" y="108" width="80" height="24" rx="3"/><text x="402" y="125" text-anchor="middle">Iter 4</text>
+<rect class="gr" x="446" y="108" width="80" height="24" rx="3"/><text x="486" y="125" text-anchor="middle">Done ✓</text>
+<text class="mut" x="303" y="156" text-anchor="middle">change simply goes into the next iteration</text>
+</svg>
+<figcaption>The same mid-project change, two outcomes</figcaption>
+</figure>
+</section>
+
+<section id="s3">
+<h3><span class="n">3.3</span>Agile vs Evolutionary Model</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Both are <b>incremental and iterative</b>, so students often confuse them. The difference is attitude:
+<div class="tw"><table>
+<tr><th>Agile</th><th>Evolutionary</th></tr>
+<tr><td>Values <b>quickness and action</b> over formality</td><td>Follows defined <b>procedures, rules and steps</b></td></tr>
+<tr><td>Minimal documentation, constant communication</td><td>Formal phases and documentation within each build</td></tr>
+<tr><td>Best when <b>deadlines are tight</b> and change is frequent</td><td>Best for large, complex projects where risk analysis matters</td></tr>
+</table></div></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">3.4</span>Scrum Framework: Roles, Product Backlog, Sprint Planning and Sprint Backlog</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Scrum is a <b>framework, not a model</b>. It is Agile-based: teamwork, frequent communication, fast delivery, efficient in cost and time. It is widely used in companies.
+<ul>
+<li><b>Sprint</b>: a <b>time box of one month or less</b>, typically 1, 2 or 4 weeks.</li>
+<li><b>Product Owner</b>: represents the client and owns the list of what to build.</li>
+<li><b>Product Backlog</b>: the <b>prioritised list of all features</b> the product needs, marked high, medium or low priority.</li>
+<li><b>Sprint Planning</b>: the team picks the <b>high-priority</b> items it can finish this sprint and estimates the time, resources, effort and cost.</li>
+<li><b>Sprint Backlog</b>: the <b>subset</b> of the product backlog chosen for the current sprint.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Per the <b>Scrum Guide</b> (Schwaber and Sutherland), Scrum has <b>3 accountabilities (roles), 5 events and 3 artifacts</b>:
+<div class="tw"><table>
+<tr><th>Roles (3)</th><th>Events (5)</th><th>Artifacts (3)</th></tr>
+<tr><td><b>Product Owner</b>: maximises value, owns and orders the Product Backlog<br><b>Scrum Master</b>: servant-leader and coach; removes impediments, makes sure Scrum is followed<br><b>Developers</b>: self-managing, cross-functional team (typically 10 or fewer people) that builds the increment</td>
+<td><b>Sprint</b> (≤ 1 month, the container for the others)<br><b>Sprint Planning</b> (≤ 8 h for a 1-month sprint)<br><b>Daily Scrum</b> (15 min)<br><b>Sprint Review</b> (≤ 4 h)<br><b>Sprint Retrospective</b> (≤ 3 h)</td>
+<td><b>Product Backlog</b> → commitment: Product Goal<br><b>Sprint Backlog</b> → commitment: Sprint Goal<br><b>Increment</b> → commitment: Definition of Done</td></tr>
+</table></div>
+Backlog items are usually written as <b>user stories</b> ("As a &lt;user&gt;, I want &lt;goal&gt; so that &lt;benefit&gt;") and sized in <b>story points</b>. The story points completed per sprint give the team's <b>velocity</b>.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">3.5</span>Sprint, Daily Scrum, PSPI, Sprint Review and Retrospective</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The full cycle:
+<ol>
+<li>Product Owner → <b>Product Backlog</b> (all features, prioritised).</li>
+<li><b>Sprint Planning</b> → <b>Sprint Backlog</b> (the high-priority subset).</li>
+<li>The <b>sprint</b> runs for 1–4 weeks. Every day there is a <b>Daily Scrum</b>, a short 15–20 minute meeting led by the <b>Scrum Master</b>, about progress, obstacles and challenges.</li>
+<li>The sprint produces a <b>PSPI (Potentially Shippable Product Increment)</b>: a working piece of the product, though not necessarily deployed yet.</li>
+<li><b>Sprint Review</b>: the increment is shown to the stakeholders for feedback.</li>
+<li><b>Sprint Retrospective</b>: the team looks back at what went well and what went badly, and takes the lessons into the next sprint.</li>
+<li>Back to <b>Sprint Planning</b> for the next sprint.</li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Scrum cycle">
+<rect class="ac" x="10" y="90" width="110" height="44" rx="4"/><text x="65" y="110" text-anchor="middle">Product</text><text x="65" y="126" text-anchor="middle">Backlog</text>
+<rect class="ac" x="150" y="90" width="100" height="44" rx="4"/><text x="200" y="110" text-anchor="middle">Sprint</text><text x="200" y="126" text-anchor="middle">Planning</text>
+<rect class="ac" x="280" y="90" width="100" height="44" rx="4"/><text x="330" y="110" text-anchor="middle">Sprint</text><text x="330" y="126" text-anchor="middle">Backlog</text>
+<circle class="pu" cx="470" cy="112" r="50"/><text x="470" y="108" text-anchor="middle" class="b">Sprint</text><text x="470" y="124" text-anchor="middle" class="mut">1–4 weeks</text>
+<circle class="gr" cx="470" cy="30" r="22"/><text x="470" y="34" text-anchor="middle" class="mut">Daily</text>
+<path class="lna" d="M455,52 A40,40 0 0 0 456,64"/>
+<rect class="gr" x="560" y="90" width="110" height="44" rx="4"/><text x="615" y="110" text-anchor="middle">Increment</text><text x="615" y="126" text-anchor="middle">(PSPI)</text>
+<rect class="or" x="560" y="176" width="110" height="40" rx="4"/><text x="615" y="201" text-anchor="middle">Sprint Review</text>
+<rect class="or" x="380" y="176" width="130" height="40" rx="4"/><text x="445" y="201" text-anchor="middle">Retrospective</text>
+<g class="lna"><line x1="120" y1="112" x2="150" y2="112"/><line x1="250" y1="112" x2="280" y2="112"/><line x1="380" y1="112" x2="420" y2="112"/><line x1="520" y1="112" x2="560" y2="112"/><line x1="615" y1="134" x2="615" y2="176"/><line x1="560" y1="196" x2="510" y2="196"/><path d="M380,196 L200,196 L200,134"/></g>
+<text class="mut" x="290" y="190" text-anchor="middle">next sprint</text>
+</svg>
+<figcaption>One Scrum sprint, from backlog to retrospective</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>The Scrum Guide time-boxes the <b>Daily Scrum to 15 minutes</b>; the lecture's "15–20 minutes" is loose. It is an event <b>for the Developers</b>. The Scrum Master makes sure it happens and stays within 15 minutes but does not have to run it.</li>
+<li><b>Sprint Review</b> inspects the <b>product</b> (what was built). <b>Sprint Retrospective</b> inspects the <b>process</b> (how the team worked). The retrospective comes <b>after</b> the review and is the last event of the sprint.</li>
+<li>The <b>Product Owner</b>, not the Scrum Master, orders the Product Backlog.</li>
+<li>Sprint length stays <b>fixed</b>. A sprint can be cancelled only by the Product Owner.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+A <b>burndown chart</b> plots the work remaining (y-axis) against time (x-axis) during a sprint; the line should slope down to zero by sprint end. A <b>burnup chart</b> plots work completed rising toward the total scope.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">3.6</span>Other Agile Methods: XP, Kanban and More<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<div class="tw"><table>
+<tr><th>Method</th><th>Key ideas</th></tr>
+<tr><td><b>Extreme Programming (XP)</b> (Kent Beck)</td><td><b>Pair programming</b>, <b>test-driven development (TDD)</b>: write the test first, <b>continuous integration</b>, refactoring, small frequent releases, collective code ownership, simple design, an on-site customer, 40-hour week. Values: communication, simplicity, feedback, courage, respect.</td></tr>
+<tr><td><b>Kanban</b></td><td>A visual board (To Do → In Progress → Done) with <b>WIP (work-in-progress) limits</b>; continuous flow with no fixed sprints. It originated in Toyota's production system.</td></tr>
+<tr><td><b>Lean</b></td><td>Eliminate waste, deliver fast, defer decisions, build quality in.</td></tr>
+<tr><td><b>FDD</b> (Feature-Driven Development)</td><td>Builds by feature, from an overall model and a feature list.</td></tr>
+<tr><td><b>DSDM</b></td><td>Fixed time and cost with flexible features; uses <b>MoSCoW</b> prioritisation (Must, Should, Could, Won't).</td></tr>
+<tr><td><b>Crystal</b> (Alistair Cockburn)</td><td>A family of methods (Clear, Yellow, Orange…) chosen by team size and criticality.</td></tr>
+<tr><td><b>ASD</b> (Adaptive Software Development)</td><td>Speculate → Collaborate → Learn cycle.</td></tr>
+</table></div></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"Pair programming" and "test-first development" → <b>XP</b>. "WIP limits" → <b>Kanban</b>. "MoSCoW" → <b>DSDM</b>. "Sprint", "Scrum Master" → <b>Scrum</b>.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">3.7</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>According to the Agile Manifesto, which is valued more? (a) Comprehensive documentation (b) Following a plan (c) Customer collaboration (d) Processes and tools<br><b>Answer: (c) Customer collaboration</b> (over contract negotiation).</div>
+<div class="num"><span class="t">Q2</span>The maximum length of a Scrum sprint is:<br><b>Answer: one month.</b></div>
+<div class="num"><span class="t">Q3</span>Who is responsible for ordering (prioritising) the Product Backlog?<br><b>Answer: the Product Owner.</b></div>
+<div class="num"><span class="t">Q4</span>Which Scrum event inspects how the last sprint went with regard to people, processes and tools?<br><b>Answer: the Sprint Retrospective.</b></div>
+<div class="num"><span class="t">Q5</span>Pair programming is a practice of: (a) Scrum (b) Kanban (c) Extreme Programming (d) Spiral<br><b>Answer: (c) XP.</b></div>
+<div class="num"><span class="t">Q6</span>The primary measure of progress in Agile is:<br><b>Answer: working software.</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Agile</b>: quick, flexible, collaborative, incremental. <b>Action over formality.</b> Accept change.</li>
+<li><b>Manifesto (2001)</b>: individuals &amp; interactions, working software, customer collaboration, responding to change, each valued over processes &amp; tools, documentation, contract negotiation, following a plan. 12 principles.</li>
+<li>Team X (waterfall) restarts on a change; Team Y (Agile) puts it into the next iteration.</li>
+<li><b>Agile vs Evolutionary</b>: both incremental and iterative; Agile is informal and fast, Evolutionary is procedural.</li>
+<li><b>Scrum</b> is a framework. 3 roles: PO, SM, Developers · 5 events: Sprint, Planning, Daily (15 min), Review, Retro · 3 artifacts: Product Backlog, Sprint Backlog, Increment.</li>
+<li>Sprint ≤ 1 month (1–4 weeks). PSPI = potentially shippable product increment.</li>
+<li>Review = product; Retrospective = process (last event).</li>
+<li>XP = pair programming + TDD + CI · Kanban = WIP limits · DSDM = MoSCoW.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 3 · Volume 04 — Software Engineering</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="02-SDLC-Models.html">← Ch 2: SDLC and Process Models</a><a href="index.html">☰ All topics</a><a href="04-Requirement-Engineering.html">Ch 4: Requirement Engineering and Gathering →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

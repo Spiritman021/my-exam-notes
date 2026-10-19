@@ -1,0 +1,107 @@
+## 1. Introduction to Software Engineering
+### 1.1 Meaning of Software Engineering (Building a House)
+### 1.2 Characteristics of Software (Engineered, Not Manufactured; Deteriorates, Doesn't Wear Out)
+### 1.3 Software Myths: Management, Customer and Practitioner (Chinese Whispers)
+### 1.4 Software Engineering as a Layered Technology (Tools, Methods, Process, Quality Focus)
+### 1.5 Problems and Challenges in Software Development
+### 1.6 Software Quality Attributes
+## 2. SDLC and Process Models
+### 2.1 SDLC Phases (Planning, Defining, Designing, Building, Testing, Deployment)
+### 2.2 Waterfall Model (Real Waterfall; Class 1 to 12)
+### 2.3 Iterative Waterfall Model (Feedback Paths)
+### 2.4 V-Shaped Model (Verification and Validation)
+### 2.5 Prototyping Model (Unclear Requirements)
+### 2.6 Incremental Model (House Room by Room)
+### 2.7 Evolutionary Model (Iterative + Incremental)
+### 2.8 Spiral Model (Four Quadrants, Risk Analysis)
+### 2.9 Unified Process (Inception, Elaboration, Construction, Transition, Production)
+## 3. Agile Development and Scrum
+### 3.1 Agile Characteristics and Principles
+### 3.2 Team X (Waterfall) vs Team Y (Agile) Scenario
+### 3.3 Agile vs Evolutionary Model
+### 3.4 Scrum Framework: Roles, Product Backlog, Sprint Planning and Sprint Backlog
+### 3.5 Sprint, Daily Scrum, PSPI, Sprint Review and Retrospective
+## 4. Requirement Engineering and Gathering
+### 4.1 Goal of Requirement Analysis and Its Challenges
+### 4.2 Basic Questions to Ask the Client (Shark Tank)
+### 4.3 Requirement Engineering Steps: Gathering, Analysis, Documentation, Review
+### 4.4 Interview and Group Discussion
+### 4.5 Delphi Technique (Anonymous Written Iterations)
+### 4.6 Facilitated Workshop and Quality Function Deployment (QFD)
+### 4.7 Role Play and Use Case Approach
+## 5. Requirement Analysis Tools
+### 5.1 Flowchart (Sum of Two Numbers; Pass/Fail Decision)
+### 5.2 Data Flow Diagram: Notation and Valid/Invalid Flows
+### 5.3 DFD Levels (Level 0, 1, 2) — Food Ordering System Example
+### 5.4 Data Dictionary (Marks Out of 100)
+### 5.5 ER Diagram (Student Studies in College)
+### 5.6 Decision Table / Cause-Effect Table (Login Example)
+## 6. Software Requirement Specification (SRS)
+### 6.1 IEEE 830 Standard and SRS Structure
+### 6.2 Requirement Review (Re-checking the Exam Paper)
+### 6.3 Functional vs Non-Functional Requirements and Goals of Implementation
+### 6.4 Characteristics of a Good SRS
+### 6.5 Consequences of Not Having an SRS
+## 7. Capability Maturity Model (CMM)
+### 7.1 CMM as a Process-Improvement Framework (Dhoni's Process Mindset)
+### 7.2 Level 1 Initial (Opening a New Shop)
+### 7.3 Level 2 Repeatable (Gym Routine)
+### 7.4 Level 3 Defined
+### 7.5 Level 4 Managed
+### 7.6 Level 5 Optimized (Continuous Improvement)
+## 8. Software Design
+### 8.1 Design Phase Input/Output: SRS to SDD
+### 8.2 Characteristics of a Good Design Document
+### 8.3 Interface Design (System as a Black Box)
+### 8.4 Architectural Design (Components and Their Interaction)
+### 8.5 Detailed Design (Algorithms and Data Structures)
+### 8.6 All Three Designs Together (Hostage Rescue Analogy)
+### 8.7 Top-Down vs Bottom-Up Design Approach
+## 9. Modularity, Coupling and Cohesion
+### 9.1 Modularity, Fan-In and Fan-Out
+### 9.2 Degree of Modularity
+### 9.3 Coupling vs Cohesion (Two Neighbouring Houses)
+### 9.4 Types of Coupling: Data, Stamp, Control, External, Common, Content (Exam Hall)
+### 9.5 Types of Cohesion: Functional to Coincidental
+## 10. Project Estimation and Resource Management
+### 10.1 Project Estimation in the Planning Phase (Size, Cost, Duration, Effort)
+### 10.2 Size Metrics: LOC and Function Points
+### 10.3 Cost Estimation Factors
+### 10.4 Resource Management: Advance Allocation, On-Demand Allocation, Reuse
+### 10.5 Estimation Techniques: Empirical, Heuristic, Analytical
+## 11. COCOMO Model
+### 11.1 Project Categories: Organic, Semi-Detached, Embedded
+### 11.2 Basic COCOMO: Effort, Development Time, Person-Month and Productivity
+### 11.3 Basic COCOMO Worked Example (50 KLOC Semi-Detached)
+### 11.4 Intermediate COCOMO: Cost Drivers and EAF
+### 11.5 Complete (Detailed) COCOMO: Subsystem-wise Estimation
+## 12. Software Testing Fundamentals and Levels
+### 12.1 Goal of Testing
+### 12.2 Verification vs Validation (Building a Car)
+### 12.3 Principles of Testing
+### 12.4 Unit Testing
+### 12.5 Integration Testing: Big Bang, Top-Down (Stubs), Bottom-Up (Drivers)
+### 12.6 System Testing
+### 12.7 Acceptance Testing: Alpha, Beta, UAT, Regulatory, Business
+### 12.8 Non-Functional Testing: Performance, Load, Stress, Scalability (Five-Seater Car)
+## 13. White-Box and Black-Box Testing
+### 13.1 White-Box Testing (Transparent Glass of Water)
+### 13.2 Statement, Branch and Path Coverage; Data-Flow Testing
+### 13.3 Black-Box Testing (Brass Glass)
+### 13.4 Cause-Effect Graph, Requirement-Based Testing and Boundary Value Analysis
+### 13.5 Regression Testing: Full vs Partial
+## 14. Software Maintenance and Re-engineering
+### 14.1 Software Maintenance (App Update Notes)
+### 14.2 Types: Corrective, Perfective, Adaptive, Preventive
+### 14.3 Software Re-engineering (Melody: Something More)
+### 14.4 Reverse Engineering, Restructuring/Refactoring and Forward Engineering
+## 15. Critical Path Method (CPM)
+### 15.1 Critical Task and Critical Path
+### 15.2 Node Block: ES, EF, LS, LF, Duration and Float
+### 15.3 Forward and Backward Pass — Worked Example (A → B → C)
+## 16. Risk Management
+### 16.1 What is Risk (Driving Accident); Assessment and Control
+### 16.2 Reactive vs Proactive Risk Management
+### 16.3 Types of Risk: Budget, Schedule, Technical, Operational, Business
+### 16.4 Risk Assessment: Probability × Severity Matrix and Ostrich Approach
+### 16.5 Risk Control: Plans A/B/C, Avoid, Transfer, Reduce, Monitor, Mitigate

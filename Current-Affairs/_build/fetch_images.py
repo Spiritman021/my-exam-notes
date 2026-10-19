@@ -84,6 +84,8 @@ def main():
     os.makedirs(IMG_DIR, exist_ok=True)
     manifest = json.load(open(MANIFEST)) if os.path.exists(MANIFEST) else {}
     for spec in specs():
+        if spec.startswith('pdf:'):  # pictures from the class PDF are handled by pdf_images.py
+            continue
         if spec in manifest and os.path.exists(os.path.join(IMG_DIR, manifest[spec]['file'])):
             continue
         try:

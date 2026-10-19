@@ -4,6 +4,7 @@ One data file per class PDF, named YYYY-MM-class-N.py (e.g. 2026-07-class-3.py).
 Each defines S (sections), QUIZ and RAPID; use k('…') to mark a key fact.
 
 Run:  python3 Current-Affairs/_build/build.py
+Pictures: fetch_images.py (Wikipedia) and/or pdf_images.py (images taken from the class PDF).
 Writes Current-Affairs/YYYY-MM-Month-Class-N.html, refreshes the month list on
 Current-Affairs/index.html and the Current Affairs entries in the hub (../../index.html).
 """
@@ -120,8 +121,12 @@ def pic_html(h, img):
         m = img_for(spec)
         if key in h and m:
             alt = re.sub('<[^>]+>', '', m.get('page') or spec.replace('File:', '').rsplit('.', 1)[0])
+            if m.get('source'):
+                cap = f'<a href="{m["source"]}" target="_blank" rel="noopener" title="Wikimedia Commons · {m.get("license", "")}">{alt}</a>'
+            else:  # picture taken from the class PDF itself (pdf_images.py)
+                cap = f'<span title="From the class PDF">{alt}</span>'
             return (f'<figure class="pic"><img src="img/{m["file"]}" alt="{alt}" loading="lazy">'
-                    f'<figcaption><a href="{m["source"]}" target="_blank" rel="noopener" title="Wikimedia Commons · {m.get("license", "")}">{alt}</a></figcaption></figure>'), spec
+                    f'<figcaption>{cap}</figcaption></figure>'), spec
     return '', None
 
 

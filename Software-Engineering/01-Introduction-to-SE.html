@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE Introduction Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><span class="off">First chapter</span><a href="index.html">☰ All topics</a><a href="02-SDLC-Models.html">Ch 2: SDLC and Process Models →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Software Engineering — Chapter 1: Introduction to Software Engineering</h1>
+  <p class="sub">Volume 04 · Part 1 · Built from the one-shot Software Engineering lecture transcript (opening section), plus the exam points the lecture skipped. What the term means, how software differs from hardware, the classic myths, the four-layer view, the problems every project faces and the quality attributes we aim for.</p>
+  <ul class="tags"><li>Software Engineering</li><li>Engineered, not manufactured</li><li>Wear-out vs deterioration</li><li>Software myths</li><li>Layered technology</li><li>Software crisis</li><li>Quality attributes</li><li>McCall</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">1.0</span>Road Map of the Subject</a></li>
+<li><a href="#s1"><span class="n">1.1</span>Meaning of Software Engineering (Building a House)</a></li>
+<li><a href="#s2"><span class="n">1.2</span>Characteristics of Software</a></li>
+<li><a href="#s3"><span class="n">1.3</span>Software Myths: Management, Customer and Practitioner</a></li>
+<li><a href="#s4"><span class="n">1.4</span>Software Engineering as a Layered Technology</a></li>
+<li><a href="#s5"><span class="n">1.5</span>Problems and Challenges in Software Development</a></li>
+<li><a href="#s6"><span class="n">1.6</span>Software Quality Attributes</a></li>
+<li><a href="#s7"><span class="n">1.7</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 1</div>
+<h2 class="ch">Introduction to Software Engineering</h2>
+<p>Writing a program that works on your laptop is programming. Delivering software that a paying client asked for, on a budget and a deadline, that keeps working for years while the client keeps changing their mind, is <b>software engineering</b>. This chapter defines the discipline, explains why software behaves differently from physical products, and lists the false beliefs, layers, challenges and quality goals that the rest of the subject builds on.</p>
+
+<section id="s0">
+<h3><span class="n">1.0</span>Road Map of the Subject</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The whole subject is covered in one video from handwritten notes. The lecturer admits SE is a "thoda theoretical, thoda boring" subject, so the notes are keyword-based and every topic is tied to a real-life example. The order follows the life of a project: <b>introduction → SDLC models → Agile/Scrum → requirements and SRS → CMM → design → estimation and COCOMO → testing → maintenance → CPM → risk management</b>. These notes follow the same order across 16 chapters.</div>
+<figure>
+<svg viewBox="0 0 720 128" role="img" aria-label="Order of topics in the lecture">
+<rect class="ac" x="8" y="14" width="80" height="34" rx="4"/><text x="48" y="36" text-anchor="middle">Intro</text>
+<rect class="gr" x="96" y="14" width="80" height="34" rx="4"/><text x="136" y="36" text-anchor="middle">SDLC</text>
+<rect class="gr" x="184" y="14" width="80" height="34" rx="4"/><text x="224" y="36" text-anchor="middle">Agile</text>
+<rect class="gr" x="272" y="14" width="100" height="34" rx="4"/><text x="322" y="36" text-anchor="middle">Requirements</text>
+<rect class="gr" x="380" y="14" width="64" height="34" rx="4"/><text x="412" y="36" text-anchor="middle">CMM</text>
+<rect class="pu" x="452" y="14" width="76" height="34" rx="4"/><text x="490" y="36" text-anchor="middle">Design</text>
+<rect class="pu" x="536" y="14" width="88" height="34" rx="4"/><text x="580" y="36" text-anchor="middle">Estimation</text>
+<rect class="pu" x="632" y="14" width="80" height="34" rx="4"/><text x="672" y="36" text-anchor="middle">COCOMO</text>
+<rect class="or" x="150" y="76" width="90" height="34" rx="4"/><text x="195" y="98" text-anchor="middle">Testing</text>
+<rect class="or" x="250" y="76" width="110" height="34" rx="4"/><text x="305" y="98" text-anchor="middle">Maintenance</text>
+<rect class="or" x="370" y="76" width="70" height="34" rx="4"/><text x="405" y="98" text-anchor="middle">CPM</text>
+<rect class="or" x="450" y="76" width="100" height="34" rx="4"/><text x="500" y="98" text-anchor="middle">Risk</text>
+<text class="mut" x="360" y="124" text-anchor="middle">process &amp; requirements (green) · design &amp; planning (purple) · quality &amp; management (orange)</text>
+</svg>
+<figcaption>Lecture order · 16 chapters</figcaption>
+</figure>
+</section>
+
+<section id="s1">
+<h3><span class="n">1.1</span>Meaning of Software Engineering (Building a House)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Break the name, understand each half, then join it back.
+<ul>
+<li><b>Software</b> brings to mind programs, a set of instructions and some documentation.</li>
+<li><b>Engineering</b> brings to mind designing, creating and building something that solves an end user's real problem in a <b>systematic, disciplined, procedural</b> manner.</li>
+</ul>
+Joined: design and build a software product that solves the end user's problem in a systematic, disciplined way. You never jump straight to coding; planning, requirement gathering, development, testing and maintenance are all involved.
+<h4>Example: building a house</h4>
+<ul>
+<li>You tell the builder "start construction on my plot". He does not turn up with cement the next day. First he asks <b>what you want</b>: how many floors, a big hall or a big kitchen, attached or common bathrooms, an L-shaped kitchen, how much garden. These are the <b>user requirements</b>, and the work is <b>customised</b> to them.</li>
+<li>Once requirements are known he can give a <b>time</b> estimate (about 1–1.5 years) and a <b>budget</b>, usually as an <b>upper bound</b> ("keep 20–25 lakh ready"). Work starts only when both sides <b>agree</b>.</li>
+<li>An <b>architect</b> draws the <b>blueprint</b> (rooms, doors arranged per Vastu): the design.</li>
+<li>Material and labour arrive and construction follows <b>steps</b>: base (its width depends on the soil), pillars, walls.</li>
+<li>Mid-way you visit and ask for a <b>change</b>: "make the gallery bigger so my parents can hang a swing, even if the garden shrinks". Customised change requests happen in software too.</li>
+</ul></div>
+<div class="def"><b>Software engineering:</b> the application of a systematic, disciplined, quantifiable approach to the development, operation and maintenance of software (IEEE definition). The goal is software that is reliable, efficient, delivered on time and within budget, and meets the user's needs.</div>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="House construction mapped to software phases">
+<g>
+<rect class="bx" x="10" y="14" width="120" height="44" rx="4"/><text x="70" y="34" text-anchor="middle">Ask what owner</text><text x="70" y="50" text-anchor="middle">wants</text>
+<rect class="bx" x="144" y="14" width="120" height="44" rx="4"/><text x="204" y="34" text-anchor="middle">Time + budget</text><text x="204" y="50" text-anchor="middle">agreement</text>
+<rect class="bx" x="278" y="14" width="120" height="44" rx="4"/><text x="338" y="34" text-anchor="middle">Architect's</text><text x="338" y="50" text-anchor="middle">blueprint</text>
+<rect class="bx" x="412" y="14" width="120" height="44" rx="4"/><text x="472" y="34" text-anchor="middle">Base → pillars</text><text x="472" y="50" text-anchor="middle">→ walls</text>
+<rect class="bx" x="546" y="14" width="124" height="44" rx="4"/><text x="608" y="34" text-anchor="middle">"Bigger gallery,</text><text x="608" y="50" text-anchor="middle">please"</text>
+</g>
+<g>
+<rect class="ac" x="10" y="94" width="120" height="40" rx="4"/><text x="70" y="119" text-anchor="middle">Requirements</text>
+<rect class="ac" x="144" y="94" width="120" height="40" rx="4"/><text x="204" y="119" text-anchor="middle">Planning</text>
+<rect class="ac" x="278" y="94" width="120" height="40" rx="4"/><text x="338" y="119" text-anchor="middle">Design</text>
+<rect class="ac" x="412" y="94" width="120" height="40" rx="4"/><text x="472" y="119" text-anchor="middle">Coding</text>
+<rect class="ac" x="546" y="94" width="124" height="40" rx="4"/><text x="608" y="119" text-anchor="middle">Change request</text>
+</g>
+<g class="ln"><line x1="70" y1="60" x2="70" y2="92"/><line x1="204" y1="60" x2="204" y2="92"/><line x1="338" y1="60" x2="338" y2="92"/><line x1="472" y1="60" x2="472" y2="92"/><line x1="608" y1="60" x2="608" y2="92"/></g>
+</svg>
+<figcaption>Building a house (top) ≈ building software (bottom)</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>The term "software engineering" was popularised at the <b>NATO Software Engineering Conference of 1968</b> (Garmisch, Germany), called to address the <b>software crisis</b> (see 1.5).</li>
+<li><b>Program vs software product:</b> a program is code written by one person for personal use, often undocumented. A software product is used by many people, developed by a team and comes with documentation, manuals and support. Software = <b>programs + documentation + operating procedures</b>.</li>
+<li><b>Generic vs custom (bespoke) software:</b> generic products (MS Office, a browser) are built for the open market; custom software is built for one client's specification (a bank's loan system).</li>
+</ul></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">1.2</span>Characteristics of Software</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ol>
+<li><b>It is engineered, not manufactured.</b> The proof is in the name: it is software <i>engineering</i>, not software manufacturing. Cars and smartphones are manufactured: raw material is combined by machinery component by component, then finished and shipped. Software is engineered: designed, developed and tested through phases.</li>
+<li><b>It does not wear out, but it deteriorates.</b> A car, phone, laptop or mic wears out physically over time. Software does not. It <b>degrades</b> because the client's heavy, repeated changes pull it away from its original motive. After enough changes "its soul (<i>aatma</i>) changes": the core functionality becomes something else.</li>
+<li><b>It is custom-built.</b> In a mall you don't buy a shirt because it looked good on someone else; you try it in the <b>trial room</b> to fit your body, colour and personality. Or you give cloth to a tailor who stitches to your measurements. Software too is built to <b>this</b> user's requirements, which is why the first step is always asking for them.</li>
+<li><b>It cannot be touched.</b> Software is intangible, unlike a mobile, a car or any hardware.</li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Hardware bathtub curve versus software failure curve">
+<g>
+<line class="ln" x1="40" y1="20" x2="40" y2="170"/><line class="ln" x1="40" y1="170" x2="320" y2="170"/>
+<text class="mut" x="30" y="95" text-anchor="middle" transform="rotate(-90 30 95)">failure rate</text>
+<text class="mut" x="180" y="188" text-anchor="middle">time</text>
+<path class="hard" d="M44,40 C70,140 90,150 120,150 L230,150 C270,150 290,120 312,40"/>
+<text class="mut" x="80" y="60">infant</text><text class="mut" x="80" y="72">mortality</text>
+<text class="mut" x="175" y="142" text-anchor="middle">steady use</text>
+<text class="mut" x="290" y="70" text-anchor="end">wear out</text>
+<text class="b" x="180" y="205" text-anchor="middle">Hardware: "bathtub curve"</text>
+</g>
+<g>
+<line class="ln" x1="380" y1="20" x2="380" y2="170"/><line class="ln" x1="380" y1="170" x2="660" y2="170"/>
+<text class="mut" x="520" y="188" text-anchor="middle">time</text>
+<path class="soft dash" d="M384,40 C410,140 430,150 460,150 L650,150"/>
+<path class="hard" d="M384,40 C410,140 430,150 460,150 L490,150 L500,105 L515,135 L540,135 L550,90 L565,120 L590,120 L600,75 L615,105 L650,105"/>
+<text class="mut" x="610" y="146">idealised</text>
+<text class="mut" x="505" y="98">change</text>
+<text class="mut" x="640" y="70" text-anchor="end">actual: rises with changes</text>
+<text class="b" x="520" y="205" text-anchor="middle">Software: deteriorates, no wear-out</text>
+</g>
+</svg>
+<figcaption>Why software "deteriorates" but never "wears out"</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+This is Pressman's classic pair of curves. Hardware follows the <b>bathtub curve</b>: high early failures (manufacturing defects), a low steady period, then rising failures as parts wear out. Software ideally has early failures (bugs) that fall and then stay flat, because nothing physical ages. In practice each <b>change</b> introduces new defects, causing a spike, and the minimum failure rate creeps upward. That upward drift is <b>deterioration</b>. Two more listed characteristics: most software is still <b>custom-built rather than assembled from existing components</b> (though component reuse is growing), and software is <b>flexible</b> (easy to change, which is both its strength and the cause of deterioration).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Software wears out with time" is <b>false</b>. "Software deteriorates due to change" is <b>true</b>. Also, a software defect is a <b>design</b> (engineering) error; there are no "spare parts" for software, so maintenance means changing the design, not replacing a part.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">1.3</span>Software Myths: Management, Customer and Practitioner</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A <b>myth</b> is a <b>false belief</b>: incorrect information that settles in our heads and creates confusion. Think of the <b>Chinese-whispers</b> game: the first person whispers a message, each person in the line changes it a little, and the last person hears something completely different. Over time, wrong interpretations of how software is built have spread the same way. The lecture gives a reality check for each group.</div>
+<div class="tw"><table>
+<tr><th>Group</th><th>Myth</th><th>Reality (lecture's example)</th></tr>
+<tr><td rowspan="3"><b>Management</b></td><td>"We already have all the standards and procedures needed for development."</td><td>Overconfidence. Software is custom-built, so new requirements may not be served efficiently by old standards and procedures.</td></tr>
+<tr><td>"Buying the latest hardware will improve development."</td><td>Latest is not the same as right. A father buys his child the newest phone with a great camera and storage, but the child wanted it for gaming and gaming runs badly, so the child is not happy. Requirements come first.</td></tr>
+<tr><td>"If we are behind schedule, add more programmers to catch up."</td><td>It makes things worse. Existing developers know the progress, conditions and constraints; newcomers must be trained and guided, which wastes their time and delays the project further.</td></tr>
+<tr><td rowspan="2"><b>Customer</b></td><td>"A general statement of objectives is enough to start writing programs; details can be filled in later."</td><td>Like shooting a film from a generic plot (hero, villain, happy ending) without a detailed script. Vague requirements lead to the wrong product.</td></tr>
+<tr><td>"Requirements change all the time, but software is flexible, so changes are easy."</td><td>Changes are cheap early, during requirements, and very costly after design and coding, because work must be redone.</td></tr>
+<tr><td rowspan="4"><b>Practitioner</b> (developer)</td><td>"Once the program is written and works, our job is done."</td><td>Roughly 50–60% of the total effort is spent <b>after</b> delivery, in maintenance.</td></tr>
+<tr><td>"Until the program runs, I can't assess its quality."</td><td>Quality can be checked phase by phase (reviews of requirements and design, using tools) long before execution.</td></tr>
+<tr><td>"The only deliverable is the working program."</td><td>A bicycle is not just two wheels that turn; it needs gears, brakes, tyres and a design. Deliverables include the SRS, design documents, test plans and user manuals.</td></tr>
+<tr><td>"SE makes us write unnecessary documentation and slows us down."</td><td>Documentation is essential for maintenance, re-engineering and versioning. The rule is to write the <b>necessary</b> documentation, not volumes of it.</td></tr>
+</table></div>
+<figure>
+<svg viewBox="0 0 640 128" role="img" aria-label="Cost of change rises steeply by phase">
+<line class="ln" x1="40" y1="12" x2="40" y2="100"/><line class="ln" x1="40" y1="100" x2="620" y2="100"/>
+<text class="mut" x="30" y="56" text-anchor="middle" transform="rotate(-90 30 56)">cost of change</text>
+<rect class="ac" x="70" y="92" width="70" height="8"/><rect class="ac" x="180" y="82" width="70" height="18"/>
+<rect class="ac" x="290" y="64" width="70" height="36"/><rect class="pu" x="400" y="40" width="70" height="60"/><rect class="or" x="510" y="14" width="70" height="86"/>
+<text class="mut" x="105" y="116" text-anchor="middle">Requirements</text><text class="mut" x="215" y="116" text-anchor="middle">Design</text>
+<text class="mut" x="325" y="116" text-anchor="middle">Coding</text><text class="mut" x="435" y="116" text-anchor="middle">Testing</text><text class="mut" x="545" y="116" text-anchor="middle">After release</text>
+</svg>
+<figcaption>Why "change is easy" is a customer myth</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+The "add more programmers" myth is <b>Brooks' Law</b>, from Fred Brooks' <i>The Mythical Man-Month</i> (1975): <b>"Adding manpower to a late software project makes it later."</b> Two reasons: ramp-up time for newcomers, and communication paths growing as n(n − 1)/2. Going from 4 to 8 people raises communication paths from 6 to 28. Studies (Boehm) estimate that fixing a defect after release can cost up to <b>100 times</b> more than fixing it during requirements.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Questions take the form "Which of the following is a <i>management</i> myth?" Memorise the grouping: <b>standards / latest hardware / add people</b> = management; <b>vague objectives / easy changes</b> = customer; <b>job done when it runs / quality only after running / only deliverable is the program / documentation slows us</b> = practitioner.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">1.4</span>Software Engineering as a Layered Technology</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+SE is described as four layers, each supporting the one above:
+<ul>
+<li><b>Quality focus</b>: the commitment to quality (usability, maintainability, security and the other attributes in 1.6) that every layer must serve.</li>
+<li><b>Process</b>: the <b>foundation</b> layer. It holds the framework of activities: communication, planning, modeling (analysis and design), construction (coding and testing), deployment and maintenance.</li>
+<li><b>Methods</b>: the technical "<b>how-to</b>" for each activity: how to gather requirements, how to design, how to test.</li>
+<li><b>Tools</b>: automated or semi-automated support for the process and the methods.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 520 210" role="img" aria-label="Four layers of software engineering">
+<rect class="pu" x="140" y="10" width="240" height="38" rx="4"/><text x="260" y="34" text-anchor="middle" class="b">Tools</text>
+<rect class="gr" x="110" y="54" width="300" height="38" rx="4"/><text x="260" y="78" text-anchor="middle" class="b">Methods</text>
+<rect class="ac" x="80" y="98" width="360" height="38" rx="4"/><text x="260" y="122" text-anchor="middle" class="b">Process</text>
+<rect class="or" x="50" y="142" width="420" height="38" rx="4"/><text x="260" y="166" text-anchor="middle" class="b">A quality focus</text>
+<text class="mut" x="400" y="34">automated support</text>
+<text class="mut" x="420" y="78">technical how-to</text>
+<text class="mut" x="450" y="122">foundation</text>
+<text class="mut" x="260" y="200" text-anchor="middle">bedrock: the whole structure rests on quality</text>
+</svg>
+<figcaption>Pressman's layered view (bottom to top)</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+In Pressman's wording, the <b>quality focus is the bedrock</b> (bottom-most layer) and the <b>process layer is the foundation</b> of software engineering. Both words appear in options. If asked "Which layer is the foundation?", answer <b>Process</b>. If asked "Which layer is at the bottom / the bedrock?", answer <b>Quality focus</b>. From bottom to top: <b>Quality → Process → Methods → Tools</b>.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Tools that are integrated so that information created by one tool can be used by another form <b>CASE</b> (Computer-Aided Software Engineering). <b>Upper CASE</b> tools support early phases (requirements, design diagrams); <b>lower CASE</b> tools support later phases (code generation, testing, debugging).</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">1.5</span>Problems and Challenges in Software Development</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Unclear requirements</b>: incomplete, or <b>ambiguous</b> (one statement with two meanings). The team needs extra brainstorming sessions just to work out what the client means.</li>
+<li><b>Tight time and budget</b>: clients set unrealistic expectations and want everything fast and cheap. As the saying goes, "haste is the devil's work" (<i>jaldi ka kaam shaitan ka</i>).</li>
+<li><b>Skill gaps and human error</b> within the development team.</li>
+<li><b>Changing requirements</b>: clients keep asking for changes, and late changes are hard and costly (see the myth in 1.3).</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Software crisis</b> is the name given (1960s–70s) to these problems at industry scale: projects running <b>over budget</b> and <b>over time</b>, software that was <b>inefficient</b>, of <b>low quality</b>, <b>did not meet requirements</b>, was <b>hard to maintain</b>, and sometimes was <b>never delivered</b>. Causes include growing size and complexity, poor project management, lack of training, and hardware prices falling while software costs rose. Software engineering, with its systematic process, was the response.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">1.6</span>Software Quality Attributes</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<div class="tw"><table>
+<tr><th>Attribute</th><th>Meaning</th></tr>
+<tr><td><b>Correctness</b></td><td>Does exactly what the requirements say.</td></tr>
+<tr><td><b>Usability</b></td><td>User-friendly; easy to learn and operate.</td></tr>
+<tr><td><b>Reliability</b></td><td>Trustworthy; performs consistently and recovers quickly from failure.</td></tr>
+<tr><td><b>Efficiency</b></td><td>Makes the best use of resources (CPU, memory, time).</td></tr>
+<tr><td><b>Maintainability</b></td><td>Easy to fix, update and enhance.</td></tr>
+<tr><td><b>Scalability</b></td><td>Scales up and down as load changes.</td></tr>
+<tr><td><b>Portability</b></td><td>Runs across different environments and platforms.</td></tr>
+<tr><td><b>Security</b></td><td>Protects against passive and active attacks and unauthorised access.</td></tr>
+<tr><td><b>Reusability</b></td><td>Parts can be reused elsewhere, saving time, effort and cost. Like reusing pages of a senior's assignment.</td></tr>
+<tr><td><b>Modularity</b></td><td>Divided into independent modules. Measured by <b>coupling</b> and <b>cohesion</b>, covered in chapter 9.</td></tr>
+</table></div></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>McCall's quality model (1977)</b> groups 11 factors under three perspectives:
+<div class="tw"><table>
+<tr><th>Perspective</th><th>Question it answers</th><th>Factors</th></tr>
+<tr><td><b>Product operation</b></td><td>How well does it run?</td><td>Correctness, Reliability, Efficiency, Integrity (security), Usability</td></tr>
+<tr><td><b>Product revision</b></td><td>How easy is it to change?</td><td>Maintainability, Flexibility, Testability</td></tr>
+<tr><td><b>Product transition</b></td><td>How easy is it to move or adapt?</td><td>Portability, Reusability, Interoperability</td></tr>
+</table></div>
+<b>ISO/IEC 9126</b> names six characteristics: <b>Functionality, Reliability, Usability, Efficiency, Maintainability, Portability</b> (mnemonic <b>FRUEMP</b>). It was replaced by <b>ISO/IEC 25010</b>, which adds Security and Compatibility for eight in total.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+In McCall's model, <b>Portability</b> and <b>Reusability</b> belong to <b>product transition</b>, not revision; <b>Maintainability</b>, <b>Flexibility</b> and <b>Testability</b> belong to <b>revision</b>. "Integrity" in McCall means <b>security</b> (controlling unauthorised access), not data integrity.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">1.7</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Software is said to "deteriorate" rather than "wear out". The main reason is: (a) physical ageing of media (b) side effects of changes made during maintenance (c) virus attacks (d) hardware failure<br><b>Answer: (b).</b> Every change can introduce new defects, so the failure rate drifts upward.</div>
+<div class="num"><span class="t">Q2</span>"Adding manpower to a late software project makes it later" is known as:<br><b>Answer: Brooks' Law.</b> It is the reality behind the management myth of adding programmers.</div>
+<div class="num"><span class="t">Q3</span>Which layer of software engineering is described as its foundation? (a) Tools (b) Methods (c) Process (d) Quality<br><b>Answer: (c) Process.</b> The quality focus is the bedrock beneath it.</div>
+<div class="num"><span class="t">Q4</span>"A general statement of objectives is sufficient to begin writing programs." This is a:<br><b>Answer: Customer myth.</b></div>
+<div class="num"><span class="t">Q5</span>In McCall's model, which factor belongs to product transition? (a) Testability (b) Portability (c) Correctness (d) Flexibility<br><b>Answer: (b) Portability.</b> The transition factors are portability, reusability and interoperability.</div>
+<div class="num"><span class="t">Q6</span>The term "software engineering" was first popularised at:<br><b>Answer: the 1968 NATO conference</b> held in response to the software crisis.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>SE</b> = a systematic, disciplined, quantifiable approach to developing, operating and maintaining software. Lecture analogy: building a house (requirements → time and budget → blueprint → construction → change requests).</li>
+<li>Software is <b>engineered, not manufactured</b>; it <b>does not wear out but deteriorates</b> because of changes; it is <b>custom-built</b>; it is <b>intangible</b>.</li>
+<li>Hardware failure = <b>bathtub curve</b>. Software = falling then flat (idealised), with spikes and an upward drift on every change (actual).</li>
+<li><b>Myths</b>: management (standards, latest hardware, add people → Brooks' Law), customer (vague objectives, easy change), practitioner (done when it runs, quality only after running, program is the only deliverable, documentation slows us).</li>
+<li>Layers from bottom to top: <b>Quality focus (bedrock) → Process (foundation) → Methods (how-to) → Tools (CASE)</b>.</li>
+<li><b>Software crisis</b>: over budget, late, low quality, unmaintainable. It led to the 1968 NATO conference and the term SE.</li>
+<li><b>McCall</b>: operation (correctness, reliability, efficiency, integrity, usability) · revision (maintainability, flexibility, testability) · transition (portability, reusability, interoperability).</li>
+<li><b>ISO 9126</b>: FRUEMP. Replaced by <b>ISO 25010</b>, which adds security and compatibility.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 1 · Volume 04 — Software Engineering</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><span class="off">First chapter</span><a href="index.html">☰ All topics</a><a href="02-SDLC-Models.html">Ch 2: SDLC and Process Models →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

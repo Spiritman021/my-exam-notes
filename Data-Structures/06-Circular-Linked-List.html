@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DS Circular Linked List Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="05-Doubly-Linked-List.html">← Ch 5: Doubly Linked List</a><a href="index.html">☰ All topics</a><a href="07-Stack.html">Ch 7: Stack →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Data Structures — Chapter 6: Circular Linked List</h1>
+  <p class="sub">Volume 03 · Part 6 · Built from the one-shot Data Structures lecture transcript (section 6), plus the exam points the lecture skipped. The lecture covers this variation quickly: the one-line idea (last→next = head) and one worked operation, deleting the head node. These notes add traversal without an infinite loop, the "keep a last pointer" trick, insertions, the circular doubly list, applications such as round-robin and Josephus, and solved questions.</p>
+  <ul class="tags"><li>last→next = head</li><li>No NULL</li><li>Stop at head, not NULL</li><li>Delete head node</li><li>Last pointer trick</li><li>Circular doubly</li><li>Round robin · Josephus</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">6.1</span>Concept: Last Node Points to Head</a></li>
+<li><a href="#s2"><span class="n">6.2</span>Deleting the Head Node</a></li>
+<li><a href="#s3"><span class="n">6.3</span>Traversal, Insertion &amp; the Last-Pointer Trick<span class="x">ADDED</span></a></li>
+<li><a href="#s4"><span class="n">6.4</span>Circular Doubly List, Applications, Comparison &amp; Solved Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 6</div>
+<h2 class="ch">Circular Linked List</h2>
+<p>Take a singly linked list, and instead of storing NULL in the last node, store the address of the <b>first</b> node. The chain becomes a <b>ring</b>. You can start anywhere and reach every node, but you can also loop forever if you test for NULL out of habit. The lecture admits this variation draws fewer questions than singly and doubly lists, but "it is a part", and its few questions are predictable.</p>
+
+<section id="s1">
+<h3><span class="n">6.1</span>Concept: Last Node Points to Head</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The lecture uses a <b>singly circular</b> linked list: the nodes look exactly like singly-linked-list nodes, but the <b>behaviour is circular</b>.<br>
+In one line: <b><code>last-&gt;next = head</code></b>. The last node's next pointer points back to the head node.<br>
+So far the last node held NULL to say "this is the end". Here it comes round again: it is a <i>chakravyuh</i>, a never-ending round, with <b>no end</b>.</div>
+<figure>
+<svg viewBox="0 0 708 175" role="img" aria-label="Circular singly linked list: nodes 10,20,30,40; last node links back to head 10">
+<text class="b" x="20" y="48">head</text>
+<rect class="ac" x="20" y="60" width="56" height="36"/><text x="48" y="83" text-anchor="middle">10</text>
+<g>
+<rect class="gr" x="110" y="60" width="55" height="36"/><text x="137.5" y="83" text-anchor="middle">1</text>
+<rect class="pu" x="165" y="60" width="55" height="36"/><text x="192.5" y="83" text-anchor="middle">20</text>
+<text class="mut" x="165.0" y="50" text-anchor="middle">@10</text></g>
+<g>
+<rect class="gr" x="266" y="60" width="55" height="36"/><text x="293.5" y="83" text-anchor="middle">2</text>
+<rect class="pu" x="321" y="60" width="55" height="36"/><text x="348.5" y="83" text-anchor="middle">30</text>
+<text class="mut" x="321.0" y="50" text-anchor="middle">@20</text></g>
+<g>
+<rect class="gr" x="422" y="60" width="55" height="36"/><text x="449.5" y="83" text-anchor="middle">3</text>
+<rect class="pu" x="477" y="60" width="55" height="36"/><text x="504.5" y="83" text-anchor="middle">40</text>
+<text class="mut" x="477.0" y="50" text-anchor="middle">@30</text></g>
+<g>
+<rect class="gr" x="578" y="60" width="55" height="36"/><text x="605.5" y="83" text-anchor="middle">4</text>
+<rect class="pu" x="633" y="60" width="55" height="36"/><text x="660.5" y="83" text-anchor="middle">10</text>
+<text class="mut" x="633.0" y="50" text-anchor="middle">@40</text></g>
+<path class="lna" d="M76 78.0 L102 78.0"/><polygon class="aha" points="101,73.0 110,78.0 101,83.0"/>
+<path class="lna" d="M220 78.0 L258 78.0"/><polygon class="aha" points="257,73.0 266,78.0 257,83.0"/>
+<path class="lna" d="M376 78.0 L414 78.0"/><polygon class="aha" points="413,73.0 422,78.0 413,83.0"/>
+<path class="lna" d="M532 78.0 L570 78.0"/><polygon class="aha" points="569,73.0 578,78.0 569,83.0"/>
+<path class="lna" d="M660.5 96 C660.5 166 130 166 130 104"/><polygon class="aha" points="125,106 130,97 135,106"/>
+<text class="mut" x="395.25" y="164" text-anchor="middle">last→next = head (no NULL anywhere)</text>
+</svg>
+<figcaption>Circular singly linked list · node @40's link holds 10, the head's address</figcaption>
+</figure>
+<div class="def"><b>Circular linked list</b>: a linked list in which the last node points back to the first node instead of NULL, so there is no NULL link and every node is reachable from every other node.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+There are two kinds:
+<ul>
+<li><b>Circular singly</b>: last→next = first.</li>
+<li><b>Circular doubly</b>: additionally first→prev = last (6.4).</li>
+</ul>
+A one-node circular list points to <b>itself</b> (<code>head-&gt;next == head</code>). An empty one is still <code>head == NULL</code>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">6.2</span>Deleting the Head Node</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+As an example operation, delete the <b>starting (head) node</b> and make the second node the new head. "The other operations you can do the same way."
+<ol>
+<li><b>Reach the last node.</b> Set <code>current = head</code>, then loop <code>while (current-&gt;next != head)</code>, moving with <code>current = current-&gt;next</code>.
+<ul><li>Look carefully at the condition: in traversals we usually tested for <b>NULL</b>, but here it is <b>head</b>.</li>
+<li>The node whose next is head can only be the <b>last node</b>; that is the characteristic of a circular list.</li></ul></li>
+<li><code>temp = head;</code> Temp points to the starting node.</li>
+<li><code>head = head-&gt;next;</code> The second node becomes the new head.</li>
+<li><code>current-&gt;next = head;</code> We walked to the last node precisely because its next pointer must now point to the <i>new</i> head. That makes "a lovely circular list" again, and the old first node is left out.</li>
+<li><code>free(temp);</code> Free the node that temp has pointed to since step 2.</li>
+</ol>
+Everything else works like a singly linked list; you just have to be <b>careful with the last node's pointer</b>.</div>
+<div class="formula">struct node *current = head, *temp;
+while (current-&gt;next != head)   /* stop at last node */
+    current = current-&gt;next;
+temp = head;
+head = head-&gt;next;
+current-&gt;next = head;          /* close the ring again */
+free(temp);</div>
+<figure>
+<svg viewBox="0 0 708 175" role="img" aria-label="Deleting head node 10: head moves to 20 and last node 40 now links to 20; node 10 is freed">
+<text class="b" x="20" y="48">head</text>
+<rect class="ac" x="20" y="60" width="56" height="36"/><text x="48" y="83" text-anchor="middle">20</text>
+<g opacity="0.4">
+<rect class="bx" x="110" y="60" width="55" height="36"/><text x="137.5" y="83" text-anchor="middle">1</text>
+<rect class="pu" x="165" y="60" width="55" height="36"/><text x="192.5" y="83" text-anchor="middle">20</text>
+<text class="mut" x="165.0" y="50" text-anchor="middle">@10 · temp</text></g>
+<g>
+<rect class="gr" x="266" y="60" width="55" height="36"/><text x="293.5" y="83" text-anchor="middle">2</text>
+<rect class="pu" x="321" y="60" width="55" height="36"/><text x="348.5" y="83" text-anchor="middle">30</text>
+<text class="mut" x="321.0" y="50" text-anchor="middle">@20</text></g>
+<g>
+<rect class="gr" x="422" y="60" width="55" height="36"/><text x="449.5" y="83" text-anchor="middle">3</text>
+<rect class="pu" x="477" y="60" width="55" height="36"/><text x="504.5" y="83" text-anchor="middle">40</text>
+<text class="mut" x="477.0" y="50" text-anchor="middle">@30</text></g>
+<g>
+<rect class="gr" x="578" y="60" width="55" height="36"/><text x="605.5" y="83" text-anchor="middle">4</text>
+<rect class="pu" x="633" y="60" width="55" height="36"/><text x="660.5" y="83" text-anchor="middle">20</text>
+<text class="mut" x="633.0" y="50" text-anchor="middle">@40 · current</text></g>
+<path class="lna" d="M48 60 Q157.0 0 286 58"/><polygon class="aha" points="280,48 287,59 291,47"/>
+<path class="lna" d="M376 78.0 L414 78.0"/><polygon class="aha" points="413,73.0 422,78.0 413,83.0"/>
+<path class="lna" d="M532 78.0 L570 78.0"/><polygon class="aha" points="569,73.0 578,78.0 569,83.0"/>
+<path class="lna" d="M660.5 96 C660.5 166 286 166 286 104"/><polygon class="aha" points="281,106 286,97 291,106"/>
+<text class="mut" x="473.25" y="164" text-anchor="middle">last→next = head (no NULL anywhere)</text>
+</svg>
+<figcaption>After deleting head node @10 · head = 20 · last node @40 now links to 20 · node 10 (faded) is freed</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>The lecture says step 3 aloud as "head next = head"; the assignment is <code>head = head-&gt;next</code>.</li>
+<li>Deleting the head of a circular list is <b>O(n)</b>, not O(1) as in a singly list, because the last node must be found to re-close the ring.</li>
+<li><b>Single node:</b> the loop stops at once (current = head), then <code>head = head-&gt;next</code> is the same node, which then gets freed, leaving head dangling. Handle it separately: <code>if (head-&gt;next == head) { free(head); head = NULL; }</code>.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">6.3</span>Traversal, Insertion &amp; the Last-Pointer Trick<span class="badge">ADDED</span></h3>
+<p><b>Traversal.</b> There is no NULL to stop at, so stop when you are <b>back at head</b>. Use a <b>do-while</b> loop, so that the first node is printed before the check:</p>
+<div class="formula">if (head != NULL) {
+    struct node *p = head;
+    do {
+        printf("%d ", p-&gt;data);
+        p = p-&gt;next;
+    } while (p != head);
+}</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li><code>while (p != NULL)</code> on a circular list is an <b>infinite loop</b>: p is never NULL.</li>
+<li><code>p = head; while (p != head)</code> runs <b>zero</b> times, because the condition is false at the start. That is why do-while is used.</li>
+</ul></div>
+
+<p><b>The last-pointer trick.</b> Many textbooks keep a pointer to the <b>last</b> node instead of head. Since <code>last-&gt;next</code> <i>is</i> the first node, one pointer gives both ends in O(1):</p>
+<div class="tw"><table>
+<tr><th>Operation (circular singly)</th><th>Code with a <code>last</code> pointer</th><th>Cost</th></tr>
+<tr><td>Insert at beginning</td><td><code>new→next = last→next; last→next = new;</code></td><td>O(1)</td></tr>
+<tr><td>Insert at end</td><td>same two lines, then <code>last = new;</code></td><td>O(1)</td></tr>
+<tr><td>Delete first node</td><td><code>t = last→next; last→next = t→next; free(t);</code></td><td>O(1)</td></tr>
+<tr><td>Delete last node</td><td>find second-last by walking</td><td>O(n)</td></tr>
+<tr><td>Insert into empty list</td><td><code>last = new; new→next = new;</code></td><td>O(1)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Insert at beginning and insert at end are the <b>same pointer surgery</b> in a circular list. The only difference is whether you then move <code>last</code> to the new node. This is why a circular list with a last pointer makes an efficient <b>queue</b>: enqueue at last, dequeue from last→next, both O(1), with a single pointer.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">6.4</span>Circular Doubly List, Applications, Comparison &amp; Solved Questions<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Circular doubly linked list</span>
+Each node has prev and next. Additionally <code>last-&gt;next = head</code> and <code>head-&gt;prev = last</code>. From head you reach the last node in <b>O(1)</b> (<code>head-&gt;prev</code>), so insert and delete at <b>both ends are O(1)</b> with just a head pointer. It is used for deques, and for the doubly linked lists inside many OS kernels and libraries.</div>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Singly</th><th>Doubly</th><th>Circular singly</th><th>Circular doubly</th></tr>
+<tr><td>Last node's next</td><td>NULL</td><td>NULL</td><td>first node</td><td>first node</td></tr>
+<tr><td>First node's prev</td><td>—</td><td>NULL</td><td>—</td><td>last node</td></tr>
+<tr><td>Traverse backwards</td><td>no</td><td>yes</td><td>no</td><td>yes</td></tr>
+<tr><td>Reach every node from any node</td><td>no</td><td>yes</td><td>yes</td><td>yes</td></tr>
+<tr><td>Loop end test</td><td><code>p != NULL</code></td><td><code>p != NULL</code></td><td><code>p != head</code> (do-while)</td><td><code>p != head</code> (do-while)</td></tr>
+<tr><td>Reach last node from head</td><td>O(n)</td><td>O(n)</td><td>O(n) (or keep last)</td><td>O(1)</td></tr>
+<tr><td>Pointers per node</td><td>1</td><td>2</td><td>1</td><td>2</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Applications</span>
+<ul>
+<li><b>Round-robin CPU scheduling</b>: the ready queue is a ring, and each process gets a time slice in turn (OS chapter).</li>
+<li><b>Multiplayer turns</b> (board/card games), and repeating <b>playlists</b>.</li>
+<li><b>Circular buffers</b> (I/O, keyboard buffers, streaming).</li>
+<li>The <b>Josephus problem</b>: n people stand in a circle and every k-th one is eliminated.</li>
+<li>The <b>Fibonacci heap</b> keeps its root list as a circular doubly linked list.</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<ul>
+<li>"In a circular linked list, the last node contains…" → the <b>address of the first node</b> (not NULL).</li>
+<li>"Which list has no NULL pointer?" → <b>circular</b> linked list (a non-empty one).</li>
+<li>"Which data structure suits round-robin scheduling?" → <b>circular linked list / circular queue</b>.</li>
+<li>"Advantage of a circular list?" → any node can be the starting point, and you reach the first node from the last in one step.</li>
+<li>"Danger of a circular list?" → <b>infinite loop</b> if the end condition is wrong.</li>
+</ul></div>
+<div class="num"><span class="t">Q1</span>Pointer p is at some node of a circular singly list. Which condition tells you that p is the last node? → <b><code>p-&gt;next == head</code></b>.</div>
+<div class="num"><span class="t">Q2</span>A circular singly list is accessed only through a pointer to its <b>last</b> node. Which takes O(n)? (a) insert at front (b) insert at end (c) delete front (d) delete last → <b>(d)</b>: the second-last node needs a full walk.</div>
+<div class="num"><span class="t">Q3</span>Josephus: 5 people in a circle (1–5), every 2nd person is eliminated, starting the count from person 1. Who survives? → The order out is 2, 4, 1, 5, so <b>3</b> survives. (Recurrence: J(n) = (J(n−1) + k) mod n, with J(1) = 0, 0-indexed.)</div>
+<div class="num"><span class="t">Q4</span>Same with 7 people and k = 3? → The order out is 3, 6, 2, 7, 5, 1, so <b>4</b> survives.</div>
+<div class="num"><span class="t">Q5</span>Why does the lecture's delete-head code first walk to the last node? → In a circular list the last node's next must be updated to the new head; without it the ring would still point to the freed node, a <b>dangling pointer</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Circular list = singly nodes with <b>last→next = head</b>. There is no NULL and no end: the lecture's "chakravyuh".</li>
+<li>Find the last node with <code>while (cur→next != head)</code>, testing for <b>head, not NULL</b>.</li>
+<li>Delete head (lecture): walk cur to last; <code>temp = head; head = head→next; cur→next = head; free(temp)</code>. O(n); a single node is a special case.</li>
+<li>Traverse with <b>do-while</b> (<code>while (p != head)</code>). <code>while (p != NULL)</code> loops forever.</li>
+<li>Keep a <b>last</b> pointer: last→next is the first node, so insert at front/end and delete front are O(1). Delete last is still O(n) in a singly circular list.</li>
+<li>Circular doubly: head→prev = last, so both ends are O(1).</li>
+<li>Uses: round-robin scheduling, game turns, playlists, circular buffers, Josephus (n=5, k=2 → 3; n=7, k=3 → 4).</li>
+</ul>
+</div>
+<div class="end">End of Chapter 6 · Volume 03 — Data Structures</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="05-Doubly-Linked-List.html">← Ch 5: Doubly Linked List</a><a href="index.html">☰ All topics</a><a href="07-Stack.html">Ch 7: Stack →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

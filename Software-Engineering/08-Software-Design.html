@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE Software Design Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="07-CMM.html">← Ch 7: Capability Maturity Model (CMM)</a><a href="index.html">☰ All topics</a><a href="09-Coupling-and-Cohesion.html">Ch 9: Modularity, Coupling and Cohesion →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Software Engineering — Chapter 8: Software Design</h1>
+  <p class="sub">Volume 04 · Part 8 · Built from the one-shot Software Engineering lecture transcript (Software Design section), plus the exam points the lecture skipped. How the SRS becomes a design document, the three levels of design from the outside in, and the top-down and bottom-up ways of getting there.</p>
+  <ul class="tags"><li>SDD</li><li>Interface design</li><li>Architectural design</li><li>Detailed design</li><li>HLD / LLD</li><li>Abstraction</li><li>Information hiding</li><li>Top-down</li><li>Bottom-up</li><li>Architectural styles</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">8.1</span>Design Phase Input/Output: SRS to SDD</a></li>
+<li><a href="#s2"><span class="n">8.2</span>Characteristics of a Good Design Document</a></li>
+<li><a href="#s3"><span class="n">8.3</span>Interface Design (System as a Black Box)</a></li>
+<li><a href="#s4"><span class="n">8.4</span>Architectural Design (Components and Their Interaction)</a></li>
+<li><a href="#s5"><span class="n">8.5</span>Detailed Design (Algorithms and Data Structures)</a></li>
+<li><a href="#s6"><span class="n">8.6</span>All Three Designs Together (Hostage Rescue Analogy)</a></li>
+<li><a href="#s7"><span class="n">8.7</span>Top-Down vs Bottom-Up Design Approach</a></li>
+<li><a href="#s8"><span class="n">8.8</span>Design Concepts and Architectural Styles<span class="x">ADDED</span></a></li>
+<li><a href="#s9"><span class="n">8.9</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 8</div>
+<h2 class="ch">Software Design</h2>
+<p>The SRS says <i>what</i> the system must do. Design decides <i>how</i>: which parts the system is made of, how they talk to each other and how each part works inside. The lecture splits design into three levels, zooming in from the outside. Interface design treats the system as a closed box. Architectural design opens the box to show its components. Detailed design opens each component.</p>
+
+<section id="s1">
+<h3><span class="n">8.1</span>Design Phase Input/Output: SRS to SDD</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Input:</b> the <b>SRS</b> document.</li>
+<li><b>Output:</b> the <b>Software Design Document (SDD)</b>.</li>
+<li>The SDD covers three kinds of design: <b>interface</b>, <b>architectural</b> and <b>detailed</b>.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 640 110" role="img" aria-label="SRS goes into design which produces SDD">
+<rect class="ac" x="10" y="35" width="110" height="40" rx="4"/><text x="65" y="60" text-anchor="middle" class="b">SRS</text>
+<rect class="pu" x="170" y="10" width="300" height="90" rx="6"/><text x="320" y="30" text-anchor="middle" class="b">Design phase</text>
+<rect class="bx" x="185" y="44" width="85" height="40" rx="3"/><text x="227" y="68" text-anchor="middle">Interface</text>
+<rect class="bx" x="278" y="44" width="85" height="40" rx="3"/><text x="320" y="68" text-anchor="middle">Architecture</text>
+<rect class="bx" x="371" y="44" width="85" height="40" rx="3"/><text x="413" y="68" text-anchor="middle">Detailed</text>
+<rect class="gr" x="520" y="35" width="110" height="40" rx="4"/><text x="575" y="60" text-anchor="middle" class="b">SDD</text>
+<g class="lna"><line x1="120" y1="55" x2="170" y2="55"/><line x1="470" y1="55" x2="520" y2="55"/></g>
+</svg>
+<figcaption>What goes into design and what comes out</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+The IEEE standard for design documents is <b>IEEE 1016</b> (Software Design Descriptions). In industry the design is usually split into <b>HLD (High-Level Design)</b>, which covers the system architecture, modules and their interfaces and is roughly the lecture's interface plus architectural design, and <b>LLD (Low-Level Design)</b>, which covers the internal logic, algorithms, data structures and class details of each module and is the lecture's detailed design.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">8.2</span>Characteristics of a Good Design Document</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Covers all the client's requirements</b> in the SRS.</li>
+<li>Is <b>free from conflict, ambiguity and incompleteness</b>.</li>
+<li>Explains every feature, both functional and non-functional, <b>clearly</b>, using clear terminology.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Textbooks add: a good design is <b>correct</b> (implements the SRS), <b>understandable</b>, <b>efficient</b>, <b>maintainable</b>, and has <b>high cohesion and low coupling</b> (chapter 9). It should be <b>traceable</b> back to the requirements and should not reinvent the wheel: reuse existing components and patterns where possible.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">8.3</span>Interface Design (System as a Black Box)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Interface design shows the <b>interaction between the system and its environment</b>: users, other systems and devices. The system is treated as a <b>black box</b>. Only its <b>inputs and outputs</b> matter; its internals are ignored.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">8.4</span>Architectural Design (Components and Their Interaction)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Architectural design <b>goes inside</b> the system and shows its major <b>components</b>, the <b>responsibility</b> of each, the <b>interfaces</b> between them and how they <b>interact</b>, much like a microprocessor architecture diagram shows the ALU, registers and control unit. The <b>internals of each component are still ignored</b>.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">8.5</span>Detailed Design (Algorithms and Data Structures)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The innermost level: the <b>internal elements of each major component</b>. It includes the <b>algorithms</b>, <b>data structures</b> and exactly how each component works.</div>
+<figure>
+<svg viewBox="0 0 660 220" role="img" aria-label="Three levels of design zooming in">
+<g>
+<rect class="ac" x="40" y="60" width="120" height="90" rx="6"/><text x="100" y="110" text-anchor="middle" class="b">System</text>
+<text class="mut" x="10" y="100">in →</text><text class="mut" x="166" y="100">→ out</text>
+<text class="b" x="100" y="190" text-anchor="middle">Interface design</text><text class="mut" x="100" y="206" text-anchor="middle">black box, I/O only</text>
+</g>
+<g>
+<rect class="ac" x="250" y="40" width="170" height="130" rx="6"/>
+<rect class="pu" x="262" y="56" width="66" height="40" rx="3"/><text x="295" y="81" text-anchor="middle">A</text>
+<rect class="pu" x="342" y="56" width="66" height="40" rx="3"/><text x="375" y="81" text-anchor="middle">B</text>
+<rect class="pu" x="302" y="116" width="66" height="40" rx="3"/><text x="335" y="141" text-anchor="middle">C</text>
+<g class="ln"><line x1="328" y1="76" x2="342" y2="76"/><line x1="300" y1="96" x2="320" y2="116"/><line x1="370" y1="96" x2="350" y2="116"/></g>
+<text class="b" x="335" y="190" text-anchor="middle">Architectural design</text><text class="mut" x="335" y="206" text-anchor="middle">components + interactions</text>
+</g>
+<g>
+<rect class="pu" x="500" y="40" width="140" height="130" rx="6"/><text x="570" y="60" text-anchor="middle" class="b">Inside C</text>
+<text class="mut" x="512" y="84">• algorithm</text><text class="mut" x="512" y="104">• data structures</text><text class="mut" x="512" y="124">• logic, pseudocode</text><text class="mut" x="512" y="144">• class details</text>
+<text class="b" x="570" y="190" text-anchor="middle">Detailed design</text><text class="mut" x="570" y="206" text-anchor="middle">internals of each component</text>
+</g>
+<g class="lna"><line x1="200" y1="105" x2="240" y2="105"/><line x1="430" y1="105" x2="490" y2="105"/></g>
+</svg>
+<figcaption>Zooming in · outside → components → inside a component</figcaption>
+</figure>
+</section>
+
+<section id="s6">
+<h3><span class="n">8.6</span>All Three Designs Together (Hostage Rescue Analogy)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A rescue team must free hostages held inside a house. It needs all three levels of information:
+<div class="tw"><table>
+<tr><th>Design level</th><th>Rescue-team information</th></tr>
+<tr><td><b>Interface design</b></td><td>The <b>surroundings</b> of the house and the ways in and out: a secret path or pipeline leading inside. Only the outside matters.</td></tr>
+<tr><td><b>Architectural design</b></td><td>The <b>blueprint</b> of the house: where the rooms, kitchen, hall and doors are and how they connect.</td></tr>
+<tr><td><b>Detailed design</b></td><td>What is <b>inside each room</b>: furniture, a bat, a table, anything the team can use to deal with the attackers.</td></tr>
+</table></div></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">8.7</span>Top-Down vs Bottom-Up Design Approach</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<h4>Top-down: divide and conquer (decomposition)</h4>
+To pass 40-plus engineering subjects, split them into 4 years, each year into 2 semesters, and each subject into 6 units. Then tackle one unit at a time. In design, start from the <b>high-level</b> features and decompose them into lower-level ones.
+<ul>
+<li>The <b>problem statement must be clear</b> from the start.</li>
+<li>Suits <b>small and medium</b> projects.</li>
+</ul>
+<h4>Bottom-up: composition</h4>
+The night before the exam, you study unit 1, unit 2 … unit 6, and together they make up the whole subject. In design, build and solve the <b>low-level modules first</b>, then <b>combine</b> them upward into the full system.
+<ul>
+<li>A full understanding of the problem is <b>not needed at the start</b>.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 660 200" role="img" aria-label="Top-down decomposition versus bottom-up composition">
+<g>
+<rect class="ac" x="110" y="10" width="100" height="30" rx="3"/><text x="160" y="30" text-anchor="middle">System</text>
+<rect class="ac" x="40" y="80" width="90" height="30" rx="3"/><text x="85" y="100" text-anchor="middle">Module 1</text>
+<rect class="ac" x="190" y="80" width="90" height="30" rx="3"/><text x="235" y="100" text-anchor="middle">Module 2</text>
+<rect class="bx" x="10" y="146" width="60" height="26" rx="3"/><text x="40" y="164" text-anchor="middle">1.1</text>
+<rect class="bx" x="90" y="146" width="60" height="26" rx="3"/><text x="120" y="164" text-anchor="middle">1.2</text>
+<rect class="bx" x="200" y="146" width="60" height="26" rx="3"/><text x="230" y="164" text-anchor="middle">2.1</text>
+<g class="lna"><line x1="150" y1="40" x2="90" y2="80"/><line x1="170" y1="40" x2="230" y2="80"/><line x1="75" y1="110" x2="45" y2="146"/><line x1="95" y1="110" x2="115" y2="146"/><line x1="235" y1="110" x2="230" y2="146"/></g>
+<text class="b" x="160" y="194" text-anchor="middle">Top-down: decompose ↓</text>
+</g>
+<g>
+<rect class="gr" x="460" y="10" width="100" height="30" rx="3"/><text x="510" y="30" text-anchor="middle">System</text>
+<rect class="gr" x="390" y="80" width="90" height="30" rx="3"/><text x="435" y="100" text-anchor="middle">Module 1</text>
+<rect class="gr" x="540" y="80" width="90" height="30" rx="3"/><text x="585" y="100" text-anchor="middle">Module 2</text>
+<rect class="bx" x="360" y="146" width="60" height="26" rx="3"/><text x="390" y="164" text-anchor="middle">1.1</text>
+<rect class="bx" x="440" y="146" width="60" height="26" rx="3"/><text x="470" y="164" text-anchor="middle">1.2</text>
+<rect class="bx" x="550" y="146" width="60" height="26" rx="3"/><text x="580" y="164" text-anchor="middle">2.1</text>
+<g class="lna"><line x1="440" y1="80" x2="500" y2="40"/><line x1="580" y1="80" x2="520" y2="40"/><line x1="395" y1="146" x2="425" y2="110"/><line x1="465" y1="146" x2="445" y2="110"/><line x1="580" y1="146" x2="585" y2="110"/></g>
+<text class="b" x="510" y="194" text-anchor="middle">Bottom-up: compose ↑</text>
+</g>
+</svg>
+<figcaption>Same tree, opposite direction of work</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th></th><th>Top-down</th><th>Bottom-up</th></tr>
+<tr><td>Direction</td><td>System → subsystems → modules</td><td>Modules → subsystems → system</td></tr>
+<tr><td>Technique</td><td>Decomposition, stepwise refinement</td><td>Composition, reuse</td></tr>
+<tr><td>Needs</td><td>Clear problem statement up front</td><td>Existing or well-understood low-level parts</td></tr>
+<tr><td>Typical for</td><td>Structured / function-oriented design</td><td>Object-oriented design, reusing libraries</td></tr>
+<tr><td>Testing counterpart</td><td>Top-down integration with <b>stubs</b></td><td>Bottom-up integration with <b>drivers</b> (chapter 12)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Most real projects use a <b>hybrid (sandwich)</b> approach: top-down for the overall structure, bottom-up for reusable low-level components. Top-down design builds on Niklaus Wirth's idea of <b>stepwise refinement</b> (1971).</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">8.8</span>Design Concepts and Architectural Styles<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<h4>Fundamental design concepts (Pressman)</h4>
+<div class="tw"><table>
+<tr><th>Concept</th><th>Meaning</th></tr>
+<tr><td><b>Abstraction</b></td><td>Focus on the essential and hide the details. <b>Procedural</b> abstraction ("open door") and <b>data</b> abstraction (a "door" object with attributes).</td></tr>
+<tr><td><b>Stepwise refinement</b></td><td>Elaborate a high-level statement step by step into detail (Wirth). It is the complement of abstraction.</td></tr>
+<tr><td><b>Modularity</b></td><td>Divide the software into separately named, addressable modules (chapter 9).</td></tr>
+<tr><td><b>Information hiding</b></td><td>A module hides its internal data and algorithms and exposes only an interface (<b>David Parnas</b>, 1972).</td></tr>
+<tr><td><b>Functional independence</b></td><td>Each module does one thing with little interaction with others, measured by cohesion and coupling.</td></tr>
+<tr><td><b>Separation of concerns</b></td><td>Split a complex problem into parts that can be solved independently.</td></tr>
+<tr><td><b>Refactoring</b></td><td>Restructure code or design without changing its external behaviour (chapter 14).</td></tr>
+<tr><td><b>Design patterns</b></td><td>Proven solutions to recurring problems: Singleton, Factory, Observer, MVC (from the "Gang of Four" book).</td></tr>
+</table></div>
+<h4>Common architectural styles</h4>
+<div class="tw"><table>
+<tr><th>Style</th><th>Idea</th><th>Example</th></tr>
+<tr><td><b>Layered</b></td><td>Each layer serves the one above it</td><td>OSI model, presentation → business → data layers</td></tr>
+<tr><td><b>Client–server</b></td><td>Clients request, a central server responds</td><td>Web apps, ATM ↔ bank server</td></tr>
+<tr><td><b>Pipe-and-filter</b></td><td>Data flows through a chain of transforming filters</td><td>Unix pipes, compilers</td></tr>
+<tr><td><b>Repository / data-centred</b></td><td>Components share a central data store</td><td>Databases, IDEs</td></tr>
+<tr><td><b>MVC</b></td><td>Separates Model (data), View (UI) and Controller (input logic)</td><td>Web frameworks</td></tr>
+<tr><td><b>Event-driven</b></td><td>Components react to events or messages</td><td>GUIs, notification systems</td></tr>
+<tr><td><b>Microservices</b></td><td>Small, independently deployable services that talk over APIs</td><td>Netflix, Amazon</td></tr>
+</table></div>
+<h4>Function-oriented vs object-oriented design</h4>
+<b>Function-oriented</b> design (Structured Analysis / Structured Design, SA/SD) decomposes the system into functions top-down. Its main design artefact is the <b>structure chart</b>: modules as rectangles, calls as arrows, data couples as arrows with an open circle, and control flags as arrows with a filled circle. <b>Object-oriented</b> design decomposes the system into <b>objects</b> that combine data and behaviour, and uses UML class, sequence and state diagrams.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+"Information hiding was proposed by?" → <b>Parnas</b>. "Stepwise refinement?" → <b>Wirth</b>. "Which style suits a compiler?" → <b>pipe-and-filter</b>. "Structure chart is used in?" → <b>function-oriented (structured) design</b>.</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">8.9</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>The output of the design phase is the: (a) SRS (b) SDD (c) test plan (d) source code<br><b>Answer: (b) SDD</b> (Software Design Document).</div>
+<div class="num"><span class="t">Q2</span>Which level of design treats the system as a black box and specifies only its inputs and outputs?<br><b>Answer: Interface design.</b></div>
+<div class="num"><span class="t">Q3</span>Algorithms and data structures for each module are decided during:<br><b>Answer: Detailed design</b> (LLD).</div>
+<div class="num"><span class="t">Q4</span>"Divide and conquer" design that starts from the overall system and refines it into modules is:<br><b>Answer: Top-down design.</b></div>
+<div class="num"><span class="t">Q5</span>Hiding a module's internal details behind a well-defined interface is called:<br><b>Answer: Information hiding</b> (Parnas).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Design: input <b>SRS</b> → output <b>SDD</b> (IEEE 1016). HLD = architecture and interfaces; LLD = internal logic.</li>
+<li>A good design covers all requirements, is free from conflict, ambiguity and incompleteness, is clear, and has high cohesion with low coupling.</li>
+<li><b>Interface</b> design = black box, I/O only · <b>Architectural</b> = components, responsibilities, interactions · <b>Detailed</b> = algorithms and data structures inside each component.</li>
+<li>Hostage rescue: surroundings and secret path (interface) · house blueprint (architecture) · objects inside each room (detailed).</li>
+<li><b>Top-down</b> = decomposition, clear problem needed (4 years → semesters → units). <b>Bottom-up</b> = composition (study unit 1–6 the night before). Hybrid = sandwich.</li>
+<li>Concepts: abstraction, refinement (Wirth), modularity, information hiding (Parnas), functional independence, patterns, refactoring.</li>
+<li>Styles: layered, client–server, pipe-and-filter, repository, MVC, event-driven, microservices.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 8 · Volume 04 — Software Engineering</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="07-CMM.html">← Ch 7: Capability Maturity Model (CMM)</a><a href="index.html">☰ All topics</a><a href="09-Coupling-and-Cohesion.html">Ch 9: Modularity, Coupling and Cohesion →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

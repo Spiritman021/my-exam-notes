@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE Coupling and Cohesion Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="08-Software-Design.html">← Ch 8: Software Design</a><a href="index.html">☰ All topics</a><a href="10-Project-Estimation.html">Ch 10: Project Estimation and Resource Management →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>Software Engineering — Chapter 9: Modularity, Coupling and Cohesion</h1>
+  <p class="sub">Volume 04 · Part 9 · Built from the one-shot Software Engineering lecture transcript (Modularity, Coupling and Cohesion sections), plus the exam points the lecture skipped. How to split software into modules, how to count a module's connections, and the two measures that tell a good split from a bad one, with every type ranked from best to worst.</p>
+  <ul class="tags"><li>Modularity</li><li>Fan-in</li><li>Fan-out</li><li>Coupling</li><li>Cohesion</li><li>Data coupling</li><li>Content coupling</li><li>Functional cohesion</li><li>Coincidental cohesion</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">9.1</span>Modularity, Fan-In and Fan-Out</a></li>
+<li><a href="#s2"><span class="n">9.2</span>Degree of Modularity</a></li>
+<li><a href="#s3"><span class="n">9.3</span>Coupling vs Cohesion (Two Neighbouring Houses)</a></li>
+<li><a href="#s4"><span class="n">9.4</span>Types of Coupling: Data, Stamp, Control, External, Common, Content (Exam Hall)</a></li>
+<li><a href="#s5"><span class="n">9.5</span>Types of Cohesion: Functional to Coincidental</a></li>
+<li><a href="#s6"><span class="n">9.6</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 9</div>
+<h2 class="ch">Modularity, Coupling and Cohesion</h2>
+<p>Chapter 8 said a good design has "high cohesion and low coupling". This chapter explains what that means. Splitting software into modules is easy; splitting it <i>well</i> is the hard part. Two measures decide it. <b>Coupling</b> measures how much modules depend on each other, and should be <b>low</b>. <b>Cohesion</b> measures how strongly the parts inside one module belong together, and should be <b>high</b>. Exams love the ranked lists of their types.</p>
+
+<section id="s1">
+<h3><span class="n">9.1</span>Modularity, Fan-In and Fan-Out</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Modularity</b> (first met among the quality attributes in chapter 1) means splitting features, functions and data into separate <b>modules</b>.
+<p>Two simple counts describe a module's connections, using modules M1–M4: M1 calls M2 and M3, and both of them call M4.</p>
+<ul>
+<li><b>Fan-out</b> = the number of modules a module <b>calls</b>. M1 has fan-out 2 because it calls M2 and M3.</li>
+<li><b>Fan-in</b> = the number of modules that <b>call it</b>. M4 has fan-in 2 because M2 and M3 call it, and fan-out 0.</li>
+</ul>
+Fully independent modules, with no calls at all, would be ideal but are unrealistic: modules must cooperate.</div>
+<figure>
+<svg viewBox="0 0 520 220" role="img" aria-label="Fan-in and fan-out with four modules">
+<rect class="ac" x="210" y="10" width="100" height="36" rx="3"/><text x="260" y="33" text-anchor="middle" class="b">M1</text>
+<rect class="ac" x="90" y="90" width="100" height="36" rx="3"/><text x="140" y="113" text-anchor="middle" class="b">M2</text>
+<rect class="ac" x="330" y="90" width="100" height="36" rx="3"/><text x="380" y="113" text-anchor="middle" class="b">M3</text>
+<rect class="gr" x="210" y="170" width="100" height="36" rx="3"/><text x="260" y="193" text-anchor="middle" class="b">M4</text>
+<g class="lna"><line x1="240" y1="46" x2="160" y2="90"/><line x1="280" y1="46" x2="360" y2="90"/><line x1="160" y1="126" x2="240" y2="170"/><line x1="360" y1="126" x2="280" y2="170"/></g>
+<text class="mut" x="330" y="30">fan-out = 2</text>
+<text class="mut" x="330" y="192">fan-in = 2, fan-out = 0</text>
+</svg>
+<figcaption>Fan-out counts arrows leaving a module; fan-in counts arrows arriving</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>High fan-in is good</b>: a module called by many others is being <b>reused</b>, typically a utility such as "validate date". <b>Very high fan-out is bad</b>: a module calling too many others is doing too much coordinating and is hard to understand. A common guideline keeps fan-out at about <b>7 or fewer</b>. A good structure is "<b>fan-out high at the top, fan-in high at the bottom</b>", shaped like an oval.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">9.2</span>Degree of Modularity</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+How many modules should there be? Somewhere between 1 and n, so take the <b>middle path</b>. Too few modules means each one is huge and does everything. Too many means the interactions and management between them become tedious.</div>
+<figure>
+<svg viewBox="0 0 560 210" role="img" aria-label="Total cost versus number of modules">
+<line class="ln" x1="50" y1="20" x2="50" y2="170"/><line class="ln" x1="50" y1="170" x2="530" y2="170"/>
+<text class="mut" x="40" y="96" text-anchor="middle" transform="rotate(-90 40 96)">cost / effort</text>
+<text class="mut" x="290" y="194" text-anchor="middle">number of modules →</text>
+<path class="soft dash" d="M60,30 C120,130 250,155 520,160"/>
+<path class="hard dash" d="M60,160 C300,155 420,120 520,30"/>
+<path class="lna" d="M60,40 C150,140 230,120 290,118 C360,118 440,110 520,40"/>
+<rect class="ac" x="230" y="100" width="120" height="34" rx="3" opacity=".35"/>
+<text class="mut" x="290" y="92" text-anchor="middle">region of minimum cost</text>
+<text class="mut" x="110" y="60">cost per module</text>
+<text class="mut" x="470" y="70" text-anchor="end">integration cost</text>
+</svg>
+<figcaption>Pressman's curve · too few and too many modules both cost more</figcaption>
+</figure>
+</section>
+
+<section id="s3">
+<h3><span class="n">9.3</span>Coupling vs Cohesion (Two Neighbouring Houses)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Think of two neighbouring <b>houses</b> as two modules.
+<ul>
+<li><b>Coupling</b> is <b>between modules</b>: how much the neighbours depend on each other, such as borrowing sugar, milk or salt. It should be <b>low</b>.</li>
+<li><b>Cohesion</b> is <b>within a module</b>: the bond between the family members inside one house. It should be <b>high</b>.</li>
+</ul>
+Coupling has three broad levels: <b>uncoupled</b> (no arrows between modules), <b>loosely coupled</b> (a few arrows) and <b>highly coupled</b> (neighbours in and out of each other's homes every day).</div>
+<figure>
+<svg viewBox="0 0 600 170" role="img" aria-label="Two houses: cohesion inside, coupling between">
+<g>
+<polygon class="ac" points="40,70 140,20 240,70"/><rect class="ac" x="50" y="70" width="180" height="80"/>
+<circle class="gr" cx="90" cy="110" r="14"/><circle class="gr" cx="140" cy="110" r="14"/><circle class="gr" cx="190" cy="110" r="14"/>
+<g class="soft"><line x1="104" y1="110" x2="126" y2="110"/><line x1="154" y1="110" x2="176" y2="110"/></g>
+<text x="140" y="164" text-anchor="middle" class="mut">strong family bond = high cohesion</text>
+</g>
+<g>
+<polygon class="ac" points="360,70 460,20 560,70"/><rect class="ac" x="370" y="70" width="180" height="80"/>
+<circle class="gr" cx="410" cy="110" r="14"/><circle class="gr" cx="460" cy="110" r="14"/><circle class="gr" cx="510" cy="110" r="14"/>
+<g class="soft"><line x1="424" y1="110" x2="446" y2="110"/><line x1="474" y1="110" x2="496" y2="110"/></g>
+</g>
+<path class="hard dash" d="M232,95 C280,80 320,80 368,95"/>
+<text x="300" y="70" text-anchor="middle" class="mut">"sugar?" = coupling</text>
+<text x="300" y="120" text-anchor="middle" class="b">keep LOW</text>
+</svg>
+<figcaption>Cohesion lives inside a module; coupling crosses between modules</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th></th><th>Coupling</th><th>Cohesion</th></tr>
+<tr><td>Measures</td><td>Interdependence <b>between</b> modules (inter-module)</td><td>Relatedness of elements <b>within</b> a module (intra-module)</td></tr>
+<tr><td>Goal</td><td><b>Low</b> (loose)</td><td><b>High</b> (strong)</td></tr>
+<tr><td>Best type</td><td>Data coupling</td><td>Functional cohesion</td></tr>
+<tr><td>Worst type</td><td>Content coupling</td><td>Coincidental cohesion</td></tr>
+<tr><td>Why it matters</td><td>Low coupling → a change in one module doesn't ripple into others</td><td>High cohesion → each module has one clear job, easy to understand and reuse</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Together, high cohesion and low coupling give <b>functional independence</b> (chapter 8). The two concepts were introduced by <b>Larry Constantine</b> (with Yourdon and Myers) in structured design in the 1970s. In general, as cohesion rises, coupling tends to fall.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">9.4</span>Types of Coupling: Data, Stamp, Control, External, Common, Content (Exam Hall)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Six types, from <b>best</b> (lowest coupling) to <b>worst</b> (highest), each illustrated in an exam hall:
+<div class="tw"><table>
+<tr><th>#</th><th>Type</th><th>What is shared</th><th>Exam-hall example</th></tr>
+<tr><td>1</td><td><b>Data</b> (best)</td><td>Only elementary data values are passed, like call by value</td><td>Whispering just the answer ("option B") to a friend</td></tr>
+<tr><td>2</td><td><b>Stamp</b></td><td>A whole data structure (or its address) is passed</td><td>Handing over your whole answer sheet when the friend needed one answer</td></tr>
+<tr><td>3</td><td><b>Control</b></td><td>One module passes control information (a flag) that decides the other's logic</td><td>Emotionally pressuring a friend for answers; Munna Bhai MBBS forcing the doctor to write his exam</td></tr>
+<tr><td>4</td><td><b>External</b></td><td>Modules depend on something external: hardware, a device, a protocol</td><td>Depending on the bus or cab to reach the exam hall</td></tr>
+<tr><td>5</td><td><b>Common</b></td><td>Modules share <b>global data</b></td><td>Two friends sharing one scale, pencil and eraser, so one waits while the other uses it. It is like the critical section and race conditions in an OS.</td></tr>
+<tr><td>6</td><td><b>Content</b> (worst)</td><td>One module directly uses or modifies another's internal data or code</td><td>One module is effectively part of another and changes its data directly</td></tr>
+</table></div></div>
+<figure>
+<svg viewBox="0 0 660 90" role="img" aria-label="Coupling types from best to worst">
+<defs><linearGradient id="cg" x1="0" x2="1"><stop offset="0" stop-color="#2F6B4F"/><stop offset="1" stop-color="#A33A3A"/></linearGradient></defs>
+<rect x="10" y="30" width="640" height="10" rx="5" fill="url(#cg)"/>
+<g><text x="40" y="22" text-anchor="middle">Data</text><text x="150" y="22" text-anchor="middle">Stamp</text><text x="260" y="22" text-anchor="middle">Control</text><text x="380" y="22" text-anchor="middle">External</text><text x="500" y="22" text-anchor="middle">Common</text><text x="615" y="22" text-anchor="middle">Content</text></g>
+<text class="mut" x="10" y="62">low coupling · best</text><text class="mut" x="650" y="62" text-anchor="end">high coupling · worst</text>
+<text class="mut" x="330" y="84" text-anchor="middle">mnemonic: "Don't Stamp Control, Ex-Common Content"</text>
+</svg>
+<figcaption>Coupling scale · aim for the left end</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li><b>Stamp coupling</b> is defined as passing a <b>composite data structure</b> (a record or struct) when the receiver uses only <b>part</b> of it. The lecture links it to call by reference, but the key idea is "<b>more data than needed</b>". Passing only the fields required turns it into data coupling.</li>
+<li><b>Control coupling</b> involves a <b>flag</b> that tells the other module <b>what to do</b> (for example <code>print(report, mode=2)</code>, which switches its logic).</li>
+<li><b>Common</b> = <b>global</b> variables. <b>Content</b> = jumping into, or modifying, <b>another module's internals</b>, such as a GOTO into the middle of another module.</li>
+<li>Some books list <b>no coupling</b> (completely independent modules) before data coupling as the theoretical ideal.</li>
+</ul></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">9.5</span>Types of Cohesion: Functional to Coincidental</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Cohesion</b> measures the strength of the relationship between the functions <b>inside one module</b>, like the bond within a family. High is desired. Seven types, from <b>best</b> to <b>worst</b>:
+<div class="tw"><table>
+<tr><th>#</th><th>Type</th><th>Elements are grouped because…</th><th>Example module</th></tr>
+<tr><td>1</td><td><b>Functional</b> (best)</td><td>All of them work together on <b>one single task</b></td><td><code>calculate_salary()</code></td></tr>
+<tr><td>2</td><td><b>Sequential</b></td><td>The <b>output of one is the input of the next</b></td><td>read data → validate → format</td></tr>
+<tr><td>3</td><td><b>Communicational</b></td><td>They operate on the <b>same data</b></td><td>From one customer record: print the address and compute the balance</td></tr>
+<tr><td>4</td><td><b>Procedural</b></td><td>They follow the <b>steps of one procedure</b> (order of execution), even if the data differs</td><td>check permission → open file → log the attempt</td></tr>
+<tr><td>5</td><td><b>Temporal</b></td><td>They run at the <b>same time</b> or in the same time span</td><td>System start-up: initialise variables, open files, clear the screen</td></tr>
+<tr><td>6</td><td><b>Logical</b></td><td>They are <b>logically similar</b> (same category) but functionally different; one is picked by a flag</td><td>All input routines: read from keyboard, file or network</td></tr>
+<tr><td>7</td><td><b>Coincidental</b> (worst)</td><td><b>No relation</b>, grouped at random, like strangers living in one house</td><td><code>utils.c</code> holding print_date, sort_array and send_email</td></tr>
+</table></div></div>
+<figure>
+<svg viewBox="0 0 660 90" role="img" aria-label="Cohesion types from best to worst">
+<defs><linearGradient id="hg" x1="0" x2="1"><stop offset="0" stop-color="#2F6B4F"/><stop offset="1" stop-color="#A33A3A"/></linearGradient></defs>
+<rect x="10" y="30" width="640" height="10" rx="5" fill="url(#hg)"/>
+<g><text x="45" y="22" text-anchor="middle">Functional</text><text x="140" y="22" text-anchor="middle">Sequential</text><text x="245" y="22" text-anchor="middle">Communic.</text><text x="345" y="22" text-anchor="middle">Procedural</text><text x="440" y="22" text-anchor="middle">Temporal</text><text x="525" y="22" text-anchor="middle">Logical</text><text x="610" y="22" text-anchor="middle">Coincidental</text></g>
+<text class="mut" x="10" y="62">high cohesion · best</text><text class="mut" x="650" y="62" text-anchor="end">low cohesion · worst</text>
+<text class="mut" x="330" y="84" text-anchor="middle">mnemonic: "Fast Snakes Can Pounce, Then Leap Carefully"</text>
+</svg>
+<figcaption>Cohesion scale · aim for the left end</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li><b>Sequential vs communicational</b>: sequential = output → input <b>chain</b>; communicational = same <b>input data</b>, no chain.</li>
+<li><b>Procedural vs temporal</b>: procedural = steps in a <b>required order</b> for one procedure; temporal = merely happen at the <b>same time</b> (initialisation, shutdown).</li>
+<li><b>Logical vs coincidental</b>: logical = same <b>category</b> ("all print functions"); coincidental = <b>no relationship at all</b>.</li>
+<li>Do not mix up the ends of the two scales. The best <b>coupling</b> is <b>data</b>; the best <b>cohesion</b> is <b>functional</b>. The worst <b>coupling</b> is <b>content</b>; the worst <b>cohesion</b> is <b>coincidental</b>.</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Typical questions:
+<ul>
+<li>"Which is the most desirable coupling?" → <b>Data</b>.</li>
+<li>"Modules sharing global variables exhibit?" → <b>Common coupling</b>.</li>
+<li>"A module that initialises all variables at system start-up has?" → <b>Temporal cohesion</b>.</li>
+<li>"Arrange the cohesion types in increasing order of strength" → coincidental &lt; logical &lt; temporal &lt; procedural &lt; communicational &lt; sequential &lt; functional.</li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">9.6</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Which is the worst (most undesirable) type of coupling? (a) Data (b) Control (c) Common (d) Content<br><b>Answer: (d) Content.</b></div>
+<div class="num"><span class="t">Q2</span>Module A passes a flag to module B telling it whether to print or display. This is:<br><b>Answer: Control coupling.</b></div>
+<div class="num"><span class="t">Q3</span>A module whose elements all contribute to computing a single result shows:<br><b>Answer: Functional cohesion</b> (the best kind).</div>
+<div class="num"><span class="t">Q4</span>A module calls 5 other modules and is called by 3. What are its fan-in and fan-out?<br><b>Answer: Fan-in = 3, fan-out = 5.</b></div>
+<div class="num"><span class="t">Q5</span>In a module, the output of one element is the input to the next. The cohesion is:<br><b>Answer: Sequential.</b></div>
+<div class="num"><span class="t">Q6</span>A good software design should have: (a) high coupling, high cohesion (b) low coupling, low cohesion (c) low coupling, high cohesion (d) high coupling, low cohesion<br><b>Answer: (c).</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Fan-out</b> = modules I call; <b>fan-in</b> = modules that call me. High fan-in = reuse (good); very high fan-out = bad.</li>
+<li>Degree of modularity: choose the middle path, the minimum-cost region between too few and too many modules.</li>
+<li>Coupling = <b>between</b> modules → <b>low</b>. Cohesion = <b>within</b> a module → <b>high</b>. (Neighbours borrowing sugar vs a family bond.)</li>
+<li>Coupling, best → worst: <b>Data → Stamp → Control → External → Common → Content</b>.</li>
+<li>Exam-hall examples: whisper the answer (data) · hand over the whole sheet (stamp) · emotional pressure, Munna Bhai (control) · bus or cab (external) · shared pencil and eraser (common) · one module inside another (content).</li>
+<li>Cohesion, best → worst: <b>Functional → Sequential → Communicational → Procedural → Temporal → Logical → Coincidental</b>.</li>
+<li>Global variables = common coupling · start-up initialisation = temporal cohesion · random utilities = coincidental cohesion.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 9 · Volume 04 — Software Engineering</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="08-Software-Design.html">← Ch 8: Software Design</a><a href="index.html">☰ All topics</a><a href="10-Project-Estimation.html">Ch 10: Project Estimation and Resource Management →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
