@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Keys Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="03-ER-Model.html">← Ch 3: ER Model</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 4: Integrity Constraints and Keys</h1>
+  <p class="sub">Volume 05 · Part 4 · Built from the one-shot DBMS lecture transcript (integrity constraints and keys), plus the exam points the lecture skipped. The four integrity constraints, candidate, primary and alternate keys, the foreign key and what happens on insert, delete and update, and the super key.</p>
+  <ul class="tags"><li>Domain integrity</li><li>Entity integrity</li><li>Referential integrity</li><li>Key integrity</li><li>Candidate key</li><li>Primary key</li><li>Alternate key</li><li>Foreign key</li><li>ON DELETE CASCADE</li><li>Super key</li><li>Composite key</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">4.1</span>Domain, Entity, Referential and Key Integrity (CHECK Marks &gt; 35)</a></li>
+<li><a href="#s2"><span class="n">4.2</span>Candidate, Primary and Alternate Keys (Phone Face Unlock vs PIN)</a></li>
+<li><a href="#s3"><span class="n">4.3</span>Foreign Key (Student and Sports Tables)</a></li>
+<li><a href="#s4"><span class="n">4.4</span>Insert, Delete and Update on Referenced vs Referencing Table (Taking a TC)</a></li>
+<li><a href="#s5"><span class="n">4.5</span>Super Key (EmpID + Name)</a></li>
+<li><a href="#s6"><span class="n">4.6</span>Other Keys and Counting Super Keys<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">4.7</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 4</div>
+<h2 class="ch">Integrity Constraints and Keys</h2>
+<p>A database is only as good as the rules that keep bad data out. <b>Integrity constraints</b> are those rules: a mark must be a number in a sensible range, every student must have a roll number, and a sports enrolment cannot name a student who does not exist. <b>Keys</b> are the attributes that make the rules enforceable, because they identify each row uniquely and link tables together. This chapter covers both, ending with the super key, which the next chapters (functional dependency and normalization) use constantly.</p>
+
+<section id="s1">
+<h3><span class="n">4.1</span>Domain, Entity, Referential and Key Integrity (CHECK Marks &gt; 35)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Domain integrity</b>: deals with the <b>domain of an attribute</b> (chapter 3): the type of data, which values are allowed, and their limits. We can put a condition in a <b>CHECK</b>: say we want to store only students who passed, so marks must be <b>greater than 35</b>. That CHECK decides the domain: which values, of which type, within which limits.</li>
+<li><b>Entity integrity</b>: about the <b>primary key</b>. The primary key <b>should never be NULL</b>; this is an integral property of the primary key. There is no student without a roll number.</li>
+<li><b>Referential integrity</b>: about the <b>foreign key</b>. In the relationship tables of chapter 3, the columns took their values by <b>referring to the primary key of another table</b>; such a column is a foreign key, and its rules are referential integrity.</li>
+<li><b>Key integrity</b>: the <b>unique identification</b> idea that applies to all keys.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Constraint</th><th>Rule</th><th>Example</th><th>SQL ➕</th></tr>
+<tr><td><b>Domain</b></td><td>Value must come from the attribute's allowed set (type, range, format)</td><td>Marks &gt; 35; RollNo is a positive integer</td><td>Data type, <code>CHECK</code>, <code>NOT NULL</code>, <code>DEFAULT</code></td></tr>
+<tr><td><b>Entity</b></td><td>Primary key can never be NULL</td><td>Every student has a roll number</td><td><code>PRIMARY KEY</code></td></tr>
+<tr><td><b>Referential</b></td><td>A foreign key value must match an existing primary key value in the referenced table (or be NULL)</td><td>Sports.RollNo must exist in Student</td><td><code>FOREIGN KEY … REFERENCES</code></td></tr>
+<tr><td><b>Key</b></td><td>Key values must be unique; no two tuples share a key</td><td>No two students share a roll number</td><td><code>PRIMARY KEY</code>, <code>UNIQUE</code></td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<pre class="formula">CREATE TABLE Student (
+  RollNo INT PRIMARY KEY,                 -- entity + key integrity
+  Name   VARCHAR(50) NOT NULL,            -- domain (no nulls)
+  Marks  INT CHECK (Marks &gt; 35)          -- domain integrity
+);</pre>
+Integrity constraints are part of the <b>schema</b> and are stored in the data dictionary. The DBMS checks them on every INSERT, UPDATE and DELETE and rejects any operation that would break them. Constraints that are more complex than these (e.g. "a customer may have at most 3 loans") are written as <b>assertions</b> or <b>triggers</b>.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">4.2</span>Candidate, Primary and Alternate Keys (Phone Face Unlock vs PIN)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<h4>Candidate key</h4>
+In a Student table, <b>RollNo, PhoneNo, GovernmentID, AdmissionNo, RegistrationNo</b> are all characteristics of each student, and they have one more thing in common: <b>each one alone can uniquely identify every record</b>. These are the <b>candidate keys</b>. The table will also have Name, Age and City, but none of those is unique, so they are <b>not</b> candidate keys.
+<h4>Primary key</h4>
+Out of all the candidate keys, the <b>database administrator</b> selects <b>one</b> as the <b>primary key</b>: "this one attribute, RollNo, will be used for unique identification." It must <b>never be NULL</b> and <b>never repeat</b>. We pick the <b>most eligible</b> key for the scenario. <b>Only one primary key is allowed</b> per table.
+<h4>Alternate keys</h4>
+The candidate keys left over after choosing the primary key are the <b>alternate keys</b>.
+<h4>Example: unlocking a phone</h4>
+The phone opens only when <b>your face</b> is shown. There are many faces in the world, but the key to your phone's lock is your face. A phone can also be unlocked by <b>fingerprint</b>, <b>pattern</b> or <b>PIN</b>; all of these are <b>candidate keys</b>. The best one in the current scenario, easy and always unique, never ambiguous, is face unlock: the <b>primary key</b>. Fingerprint, pattern and PIN are the <b>alternate keys</b>.</div>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="Candidate keys split into one primary key and the rest alternate keys">
+<rect class="bx" x="20" y="20" width="640" height="44" rx="4"/>
+<text x="340" y="38" text-anchor="middle" class="b">Candidate keys (each alone is unique)</text>
+<text class="mut" x="340" y="56" text-anchor="middle">RollNo · PhoneNo · GovtID · AdmissionNo · RegistrationNo</text>
+<line class="ln" x1="200" y1="64" x2="160" y2="100"/><line class="ln" x1="480" y1="64" x2="520" y2="100"/>
+<rect class="ac" x="40" y="100" width="240" height="56" rx="4"/><text x="160" y="124" text-anchor="middle" class="b">Primary key (exactly one)</text><text class="mut" x="160" y="144" text-anchor="middle">RollNo · face unlock</text>
+<rect class="gr" x="400" y="100" width="240" height="56" rx="4"/><text x="520" y="124" text-anchor="middle" class="b">Alternate keys (the rest)</text><text class="mut" x="520" y="144" text-anchor="middle">PhoneNo, GovtID… · fingerprint, pattern, PIN</text>
+<text class="mut" x="340" y="182" text-anchor="middle">Name, Age, City repeat → not candidate keys ("non-prime" attributes)</text>
+</svg>
+<figcaption>Choosing the primary key from the candidate keys</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Formally, a <b>candidate key</b> is a <b>minimal super key</b>: it identifies tuples uniquely, and no proper subset of it does. A candidate key can be <b>composite</b> (more than one attribute), like (RollNo, SID) in chapter 3.</li>
+<li>A table can have <b>many</b> candidate keys but only <b>one</b> primary key.</li>
+<li>Attributes that are part of <b>any</b> candidate key are <b>prime attributes</b>; all others are <b>non-prime</b>. This distinction drives 2NF and 3NF (chapter 8).</li>
+<li><b>UNIQUE key vs PRIMARY KEY</b>: both reject duplicates, but a UNIQUE column may hold <b>NULL</b> and a table may have <b>several</b> UNIQUE constraints; a primary key never allows NULL and there is only one. In most DBMSs the primary key also creates a clustered index by default.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"A table can have more than one primary key" is <b>false</b>. "A primary key can consist of more than one column" is <b>true</b> (composite primary key). Don't confuse "one primary key" with "one column".</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">4.3</span>Foreign Key (Student and Sports Tables)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Two tables (always write the table name when you draw one, or you get confused):
+<ul>
+<li><b>Student</b>(RollNo, Name) with primary key RollNo. The school has 4 students: roll numbers 1 to 4.</li>
+<li><b>Sports</b>(SportsID, SportsName, RollNo): cricket, football, hockey, kho-kho and so on, each with an ID, primary key SportsID. It also contains RollNo.</li>
+</ul>
+<h4>The scenario</h4>
+Sports is a school facility, so only students who paid fees and took admission in <b>this</b> school should use it; students from other schools should not. The <b>sports teacher</b> sits with the school's sheet of roll numbers. Every student who comes to enrol first says their roll number, and the teacher <b>checks it against the school records</b>:
+<ul>
+<li>Roll 1: in the records → enrolled. Roll 2 → enrolled in 102. Roll 3 → enrolled in 103.</li>
+<li>Roll 5: the teacher looks in the school records; nobody was given roll number 5. That student is not in the Student table, so <b>no entry</b> is allowed.</li>
+</ul>
+That is the referential-integrity constraint. Every time an entry with a RollNo is added to Sports, it <b>refers</b> to the Student table, where RollNo is the primary key. Written formally: <b>Sports.RollNo references Student.RollNo</b>.</div>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Sports.RollNo references Student.RollNo; roll 5 is rejected">
+<text x="140" y="18" text-anchor="middle" class="b">Student (referenced / parent)</text>
+<rect class="ac" x="60" y="28" width="160" height="26"/><text x="100" y="46" text-anchor="middle" class="b">RollNo</text><text x="180" y="46" text-anchor="middle" class="b">Name</text>
+<rect class="bx" x="60" y="54" width="160" height="24"/><text x="100" y="71" text-anchor="middle">1</text><text x="180" y="71" text-anchor="middle">A</text>
+<rect class="bx" x="60" y="78" width="160" height="24"/><text x="100" y="95" text-anchor="middle">2</text><text x="180" y="95" text-anchor="middle">B</text>
+<rect class="bx" x="60" y="102" width="160" height="24"/><text x="100" y="119" text-anchor="middle">3</text><text x="180" y="119" text-anchor="middle">C</text>
+<rect class="bx" x="60" y="126" width="160" height="24"/><text x="100" y="143" text-anchor="middle">4</text><text x="180" y="143" text-anchor="middle">D</text>
+<text x="520" y="18" text-anchor="middle" class="b">Sports (referencing / child)</text>
+<rect class="gr" x="400" y="28" width="240" height="26"/><text x="440" y="46" text-anchor="middle" class="b">SID</text><text x="520" y="46" text-anchor="middle" class="b">Sport</text><text x="600" y="46" text-anchor="middle" class="b">RollNo</text>
+<rect class="bx" x="400" y="54" width="240" height="24"/><text x="440" y="71" text-anchor="middle">101</text><text x="520" y="71" text-anchor="middle">Cricket</text><text x="600" y="71" text-anchor="middle">1</text>
+<rect class="bx" x="400" y="78" width="240" height="24"/><text x="440" y="95" text-anchor="middle">102</text><text x="520" y="95" text-anchor="middle">Football</text><text x="600" y="95" text-anchor="middle">2</text>
+<rect class="bx" x="400" y="102" width="240" height="24"/><text x="440" y="119" text-anchor="middle">103</text><text x="520" y="119" text-anchor="middle">Hockey</text><text x="600" y="119" text-anchor="middle">3</text>
+<rect class="or" x="400" y="126" width="240" height="24"/><text x="440" y="143" text-anchor="middle">104</text><text x="520" y="143" text-anchor="middle">Kho-kho</text><text x="600" y="143" text-anchor="middle">5 ✗</text>
+<line class="lna" x1="400" y1="66" x2="230" y2="66"/><polygon class="aha" points="230,61 220,66 230,71"/>
+<text class="mut" x="315" y="58" text-anchor="middle">FK → PK</text>
+<text class="mut" x="340" y="180" text-anchor="middle">Roll 5 is not in Student → insert rejected (referential integrity)</text>
+</svg>
+<figcaption>The sports teacher checks every roll number against the school records</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<pre class="formula">CREATE TABLE Sports (
+  SportsID   INT PRIMARY KEY,
+  SportsName VARCHAR(30),
+  RollNo     INT,
+  FOREIGN KEY (RollNo) REFERENCES Student(RollNo)
+);</pre>
+<ul>
+<li>The table holding the foreign key is the <b>referencing (child)</b> table; the table it points to is the <b>referenced (parent / master)</b> table.</li>
+<li>A foreign key <b>can be NULL</b> (unless declared NOT NULL) and <b>can repeat</b> (many sports rows for one student).</li>
+<li>A foreign key must reference a <b>primary key or UNIQUE</b> column, with the same data type.</li>
+<li>A <b>self-referencing</b> foreign key points to its own table: Employee.ManagerID references Employee.EmpID.</li>
+<li>A table can have <b>many</b> foreign keys.</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">4.4</span>Insert, Delete and Update on Referenced vs Referencing Table (Taking a TC)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Student is the table <b>being referred to</b>; Sports is the table <b>that refers</b>. Do insert, delete and update on each and see the impact on the other.
+<h4>Changes in the referenced table (Student)</h4>
+<ul>
+<li><b>Insert</b> (5, E) into Student: <b>no impact</b> on Sports at all.</li>
+<li><b>Delete</b> roll 2 from Student (the student <b>took a TC</b> and left the school): this <b>does</b> affect Sports. The Sports row with roll 2 now refers to nothing, so the constraint is violated. You can <b>cascade</b> the delete: propagate it from Student to Sports and delete that row too, so no inconsistency remains.</li>
+<li><b>Update</b> roll 5 to roll 6 in Student (the student didn't like 5 and 6 was vacant): if Sports has a row with roll 5, it now refers to a value that no longer exists. You must <b>update it to 6 in Sports too</b>; only then is the constraint satisfied in both tables.</li>
+</ul>
+<h4>Changes in the referencing table (Sports)</h4>
+<ul>
+<li><b>Insert</b> (105, "F" / kho-kho, roll 6) into Sports: the constraint is <b>violated</b>, because 6 does not exist in Student, so the insert is <b>not allowed</b>. Student itself is not affected at all.</li>
+<li><b>Delete</b> a Sports row (the student lost interest and asked to have their name removed): <b>no problem</b>. Nothing to change in Student; roll 2 stays as it is.</li>
+<li><b>Update</b> roll 3 to roll 6 in Sports (roll 3 wants his friend with roll 6 enrolled in sport 103 instead): the sports teacher sees no 6 in the school records, so the update is <b>refused</b>. If 6 did exist in Student, the update would be valid.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Operation</th><th>On referenced table (Student)</th><th>On referencing table (Sports)</th></tr>
+<tr><td><b>Insert</b></td><td>✅ No violation</td><td>⚠️ May violate — rejected if the RollNo doesn't exist in Student</td></tr>
+<tr><td><b>Delete</b></td><td>⚠️ May violate — orphan rows in Sports; handle by cascade / set null / restrict</td><td>✅ No violation</td></tr>
+<tr><td><b>Update</b></td><td>⚠️ May violate — handle by cascading the new value to Sports</td><td>⚠️ May violate — rejected if the new RollNo doesn't exist in Student</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+SQL lets you choose what happens when a referenced row is deleted or updated (<code>ON DELETE …</code> / <code>ON UPDATE …</code>):
+<div class="tw"><table>
+<tr><th>Option</th><th>Effect on child rows</th></tr>
+<tr><td><code>CASCADE</code></td><td>Delete (or update) the matching child rows too. The lecture's "cascade".</td></tr>
+<tr><td><code>SET NULL</code></td><td>Set the child's foreign key to NULL.</td></tr>
+<tr><td><code>SET DEFAULT</code></td><td>Set the child's foreign key to its default value.</td></tr>
+<tr><td><code>RESTRICT</code> / <code>NO ACTION</code></td><td>Refuse the parent delete/update while child rows exist (the usual default).</td></tr>
+</table></div>
+<pre class="formula">FOREIGN KEY (RollNo) REFERENCES Student(RollNo)
+  ON DELETE CASCADE ON UPDATE CASCADE</pre></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+The one-line rule: <b>insert into the child</b> and <b>delete from the parent</b> are the operations that can violate referential integrity (update can violate on both sides). <b>Insert into the parent</b> and <b>delete from the child</b> are always safe.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">4.5</span>Super Key (EmpID + Name)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+A super key is not some "super-power" key. Take a <b>candidate key</b> and combine it with any <b>non-prime attribute</b> (one that is not a key): the combination becomes a <b>super key</b>.
+<ul>
+<li>Employee table: <b>EmpID</b> is the primary key, so it is also one of the candidate keys.</li>
+<li><b>EmpID + Name</b> together is a super key.</li>
+<li>Each employee also has a <b>Location</b> (where they work), a normal non-prime attribute. <b>EmpID + Location</b> is also a super key.</li>
+<li>But <b>non-prime + non-prime</b> never makes a super key. Super key still contains "key", and a key must identify uniquely. If someone is named Akshay and is from Maharashtra, there will be many "Akshay–Maharashtra" combinations in the table, so it cannot identify a row uniquely.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Nested sets: primary key within candidate keys within super keys">
+<ellipse cx="340" cy="105" rx="320" ry="95" class="bx"/>
+<ellipse cx="340" cy="118" rx="210" ry="70" class="gr"/>
+<ellipse cx="340" cy="130" rx="100" ry="38" class="ac"/>
+<text x="340" y="30" text-anchor="middle" class="b">Super keys</text>
+<text class="mut" x="340" y="46" text-anchor="middle">{EmpID, Name} · {EmpID, Location} · {EmpID, Name, Location} …</text>
+<text x="340" y="72" text-anchor="middle" class="b">Candidate keys (minimal super keys)</text>
+<text class="mut" x="340" y="88" text-anchor="middle">{EmpID} · {Email}</text>
+<text x="340" y="128" text-anchor="middle" class="b">Primary key</text>
+<text class="mut" x="340" y="144" text-anchor="middle">{EmpID}</text>
+<text class="mut" x="610" y="196" text-anchor="end">{Name, Location} → not a super key</text>
+</svg>
+<figcaption>Every primary key is a candidate key; every candidate key is a super key</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+The textbook definition is broader than the lecture's: a <b>super key</b> is <b>any set of attributes that uniquely identifies each tuple</b>. Any <b>superset</b> of a candidate key is a super key, including the candidate key itself and the set of all attributes. A <b>candidate key is a minimal super key</b>: remove any attribute and it stops being unique. So: <b>Primary key ⊆ Candidate keys ⊆ Super keys</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Every super key is a candidate key" is <b>false</b>; "every candidate key is a super key" is <b>true</b>. The candidate key alone (EmpID) also counts as a super key; you don't have to add anything to it.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">4.6</span>Other Keys and Counting Super Keys<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<div class="tw"><table>
+<tr><th>Key</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><b>Composite key</b></td><td>A key made of two or more attributes</td><td>(RollNo, SubjectID) in an Enrolment table</td></tr>
+<tr><td><b>Compound key</b></td><td>A composite key whose parts are each foreign keys</td><td>(OrderID, ProductID) in OrderItems</td></tr>
+<tr><td><b>Surrogate key</b></td><td>An artificial, system-generated key with no business meaning</td><td>Auto-increment ID, sequence number</td></tr>
+<tr><td><b>Natural key</b></td><td>A key that already exists in real-world data</td><td>PAN, Aadhaar, IFSC code</td></tr>
+<tr><td><b>Unique key</b></td><td>Unique, but allows NULL; many per table</td><td>Email, Mobile</td></tr>
+<tr><td><b>Secondary key</b></td><td>An attribute used for searching or indexing, not necessarily unique</td><td>Name, City</td></tr>
+</table></div>
+<h4>Counting super keys</h4>
+Relation with <b>n</b> attributes:
+<ul>
+<li>One candidate key with <b>1 attribute</b> (say A): every super key contains A, and each of the other n − 1 attributes is either in or out. Number of super keys = <b>2<sup>n−1</sup></b>.</li>
+<li>Two single-attribute candidate keys A and B: by inclusion–exclusion, |contains A| + |contains B| − |contains both| = 2<sup>n−1</sup> + 2<sup>n−1</sup> − 2<sup>n−2</sup>.</li>
+<li>One candidate key with <b>k attributes</b>: <b>2<sup>n−k</sup></b>.</li>
+</ul></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">4.7</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>The constraint that the primary key cannot be NULL is: (a) domain integrity (b) entity integrity (c) referential integrity (d) key integrity<br><b>Answer: (b) Entity integrity.</b></div>
+<div class="num"><span class="t">Q2</span>A foreign key value must match a primary key value in another relation or be NULL. This is:<br><b>Answer: Referential integrity.</b></div>
+<div class="num"><span class="t">Q3</span>Customer(CustID, PAN, Email, Name, City) — CustID, PAN and Email are each unique. CustID is chosen as the primary key. What are the alternate keys?<br><b>Answer: PAN and Email.</b> All three are candidate keys.</div>
+<div class="num"><span class="t">Q4</span>Account(AccNo, CustID) has CustID referencing Customer(CustID). Which operation can violate referential integrity? (a) Insert into Customer (b) Delete from Account (c) Insert into Account (d) None<br><b>Answer: (c) Insert into Account</b> with a CustID that does not exist in Customer.</div>
+<div class="num"><span class="t">Q5</span>Which clause automatically deletes child rows when the parent row is deleted?<br><b>Answer: ON DELETE CASCADE.</b></div>
+<div class="num"><span class="t">Q6</span>R(A, B, C, D) has the single candidate key A. How many super keys does R have?<br><b>Answer: 2<sup>4−1</sup> = 8</b>: A, AB, AC, AD, ABC, ABD, ACD, ABCD.</div>
+<div class="num"><span class="t">Q7</span>R(A, B, C) has candidate keys A and B. How many super keys?<br><b>Answer: 2<sup>2</sup> + 2<sup>2</sup> − 2<sup>1</sup> = 6</b>: A, AB, AC, ABC, B, BC.</div>
+<div class="num"><span class="t">Q8</span>Which statement is true? (a) A table may have two primary keys (b) A UNIQUE column can hold NULL (c) A foreign key must be unique (d) Every super key is minimal<br><b>Answer: (b).</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Domain integrity</b> = type and allowed values (CHECK marks &gt; 35). <b>Entity integrity</b> = PK never NULL. <b>Referential integrity</b> = FK refers to another table's PK. <b>Key integrity</b> = keys are unique.</li>
+<li><b>Candidate keys</b> = each can uniquely identify a record (RollNo, Phone, GovtID, AdmissionNo, RegNo); Name, Age, City cannot. ➕ Minimal super key; can be composite.</li>
+<li><b>Primary key</b> = one candidate key chosen by the DBA; unique, never NULL; only one per table (face unlock). <b>Alternate keys</b> = the remaining candidate keys (fingerprint, pattern, PIN).</li>
+<li><b>Foreign key</b> = attribute that refers to the PK of another table (Sports.RollNo → Student.RollNo; roll 5 refused by the sports teacher). ➕ Can be NULL, can repeat, can be self-referencing.</li>
+<li>Referenced table (Student): insert ✓, delete ✗ → cascade (TC), update ✗ → update FK too. Referencing table (Sports): insert ✗ if roll missing, delete ✓, update ✗ if new roll missing.</li>
+<li>➕ ON DELETE / ON UPDATE: CASCADE, SET NULL, SET DEFAULT, RESTRICT / NO ACTION.</li>
+<li><b>Super key</b> = candidate key + any non-prime attribute (EmpID + Name, EmpID + Location). Non-prime + non-prime is never a super key (Akshay + Maharashtra). ➕ Any superset of a candidate key; PK ⊆ CK ⊆ SK.</li>
+<li>➕ Super keys with n attributes and one single-attribute CK = 2<sup>n−1</sup>.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 4 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="03-ER-Model.html">← Ch 3: ER Model</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

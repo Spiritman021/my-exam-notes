@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Introduction Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><span class="off">First chapter</span><a href="index.html">☰ All topics</a><a href="02-Architecture-and-Schemas.html">Ch 2: DBMS Architecture and Schemas →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 1: Introduction to DBMS</h1>
+  <p class="sub">Volume 05 · Part 1 · Built from the one-shot DBMS lecture transcript (opening section), plus the exam points the lecture skipped. What data, information, a database and a DBMS are, why the old file system was not enough, how OLAP differs from OLTP, and the two broad kinds of data.</p>
+  <ul class="tags"><li>Data vs information</li><li>Database</li><li>DBMS</li><li>File system drawbacks</li><li>Redundancy</li><li>Inconsistency</li><li>OLAP</li><li>OLTP</li><li>Structured data</li><li>Unstructured data</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s0"><span class="n">1.0</span>Road Map of the Subject</a></li>
+<li><a href="#s1"><span class="n">1.1</span>Data, Information, Database and DBMS (Shopping-Mart Analogy)</a></li>
+<li><a href="#s2"><span class="n">1.2</span>Problems with the File System: Redundancy, Inconsistency, Difficult Access, Isolation</a></li>
+<li><a href="#s3"><span class="n">1.3</span>Security, Atomicity and Concurrency Issues in File Systems</a></li>
+<li><a href="#s4"><span class="n">1.4</span>OLAP vs OLTP</a></li>
+<li><a href="#s5"><span class="n">1.5</span>Structured vs Unstructured Data</a></li>
+<li><a href="#s6"><span class="n">1.6</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 1</div>
+<h2 class="ch">Introduction to DBMS</h2>
+<p>Every bank, school, shop and app keeps records: who the customers are, what they bought, how much money sits in which account. A <b>database management system</b> is the software that stores those records and lets many people read and change them quickly, safely and without contradicting each other. This chapter sets up the basic vocabulary, shows why plain files on a disk were not good enough, and separates the two jobs databases do: running today's transactions (OLTP) and analysing years of history (OLAP).</p>
+
+<section id="s0">
+<h3><span class="n">1.0</span>Road Map of the Subject</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The whole subject is taught in one video from handwritten notes, in simple "desi" language with many illustrations and solved problems of the kind asked in university and competitive exams. It starts with basic terms and the introduction module, then moves to the <b>ER diagram</b>, keys and constraints, <b>functional dependency</b> and <b>normalization</b>, joins, <b>relational algebra and calculus</b>, <b>SQL</b>, <b>indexing and B/B+ trees</b>, and ends with <b>transactions and concurrency control</b>. These notes follow the same order across 19 chapters.</div>
+<figure>
+<svg viewBox="0 0 720 128" role="img" aria-label="Order of topics in the lecture">
+<rect class="ac" x="8" y="14" width="74" height="34" rx="4"/><text x="45" y="36" text-anchor="middle">Intro</text>
+<rect class="ac" x="90" y="14" width="96" height="34" rx="4"/><text x="138" y="36" text-anchor="middle">Architecture</text>
+<rect class="gr" x="194" y="14" width="64" height="34" rx="4"/><text x="226" y="36" text-anchor="middle">ER</text>
+<rect class="gr" x="266" y="14" width="64" height="34" rx="4"/><text x="298" y="36" text-anchor="middle">Keys</text>
+<rect class="gr" x="338" y="14" width="64" height="34" rx="4"/><text x="370" y="36" text-anchor="middle">FD</text>
+<rect class="gr" x="410" y="14" width="110" height="34" rx="4"/><text x="465" y="36" text-anchor="middle">Normalization</text>
+<rect class="pu" x="528" y="14" width="64" height="34" rx="4"/><text x="560" y="36" text-anchor="middle">Joins</text>
+<rect class="pu" x="600" y="14" width="112" height="34" rx="4"/><text x="656" y="36" text-anchor="middle">RA / RC</text>
+<rect class="pu" x="120" y="76" width="70" height="34" rx="4"/><text x="155" y="98" text-anchor="middle">SQL</text>
+<rect class="or" x="200" y="76" width="90" height="34" rx="4"/><text x="245" y="98" text-anchor="middle">Indexing</text>
+<rect class="or" x="300" y="76" width="96" height="34" rx="4"/><text x="348" y="98" text-anchor="middle">B / B+ tree</text>
+<rect class="or" x="406" y="76" width="104" height="34" rx="4"/><text x="458" y="98" text-anchor="middle">Transactions</text>
+<rect class="or" x="520" y="76" width="104" height="34" rx="4"/><text x="572" y="98" text-anchor="middle">Concurrency</text>
+<text class="mut" x="360" y="124" text-anchor="middle">basics (blue) · design (green) · query languages (purple) · storage &amp; transactions (orange)</text>
+</svg>
+<figcaption>Lecture order · 19 chapters</figcaption>
+</figure>
+</section>
+
+<section id="s1">
+<h3><span class="n">1.1</span>Data, Information, Database and DBMS (Shopping-Mart Analogy)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Data</b>: almost everything is data. Facts, figures (<i>aankde</i>), statistics and records are all data, and today data is extremely valuable.</li>
+<li><b>Information</b>: <b>meaningful, processed, useful and relevant</b> data. Information is also data, but not all data is information. There is a "thin line of difference" that students often blur.
+<h4>Example: the teacher's life story</h4>
+You are studying DBMS. In the middle of the lecture the teacher starts on the sad story of his life: what he likes to eat, which people he likes and dislikes. You would ask, "Sir, what is going on? Is this useful or relevant here?" What he is saying is <b>data</b>, but in this context it is <b>not information</b>.</li>
+<li><b>Database (DB)</b>: a <b>collection of related data</b>. The data can relate to one person, a group, a company, an institute or a school. Company X and Company Y each have their own employees, rules and functions, so each has its own related data, and therefore its <b>own separate database</b>.</li>
+<li><b>DBMS</b>: a <b>software</b> that lets you store, access, retrieve, update, create, maintain, delete and secure data.</li>
+</ul>
+<h4>Example: the shopping mart</h4>
+A mart (vegetables, cold drinks, groceries, fashion, all under one roof) does to items exactly what a DBMS does to data:
+<ul>
+<li><b>Store</b>: everything is kept on shelves.</li>
+<li><b>Access / retrieve</b>: chocolates, candies and chips are placed on the <b>lowest shelves</b> so small children can reach them and slip them into the cart before their parents notice. Nothing is locked or password-protected; you pick it up and go.</li>
+<li><b>Update / modify</b>: items that are not selling are replaced with another brand or item.</li>
+<li><b>Create</b>: some marts make products under their own brand and place them <b>near the billing counter</b>, so every customer sees them.</li>
+<li><b>Maintain</b>: milk, butter and cold drinks go in the refrigerator; other items stay on shelves.</li>
+<li><b>Delete</b>: items past their expiry date are removed, because keeping them plays with the customer's life.</li>
+<li><b>Secure</b>: all of this happens under <b>CCTV surveillance</b>.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="Data becomes information; related data forms a database managed by a DBMS">
+<rect class="bx" x="10" y="20" width="120" height="48" rx="4"/><text x="70" y="40" text-anchor="middle" class="b">Data</text><text class="mut" x="70" y="58" text-anchor="middle">raw facts, figures</text>
+<line class="ln" x1="130" y1="44" x2="176" y2="44"/><polygon class="ah" points="176,39 186,44 176,49"/>
+<text class="mut" x="158" y="34" text-anchor="middle">process</text>
+<rect class="gr" x="188" y="20" width="140" height="48" rx="4"/><text x="258" y="40" text-anchor="middle" class="b">Information</text><text class="mut" x="258" y="58" text-anchor="middle">meaningful, relevant</text>
+<rect class="ac" x="380" y="10" width="140" height="68" rx="4"/><text x="450" y="34" text-anchor="middle" class="b">Database</text><text class="mut" x="450" y="52" text-anchor="middle">collection of</text><text class="mut" x="450" y="66" text-anchor="middle">related data</text>
+<rect class="pu" x="540" y="10" width="130" height="68" rx="4"/><text x="605" y="34" text-anchor="middle" class="b">DBMS</text><text class="mut" x="605" y="52" text-anchor="middle">software that</text><text class="mut" x="605" y="66" text-anchor="middle">manages the DB</text>
+<line class="ln" x1="540" y1="44" x2="524" y2="44"/><polygon class="ah" points="524,39 514,44 524,49"/>
+<text class="mut" x="340" y="112" text-anchor="middle">Mart analogy: store · access · update · create · maintain · delete · secure (CCTV)</text>
+<text class="mut" x="340" y="134" text-anchor="middle">Database + DBMS together = database system</text>
+</svg>
+<figcaption>The four basic terms</figcaption>
+</figure>
+<div class="def"><b>DBMS:</b> a collection of interrelated data together with a set of programs to access that data, providing a convenient and efficient way to store and retrieve database information (Korth). Examples: <b>MySQL, Oracle, PostgreSQL, Microsoft SQL Server, IBM DB2, SQLite, MS Access</b>. MongoDB and Cassandra are NoSQL DBMSs.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Database system</b> = database + DBMS software (+ application programs).</li>
+<li><b>Metadata</b> is "data about data": table names, column types, constraints. The DBMS keeps it in the <b>data dictionary</b> (system catalog).</li>
+<li><b>RDBMS</b> (relational DBMS) stores data as tables (relations). The relational model was proposed by <b>E. F. Codd</b> at IBM in <b>1970</b>. Codd later gave <b>12 rules</b> (numbered 0–12, so 13 in all) that a DBMS must follow to be called relational.</li>
+<li>Main <b>database users</b>: DBA (database administrator), database designers, application programmers, and end users (naive, casual, sophisticated).</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"All information is data, but all data is not information." Options that reverse this are wrong. Also, a <b>database</b> is the collection of data; the <b>DBMS</b> is the software. "Oracle is a database" is loose talk; strictly, Oracle is a DBMS.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">1.2</span>Problems with the File System: Redundancy, Inconsistency, Difficult Access, Isolation (Boys' Hostel Room)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Before DBMS, data lived in the <b>conventional file system</b>. Why did we need something new? Because of these disadvantages:
+<ol>
+<li><b>Data redundancy</b>: the most basic and most common problem. You keep copies of the same files in different drives and locations. Storage is wasted, and when space runs out you can't decide what to delete, so you buy a <b>new hard drive</b>. Cost goes up, and with so much data the cost of access goes up too.</li>
+<li><b>Data inconsistency</b>: you save the same file in Drive A and Drive B, then fix a spelling mistake in Drive B's copy. That change does <b>not</b> reflect in Drive A unless you do it by hand. The two copies were consistent; now they are inconsistent, purely because of how a file system works.</li>
+<li><b>Difficult access</b>: you are handed the school's records for the last 10 years and asked for the full data of every student who was selected for the cricket team. Doing that by hand is very hard.</li>
+<li><b>Data isolation</b>: the data is scattered all over the system, like a <b>boys' hostel room</b>: jeans here, socks there, towel somewhere, bag, books and laptop all over the place. Pulling out just the data you are interested in becomes a difficult task.</li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="Redundancy leads to inconsistency when only one copy is updated">
+<rect class="bx" x="20" y="20" width="200" height="120" rx="4"/><text x="120" y="42" text-anchor="middle" class="b">Drive A</text>
+<rect class="or" x="50" y="60" width="140" height="56" rx="4"/><text x="120" y="84" text-anchor="middle">report.docx</text><text class="mut" x="120" y="102" text-anchor="middle">"Recieve" (old)</text>
+<rect class="bx" x="300" y="20" width="200" height="120" rx="4"/><text x="400" y="42" text-anchor="middle" class="b">Drive B</text>
+<rect class="gr" x="330" y="60" width="140" height="56" rx="4"/><text x="400" y="84" text-anchor="middle">report.docx</text><text class="mut" x="400" y="102" text-anchor="middle">"Receive" (fixed)</text>
+<line class="ln dash" x1="190" y1="88" x2="330" y2="88"/>
+<text class="mut" x="260" y="80" text-anchor="middle">same file twice</text>
+<text class="mut" x="260" y="104" text-anchor="middle">= redundancy</text>
+<text x="590" y="70" text-anchor="middle" class="b">A ≠ B</text>
+<text class="mut" x="590" y="90" text-anchor="middle">= inconsistency</text>
+<text class="mut" x="340" y="162" text-anchor="middle">Fix made in B does not reach A; a DBMS keeps one shared copy</text>
+</svg>
+<figcaption>Redundancy is the cause; inconsistency is the effect</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Textbook lists (Korth) add three more file-system problems:
+<ul>
+<li><b>Integrity problems</b>: rules such as "balance must never go below ₹0" are buried inside program code. Adding or changing a rule means editing many programs.</li>
+<li><b>Data dependence</b>: each program depends on the exact file format. Change the file layout and every program that reads it must be rewritten. A DBMS gives <b>data independence</b> (chapter 2).</li>
+<li><b>Limited data sharing</b>: each department keeps its own files in its own format.</li>
+</ul>
+<b>Advantages of DBMS</b> are the opposites: controlled redundancy, consistency, easy querying (SQL), data sharing, integrity constraints, security via views and permissions, atomic transactions, concurrency control, and backup and recovery. <b>Disadvantages</b> of DBMS: high cost of software, hardware and trained staff, complexity, size, and higher impact of a failure (everything is in one place).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A DBMS gives <b>controlled</b> (minimised) redundancy, not <b>zero</b> redundancy. Some duplication is deliberate, such as foreign key values repeated across tables and backup copies. If an option says "DBMS eliminates redundancy completely", it is wrong.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">1.3</span>Security, Atomicity and Concurrency Issues in File Systems (Password-Protected PDF)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ol start="5">
+<li><b>Security issues</b>: you put a password on a PDF. That authenticates the file as a whole: whoever has the password can open it. But you cannot secure the <b>data inside</b> it user by user: page 1 visible only to User 1, page 2 only to User 2, neither seeing the other's page. In a DBMS this is easy through <b>views</b>; users get different views of the same data without even knowing it.</li>
+<li><b>Atomicity</b>: a task must be done <b>completely or not at all</b> (all or none). If a transaction fails half-way, it should be <b>rolled back</b> and the data restored to the original values. This is really hard in a file system. It is covered in detail with the ACID properties (chapter 16).</li>
+<li><b>Concurrency</b>: "the world runs on concurrency". Many users access your server at the same time and expect a fast, efficient experience. A file system is slow at this, and redundancy makes it worse. DBMS solves it with concurrency control protocols (chapter 19).</li>
+<li><b>Simplicity</b>: the file system's only plus is that it is simple. "What do I do with that simplicity?" With so many disadvantages, it is not worth much. That is why we move on to DBMS.</li>
+</ol></div>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="File password protects the whole file; DBMS views give each user a different part">
+<text x="160" y="18" text-anchor="middle" class="b">File system</text>
+<rect class="or" x="80" y="30" width="160" height="90" rx="4"/><text x="160" y="58" text-anchor="middle">🔒 notes.pdf</text><text class="mut" x="160" y="80" text-anchor="middle">page 1 · page 2</text><text class="mut" x="160" y="98" text-anchor="middle">one password, all or nothing</text>
+<text class="mut" x="160" y="146" text-anchor="middle">User 1 and User 2 both see every page</text>
+<text x="500" y="18" text-anchor="middle" class="b">DBMS</text>
+<rect class="ac" x="430" y="30" width="140" height="40" rx="4"/><text x="500" y="55" text-anchor="middle">one table</text>
+<rect class="gr" x="380" y="100" width="100" height="36" rx="4"/><text x="430" y="123" text-anchor="middle">View 1</text>
+<rect class="gr" x="520" y="100" width="100" height="36" rx="4"/><text x="570" y="123" text-anchor="middle">View 2</text>
+<line class="ln" x1="470" y1="70" x2="440" y2="100"/><line class="ln" x1="530" y1="70" x2="560" y2="100"/>
+<text class="mut" x="430" y="156" text-anchor="middle">User 1</text><text class="mut" x="570" y="156" text-anchor="middle">User 2</text>
+</svg>
+<figcaption>File-level password vs view-level security</figcaption>
+</figure>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+The standard list of file-system drawbacks to remember: <b>redundancy, inconsistency, difficulty in accessing data, data isolation, integrity problems, atomicity problems, concurrent-access anomalies, security problems</b>. A typical question: "Which of these is NOT a disadvantage of the file processing system?", where the odd one out is something like "data independence" or "simplicity".</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">1.4</span>OLAP vs OLTP (Heaters and Blankets Sell in Winter)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Both full forms start with <b>Online</b> and end with <b>Processing</b>; the difference is the middle letter: <b>A</b>nalytical vs <b>T</b>ransaction.
+<ul>
+<li><b>OLAP</b> (Online <b>Analytical</b> Processing) needs <b>historical data</b>. To analyse anything you need history.</li>
+<li><b>OLTP</b> (Online <b>Transaction</b> Processing) works on <b>current, operational, real-time</b> data.</li>
+<li>In any organisation, roughly <b>95–97%</b> of its data is historical (everything since the company started 10–15 years ago) and only about <b>5%</b> is current, operational data.</li>
+<li>So OLAP handles a <b>large volume</b> and needs <b>large storage</b>; OLTP handles a <b>small volume</b> and needs <b>small storage</b>.</li>
+<li><b>Applications of OLAP</b>: analysing <b>trends</b> (where the high and low points are and after what period they repeat) and <b>predicting customer behaviour</b>. In winter you observe that <b>heaters and blankets</b> sell more.</li>
+<li><b>Applications of OLTP</b>: no heavy analysis; you manage and process <b>payments</b> and <b>orders</b> as they come in.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="About 95 percent of data is historical used by OLAP, 5 percent is current used by OLTP">
+<rect class="pu" x="20" y="30" width="580" height="50" rx="4"/><text x="310" y="60" text-anchor="middle" class="b">Historical data ≈ 95%</text>
+<rect class="gr" x="600" y="30" width="60" height="50" rx="4"/><text x="630" y="60" text-anchor="middle" class="b">5%</text>
+<text class="mut" x="310" y="104" text-anchor="middle">OLAP: analyse trends, predict behaviour · large volume · large storage</text>
+<text class="mut" x="630" y="104" text-anchor="middle">OLTP</text>
+<text class="mut" x="630" y="120" text-anchor="middle">current</text>
+<text class="mut" x="340" y="142" text-anchor="middle">since the company started ─────────────────────────────▶ today</text>
+</svg>
+<figcaption>The lecture's 95 : 5 diagram</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Point</th><th>OLAP</th><th>OLTP</th></tr>
+<tr><td>Full form</td><td>Online Analytical Processing</td><td>Online Transaction Processing</td></tr>
+<tr><td>Data</td><td>Historical, consolidated</td><td>Current, operational, real-time</td></tr>
+<tr><td>Volume and storage</td><td>Large (GB to TB and beyond)</td><td>Small per transaction</td></tr>
+<tr><td>Purpose</td><td>Analysis, trends, decision support</td><td>Day-to-day transactions (payments, orders)</td></tr>
+<tr><td>Typical operations ➕</td><td>Complex read-heavy queries, aggregation</td><td>Short INSERT / UPDATE / DELETE</td></tr>
+<tr><td>Users ➕</td><td>Analysts, managers, executives</td><td>Clerks, cashiers, customers</td></tr>
+<tr><td>Design ➕</td><td>Denormalised (star / snowflake schema)</td><td>Highly normalised (3NF)</td></tr>
+<tr><td>Source ➕</td><td>Data warehouse</td><td>Operational database</td></tr>
+<tr><td>Example</td><td>Winter sales of heaters and blankets</td><td>ATM withdrawal, UPI payment, placing an order</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+OLAP runs on a <b>data warehouse</b>, which is loaded from OLTP systems through <b>ETL</b> (Extract, Transform, Load). OLAP data is seen as a multi-dimensional <b>cube</b>, with these operations:
+<ul>
+<li><b>Roll-up</b> (drill-up): summarise to a higher level, e.g. city → state.</li>
+<li><b>Drill-down</b>: go to finer detail, e.g. year → month.</li>
+<li><b>Slice</b>: fix one dimension (only the year 2025).</li>
+<li><b>Dice</b>: pick a sub-cube on two or more dimensions.</li>
+<li><b>Pivot</b> (rotate): swap rows and columns of the view.</li>
+</ul>
+OLAP types: <b>ROLAP</b> (relational), <b>MOLAP</b> (multidimensional), <b>HOLAP</b> (hybrid). In a bank, the core banking system (CBS) is OLTP; the MIS and analytics reports are OLAP.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Do not mix up the letters: <b>T = Transaction = today's data</b>; <b>A = Analytical = archive (history)</b>. OLTP databases are <b>normalised</b>; data warehouses for OLAP are usually <b>denormalised</b> for faster reads.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">1.5</span>Structured vs Unstructured Data (Skeleton vs Amoeba)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Broadly, data falls into two types (the lecture covers this right after the three-schema architecture):
+<ul>
+<li><b>Structured data</b>: follows a fixed structure, framework or <b>skeleton</b> for storing and placing the data. Rules apply, and the data stays within them. Like a human or an animal, which has a specific, predefined skeleton that organs and nerves are arranged around. The <b>relational database</b> holds structured data: tables with <b>rows and columns</b>. A table is a relation of rows and columns, which is why a <b>table is also called a relation</b>. <b>SQL</b> (Structured Query Language) operates on structured data.</li>
+<li><b>Unstructured data</b>: follows no structure, framework or skeleton. Like an <b>amoeba</b>, which has no fixed shape: it looks one way today and another way tomorrow. Examples: <b>images, audio, video</b>.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Type</th><th>Structure</th><th>Examples</th><th>Stored in</th></tr>
+<tr><td><b>Structured</b></td><td>Fixed schema; rows and columns</td><td>Bank account table, marks sheet, Excel/CSV with fixed columns</td><td>RDBMS (MySQL, Oracle), queried with SQL</td></tr>
+<tr><td><b>Semi-structured</b> ➕</td><td>No rigid table, but tags or keys give some structure</td><td>XML, JSON, HTML, emails (header fields + free body)</td><td>NoSQL document stores (MongoDB), XML databases</td></tr>
+<tr><td><b>Unstructured</b></td><td>No predefined model</td><td>Images, audio, video, PDFs, social media posts</td><td>File systems, data lakes, object storage</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Exams often add a third category, <b>semi-structured</b> data (XML, JSON). An estimated <b>80–90%</b> of the world's data is unstructured. In the relational model: table = <b>relation</b>, row = <b>tuple</b> (record), column = <b>attribute</b> (field); the number of columns is the <b>degree</b> and the number of rows is the <b>cardinality</b>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Degree</b> = number of <b>attributes (columns)</b>; <b>cardinality</b> = number of <b>tuples (rows)</b>. A table with 5 columns and 100 rows has degree 5 and cardinality 100. Note that "cardinality" also has a second meaning in ER diagrams (1:1, 1:N, M:N), covered in chapter 3.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">1.6</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Processed, meaningful and relevant data is called: (a) Metadata (b) Information (c) Database (d) Record<br><b>Answer: (b) Information.</b> Metadata is data about data.</div>
+<div class="num"><span class="t">Q2</span>The same customer address stored in two files, updated in only one, leads to: (a) data isolation (b) data inconsistency (c) data independence (d) atomicity<br><b>Answer: (b) Data inconsistency</b>, caused by redundancy.</div>
+<div class="num"><span class="t">Q3</span>Which is NOT a disadvantage of the file processing system? (a) Data redundancy (b) Data isolation (c) Data independence (d) Concurrent-access anomalies<br><b>Answer: (c) Data independence.</b> It is an advantage of DBMS; files suffer from data <i>dependence</i>.</div>
+<div class="num"><span class="t">Q4</span>A bank's ATM withdrawals are handled by which type of system?<br><b>Answer: OLTP</b> (current, real-time transactions). Analysing five years of withdrawal patterns would be OLAP.</div>
+<div class="num"><span class="t">Q5</span>Which OLAP operation moves from yearly sales to monthly sales?<br><b>Answer: Drill-down.</b> The reverse (month → year) is roll-up.</div>
+<div class="num"><span class="t">Q6</span>A JSON file is an example of: (a) structured (b) semi-structured (c) unstructured data<br><b>Answer: (b) Semi-structured.</b></div>
+<div class="num"><span class="t">Q7</span>A relation has 6 attributes and 250 tuples. What are its degree and cardinality?<br><b>Answer: Degree 6, cardinality 250.</b></div>
+<div class="num"><span class="t">Q8</span>Who proposed the relational model of data?<br><b>Answer: E. F. Codd</b> (IBM, 1970).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Data</b> = facts, figures, statistics, records. <b>Information</b> = meaningful, processed, useful, relevant data (the teacher's life story is data, not information).</li>
+<li><b>Database</b> = collection of related data (Company X and Y each have their own). <b>DBMS</b> = software to store, access, retrieve, update, create, maintain, delete and secure data (shopping-mart analogy).</li>
+<li><b>File system drawbacks</b>: redundancy (extra hard drive) → inconsistency (Drive A vs B) · difficult access (10 years of cricket-team records) · isolation (boys' hostel room) · security (PDF password is all-or-nothing; DBMS uses views) · atomicity (all or none, rollback) · concurrency (many users at once). Only plus: simplicity. ➕ Also integrity problems and data dependence.</li>
+<li>DBMS gives <b>controlled</b> redundancy, not zero.</li>
+<li><b>OLAP</b> = analytical, historical (~95%), large volume and storage, trends and behaviour prediction (heaters in winter), data warehouse, denormalised. <b>OLTP</b> = transactional, current (~5%), small volume, payments and orders, normalised.</li>
+<li>➕ OLAP operations: roll-up, drill-down, slice, dice, pivot. ETL loads the warehouse.</li>
+<li><b>Structured</b> = fixed skeleton, tables (table = relation), SQL. <b>Unstructured</b> = no shape like an amoeba: images, audio, video. ➕ <b>Semi-structured</b> = XML, JSON.</li>
+<li>➕ Degree = columns; cardinality = rows. Relational model: E. F. Codd, 1970.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 1 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><span class="off">First chapter</span><a href="index.html">☰ All topics</a><a href="02-Architecture-and-Schemas.html">Ch 2: DBMS Architecture and Schemas →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

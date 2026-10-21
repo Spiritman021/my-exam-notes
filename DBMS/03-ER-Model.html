@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS ER Model Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="02-Architecture-and-Schemas.html">← Ch 2: DBMS Architecture and Schemas</a><a href="index.html">☰ All topics</a><a href="04-Integrity-Constraints-and-Keys.html">Ch 4: Integrity Constraints and Keys →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 3: ER Model</h1>
+  <p class="sub">Volume 05 · Part 3 · Built from the one-shot DBMS lecture transcript (ER diagram module), plus the exam points the lecture skipped. Entities, attributes and their types, relationships and cardinality with relationship tables, merging tables, and generalization vs specialization.</p>
+  <ul class="tags"><li>ER diagram</li><li>Entity / entity type / entity set</li><li>Domain</li><li>Attribute types</li><li>Relationship</li><li>Cardinality</li><li>1:1 · 1:N · M:N</li><li>Weak entity</li><li>Participation</li><li>Generalization</li><li>Specialization</li><li>Aggregation</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">3.1</span>ER Diagram: Entity, Entity Type and Entity Set (Student Table)</a></li>
+<li><a href="#s2"><span class="n">3.2</span>Attributes and Domain</a></li>
+<li><a href="#s3"><span class="n">3.3</span>Types of Attributes (Calling "Akshay" at Attendance)</a></li>
+<li><a href="#s4"><span class="n">3.4</span>Relationships and One-to-One Cardinality (Student Enrolled in Course)</a></li>
+<li><a href="#s5"><span class="n">3.5</span>One-to-Many and Reducing Tables (Parent–Child)</a></li>
+<li><a href="#s6"><span class="n">3.6</span>Many-to-Many and Composite Primary Key (Students–Subjects)</a></li>
+<li><a href="#s7"><span class="n">3.7</span>Generalization and Specialization (Person → Student, Teacher)</a></li>
+<li><a href="#s8"><span class="n">3.8</span>Weak Entities, Participation, Degree and Aggregation<span class="x">ADDED</span></a></li>
+<li><a href="#s9"><span class="n">3.9</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 3</div>
+<h2 class="ch">ER Model</h2>
+<p>Before a single table is created, the database designer sketches what the database is about: the things it stores, the facts about each thing, and how the things are connected. The <b>Entity-Relationship (ER) model</b> is that sketch. It lives at the conceptual level of the three-schema architecture (chapter 2), and every ER diagram can be converted mechanically into tables. This chapter builds the vocabulary and shows exactly how each kind of relationship turns into tables and keys.</p>
+
+<section id="s1">
+<h3><span class="n">3.1</span>ER Diagram: Entity, Entity Type and Entity Set (Student Table)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>An <b>ER diagram</b> is a visualisation that captures <b>entities</b> and the <b>relationships</b> between them. Its advantages: very <b>easy to make</b>, <b>simple notation</b> with few symbols, and <b>easy to understand</b>; a third person looking at a finished ER diagram can understand how the entities are related.</li>
+<li><b>Entity</b>: a <b>real-world object</b> that has an existence, either <b>physical</b> or <b>logical</b>. Student, teacher, administrator exist physically; you can see and touch them. A <b>bank account</b> exists only logically.</li>
+<li>Entities have <b>attributes</b> (roll number, name, father's name, mother's name, phone number, city). Entities <b>differ from each other</b> by the values of their attributes, which is how we identify a particular student.</li>
+</ul>
+<h4>Entity vs entity type vs entity set</h4>
+Students often confuse these three. Take a Student table:
+<ul>
+<li><b>Entity</b>: one row (record). Roll no 1, name "Shridhar" is one entity; 1 and "Shridhar" are the values of its attributes.</li>
+<li><b>Entity type</b>: the table's name plus the attributes it contains: <b>Student(RollNo, Name)</b>. Every entity of it will be of type Student with those attributes.</li>
+<li><b>Entity set</b>: a set of entities, e.g. {S1, S2, S3}.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="Student table showing entity type header, entity rows and the entity set">
+<rect class="ac" x="150" y="20" width="260" height="30"/><text x="215" y="40" text-anchor="middle" class="b">RollNo</text><text x="345" y="40" text-anchor="middle" class="b">Name</text>
+<rect class="bx" x="150" y="50" width="260" height="28"/><text x="215" y="69" text-anchor="middle">1</text><text x="345" y="69" text-anchor="middle">Shridhar</text>
+<rect class="bx" x="150" y="78" width="260" height="28"/><text x="215" y="97" text-anchor="middle">2</text><text x="345" y="97" text-anchor="middle">Meena</text>
+<rect class="bx" x="150" y="106" width="260" height="28"/><text x="215" y="125" text-anchor="middle">3</text><text x="345" y="125" text-anchor="middle">Kabir</text>
+<text class="mut" x="140" y="40" text-anchor="end">Entity type:</text><text class="mut" x="140" y="54" text-anchor="end">Student(RollNo, Name)</text>
+<line class="lna" x1="420" y1="64" x2="470" y2="64"/><text x="480" y="68">one row = an entity (S1)</text>
+<path class="ln" d="M420,52 Q450,52 450,92 Q450,132 420,132"/><text x="462" y="110">all rows = entity set {S1, S2, S3}</text>
+<text class="mut" x="340" y="170" text-anchor="middle">In ER terms → table = entity type · row = entity · collection of rows = entity set</text>
+</svg>
+<figcaption>Three easily-confused terms on one table</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+The ER model was proposed by <b>Peter Chen in 1976</b>. It is a <b>conceptual (high-level) data model</b>. Standard Chen notation:
+<div class="tw"><table>
+<tr><th>Symbol</th><th>Meaning</th></tr>
+<tr><td>Rectangle</td><td>Strong entity set</td></tr>
+<tr><td>Double rectangle</td><td>Weak entity set</td></tr>
+<tr><td>Diamond</td><td>Relationship set</td></tr>
+<tr><td>Double diamond</td><td>Identifying relationship (links a weak entity to its owner)</td></tr>
+<tr><td>Ellipse (oval)</td><td>Attribute</td></tr>
+<tr><td>Double ellipse</td><td>Multi-valued attribute</td></tr>
+<tr><td>Dashed ellipse</td><td>Derived attribute</td></tr>
+<tr><td>Ellipse with attached ellipses</td><td>Composite attribute</td></tr>
+<tr><td>Underlined attribute name</td><td>Key attribute</td></tr>
+<tr><td>Dashed underline</td><td>Partial key (discriminator) of a weak entity</td></tr>
+<tr><td>Single line / double line</td><td>Partial / total participation</td></tr>
+<tr><td>Triangle labelled ISA</td><td>Generalization / specialization</td></tr>
+</table></div></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">3.2</span>Attributes and Domain</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Attributes</b> give information about an entity: they are its <b>properties or characteristics</b>. Every student has a roll number (a characteristic) and a name (a property).</li>
+<li><b>Domain</b>: the <b>allowed set of values</b> for an attribute. It is very important and used a lot later. If the school has roll numbers only up to 99, the domain of RollNo is <b>two-digit positive integers</b>; no characters allowed. That is a strict domain; usually we just say "integer" or "character".</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+A domain is <b>atomic</b> in the relational model: each value is indivisible. The domain is enforced in SQL by the data type plus a <b>CHECK</b> constraint, e.g. <code>RollNo INT CHECK (RollNo BETWEEN 1 AND 99)</code>. This is <b>domain integrity</b> (chapter 4). A <b>NULL</b> value means "unknown" or "not applicable" and is not part of any domain.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">3.3</span>Types of Attributes: Single/Multi-Valued, Simple/Composite, Derived, Key, Descriptive (Calling "Akshay" at Attendance)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Single-valued</b>: has exactly one value. RollNo; have you ever seen a student with two roll numbers? Drawn as a normal <b>ellipse</b> (oval).</li>
+<li><b>Multi-valued</b>: can hold more than one value. Phone number (main number + alternate number). Drawn as a <b>double ellipse</b>.</li>
+<li><b>Simple (atomic)</b>: cannot be divided further. RollNo 1, 2, 3; what would you divide?</li>
+<li><b>Composite</b>: can be divided further. <b>Address</b>: you never answer "Flat number XYZ"; you say which street it is on, which city, which state. City + street + state together make the address.</li>
+<li><b>Derived</b>: computed from another attribute. <b>Age</b> derived from <b>date of birth</b>: if you doubt someone's age, you ask their birth year and calculate it.</li>
+<li><b>Key (prime) attribute</b>: uniquely identifies each entity; drawn in an ellipse with its name <b>underlined</b>. Attendance is taken by roll number because if you call "Rakesh", 10 Rakeshes stand up; "Suresh", 20; call "Akshay" (a very common name) and <b>50 Akshays</b> stand up.</li>
+<li><b>Descriptive attribute</b>: attached to a <b>relationship</b>, not to an entity. All the other attributes belong to entities.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 230" role="img" aria-label="Student entity with key, multivalued, composite and derived attributes">
+<rect class="ac" x="280" y="100" width="120" height="40"/><text x="340" y="125" text-anchor="middle" class="b">STUDENT</text>
+<ellipse cx="120" cy="40" rx="62" ry="20" class="bx"/><text x="120" y="45" text-anchor="middle" text-decoration="underline">RollNo</text>
+<ellipse cx="120" cy="120" rx="62" ry="20" class="bx"/><text x="120" y="125" text-anchor="middle">Name</text>
+<ellipse cx="120" cy="200" rx="64" ry="20" class="bx"/><ellipse cx="120" cy="200" rx="56" ry="15" class="bx"/><text x="120" y="205" text-anchor="middle">Phone</text>
+<ellipse cx="560" cy="40" rx="60" ry="20" class="bx"/><text x="560" y="45" text-anchor="middle">DOB</text>
+<ellipse cx="560" cy="120" rx="60" ry="20" class="bx dash"/><text x="560" y="125" text-anchor="middle">Age</text>
+<ellipse cx="460" cy="200" rx="62" ry="20" class="bx"/><text x="460" y="205" text-anchor="middle">Address</text>
+<ellipse cx="610" cy="185" rx="40" ry="14" class="bx"/><text x="610" y="189" text-anchor="middle" class="mut">Street</text>
+<ellipse cx="610" cy="215" rx="40" ry="14" class="bx"/><text x="610" y="219" text-anchor="middle" class="mut">City</text>
+<g class="ln"><line x1="182" y1="44" x2="280" y2="108"/><line x1="182" y1="120" x2="280" y2="120"/><line x1="184" y1="196" x2="280" y2="134"/><line x1="500" y1="44" x2="400" y2="108"/><line x1="500" y1="120" x2="400" y2="120"/><line x1="440" y1="180" x2="380" y2="140"/><line x1="522" y1="198" x2="570" y2="188"/><line x1="522" y1="204" x2="570" y2="212"/></g>
+<text class="mut" x="120" y="14" text-anchor="middle">key (underlined)</text>
+<text class="mut" x="560" y="80" text-anchor="middle">derived (dashed) ← from DOB</text>
+<text class="mut" x="210" y="226" text-anchor="middle">multi-valued (double)</text>
+<text class="mut" x="460" y="168" text-anchor="middle">composite</text>
+</svg>
+<figcaption>All the attribute types on one entity</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Attributes can combine: Address is <b>composite + single-valued</b>; a list of degrees, each with (name, year), is a <b>composite multi-valued</b> attribute.</li>
+<li>A <b>stored attribute</b> is the opposite of a derived one: DOB is stored, Age is derived.</li>
+<li>When converting to tables, a <b>multi-valued attribute becomes a separate table</b> (key + that attribute), and a composite attribute is <b>flattened</b> into its components (Street, City, State columns).</li>
+<li>Example of a descriptive attribute: <b>Date_of_enrolment</b> on the relationship "Student <i>enrolls in</i> Course", or <b>Grade</b> on "Student <i>takes</i> Subject". It belongs to the pair, not to either entity alone.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Double ellipse = multi-valued</b>; <b>dashed ellipse = derived</b>; <b>double rectangle = weak entity</b>; <b>double diamond = identifying relationship</b>. Don't swap "double" and "dashed". And "simple" is the opposite of <b>composite</b>, while "single-valued" is the opposite of <b>multi-valued</b>; they are two separate classifications.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">3.4</span>Relationships and One-to-One Cardinality (Student Enrolled in Course)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li>A <b>relationship</b> (also called an <b>association</b>) answers "<i>yeh rishta kya kehlata hai?</i>" — what is the relation between two entities? It is drawn as a <b>diamond</b> with the relation written inside: "Student <b>studies in</b> College".</li>
+<li>Entities, relationships and attributes in an ER diagram help us understand the tables of the database better, and so does the <b>cardinality</b> of the relationship: one-to-one, many-to-one, one-to-many, many-to-many.</li>
+</ul>
+<h4>One-to-one (1:1)</h4>
+"One candidate standing on each side." Student <b>enrolled in</b> Course, with a rule: a student enrols in only <b>one</b> course and each course has only <b>one</b> student. Another example: I am alone in this room teaching, and you are alone watching the video: one on each end.
+<h4>The relationship table</h4>
+The Student table (RollNo, Name) and the Course table (CourseID, Name) describe two separate things. Neither shows which student joined which course. That information goes in a <b>relationship table</b>, made of the prime attribute of each side: <b>RollNo</b> and <b>CourseID</b>. These columns <b>refer</b> to the other tables, so they are <b>foreign keys</b> (concept coming in chapter 4).</div>
+<div class="tw"><table>
+<tr><th colspan="2">Student</th><th></th><th colspan="2">Enrolled (relationship table)</th><th></th><th colspan="2">Course</th></tr>
+<tr><th>RollNo</th><th>Name</th><th></th><th>RollNo</th><th>CourseID</th><th></th><th>CourseID</th><th>Name</th></tr>
+<tr><td>1</td><td>A</td><td></td><td>1</td><td>101</td><td></td><td>101</td><td>DBMS</td></tr>
+<tr><td>2</td><td>B</td><td></td><td>2</td><td>102</td><td></td><td>102</td><td>OS</td></tr>
+<tr><td>3</td><td>C</td><td></td><td>3</td><td>103</td><td></td><td>103</td><td>CN</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+In a 1:1 relationship table <b>nothing repeats</b>: one roll number cannot enrol in more than one course, and course 101 cannot have students 1, 2 and 3. So <b>either RollNo or CourseID</b> can be the primary key of the relationship table.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">3.5</span>One-to-Many and Reducing Tables (Parent–Child)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>One-to-many (1:N)</b>: Parent and Child entities (rectangles), where "parent" means the biological mother-father pair. One parent pair can have <b>many</b> children, but biologically a child cannot have more than <b>one</b> parent pair. So: parent has many children; child has one parent.
+<h4>Relationship table</h4>
+Parent table (ID = government ID, Name) and Child table (CID, Name). The relationship table takes <b>ID</b> and <b>CID</b>, both foreign keys. Parent 1 has two children, parent 2 has one, parent 3 has two (104, 105).
+<ul>
+<li>The <b>ID</b> column <b>repeats</b>: to show one parent with many children, the parent ID must be repeated. That is the nature of 1:N.</li>
+<li>The <b>CID</b> column is <b>unique</b>, because each child has only one parent.</li>
+<li>So <b>CID</b> (the "many" side's key) is the <b>primary key</b> of the relationship table.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th colspan="2">Parent</th><th></th><th colspan="2">Has (relationship)</th><th></th><th colspan="2">Child</th></tr>
+<tr><th>ID</th><th>Name</th><th></th><th>ID</th><th><u>CID</u></th><th></th><th><u>CID</u></th><th>Name</th></tr>
+<tr><td>1</td><td>P</td><td></td><td>1</td><td>101</td><td></td><td>101</td><td>a</td></tr>
+<tr><td>2</td><td>Q</td><td></td><td>1</td><td>102</td><td></td><td>102</td><td>b</td></tr>
+<tr><td>3</td><td>R</td><td></td><td>2</td><td>103</td><td></td><td>103</td><td>c</td></tr>
+<tr><td></td><td></td><td></td><td>3</td><td>104</td><td></td><td>104</td><td>d</td></tr>
+<tr><td></td><td></td><td></td><td>3</td><td>105</td><td></td><td>105</td><td>e</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture — solved problem: reduce the number of tables</span></div>
+<div class="num"><span class="t">Q</span>There are three tables. Can the relationship table be merged with one of the others to reduce the count? With which one?<br>
+<b>Answer:</b> Merge it with the <b>Child</b> table (the "many" side).
+<ul>
+<li>In the relationship table, CID is unique and is its primary key. In the Child table, CID is also unique and is the primary key. Both are unique on the common column: "<b>the horoscopes match</b>" (<i>kundli mil gayi</i>), so join them.</li>
+<li>Do not merge with Parent: ID repeats in the relationship table but is unique in Parent.</li>
+<li>Result: <b>Child(CID, Name, ID)</b> with CID as primary key and ID as foreign key. The meaning has not changed; we still know each child's parent, plus the child's name.</li>
+</ul>
+So a 1:N relationship needs only <b>2 tables</b>.</div>
+<figure>
+<svg viewBox="0 0 680 140" role="img" aria-label="Relationship table merges into the many side">
+<rect class="bx" x="20" y="30" width="140" height="44" rx="4"/><text x="90" y="50" text-anchor="middle" class="b">Parent</text><text class="mut" x="90" y="66" text-anchor="middle">ID, Name</text>
+<rect class="pu" x="270" y="30" width="140" height="44" rx="4"/><text x="340" y="50" text-anchor="middle" class="b">Has</text><text class="mut" x="340" y="66" text-anchor="middle">ID, CID (CID unique)</text>
+<rect class="gr" x="520" y="30" width="140" height="44" rx="4"/><text x="590" y="50" text-anchor="middle" class="b">Child</text><text class="mut" x="590" y="66" text-anchor="middle">CID, Name</text>
+<line class="lna" x1="410" y1="52" x2="510" y2="52"/><polygon class="aha" points="510,47 520,52 510,57"/>
+<text x="465" y="44" text-anchor="middle" class="mut">merge ✓</text>
+<text x="215" y="44" text-anchor="middle" class="mut">✗ ID repeats</text>
+<rect class="ac" x="400" y="96" width="260" height="34" rx="4"/><text x="530" y="118" text-anchor="middle">Child(<tspan text-decoration="underline">CID</tspan>, Name, ID→Parent)</text>
+<text class="mut" x="200" y="118" text-anchor="middle">1:N → 2 tables after merging</text>
+</svg>
+<figcaption>Merge the relationship into the "many" side</figcaption>
+</figure>
+</section>
+
+<section id="s6">
+<h3><span class="n">3.6</span>Many-to-Many and Composite Primary Key (Students–Subjects)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Many-to-many (M:N)</b>: Student and Subject. A student can study <b>many</b> subjects (one side of the story); a subject can be studied by <b>many</b> students (the other side). "A fierce war from both sides, weapons flying in both directions."
+<h4>Relationship table</h4>
+RollNo and SID, both foreign keys referring to the primary keys of Student and Subject.
+<ul>
+<li>Roll 1 studies S1 and S3: one student, more than one subject.</li>
+<li>S1 is studied by 1 and 2; S2 by 3 and 5: one subject, more than one student.</li>
+<li>Neither column is unique: values repeat in RollNo <b>and</b> in SID.</li>
+<li>So the primary key is the <b>combination (RollNo, SID)</b>, a <b>composite key</b>. Check the whole table: 1-S1 never appears twice, nor 2-S1, 1-S3, 3-S2 or 4-S1. Combined, every record is uniquely identified.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th><u>RollNo</u></th><th><u>SID</u></th><th>Observation</th></tr>
+<tr><td>1</td><td>S1</td><td rowspan="2">Roll 1 → two subjects</td></tr>
+<tr><td>1</td><td>S3</td></tr>
+<tr><td>2</td><td>S1</td><td>S1 → students 1 and 2</td></tr>
+<tr><td>3</td><td>S2</td><td rowspan="2">S2 → students 3 and 5</td></tr>
+<tr><td>5</td><td>S2</td></tr>
+<tr><td>4</td><td>S1</td><td>No (RollNo, SID) pair repeats</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<b>Minimum number of tables</b> when converting a binary relationship between two strong entities:
+<div class="tw"><table>
+<tr><th>Cardinality</th><th>Minimum tables</th><th>Rule</th></tr>
+<tr><td>1:1</td><td>2</td><td>Merge the relationship into either side (prefer the side with total participation). If <b>both</b> sides have total participation, everything fits in <b>1</b> table.</td></tr>
+<tr><td>1:N</td><td>2</td><td>Merge into the <b>N (many)</b> side; its key becomes the key.</td></tr>
+<tr><td>M:N</td><td>3</td><td>Cannot merge; the relationship table's key is the <b>composite</b> of both keys.</td></tr>
+</table></div>
+Each <b>multi-valued attribute</b> adds one more table.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+For 1:N, the foreign key goes on the <b>many</b> side (Child gets Parent's ID), never the other way round; putting many child IDs into one Parent row would violate 1NF. And in M:N, <b>neither</b> foreign key alone can be the primary key.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">3.7</span>Generalization and Specialization (Person → Student, Teacher)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Questions have been asked on this, which is why it is covered.
+<ul>
+<li><b>Generalization</b>: going from a <b>low level to a high level</b>, from the personal/specific level to the general level. It is a <b>bottom-up approach</b>. Student is an entity, Teacher is an entity (specific level); taken together, both are human beings, both are <b>Person</b>. "Student <b>is a</b> Person", "Teacher <b>is a</b> Person".</li>
+<li><b>Specialization</b>: the reverse, from a <b>high level to a low level</b>, a <b>top-down approach</b>. You are not talking generally but specifically. Two persons stand in front of you. One wears a school uniform, so "this person is a <b>Student</b>". The other carries books and an attendance register, so "this person is a <b>Teacher</b>". You moved from a general statement to a specific one.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 210" role="img" aria-label="Person generalizes Student and Teacher via ISA">
+<rect class="ac" x="270" y="16" width="140" height="40"/><text x="340" y="41" text-anchor="middle" class="b">PERSON</text>
+<polygon class="pu" points="340,80 380,130 300,130"/><text x="340" y="120" text-anchor="middle" class="b">ISA</text>
+<line class="ln" x1="340" y1="56" x2="340" y2="80"/>
+<rect class="gr" x="150" y="160" width="140" height="40"/><text x="220" y="185" text-anchor="middle" class="b">STUDENT</text>
+<rect class="gr" x="390" y="160" width="140" height="40"/><text x="460" y="185" text-anchor="middle" class="b">TEACHER</text>
+<line class="ln" x1="310" y1="130" x2="230" y2="160"/><line class="ln" x1="370" y1="130" x2="450" y2="160"/>
+<line class="lna" x1="60" y1="190" x2="60" y2="30"/><polygon class="aha" points="55,30 60,20 65,30"/>
+<text x="74" y="110" class="b">Generalization</text><text x="74" y="126" class="mut">bottom-up</text><text x="74" y="140" class="mut">low → high</text>
+<line class="lna" x1="620" y1="30" x2="620" y2="190"/><polygon class="aha" points="615,190 620,200 625,190"/>
+<text x="606" y="110" text-anchor="end" class="b">Specialization</text><text x="606" y="126" text-anchor="end" class="mut">top-down</text><text x="606" y="140" text-anchor="end" class="mut">high → low</text>
+</svg>
+<figcaption>Same diagram, two directions of thinking</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>The higher-level entity is the <b>superclass</b>; lower-level ones are <b>subclasses</b>. Subclasses <b>inherit</b> all attributes and relationships of the superclass (<b>attribute inheritance</b>): Student and Teacher both get Name and Address from Person, and add their own (RollNo; EmpID, Salary).</li>
+<li><b>Disjoint vs overlapping</b>: disjoint means an entity belongs to at most one subclass (an Account is either Savings or Current); overlapping means it can be in several (a Person can be both Student and Employee).</li>
+<li><b>Total vs partial</b> (completeness): total means every superclass entity must belong to some subclass; partial means some may belong to none.</li>
+<li>Generalization emphasises <b>common features</b>; specialization emphasises <b>differences</b>.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>G</b>eneralization = bottom-up (think "<b>g</b>rouping up"); <b>S</b>pecialization = top-down ("<b>s</b>plitting down"). Exams frequently swap these two in the options.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">3.8</span>Weak Entities, Participation, Degree and Aggregation<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Strong entity</b>: has its own primary key (Employee with EmpID). <b>Weak entity</b>: has <b>no primary key of its own</b>; it depends on an <b>owner (identifying) entity</b>. Example: <b>Dependent</b> (an employee's family member, identified by name only within that employee) or <b>Loan Payment</b> (payment no. 1, 2, 3 repeats across loans). Drawn as a <b>double rectangle</b>, linked by a <b>double diamond</b>. Its <b>partial key / discriminator</b> (dashed underline) plus the owner's key forms its primary key: (EmpID, DependentName).</li>
+<li>A weak entity always has <b>total participation</b> in its identifying relationship.</li>
+<li><b>Participation constraint</b>: <b>total</b> (double line) means every entity must take part (every Loan must have a Customer); <b>partial</b> (single line) means some may not (not every Customer has a Loan).</li>
+<li><b>Degree of a relationship</b> = number of entity sets taking part: <b>unary</b> (recursive; Employee <i>manages</i> Employee), <b>binary</b> (Student–Course, the most common), <b>ternary</b> (Supplier–Part–Project).</li>
+<li><b>Aggregation</b>: treating a relationship (with its entities) as a single higher-level entity so it can take part in another relationship. Example: (Employee <i>works on</i> Project) is aggregated, then <i>monitored by</i> Manager.</li>
+<li>Cardinality is also shown with <b>min–max (structural) notation</b> (0..1, 1..N) or with <b>crow's-foot</b> notation in industry tools.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 120" role="img" aria-label="Employee strong entity linked to Dependent weak entity via double diamond">
+<rect class="ac" x="30" y="40" width="140" height="40"/><text x="100" y="65" text-anchor="middle" class="b">EMPLOYEE</text>
+<polygon class="pu" points="340,26 410,60 340,94 270,60"/><polygon class="pu" points="340,34 396,60 340,86 284,60"/><text x="340" y="65" text-anchor="middle">Has</text>
+<rect class="or" x="510" y="40" width="140" height="40"/><rect class="or" x="516" y="46" width="128" height="28"/><text x="580" y="65" text-anchor="middle" class="b">DEPENDENT</text>
+<line class="ln" x1="170" y1="60" x2="270" y2="60"/>
+<line class="ln" x1="410" y1="57" x2="510" y2="57"/><line class="ln" x1="410" y1="63" x2="510" y2="63"/>
+<text class="mut" x="220" y="52" text-anchor="middle">1</text><text class="mut" x="460" y="50" text-anchor="middle">N · total (double line)</text>
+<text class="mut" x="340" y="114" text-anchor="middle">PK of DEPENDENT = EmpID (owner) + Name (partial key)</text>
+</svg>
+<figcaption>Weak entity with an identifying relationship</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The lecture says "degree <i>or</i> cardinality" loosely. In exams they are different: <b>degree</b> of a relationship = <b>how many entity sets</b> participate (unary, binary, ternary); <b>cardinality ratio</b> = <b>how many instances</b> map (1:1, 1:N, M:N).</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">3.9</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>In an ER diagram, a multi-valued attribute is shown by: (a) dashed ellipse (b) double ellipse (c) double rectangle (d) underlined ellipse<br><b>Answer: (b) Double ellipse.</b></div>
+<div class="num"><span class="t">Q2</span>Age, computed from date of birth, is a ____ attribute.<br><b>Answer: Derived.</b></div>
+<div class="num"><span class="t">Q3</span>Entity sets A and B have a 1:N relationship R (one A, many B). What is the minimum number of tables, and where does A's key go?<br><b>Answer: 2 tables;</b> A's key becomes a foreign key in B (the many side).</div>
+<div class="num"><span class="t">Q4</span>The primary key of the relationship table for an M:N relationship between Student(RollNo) and Subject(SID) is:<br><b>Answer: (RollNo, SID)</b>, a composite key.</div>
+<div class="num"><span class="t">Q5</span>An entity set that does not have sufficient attributes to form a primary key is a:<br><b>Answer: Weak entity set.</b></div>
+<div class="num"><span class="t">Q6</span>Creating a superclass "Vehicle" from existing classes "Car" and "Truck" is: (a) specialization (b) generalization (c) aggregation (d) association<br><b>Answer: (b) Generalization</b> (bottom-up).</div>
+<div class="num"><span class="t">Q7</span>"Employee manages Employee" is a relationship of degree:<br><b>Answer: 1 (unary / recursive).</b></div>
+<div class="num"><span class="t">Q8</span>Who proposed the ER model?<br><b>Answer: Peter Chen (1976).</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>ER diagram</b> = entities + relationships; easy to draw, simple notation, easy to read. ➕ Peter Chen, 1976; conceptual level.</li>
+<li><b>Entity</b> = real-world object with physical (student) or logical (bank account) existence. <b>Entity</b> = row; <b>entity type</b> = Student(RollNo, Name); <b>entity set</b> = {S1, S2, S3}.</li>
+<li><b>Attribute</b> = property/characteristic. <b>Domain</b> = allowed values (2-digit positive integers for roll no ≤ 99).</li>
+<li>Attribute types: single (ellipse) / multi-valued (double ellipse, phone); simple / composite (address); derived (age from DOB, ➕ dashed); key (underlined; "50 Akshays stand up"); descriptive (on a relationship).</li>
+<li><b>Relationship</b> = association, diamond ("Student studies in College").</li>
+<li><b>1:1</b> (Student–Course): nothing repeats; either key can be PK. <b>1:N</b> (Parent–Child): parent ID repeats, CID unique → CID is PK; merge relationship into the <b>many</b> side ("kundli mil gayi") → 2 tables. <b>M:N</b> (Student–Subject): both repeat → composite PK (RollNo, SID) → 3 tables.</li>
+<li><b>Generalization</b> = bottom-up, low → high (Student, Teacher → Person). <b>Specialization</b> = top-down, high → low (Person → uniform = Student, register = Teacher).</li>
+<li>➕ Weak entity = double rectangle + double diamond, PK = owner key + partial key, total participation. Degree = unary/binary/ternary; cardinality = 1:1/1:N/M:N. Aggregation = relationship treated as an entity.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 3 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="02-Architecture-and-Schemas.html">← Ch 2: DBMS Architecture and Schemas</a><a href="index.html">☰ All topics</a><a href="04-Integrity-Constraints-and-Keys.html">Ch 4: Integrity Constraints and Keys →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

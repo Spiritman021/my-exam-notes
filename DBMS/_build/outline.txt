@@ -1,0 +1,113 @@
+## 1. Introduction to DBMS
+### 1.1 Data, Information, Database and DBMS (Shopping-Mart Analogy)
+### 1.2 Problems with the File System: Redundancy, Inconsistency, Difficult Access, Isolation (Boys' Hostel Room)
+### 1.3 Security, Atomicity and Concurrency Issues in File Systems (Password-Protected PDF)
+### 1.4 OLAP vs OLTP (Heaters and Blankets Sell in Winter)
+### 1.5 Structured vs Unstructured Data (Skeleton vs Amoeba)
+## 2. DBMS Architecture and Schemas
+### 2.1 2-Tier Client-Server Architecture (Bag of Gold Left on the Road)
+### 2.2 3-Tier Architecture: Client, Business Logic and Data Tiers
+### 2.3 Schema vs Instance
+### 2.4 Three-Schema Architecture: External, Conceptual, Internal (School Records Views)
+### 2.5 Data Independence: Physical and Logical
+## 3. ER Model
+### 3.1 ER Diagram: Entity, Entity Type and Entity Set (Student Table)
+### 3.2 Attributes and Domain
+### 3.3 Types of Attributes: Single/Multi-Valued, Simple/Composite, Derived, Key, Descriptive (Calling "Akshay" at Attendance)
+### 3.4 Relationships and One-to-One Cardinality (Student Enrolled in Course)
+### 3.5 One-to-Many and Reducing Tables (Parent–Child)
+### 3.6 Many-to-Many and Composite Primary Key (Students–Subjects)
+### 3.7 Generalization and Specialization (Person → Student, Teacher)
+## 4. Integrity Constraints and Keys
+### 4.1 Domain, Entity, Referential and Key Integrity (CHECK Marks > 35)
+### 4.2 Candidate, Primary and Alternate Keys (Phone Face Unlock vs PIN)
+### 4.3 Foreign Key (Student and Sports Tables)
+### 4.4 Insert, Delete and Update on Referenced vs Referencing Table (Taking a TC)
+### 4.5 Super Key (EmpID + Name)
+## 5. Functional Dependency
+### 5.1 Meaning of FD: Determinant and Dependent (Phone and Its Cover)
+### 5.2 Tuple-Based Definition and Checking an FD on a Table
+### 5.3 Armstrong's Axioms: Reflexivity, Augmentation, Transitivity
+### 5.4 Secondary Rules: Union, Decomposition, Pseudo-Transitivity, Composition
+### 5.5 Attribute Closure and Finding Candidate/Super Keys — Solved Problems
+## 6. Minimal Cover and Equivalence of FDs
+### 6.1 Minimal (Canonical) Cover: Purpose (Two Routes to the Same Destination)
+### 6.2 Three Steps of Minimal Cover — Solved (A→B, C→B, D→ABC, AC→D)
+### 6.3 Equivalence of FD Sets — Solved Problems
+## 7. Decomposition
+### 7.1 Lossless vs Lossy Decomposition (Movie Story with Extra Scenes)
+### 7.2 Lossless Condition: Common Attribute Must Be a Key — Solved
+### 7.3 Dependency-Preserving Decomposition — Solved R(A,B,C)
+### 7.4 Dependency Not Preserved — Solved R(A,B,C,D)
+## 8. Normalization
+### 8.1 Purpose of Normalization and the Normal Forms
+### 8.2 First Normal Form: Three Approaches (Employee Projects)
+### 8.3 Second Normal Form: Partial Dependency
+### 8.4 Third Normal Form: Transitive Dependency
+### 8.5 BCNF and the Normal-Form Hierarchy
+### 8.6 4NF (Multi-Valued Dependency) and 5NF
+## 9. Joins
+### 9.1 Why Joins and Types of Joins (Two Friends Invited to Dinner)
+### 9.2 Cross (Cartesian) Product
+### 9.3 Natural Join and Equi Join (Exam in the Home City)
+### 9.4 Self Join (Students in More Than One Subject)
+### 9.5 Left, Right and Full Outer Join
+## 10. Relational Algebra
+### 10.1 Procedural vs Non-Procedural Languages; Basic and Derived Operators
+### 10.2 Projection (π) and Selection (σ)
+### 10.3 Union and Set Difference (Cricket and Hockey Tables)
+### 10.4 Cross Product and Rename (ρ) (Student → Alumni)
+### 10.5 Division and Building It from Basic Operators — Solved
+## 11. Relational Calculus
+### 11.1 Tuple Relational Calculus: Syntax and Connectors (∃, ∀)
+### 11.2 Unsafe Expressions
+### 11.3 Domain Relational Calculus
+## 12. SQL Basics: Command Types and DDL
+### 12.1 Introduction to SQL; DDL, DML, DCL, TCL (House on an Empty Plot; Mom's Kitchen)
+### 12.2 CREATE DATABASE, CREATE TABLE and Data Types (CHAR vs VARCHAR)
+### 12.3 ALTER, RENAME, DROP and TRUNCATE
+### 12.4 Foreign Key Syntax, INSERT and DELETE
+### 12.5 GRANT/REVOKE and COMMIT/ROLLBACK
+## 13. SQL Queries
+### 13.1 SELECT, WHERE, DISTINCT and Arithmetic (+10 for an Out-of-Syllabus Question)
+### 13.2 AND/OR, BETWEEN and NOT BETWEEN (Marks and Attendance)
+### 13.3 LIKE with % and _ Wildcards
+### 13.4 UNION, INTERSECT, EXCEPT (and ALL)
+### 13.5 Joins in SQL
+### 13.6 Aggregate Functions, ORDER BY and GROUP BY (WhatsApp Group per State)
+### 13.7 Views (Student, Teacher and Admin Views)
+### 13.8 Subqueries and Nested Subqueries (Inception; an Investigation)
+## 14. Indexing
+### 14.1 Why Indexing (Book Index); Records in Blocks — Solved Numerical
+### 14.2 Index Table Structure and Primary Indexing (Anchor Records) — Solved
+### 14.3 Single-Level vs Multi-Level Indexing
+### 14.4 Dense vs Sparse Index; Clustered Indexing
+### 14.5 Secondary Indexing on Key and Non-Key Attributes
+## 15. B-Tree and B+ Tree
+### 15.1 B-Tree Node Structure: Block Pointers, Keys, Data Pointers
+### 15.2 Order of a B-Tree: Minimum and Maximum Keys
+### 15.3 Inserting 1 to 12 into a B-Tree of Order 4 — Solved
+### 15.4 B+ Tree: Leaf vs Non-Leaf Nodes and Linked Leaves
+### 15.5 Finding the Order of B-Tree and B+ Tree Nodes — Solved Numericals
+## 16. Transactions and ACID Properties
+### 16.1 Need for Concurrency and What a Transaction Is (UPI Transfer)
+### 16.2 ACID: Atomicity, Consistency, Isolation, Durability
+### 16.3 Transaction States (Publishing a Video)
+### 16.4 Serial vs Concurrent Schedules
+## 17. Concurrency Problems and Recoverability
+### 17.1 Dirty Read Problem (Copying Answers in the Exam Hall)
+### 17.2 Incorrect Summary and Lost Update Problems
+### 17.3 Unrepeatable Read and Phantom Read Problems
+### 17.4 Cascading vs Cascadeless Schedules
+### 17.5 Recoverable vs Irrecoverable Schedules
+### 17.6 Strict Schedule and the Schedule Hierarchy
+## 18. Serializability
+### 18.1 Serializability; Conflicting vs Non-Conflicting Pairs
+### 18.2 Conflict Equivalence by Swapping Operations
+### 18.3 Precedence Graph Test — Solved (Without and With a Cycle)
+### 18.4 View Serializability: Initial Read and Final Write — Solved
+## 19. Concurrency Control Protocols
+### 19.1 Lock-Based Protocol: Shared and Exclusive Locks; Compatibility Matrix
+### 19.2 Two-Phase Locking: Growing and Shrinking Phases — Solved
+### 19.3 Timestamp Ordering: TS, RTS and WTS (Bade Miyan, Chhote Miyan)
+### 19.4 Read and Write Rules of Timestamp Ordering — Solved

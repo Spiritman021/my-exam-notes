@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Architecture Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="01-Introduction-to-DBMS.html">← Ch 1: Introduction to DBMS</a><a href="index.html">☰ All topics</a><a href="03-ER-Model.html">Ch 3: ER Model →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 2: DBMS Architecture and Schemas</h1>
+  <p class="sub">Volume 05 · Part 2 · Built from the one-shot DBMS lecture transcript (introduction module, second half), plus the exam points the lecture skipped. How clients reach a database (2-tier vs 3-tier), what a schema and an instance are, the three-schema architecture and the two kinds of data independence.</p>
+  <ul class="tags"><li>1-tier</li><li>2-tier</li><li>3-tier</li><li>Client-server</li><li>Schema</li><li>Instance</li><li>ANSI/SPARC</li><li>External level</li><li>Conceptual level</li><li>Internal level</li><li>Data independence</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">2.1</span>2-Tier Client-Server Architecture (Bag of Gold Left on the Road)</a></li>
+<li><a href="#s2"><span class="n">2.2</span>3-Tier Architecture: Client, Business Logic and Data Tiers</a></li>
+<li><a href="#s3"><span class="n">2.3</span>Schema vs Instance</a></li>
+<li><a href="#s4"><span class="n">2.4</span>Three-Schema Architecture: External, Conceptual, Internal (School Records Views)</a></li>
+<li><a href="#s5"><span class="n">2.5</span>Data Independence: Physical and Logical</a></li>
+<li><a href="#s6"><span class="n">2.6</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 2</div>
+<h2 class="ch">DBMS Architecture and Schemas</h2>
+<p>A database is useless if nobody can reach it, and dangerous if everybody can reach all of it. This chapter looks at the structure around the data from two angles. The <b>tier architecture</b> is about the network: how many layers sit between the user's machine and the database server. The <b>three-schema architecture</b> is about abstraction: how the same data is described for end users, for the database designer and for the disk, so that a change at one level does not break the others.</p>
+
+<section id="s1">
+<h3><span class="n">2.1</span>2-Tier Client-Server Architecture (Bag of Gold Left on the Road)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+University exams ask for these architectures with a diagram, so know what to draw, which points to write and how to explain each one.
+<ul>
+<li>The 2-tier architecture is also called the <b>client-server architecture</b>. It has two tiers: the <b>client tier</b> with client machines C1, C2, C3…, and the <b>data tier</b> with the <b>database server</b>.</li>
+<li><b>Working</b>: each client machine has a basic interface. The client sends a <b>query</b> for the data it needs, and it is <b>directly connected</b> to the DB server. The server accepts the query, <b>processes</b> it (to understand what the client is asking for), then sends the data back as a response. It does the same for C1, C2, C3 and every other client; nobody gets special treatment.</li>
+<li><b>Problem 1, slow</b>: with 2–5 clients it works fine. At a large scale, many clients send requests at the same time, and the server must process each, respond, then take the next. That introduces a <b>delay factor</b>, and users experience slowness.</li>
+<li><b>Problem 2, weak security</b>: the client is in <b>direct contact</b> with the database. It is like leaving a <b>1-ton bag of gold on the road</b> in public. Not everyone will steal it, but someone surely will take advantage. Data is "no less than gold", and any machine can exploit that direct connection.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="2-tier: client machines connect directly to the database server">
+<text x="110" y="18" text-anchor="middle" class="b">Client tier</text>
+<rect class="ac" x="50" y="30" width="120" height="36" rx="4"/><text x="110" y="53" text-anchor="middle">C1</text>
+<rect class="ac" x="50" y="80" width="120" height="36" rx="4"/><text x="110" y="103" text-anchor="middle">C2</text>
+<rect class="ac" x="50" y="130" width="120" height="36" rx="4"/><text x="110" y="153" text-anchor="middle">C3</text>
+<text x="540" y="18" text-anchor="middle" class="b">Data tier</text>
+<rect class="or" x="470" y="60" width="140" height="80" rx="4"/><text x="540" y="94" text-anchor="middle" class="b">DB server</text><text class="mut" x="540" y="114" text-anchor="middle">processes every query</text>
+<g class="ln"><line x1="170" y1="48" x2="460" y2="88"/><line x1="170" y1="98" x2="460" y2="100"/><line x1="170" y1="148" x2="460" y2="112"/></g>
+<polygon class="ah" points="460,83 470,89 460,93"/><polygon class="ah" points="460,95 470,100 460,105"/><polygon class="ah" points="460,107 470,111 460,117"/>
+<text class="mut" x="315" y="60" text-anchor="middle">query (direct)</text>
+<text class="mut" x="315" y="140" text-anchor="middle">data (response)</text>
+<text class="mut" x="340" y="190" text-anchor="middle">Direct contact = slow at scale + weak security</text>
+</svg>
+<figcaption>2-tier (client-server) architecture</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>1-tier architecture</b>: the user works directly on the DBMS on the same machine, e.g. a developer running MySQL locally or an MS Access file on a desktop. No network is involved.</li>
+<li>In 2-tier, the client talks to the database through APIs such as <b>ODBC</b> (Open Database Connectivity) and <b>JDBC</b> (Java Database Connectivity). The application logic sits on the client, which is called a <b>fat (thick) client</b>.</li>
+<li>2-tier advantages: simple, easy to build and maintain, fast for a small number of users. Typical use: a small office application on a LAN.</li>
+</ul></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">2.2</span>3-Tier Architecture: Client, Business Logic and Data Tiers</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The 3-tier architecture removes both disadvantages by adding a middle layer:
+<ul>
+<li><b>Client tier</b>: client machines (your laptop, a web application).</li>
+<li><b>Business tier</b>, also called the <b>middleware</b> or <b>logic tier</b>.</li>
+<li><b>Data tier</b>: the database server.</li>
+</ul>
+<b>Working</b>: the client is <b>not in direct contact</b> with the database at all. You open a web app on your laptop and request some data. The query goes to the <b>business layer</b>, which has "taken the contract" for processing. It understands and processes the query, then puts a plain, straightforward request to the DB: "please give us this". The DB server returns the data to the business layer, which sends it to client C1 in the form C1 expects.
+<ul>
+<li>In 2-tier, the <b>DB</b> did the processing. In 3-tier, the DB is <b>freed</b> from it and only serves data.</li>
+<li>However many client machines you add, the business layer handles them; the load is not on the DB server. So it is <b>faster</b>.</li>
+<li>No direct contact also makes it <b>more secure</b>.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="3-tier: clients talk to business tier which talks to database server">
+<text x="90" y="18" text-anchor="middle" class="b">Client tier</text>
+<rect class="ac" x="30" y="30" width="120" height="34" rx="4"/><text x="90" y="52" text-anchor="middle">C1</text>
+<rect class="ac" x="30" y="76" width="120" height="34" rx="4"/><text x="90" y="98" text-anchor="middle">C2</text>
+<rect class="ac" x="30" y="122" width="120" height="34" rx="4"/><text x="90" y="144" text-anchor="middle">C3</text>
+<text x="340" y="18" text-anchor="middle" class="b">Business tier</text>
+<rect class="pu" x="260" y="40" width="160" height="106" rx="4"/><text x="340" y="80" text-anchor="middle" class="b">Middleware /</text><text x="340" y="98" text-anchor="middle" class="b">application server</text><text class="mut" x="340" y="120" text-anchor="middle">processes queries</text>
+<text x="580" y="18" text-anchor="middle" class="b">Data tier</text>
+<rect class="or" x="520" y="58" width="120" height="70" rx="4"/><text x="580" y="90" text-anchor="middle" class="b">DB server</text><text class="mut" x="580" y="108" text-anchor="middle">only serves data</text>
+<g class="ln"><line x1="150" y1="47" x2="250" y2="80"/><line x1="150" y1="93" x2="250" y2="93"/><line x1="150" y1="139" x2="250" y2="106"/><line x1="420" y1="93" x2="510" y2="93"/></g>
+<polygon class="ah" points="250,75 260,81 250,85"/><polygon class="ah" points="250,88 260,93 250,98"/><polygon class="ah" points="250,101 260,105 250,111"/><polygon class="ah" points="510,88 520,93 510,98"/>
+<text class="mut" x="340" y="178" text-anchor="middle">No client touches the DB directly → faster at scale, more secure</text>
+</svg>
+<figcaption>3-tier architecture</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Point</th><th>2-tier</th><th>3-tier</th></tr>
+<tr><td>Tiers</td><td>Client, data</td><td>Client, business (middleware/logic), data</td></tr>
+<tr><td>Client ↔ DB</td><td>Direct connection</td><td>No direct contact; goes through the business tier</td></tr>
+<tr><td>Who processes queries</td><td>DB server</td><td>Business tier</td></tr>
+<tr><td>Speed with many clients</td><td>Slow (delay factor)</td><td>Fast; DB is freed from processing</td></tr>
+<tr><td>Security</td><td>Low ("bag of gold on the road")</td><td>High</td></tr>
+<tr><td>Scalability ➕</td><td>Poor</td><td>Good; each tier scales separately</td></tr>
+<tr><td>Client type ➕</td><td>Fat (thick) client</td><td>Thin client (often just a browser)</td></tr>
+<tr><td>Example ➕</td><td>Desktop app on an office LAN using ODBC</td><td>Internet banking, e-commerce, railway booking web apps</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+In web terms, the three tiers are the <b>presentation tier</b> (browser/UI), the <b>application tier</b> (web or application server running business logic, e.g. Java, Python, Node.js) and the <b>data tier</b> (RDBMS). 3-tier disadvantages: more complex to build, more components to maintain, and a little extra latency from the extra hop. Splitting further gives <b>n-tier</b> architecture.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Client-server architecture" in DBMS questions means the <b>2-tier</b> architecture. In 3-tier the <b>end user does not know the database exists</b>; the application server is what the client talks to.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">2.3</span>Schema vs Instance</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<ul>
+<li><b>Schema</b>: the <b>logical representation</b> of your data; in other words, the <b>blueprint</b> of your database: its framework (<i>dhaancha</i>), structure, skeleton. It answers many questions: how the data is organised and arranged, which tables (relations) exist, which columns they have, their names, their types and the constraints imposed on them. To implement a schema you use <b>SQL</b> (Structured Query Language). This applies to relational DBMS, where there are relations (tables) and relationships between them.</li>
+<li><b>Instance</b>: the information present in the database <b>at a given moment</b>. Whatever data is currently stored right now is the instance.</li>
+<li>The difference between schema and instance is asked very often.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="Schema is the table structure; instance is the rows at a moment">
+<text x="170" y="18" text-anchor="middle" class="b">Schema (blueprint)</text>
+<rect class="ac" x="30" y="30" width="280" height="40" rx="4"/>
+<text x="170" y="55" text-anchor="middle">STUDENT(RollNo INT PK, Name VARCHAR, Marks INT)</text>
+<text class="mut" x="170" y="92" text-anchor="middle">defined once with SQL DDL · rarely changes</text>
+<text x="500" y="18" text-anchor="middle" class="b">Instance at 10:00 am</text>
+<rect class="bx" x="380" y="30" width="240" height="26"/><text x="420" y="48" text-anchor="middle" class="b">RollNo</text><text x="500" y="48" text-anchor="middle" class="b">Name</text><text x="580" y="48" text-anchor="middle" class="b">Marks</text>
+<rect class="gr" x="380" y="56" width="240" height="24"/><text x="420" y="73" text-anchor="middle">1</text><text x="500" y="73" text-anchor="middle">Asha</text><text x="580" y="73" text-anchor="middle">72</text>
+<rect class="gr" x="380" y="80" width="240" height="24"/><text x="420" y="97" text-anchor="middle">2</text><text x="500" y="97" text-anchor="middle">Ravi</text><text x="580" y="97" text-anchor="middle">65</text>
+<text class="mut" x="500" y="124" text-anchor="middle">changes with every insert / update / delete</text>
+<text class="mut" x="340" y="168" text-anchor="middle">Schema ≈ the class's attendance register format · Instance ≈ today's filled-in page</text>
+</svg>
+<figcaption>Same table, two views: structure vs contents</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Point</th><th>Schema</th><th>Instance</th></tr>
+<tr><td>Meaning</td><td>Logical structure / blueprint of the database</td><td>Data stored at a particular moment</td></tr>
+<tr><td>Changes</td><td>Rarely (needs ALTER, a design change)</td><td>Frequently (every insert, update, delete)</td></tr>
+<tr><td>Defined by ➕</td><td>DDL (CREATE, ALTER)</td><td>DML (INSERT, UPDATE, DELETE)</td></tr>
+<tr><td>Other names ➕</td><td>Intension, database description</td><td>Extension, database state, snapshot</td></tr>
+<tr><td>Analogy ➕</td><td>Variable declaration in a program (<code>int x;</code>)</td><td>Value of the variable at a moment (<code>x = 5</code>)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Schemas exist at three levels, matching the three-schema architecture below: <b>physical schema</b> (internal), <b>logical schema</b> (conceptual) and <b>view schema / subschema</b> (external). A database has <b>one</b> physical and <b>one</b> logical schema but can have <b>many</b> subschemas (views). The schema description is stored in the <b>data dictionary</b> as metadata.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Schema = <b>intension</b>; instance = <b>extension</b>. Memory hook: <b>int</b>ension is like the <b>int</b> declaration (structure), extension is the data that <b>ex</b>ists right now.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">2.4</span>Three-Schema Architecture: External, Conceptual, Internal (School Records Views)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Three schemas, i.e. three layers:
+<ol>
+<li><b>External schema / external layer</b>: the place of <b>views</b>. Different users should see the same data differently (as with the file-system security problem in chapter 1).
+<h4>Example: school records</h4>
+<ul>
+<li>A <b>student</b> sees their own profile data: name, surname, mobile number, hobbies, class, percentage, pass or fail.</li>
+<li><b>Teachers</b> also get <b>write access</b> to students' academic records, to enter marks. Give that same access to a student and they would enter "100, 100, 100…" and pass everything. That is why views are generated in the external layer.</li>
+<li>The <b>administration</b> sees its own view, and the admin can access all the data.</li>
+</ul>
+So View 1 is for User 1, View 2 for User 2, View 3 for User 3.</li>
+<li><b>Conceptual schema / conceptual layer</b>: sits between the external and internal layers. This is where the <b>ER diagram</b> belongs: how the database is <b>designed</b>, what goes in and what does not, which relations and tables exist, how many columns, their data types, and which constraints and restrictions apply.</li>
+<li><b>Internal schema / internal layer</b>: the back-end layer, in direct connection with the database. It describes how the data is <b>physically stored</b> in the database.</li>
+</ol>
+<h4>Who owns each layer</h4>
+<ul>
+<li><b>External</b> layer (application interface): <b>developers</b>.</li>
+<li><b>Conceptual</b> layer: the <b>database designer</b>, who decides the tables, columns, types and constraints.</li>
+<li><b>Internal</b> layer: the <b>database administrator (DBA)</b>, closest to the database with the most control. The DBA decides which methods and protocols are used to store the actual data.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 290" role="img" aria-label="Three-schema architecture with views, conceptual schema, internal schema and stored database">
+<text class="mut" x="20" y="44">External level</text><text class="mut" x="20" y="60">(developers)</text>
+<rect class="gr" x="200" y="26" width="110" height="40" rx="4"/><text x="255" y="51" text-anchor="middle">View 1</text>
+<rect class="gr" x="340" y="26" width="110" height="40" rx="4"/><text x="395" y="51" text-anchor="middle">View 2</text>
+<rect class="gr" x="480" y="26" width="110" height="40" rx="4"/><text x="535" y="51" text-anchor="middle">View 3</text>
+<text class="mut" x="255" y="18" text-anchor="middle">student</text><text class="mut" x="395" y="18" text-anchor="middle">teacher</text><text class="mut" x="535" y="18" text-anchor="middle">admin</text>
+<g class="ln"><line x1="255" y1="66" x2="360" y2="104"/><line x1="395" y1="66" x2="395" y2="104"/><line x1="535" y1="66" x2="430" y2="104"/></g>
+<text class="mut" x="560" y="92">external/conceptual mapping</text>
+<text class="mut" x="20" y="126">Conceptual level</text><text class="mut" x="20" y="142">(DB designer)</text>
+<rect class="ac" x="230" y="104" width="330" height="44" rx="4"/><text x="395" y="124" text-anchor="middle" class="b">Conceptual schema</text><text class="mut" x="395" y="140" text-anchor="middle">tables, columns, types, constraints (ER design)</text>
+<line class="ln" x1="395" y1="148" x2="395" y2="180"/>
+<text class="mut" x="410" y="170">conceptual/internal mapping</text>
+<text class="mut" x="20" y="202">Internal level</text><text class="mut" x="20" y="218">(DBA)</text>
+<rect class="pu" x="230" y="180" width="330" height="44" rx="4"/><text x="395" y="200" text-anchor="middle" class="b">Internal schema</text><text class="mut" x="395" y="216" text-anchor="middle">files, indexes, storage structures</text>
+<line class="ln" x1="395" y1="224" x2="395" y2="246"/>
+<rect class="or" x="320" y="246" width="150" height="34" rx="4"/><text x="395" y="268" text-anchor="middle">Stored database</text>
+<text x="640" y="196" text-anchor="middle" class="b">↑</text><text class="mut" x="640" y="214" text-anchor="middle">physical</text><text class="mut" x="640" y="228" text-anchor="middle">DI</text>
+<text x="640" y="122" text-anchor="middle" class="b">↑</text><text class="mut" x="640" y="140" text-anchor="middle">logical</text><text class="mut" x="640" y="154" text-anchor="middle">DI</text>
+</svg>
+<figcaption>Three-schema (ANSI/SPARC) architecture with owners and mappings</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>This is the <b>ANSI/SPARC architecture</b> (proposed 1975). Its levels are also called the <b>view level</b> (external), <b>logical level</b> (conceptual) and <b>physical level</b> (internal).</li>
+<li>The DBMS translates requests between levels through <b>mappings</b>: <b>external/conceptual mapping</b> and <b>conceptual/internal mapping</b>. Data independence comes from these mappings: when a lower level changes, only the mapping is updated.</li>
+<li>Number of schemas: many external schemas, <b>exactly one</b> conceptual schema and <b>exactly one</b> internal schema per database.</li>
+<li>The internal level deals with storage space allocation, record placement, access paths (indexes, hashing), compression and encryption.</li>
+<li>The main <b>objective</b> of the architecture is to separate each user's view from the way the data is physically stored.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The <b>DBA</b> is formally responsible for the whole database (schema definition, storage structures, access permissions, backup and recovery), but in the layer-ownership picture the DBA is tied to the <b>internal</b> level. Views (and security through views) belong to the <b>external</b> level; table design (ER) belongs to the <b>conceptual</b> level.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">2.5</span>Data Independence: Physical and Logical</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<b>Data independence</b> means layer-wise independence: if I change something in a <b>lower</b> layer, the <b>higher</b> layers should feel no impact. They should keep working as before, without any error, problem or obstacle. The change stays confined to that layer. There are two types:
+<ul>
+<li><b>Physical (internal) data independence</b>: works between the <b>internal</b> and <b>conceptual</b> layers. Changes in the internal schema should not propagate up to the conceptual layer; it should not even "get a hint" (<i>bhanak</i>) of them.</li>
+<li><b>Logical (conceptual) data independence</b>: works between the <b>conceptual</b> and <b>external</b> layers. If you change the design (a table, a column, a type) in the conceptual layer, the impact should not show in the views, to the users, or in the application interface and programs.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Point</th><th>Physical data independence</th><th>Logical data independence</th></tr>
+<tr><td>Between</td><td>Internal ↔ conceptual</td><td>Conceptual ↔ external</td></tr>
+<tr><td>Change made in</td><td>Internal (physical) schema</td><td>Conceptual (logical) schema</td></tr>
+<tr><td>Must not affect</td><td>Conceptual schema</td><td>External views and application programs</td></tr>
+<tr><td>Example changes ➕</td><td>Moving to a new disk or SSD, adding an index, changing the file organisation (heap → hashed), compression</td><td>Adding a column, splitting a table into two, adding a new entity or relationship</td></tr>
+<tr><td>Difficulty ➕</td><td>Easier to achieve</td><td><b>Harder</b> to achieve (programs depend more on logical structure)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Data independence is the <b>capacity to change the schema at one level without changing the schema at the next higher level</b>. It is the biggest advantage of DBMS over the file system, where programs depend on the exact file format (data dependence). Not every logical change can be hidden: <b>dropping</b> a column that a view uses will still break that view.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Two classic one-liners: "Adding an index without changing application programs is an example of <b>physical</b> data independence." "Adding a new attribute to a table without rewriting existing programs is an example of <b>logical</b> data independence." And: "Which data independence is harder to achieve?" → <b>Logical</b>.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">2.6</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>In which architecture does the client communicate directly with the database server? (a) 1-tier (b) 2-tier (c) 3-tier (d) n-tier<br><b>Answer: (b) 2-tier</b> (client-server).</div>
+<div class="num"><span class="t">Q2</span>In a 3-tier architecture, business rules are placed in the: (a) client tier (b) application/middle tier (c) data tier (d) storage tier<br><b>Answer: (b) Application (middle) tier.</b></div>
+<div class="num"><span class="t">Q3</span>The overall design of a database is called the ____, and the data in it at a given moment is called the ____.<br><b>Answer: schema; instance.</b></div>
+<div class="num"><span class="t">Q4</span>Which level of the three-schema architecture describes how data is actually stored? (a) External (b) Conceptual (c) Internal (d) View<br><b>Answer: (c) Internal</b> (physical level).</div>
+<div class="num"><span class="t">Q5</span>How many conceptual schemas can a database have?<br><b>Answer: Exactly one.</b> It can have many external schemas (views).</div>
+<div class="num"><span class="t">Q6</span>The DBA moves a table to a faster disk and builds a new index; no query or program needs changing. This shows:<br><b>Answer: Physical data independence.</b></div>
+<div class="num"><span class="t">Q7</span>A column "email" is added to CUSTOMER; old reports keep working. This shows:<br><b>Answer: Logical data independence.</b></div>
+<div class="num"><span class="t">Q8</span>Schema is also known as: (a) extension (b) intension (c) snapshot (d) state<br><b>Answer: (b) Intension.</b> The other three describe an instance.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>2-tier</b> = client-server; client tier (C1, C2, C3) directly connected to the DB server; DB processes every query. Slow at scale (delay factor) and insecure (1-ton bag of gold on the road).</li>
+<li><b>3-tier</b> = client + business/middleware/logic + data. Business tier processes queries; DB only serves data. No direct contact → faster and more secure.</li>
+<li>➕ 1-tier = DBMS on the same machine. 2-tier uses ODBC/JDBC, fat client. 3-tier = thin client (browser), e.g. net banking.</li>
+<li><b>Schema</b> = logical representation / blueprint (tables, columns, types, constraints), implemented with SQL; ➕ intension, rarely changes. <b>Instance</b> = data at a given moment; ➕ extension / state / snapshot.</li>
+<li><b>Three-schema</b>: External (views per user; school: student, teacher, admin; owned by developers) → Conceptual (design, ER; DB designer) → Internal (physical storage; DBA). ➕ ANSI/SPARC; one conceptual + one internal, many external.</li>
+<li><b>Data independence</b>: change at a lower layer must not affect higher layers. <b>Physical</b> = internal → conceptual (new index, new disk). <b>Logical</b> = conceptual → external (new column, split table); ➕ harder to achieve.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 2 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="01-Introduction-to-DBMS.html">← Ch 1: Introduction to DBMS</a><a href="index.html">☰ All topics</a><a href="03-ER-Model.html">Ch 3: ER Model →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
