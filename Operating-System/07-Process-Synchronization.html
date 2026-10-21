@@ -125,13 +125,20 @@ svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
 .end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
 code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
 
+/* full / revision tabs */
+.tabs{position:sticky;top:0;z-index:4;display:flex;gap:6px;background:var(--ground);padding:10px 0;margin:0 0 18px;border-bottom:1px solid var(--line)}
+.tabs button{font:600 14.5px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:7px 16px;cursor:pointer}
+.tabs button:hover{border-color:var(--accent);color:var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.ref{font-size:11.5px;color:var(--muted);white-space:nowrap}
+
 .topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
 .topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
 .topnav a:hover{border-color:var(--accent)}
 .topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
 @media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
 @media print{
-  button.themer{display:none}
+  button.themer,.tabs{display:none}
   body{background:#fff;font-size:12.5px}
   section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
   figure,.box,.num,table{break-inside:avoid}
@@ -161,6 +168,11 @@ code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding
   </div>
 </header>
 
+<div class="tabs" role="tablist" aria-label="Notes view">
+  <button type="button" role="tab" id="tab-full" aria-controls="pane-full" aria-selected="true">📖 Full notes</button>
+  <button type="button" role="tab" id="tab-rev" aria-controls="pane-rev" aria-selected="false">⚡ Revision notes</button>
+</div>
+<div class="pane" id="pane-full" role="tabpanel" aria-labelledby="tab-full">
 <nav class="toc" aria-label="Contents">
   <h2>Contents</h2>
   <ol>
@@ -180,6 +192,7 @@ code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding
     <li><a href="#s13"><span class="n">7.13</span>Peterson's Solution</a></li>
     <li><a href="#s14"><span class="n">7.14</span>Peterson: Mutual Exclusion Scenario</a></li>
     <li><a href="#s15"><span class="n">7.15</span>Peterson: Progress Guaranteed</a></li>
+    <li><a href="#s15a"><span class="n">7.15A</span>Dekker's &amp; Bakery Algorithms<span class="x">ADDED</span></a></li>
     <li><a href="#s16"><span class="n">7.16</span>Lock Variable</a></li>
     <li><a href="#s17"><span class="n">7.17</span>Lock Variable: ME Failure under Preemption</a></li>
     <li><a href="#s18"><span class="n">7.18</span>Test-and-Set (TSL) Instruction</a></li>
@@ -356,7 +369,7 @@ A popular way to study solutions: take only <b>two processes</b>, try a techniqu
 <div class="box add"><span class="t">➕ The full map of solutions</span>
 <div class="tw"><table>
 <tr><th>Category</th><th>Solutions</th></tr>
-<tr><td>Software (user mode, busy waiting)</td><td>Lock variable · Turn variable (strict alternation) · Flag array · <b>Peterson's</b> · Dekker's · Bakery (n processes)</td></tr>
+<tr><td>Software (user mode, busy waiting)</td><td>Lock variable · Turn variable (strict alternation) · Flag array · <b>Peterson's</b> · <a href="#s15a">Dekker's</a> · <a href="#s15a">Bakery (n processes)</a></td></tr>
 <tr><td>Hardware</td><td>Disabling interrupts · <b>Test-and-Set (TSL)</b> · Swap / Compare-and-Swap</td></tr>
 <tr><td>OS / language level</td><td><b>Semaphores</b> · Mutex locks · <b>Monitors</b> · Condition variables</td></tr>
 </table></div></div>
@@ -480,10 +493,83 @@ P1 is <b>not interested</b> (flag[0] = F, turn = 0). P2 sets flag[1] = T and tur
 </table></div>
 <div class="box add"><span class="t">➕ Limitations (textbook)</span>
 <ul>
-<li>Works only for <b>2 processes</b>. For n processes, use the <b>Bakery algorithm</b> (Lamport). <b>Dekker's algorithm</b> was the first correct two-process software solution (1965).</li>
+<li>Works only for <b>2 processes</b>. For n processes, use the <b>Bakery algorithm</b> (Lamport). <b>Dekker's algorithm</b> was the first correct two-process software solution (1965). Both are covered in <a href="#s15a">7.15A</a>.</li>
 <li>Uses <b>busy waiting</b>, which wastes CPU cycles.</li>
 <li>It is <b>not guaranteed on modern CPUs</b>, because compilers and processors may <b>reorder</b> independent reads and writes. Memory barriers are needed.</li>
 </ul></div>
+</section>
+
+<!-- 7.15A -->
+<section id="s15a">
+<h3><span class="n">7.15A</span>Dekker's Algorithm &amp; Bakery Algorithm <span class="badge">ADDED</span></h3>
+<div class="def"><b>Dekker's algorithm (1965):</b> the <b>first correct software solution</b> for <b>two processes</b>, by the Dutch mathematician <b>Th. J. Dekker</b> and published by <b>Dijkstra</b>. Like Peterson's, it uses <b>flag[2]</b> and <b>turn</b>. The difference: when both are interested, the process whose turn it is <b>not</b> <b>lowers its flag and backs off</b> until the turn comes to it.</div>
+<div class="num"><span class="t">Code (Pi, with j = 1 − i; initially flag = {F, F}, turn = 0 or 1)</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">flag[i] = true;              // I'm interested
+while (flag[j]) {            // the other is interested too
+    if (turn == j) {         // and it is the other's turn
+        flag[i] = false;     //   back off
+        while (turn == j);   //   busy wait for my turn
+        flag[i] = true;      //   show interest again
+    }
+}
+&lt;critical section&gt;
+turn = j;                    // hand the turn to the other
+flag[i] = false;
+&lt;remainder section&gt;</pre></div>
+<div class="tw"><table>
+<tr><th>Situation</th><th>What happens</th></tr>
+<tr><td>Only Pi interested (flag[j] = F)</td><td>The outer <code>while</code> is false, so Pi <b>enters at once</b>: <b>progress ✔</b> (unlike strict alternation)</td></tr>
+<tr><td>Both interested</td><td><code>turn</code> breaks the tie. The process that does not hold the turn lowers its flag, so there is <b>no deadlock</b> (unlike the flag array), and only one enters: <b>ME ✔</b></td></tr>
+<tr><td>Pi leaves the CS</td><td>It sets <code>turn = j</code>, so if Pj is waiting it goes next: <b>bounded waiting ✔</b></td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Dekker vs Peterson</span>
+Both are two-process, busy-waiting solutions that satisfy all three conditions. <b>Peterson</b> gives the turn away <b>on entry</b> (<code>turn = j</code> before waiting), which makes it a single short loop. <b>Dekker</b> gives the turn away <b>on exit</b> and needs the nested back-off loop. Peterson's (1981) is a simpler form of the same idea.</div>
+
+<div class="def" style="margin-top:22px"><b>Bakery algorithm (Lamport, 1974):</b> a software solution for <b>n processes</b>. It works like a bakery or bank token counter: each process that wants the CS <b>takes a token number</b> one larger than any number currently held, and the <b>smallest token is served first</b>. If two processes get the <b>same number</b>, the one with the <b>smaller process id</b> goes first.</div>
+<div class="num"><span class="t">Code (Pi; shared: bool choosing[n] = {F…}; int number[n] = {0…})</span>
+<pre style="font-family:var(--code);font-size:14px;margin:6px 0;overflow-x:auto">choosing[i] = true;                         // I'm picking a token
+number[i] = 1 + max(number[0], …, number[n-1]);
+choosing[i] = false;
+for (j = 0; j &lt; n; j++) {
+    while (choosing[j]);                    // wait until Pj has its token
+    while (number[j] != 0 &amp;&amp;
+           (number[j], j) &lt; (number[i], i)); // Pj is ahead of me: wait
+}
+&lt;critical section&gt;
+number[i] = 0;                              // give up my token
+&lt;remainder section&gt;</pre>
+<b>(a, b) &lt; (c, d)</b> means <b>a &lt; c</b>, or <b>a = c and b &lt; d</b>. <code>number[i] = 0</code> means "not interested".</div>
+<div class="num"><span class="t">Walkthrough: P1, P2, P3 want the CS</span>
+<div class="tw"><table>
+<tr><th>Step</th><th>Event</th><th>number[1]</th><th>number[2]</th><th>number[3]</th></tr>
+<tr><td>1</td><td>P1 and P3 read the max at the same time (0), so both take 1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>2</td><td>P2 arrives later and takes 1 + max = 2</td><td>1</td><td>2</td><td>1</td></tr>
+<tr><td>3</td><td>Tie at 1: (1, 1) &lt; (1, 3), so <b>P1 enters</b></td><td>1</td><td>2</td><td>1</td></tr>
+<tr><td>4</td><td>P1 exits: number[1] = 0, so <b>P3 enters</b></td><td>0</td><td>2</td><td>1</td></tr>
+<tr><td>5</td><td>P3 exits: number[3] = 0, so <b>P2 enters</b></td><td>0</td><td>2</td><td>0</td></tr>
+</table></div>
+Order served: <b>P1 → P3 → P2</b>, which is first-come first-served by token and then by process id.</div>
+<div class="tw"><table>
+<tr><th>Bakery algorithm</th><th>Verdict</th></tr>
+<tr><td>Mutual exclusion</td><td>✔: the pair (number, id) is unique, so exactly one waiting process has the smallest pair</td></tr>
+<tr><td>Progress</td><td>✔: a process with number = 0 is skipped and never blocks others</td></tr>
+<tr><td>Bounded waiting</td><td>✔: <b>FCFS</b>. A process that arrives later gets a larger token, so each process waits for at most n − 1 others</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam traps</span>
+<ul>
+<li><b>Why is <code>choosing[]</code> needed?</b> Without it, Pi could look at Pj while Pj has read the max but not yet written its number. Pi sees number[j] = 0 and enters; Pj then writes the <b>same</b> number, has the smaller id, and also enters, so <b>ME fails</b>. <code>while(choosing[j])</code> makes Pi wait until Pj's token is final.</li>
+<li>Token numbers <b>can be equal</b>, because the max is not computed atomically. That is why ties are broken by process id.</li>
+<li>Token numbers can <b>grow without bound</b> while the CS is always busy, which is a practical drawback.</li>
+<li>All three (Peterson, Dekker, Bakery) use <b>busy waiting</b> and need <b>no special hardware</b>. They work using only ordinary reads and writes.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th></th><th>Peterson</th><th>Dekker</th><th>Bakery</th></tr>
+<tr><td>By / year</td><td>Peterson, 1981</td><td>Dekker (via Dijkstra), 1965</td><td>Lamport, 1974</td></tr>
+<tr><td>Processes</td><td>2</td><td>2</td><td><b>n</b></td></tr>
+<tr><td>Shared data</td><td>flag[2], turn</td><td>flag[2], turn</td><td>choosing[n], number[n]</td></tr>
+<tr><td>Turn handed over</td><td>On entry</td><td>On exit</td><td>— (token order)</td></tr>
+<tr><td>ME / Progress / BW</td><td>✔ / ✔ / ✔</td><td>✔ / ✔ / ✔</td><td>✔ / ✔ / ✔ (FCFS)</td></tr>
+</table></div>
 </section>
 
 <!-- 7.16 -->
@@ -1002,6 +1088,7 @@ A <b>monitor</b>-based solution uses philosopher states THINKING, HUNGRY and EAT
 <li><b>ME</b>: only one process in the CS. <b>Progress</b>: an uninterested process can't block an interested one, and no deadlock. <b>Bounded waiting</b>: a limit on how often others enter before you (the phone "5 minutes" analogy); it means no starvation.</li>
 <li><b>Turn variable</b>: ME ✔, progress ✗ (strict alternation). <b>Flag array</b>: ME ✔, progress ✗ (both flags true → <b>deadlock</b>).</li>
 <li><b>Peterson's</b>: <code>flag[i]=T; turn=j; while(turn==j &amp;&amp; flag[j]);</code>. ME ✔, progress ✔, bounded waiting ✔. Two processes; busy waiting.</li>
+<li><b>Dekker's</b> (1965, first correct 2-process solution): flag + turn, the non-turn process lowers its flag and backs off; turn handed over <b>on exit</b>. <b>Bakery</b> (Lamport, <b>n processes</b>): take token = 1 + max, smallest (number, id) enters first, so FCFS; <code>choosing[]</code> stops a half-taken token from breaking ME. All ✔ ME, progress, BW.</li>
 <li><b>Lock variable</b>: <code>while(lock!=0); lock=1;</code>. Preemption between the test and the set means <b>both enter</b>, so ME ✗.</li>
 <li><b>TSL</b>: atomic {old = lock; lock = true; return old}; <code>while(TestAndSet(&amp;lock));</code>. ME ✔, bounded waiting ✗, spinlock.</li>
 <li><b>Semaphore</b> (Dijkstra): an integer with <b>atomic</b> P/wait/down and V/signal/up. <b>Binary</b> (0/1) for ME. <b>Counting</b>: S=5 → P1–P5 enter, P6–P8 blocked (S = −3); V wakes one if S ≤ 0.</li>
@@ -1010,6 +1097,165 @@ A <b>monitor</b>-based solution uses philosopher states THINKING, HUNGRY and EAT
 <li><b>Dining philosophers</b>: fork[i]=1; take f[i] then f[(i+1)%5]. Everyone holding the left fork → <b>deadlock</b>. Fix: reverse the order for one philosopher (or odd/even), allow at most 4, or take both-or-none. At most 2 eat at once.</li>
 <li><b>Monitor</b>: data + procedures, one process active at a time, condition variables with wait/signal.</li>
 </ul>
+</div>
+</div>
+<div class="pane" id="pane-rev" role="tabpanel" aria-labelledby="tab-rev" hidden>
+<div class="box lec"><span class="t">⚡ How to use the revision notes</span>
+The whole chapter on one screen-scroll: definitions, the key line of every algorithm, initial values, verdict tables and traps. Read the <b>Full notes</b> once first, then use this tab for every later revision. Section numbers (7.x) point back to the full notes.</div>
+
+<section id="r1">
+<h3><span class="n">R1</span>Basics: Race Condition &amp; Critical Section</h3>
+<ul>
+<li><b>Synchronization</b>: coordinating processes that share data so the data stays consistent. Needed only by <b>cooperative</b> processes (they share data and affect each other); <b>independent</b> processes share nothing. <span class="ref">7.0–7.1</span></li>
+<li><b>Why cooperate</b> (Galvin): information sharing, computation speed-up, modularity, convenience.</li>
+<li><b>IPC</b>: shared memory (fast, needs synchronization) or message passing (send/receive via kernel; easier, slower; <b>direct</b> or <b>indirect</b> (mailbox), <b>blocking</b> (synchronous) or <b>non-blocking</b>; pipes, sockets, RPC).</li>
+<li><b>Race condition</b>: the result depends on the <b>order of execution</b>. One statement = <b>3 machine instructions</b> (load, change, store); preemption between them causes a <b>lost update</b>. <span class="ref">7.2–7.3</span></li>
+</ul>
+<div class="tw"><table>
+<tr><th>Lecture example</th><th>Correct (serial)</th><th>Wrong results</th></tr>
+<tr><td>data = 100; P1 +50, P2 +5</td><td><b>155</b></td><td>105, 150</td></tr>
+<tr><td>count = 10; P1 count++, P2 count--</td><td><b>10</b></td><td>9, 11</td></tr>
+<tr><td>Galvin: counter = 5</td><td><b>5</b></td><td>4, 6</td></tr>
+</table></div>
+<ul>
+<li><b>Critical section</b> = the <b>code</b> that touches shared data (not the variable itself). Structure: <b>entry section</b> (the "trap") → CS → <b>exit section</b> → remainder. <span class="ref">7.4</span></li>
+</ul>
+</section>
+
+<section id="r2">
+<h3><span class="n">R2</span>The Three Requirements</h3>
+<div class="tw"><table>
+<tr><th>Requirement</th><th>Meaning</th><th>Lecture memory hook</th></tr>
+<tr><td><b>Mutual exclusion</b> (mandatory)</td><td>At most one process in its CS at a time</td><td>P1 inside → P2 out</td></tr>
+<tr><td><b>Progress</b> (mandatory)</td><td>An uninterested process cannot block an interested one; the decision isn't postponed forever (no deadlock)</td><td>"Progressive thinking: you go ahead"</td></tr>
+<tr><td><b>Bounded waiting</b></td><td>A limit on how many times others enter after you request; means <b>no starvation</b></td><td>"I'll call back in 5 minutes"</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Trap</span>Lecture/GATE style: ME and Progress <b>mandatory</b>, BW <b>desirable</b>. Galvin: all three required. Informal 4th: <b>no assumptions about speed or number of CPUs</b>. <span class="ref">7.5–7.7</span></div>
+</section>
+
+<section id="r3">
+<h3><span class="n">R3</span>Software Solutions (busy waiting)</h3>
+<div class="tw"><table>
+<tr><th>Solution</th><th>Key line(s)</th><th>Why it works / fails</th></tr>
+<tr><td><b>Lock variable</b></td><td><code>while(lock!=0); lock=1;</code></td><td>User mode, any number of processes, but test and set are <b>2 instructions</b>; preemption between them → both enter → <b>ME ✗</b>. Fix: make them one atomic instruction (TSL) <span class="ref">7.16–7.17</span></td></tr>
+<tr><td><b>Turn variable</b></td><td><code>while(turn!=i);</code> … <code>turn=j;</code></td><td>ME ✔; <b>strict alternation</b> → uninterested process blocks → <b>Progress ✗</b> <span class="ref">7.9–7.10</span></td></tr>
+<tr><td><b>Flag array</b></td><td><code>flag[i]=T; while(flag[j]);</code></td><td>ME ✔; both set flags together → <b>deadlock</b> → <b>Progress ✗</b> <span class="ref">7.11–7.12</span></td></tr>
+<tr><td><b>Peterson</b> (1981)</td><td><code>flag[i]=T; turn=j; while(flag[j] &amp;&amp; turn==j);</code></td><td>Flag + turn; whoever writes <code>turn</code> <b>last</b> waits. All ✔ — BW because a waiting process enters after <b>at most one</b> entry by the other. 2 processes <span class="ref">7.13–7.15</span></td></tr>
+<tr><td><b>Dekker</b> (1965)</td><td><code>while(flag[j]){ if(turn==j){flag[i]=F; while(turn==j); flag[i]=T;} }</code> … exit: <code>turn=j;</code></td><td><b>First correct</b> 2-process solution. Non-turn process <b>backs off</b>; turn handed over <b>on exit</b>. All ✔ <span class="ref">7.15A</span></td></tr>
+<tr><td><b>Bakery</b> (Lamport 1974)</td><td><code>number[i]=1+max(number);</code> wait while <code>(number[j],j) &lt; (number[i],i)</code></td><td><b>n processes</b>; smallest token first, tie → smaller id; <b>FCFS</b>. All ✔ <span class="ref">7.15A</span></td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Traps</span>
+<ul>
+<li><code>while(cond);</code> (with semicolon) is the <b>trap</b> = busy waiting; <code>while(1){…}</code> is the forever loop.</li>
+<li>Turn variable fails Progress by <b>alternation</b>; flag array fails Progress by <b>deadlock</b>. Peterson combines both and fixes both.</li>
+<li><code>flag[j] = true</code> means "j is <b>interested</b>", not "j is in the CS".</li>
+<li>Bakery: <code>choosing[]</code> stops a half-taken token from breaking ME; tokens can be <b>equal</b> (tie → id) and can <b>grow without bound</b>.</li>
+<li>Peterson needs memory barriers on modern CPUs (instruction reordering).</li>
+</ul></div>
+</section>
+
+<section id="r4">
+<h3><span class="n">R4</span>Hardware Support &amp; Mutex</h3>
+<div class="formula">boolean TestAndSet(boolean *t){ boolean s=*t; *t=true; return s; }   // ATOMIC
+while (TestAndSet(&amp;lock));  &lt;CS&gt;  lock = false;</div>
+<ul>
+<li><b>TSL</b>: returns the <b>old</b> value and always leaves lock = true, in one atomic step. ME ✔, Progress ✔, <b>BW ✗</b> (an unlucky process can lose every time; Galvin fixes it with a <code>waiting[]</code> array). It is a <b>spinlock</b>. <span class="ref">7.18–7.19</span></li>
+<li><b>Compare-and-Swap</b>: <code>CAS(&amp;lock,0,1)</code> sets 1 only if 0, returns old value (x86 <code>CMPXCHG</code>, lock-free structures).</li>
+<li><b>Disabling interrupts</b>: works on a <b>uniprocessor</b> only; privileged, so not for user programs.</li>
+<li><b>Spinlock</b>: busy-waiting lock; good on <b>multiprocessors</b> for <b>short</b> waits (no context switch).</li>
+<li><b>Mutex</b>: <code>acquire()</code>/<code>release()</code>, atomic; <b>owned</b> — only the locker can unlock. <span class="ref">7.19A</span></li>
+</ul>
+</section>
+
+<section id="r5">
+<h3><span class="n">R5</span>Semaphores</h3>
+<ul>
+<li><b>Semaphore</b> (<b>Dijkstra, 1965</b>): an integer accessed only through two <b>atomic</b> operations. <span class="ref">7.20</span></li>
+<li><b>Atomicity is the whole point</b> — without it a semaphore fails like the lock variable. Achieved by <b>disabling interrupts</b> (uniprocessor) or <b>spinlocks / TSL</b> (multiprocessor).</li>
+</ul>
+<div class="tw"><table>
+<tr><th>Operation</th><th>Also called</th><th>When</th></tr>
+<tr><td><b>P(S)</b></td><td>wait · down · sleep (Dutch <i>proberen</i>)</td><td>Before the CS</td></tr>
+<tr><td><b>V(S)</b></td><td>signal · up · wakeup (Dutch <i>verhogen</i>)</td><td>After the CS</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Binary semaphore</th><th>Counting semaphore</th></tr>
+<tr><td>Values 0/1; init 1 → mutual exclusion; init 0 → ordering</td><td>Any integer; init N = number of resource instances</td></tr>
+<tr><td>Busy-wait form: <code>P: while(S==0); S--;</code> <code>V: S++;</code></td><td>Block-list form: <code>P: S--; if(S&lt;0) block();</code> <code>V: S++; if(S&lt;=0) wakeup();</code> — <b>no busy waiting</b></td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 Reading the value</span>
+Negative values exist only in the <b>block-list</b> form; the busy-wait form never goes below 0. A counting semaphore counts <b>resource instances</b> (e.g. 5 printers), not "processes in the CS". FIFO block list → bounded waiting.<br>
+<b>S &gt; 0</b>: that many more can enter · <b>S = 0</b>: all in use, nobody blocked · <b>S = −k</b>: <b>k processes blocked</b>.<br>
+<b>Final S = initial − (number of P) + (number of V)</b>. E.g. 10 − 6 + 4 = <b>8</b>; 7 − 20 + 15 = <b>2</b>; S = 5 and 8 P → <b>−3</b> (P6–P8 blocked). <span class="ref">7.23–7.24A</span></div>
+<ul>
+<li><b>Ordering</b>: <code>synch = 0</code>; P1: <code>S1; signal(synch);</code> P2: <code>wait(synch); S2;</code> → S1 always before S2.</li>
+<li><b>Deadlock</b>: P0 <code>wait(S); wait(Q);</code>, P1 <code>wait(Q); wait(S);</code> → each holds one. Fix: same order everywhere.</li>
+<li><b>Problems</b>: deadlock, starvation (LIFO list), <b>priority inversion</b> (fix: priority inheritance — Mars Pathfinder), programmer errors (swapped or missing wait/signal) → led to <b>monitors</b>.</li>
+</ul>
+<div class="tw"><table>
+<tr><th>Mutex</th><th>Binary semaphore</th></tr>
+<tr><td><b>Locking</b> mechanism with <b>ownership</b> (only locker unlocks)</td><td><b>Signalling</b> mechanism; any process can signal</td></tr>
+<tr><td>Only mutual exclusion</td><td>ME and ordering between processes</td></tr>
+</table></div>
+</section>
+
+<section id="r6">
+<h3><span class="n">R6</span>Classic Problems</h3>
+<div class="tw"><table>
+<tr><th>Problem</th><th>Initial values</th><th>Key rule</th></tr>
+<tr><td><b>Producer-consumer</b> (bounded buffer, n slots)</td><td><b>full = 0</b>, <b>empty = n</b>, <b>mutex = 1</b></td><td>Producer: <code>wait(empty) wait(mutex)</code> insert <code>signal(mutex) signal(full)</code>. Consumer: the <b>opposite</b> (full ↔ empty). full + empty = n <span class="ref">7.25–7.28</span></td></tr>
+<tr><td><b>Readers-writers</b></td><td><b>mutex = 1</b>, <b>wrt = 1</b>, <b>readcount = 0</b></td><td>Writer: <code>wait(wrt) … signal(wrt)</code>. <b>First</b> reader does <code>wait(wrt)</code>, <b>last</b> reader does <code>signal(wrt)</code>; mutex protects readcount. R–R allowed, anything with W conflicts <span class="ref">7.29–7.32</span></td></tr>
+<tr><td><b>Dining philosophers</b> (Dijkstra)</td><td><b>f[5] = {1,1,1,1,1}</b></td><td><code>down(f[i]); down(f[(i+1)%5]);</code> eat, then up both. At most <b>⌊n/2⌋ = 2</b> eat at once (non-adjacent) <span class="ref">7.33–7.35</span></td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Traps</span>
+<ul>
+<li>Producer-consumer guards against <b>overflow</b> (producing into a full buffer → <code>empty</code> blocks it) and <b>underflow</b> (consuming from an empty buffer → <code>full</code> blocks it). Trace n = 3: 3 inserts → full 3, empty 0; the 4th produce blocks until one consume.</li>
+<li>Producer-consumer: <b>never swap the two waits</b> (taking mutex first, then blocking on empty → deadlock). Swapping the signals is harmless.</li>
+<li>Readers-writers (first problem, reader preference): <b>writers can starve</b>. Second problem (writer preference): readers can starve. Practical answer: <b>reader-writer locks</b>.</li>
+<li>Dining philosophers: everyone takes the left fork → <b>deadlock</b> (circular wait P0→P1→…→P4→P0). <span class="ref">7.36</span></li>
+<li>Fixes: <b>reverse the order for one philosopher</b> (lecture) / odd-even asymmetric; allow at most <b>4</b> at the table; pick up <b>both or none</b>. Deadlock-free ≠ starvation-free. <span class="ref">7.37</span></li>
+<li>The lecture <b>rejects adding more forks</b> (it changes the problem). Monitor solution: states <b>THINKING / HUNGRY / EATING</b>; i eats only if neither neighbour is eating.</li>
+</ul></div>
+</section>
+
+<section id="r7">
+<h3><span class="n">R7</span>Monitors</h3>
+<ul>
+<li><b>Monitor</b>: language construct = shared data + procedures; <b>only one process active inside</b>, so ME is automatic. <span class="ref">7.38</span></li>
+<li><b>Condition variables</b>: <code>x.wait()</code> suspends; <code>x.signal()</code> resumes exactly one — and <b>does nothing if none is waiting</b> (unlike semaphore V, which always increments).</li>
+<li>Signal-and-wait (<b>Hoare</b>) vs signal-and-continue (<b>Mesa</b>/Java). Examples: Java <code>synchronized</code> + <code>wait()/notify()</code>, C# <code>lock</code>.</li>
+</ul>
+</section>
+
+<section id="r8">
+<h3><span class="n">R8</span>Master Comparison</h3>
+<div class="tw"><table>
+<tr><th>Solution</th><th>ME</th><th>Progress</th><th>BW</th><th>Busy wait</th><th>Note</th></tr>
+<tr><td>Lock variable</td><td>✗</td><td>✔</td><td>✗</td><td>Yes</td><td>Test/set split by preemption</td></tr>
+<tr><td>Turn variable</td><td>✔</td><td>✗</td><td>✔</td><td>Yes</td><td>Strict alternation</td></tr>
+<tr><td>Flag array</td><td>✔</td><td>✗</td><td>✔</td><td>Yes</td><td>Deadlock possible</td></tr>
+<tr><td>Peterson</td><td>✔</td><td>✔</td><td>✔</td><td>Yes</td><td>2 processes</td></tr>
+<tr><td>Dekker</td><td>✔</td><td>✔</td><td>✔</td><td>Yes</td><td>2 processes; first correct (1965)</td></tr>
+<tr><td>Bakery</td><td>✔</td><td>✔</td><td>✔</td><td>Yes</td><td><b>n</b> processes; FCFS</td></tr>
+<tr><td>Test-and-Set</td><td>✔</td><td>✔</td><td>✗</td><td>Yes (spinlock)</td><td>Atomic hardware instruction</td></tr>
+<tr><td>Disabling interrupts</td><td>✔ (uni)</td><td>✔</td><td>✗</td><td>No</td><td>Not multiprocessor / user mode</td></tr>
+<tr><td>Semaphore (block list)</td><td>✔</td><td>✔</td><td>✔ (FIFO)</td><td>No</td><td>Deadlock/starvation if misused</td></tr>
+<tr><td>Monitor</td><td>✔</td><td>✔</td><td>✔</td><td>No</td><td>Language level; safest</td></tr>
+</table></div>
+</section>
+
+<div class="rapid">
+<h3>🎯 Last-minute one-liners</h3>
+<ul>
+<li>Race condition = result depends on order · CS = <b>code</b> touching shared data.</li>
+<li>ME + Progress + Bounded Waiting · Peterson / Dekker (2 proc.) and Bakery (n proc.) satisfy all three.</li>
+<li>wait = P = down · signal = V = up · inventor <b>Dijkstra</b> · Bakery inventor <b>Lamport</b>.</li>
+<li>PC: full 0, empty n, mutex 1 · RW: mutex 1, wrt 1, readcount 0 · DP: fork[5] = 1.</li>
+<li>Semaphore at −k → k blocked · final = initial − P + V.</li>
+<li>TSL: no bounded waiting · lock variable: no ME · turn: no progress · flag: deadlock.</li>
+<li>Dining philosophers = classic <b>deadlock (circular wait)</b> example → Chapter 8.</li>
+</ul>
+</div>
 </div>
 <div class="end">End of Volume 01 — Part 7 · Next: Chapter 8 — Deadlocks</div>
 
@@ -1025,6 +1271,24 @@ A <b>monitor</b>-based solution uses philosopher states THINKING, HUNGRY and EAT
     var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
     try{localStorage.setItem('os-notes-theme',nxt);}catch(e){}
   });
+  // Full / revision tabs: remembered per viewer; #revision opens revision, other #links open full notes.
+  var tabs={full:document.getElementById('tab-full'),rev:document.getElementById('tab-rev')};
+  function show(v,save){
+    ['full','rev'].forEach(function(k){
+      tabs[k].setAttribute('aria-selected',k===v); document.getElementById('pane-'+k).hidden=(k!==v);
+    });
+    if(save){try{localStorage.setItem('os-ch7-view',v);}catch(e){}}
+  }
+  tabs.full.addEventListener('click',function(){show('full',true);});
+  tabs.rev.addEventListener('click',function(){show('rev',true);});
+  function fromHash(){
+    var h=location.hash.slice(1); if(!h) return false;
+    if(h==='revision'){show('rev');return true;}
+    var el=document.getElementById(h); if(!el) return false;
+    show(el.closest('#pane-rev')?'rev':'full'); el.scrollIntoView(); return true;
+  }
+  window.addEventListener('hashchange',fromHash);
+  if(!fromHash()){var v=null; try{v=localStorage.getItem('os-ch7-view');}catch(e){} if(v) show(v);}
 })();
 </script>
 </body>
