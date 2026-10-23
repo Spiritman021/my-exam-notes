@@ -165,24 +165,25 @@ code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding
   <ol>
     <li><a href="#s0"><span class="n">8.0</span>What is a Deadlock?</a></li>
     <li><a href="#s1"><span class="n">8.1</span>Example: Holding and Requesting Resources</a></li>
-    <li><a href="#s2"><span class="n">8.2</span>Necessary Conditions for Deadlock</a></li>
-    <li><a href="#s3"><span class="n">8.3</span>Deadlock Handling Methods</a></li>
-    <li><a href="#s4"><span class="n">8.4</span>Prevention: Violating Mutual Exclusion</a></li>
-    <li><a href="#s5"><span class="n">8.5</span>Prevention: Violating Hold and Wait</a></li>
-    <li><a href="#s6"><span class="n">8.6</span>Prevention: Violating No Preemption</a></li>
-    <li><a href="#s7"><span class="n">8.7</span>Prevention: Violating Circular Wait</a></li>
-    <li><a href="#s8"><span class="n">8.8</span>Deadlock Avoidance</a></li>
-    <li><a href="#s9"><span class="n">8.9</span>Banker's Algorithm: Numerical</a></li>
-    <li><a href="#s9a"><span class="n">8.9A</span>Banker's Full Algorithm, Request Numerical<span class="x">ADDED</span></a></li>
-    <li><a href="#s10"><span class="n">8.10</span>Safe and Unsafe States</a></li>
-    <li><a href="#s11"><span class="n">8.11</span>Deadlock Detection</a></li>
-    <li><a href="#s12"><span class="n">8.12</span>Recovery: Process Termination</a></li>
-    <li><a href="#s13"><span class="n">8.13</span>Recovery: Resource Preemption and Rollback</a></li>
-    <li><a href="#s14"><span class="n">8.14</span>Deadlock Ignorance (Ostrich Algorithm)</a></li>
-    <li><a href="#s15"><span class="n">8.15</span>Resource Allocation Graph (RAG)</a></li>
+    <li><a href="#s2"><span class="n">8.2</span>Resource Allocation Graph (RAG)</a></li>
+    <li><a href="#s3"><span class="n">8.3</span>Necessary Conditions for Deadlock</a></li>
+    <li><a href="#s4"><span class="n">8.4</span>Deadlock Handling Methods</a></li>
+    <li><a href="#s5"><span class="n">8.5</span>Prevention: Violating Mutual Exclusion</a></li>
+    <li><a href="#s6"><span class="n">8.6</span>Prevention: Violating Hold and Wait</a></li>
+    <li><a href="#s7"><span class="n">8.7</span>Prevention: Violating No Preemption</a></li>
+    <li><a href="#s8"><span class="n">8.8</span>Prevention: Violating Circular Wait</a></li>
+    <li><a href="#s9"><span class="n">8.9</span>Deadlock Avoidance</a></li>
+    <li><a href="#s10"><span class="n">8.10</span>Banker's Algorithm: Numerical</a></li>
+    <li><a href="#s10a"><span class="n">8.10A</span>Banker's Full Algorithm, Request Numerical<span class="x">ADDED</span></a></li>
+    <li><a href="#s11"><span class="n">8.11</span>Safe and Unsafe States</a></li>
+    <li><a href="#s12"><span class="n">8.12</span>Deadlock Detection</a></li>
+    <li><a href="#s13"><span class="n">8.13</span>Recovery: Process Termination</a></li>
+    <li><a href="#s14"><span class="n">8.14</span>Recovery: Resource Preemption and Rollback</a></li>
+    <li><a href="#s15"><span class="n">8.15</span>Deadlock Ignorance (Ostrich Algorithm)</a></li>
     <li><a href="#s16"><span class="n">8.16</span>Detecting Deadlock with RAG: Single Instance</a></li>
     <li><a href="#s17"><span class="n">8.17</span>Cycle with Multi-Instance Resources</a></li>
     <li><a href="#s18"><span class="n">8.18</span>Minimum-Resource Numericals &amp; Comparisons<span class="x">ADDED</span></a></li>
+    <li><a href="#s19"><span class="n">8.19</span>Practice MCQs<span class="x">ADDED</span></a></li>
     <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
   </ol>
 </nav>
@@ -233,7 +234,8 @@ Every deadlock implies starvation of the processes involved, but starvation does
 <div class="box lec"><span class="t">🎓 From the lecture</span>
 P1 holds <b>R1</b> but also wants <b>R2</b>. P2 holds <b>R2</b> but also wants <b>R1</b>. P1 releases R1 only after it finishes, and it can't finish without R2. P2 is in the same position. They depend on each other and just "<b>wait, wait, wait</b>".
 <ul><li>Arrow <b>resource → process</b> = the resource is <b>assigned</b> (held).</li>
-<li>Arrow <b>process → resource</b> = the process is <b>requesting</b> it.</li></ul></div>
+<li>Arrow <b>process → resource</b> = the process is <b>requesting</b> it.</li></ul>
+This picture is a <b>Resource Allocation Graph</b>; its full notation is in 8.2 below.</div>
 <figure>
 <svg viewBox="0 0 480 220" role="img" aria-label="P1 holds R1 requests R2, P2 holds R2 requests R1, forming a cycle">
   <defs><marker id="a82" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker>
@@ -254,7 +256,30 @@ P1 holds <b>R1</b> but also wants <b>R2</b>. P2 holds <b>R2</b> but also wants <
 
 <!-- 8.2 -->
 <section id="s2">
-<h3><span class="n">8.2</span>Necessary Conditions for Deadlock</h3>
+<h3><span class="n">8.2</span>Resource Allocation Graph (RAG)</h3>
+<div class="def"><b>Resource Allocation Graph:</b> a directed graph G = (V, E). The vertices are <b>processes (circles)</b> and <b>resource types (rectangles)</b>, with <b>a dot for each instance</b>. The edges are <b>request edges</b> (Pi → Rj) and <b>assignment edges</b> (Rj → Pi).</div>
+<figure>
+<svg viewBox="0 0 680 160" role="img" aria-label="RAG notation: process circle, single instance resource, multi instance resource, request edge, assignment edge">
+  <defs><marker id="a86" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
+  <circle cx="60" cy="60" r="26" class="ac"/><text x="60" y="65" text-anchor="middle" class="b">Pi</text><text x="60" y="110" text-anchor="middle" class="mut">process</text>
+  <rect x="140" y="35" width="60" height="50" class="gr"/><circle cx="170" cy="60" r="5" style="fill:var(--ink)"/><text x="170" y="110" text-anchor="middle" class="mut">single instance</text>
+  <rect x="240" y="35" width="80" height="50" class="gr"/><circle cx="258" cy="60" r="5" style="fill:var(--ink)"/><circle cx="280" cy="60" r="5" style="fill:var(--ink)"/><circle cx="302" cy="60" r="5" style="fill:var(--ink)"/><text x="280" y="110" text-anchor="middle" class="mut">3 instances</text>
+  <circle cx="370" cy="60" r="16" class="ac"/><text x="370" y="65" text-anchor="middle">P</text>
+  <path d="M386 60 H446" class="lna" marker-end="url(#a86)"/><rect x="448" y="45" width="30" height="30" class="gr"/><text x="430" y="110" text-anchor="middle" class="mut">request edge P → R</text>
+  <rect x="530" y="45" width="30" height="30" class="gr"/><circle cx="545" cy="60" r="4" style="fill:var(--ink)"/>
+  <path d="M560 60 H620" class="lna" marker-end="url(#a86)"/><circle cx="638" cy="60" r="16" class="ac"/><text x="638" y="65" text-anchor="middle">P</text><text x="590" y="110" text-anchor="middle" class="mut">assignment edge R → P</text>
+  <text x="340" y="148" text-anchor="middle" class="mut">The assignment edge starts from a specific instance (dot); the request edge points to the resource box.</text>
+</svg>
+<figcaption>Figure 8.3: RAG notation</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Vertices (nodes) are either <b>processes</b> (circles: P1, P2, P3…) or <b>resources</b> (rectangles). A resource can be <b>single-instance</b> (one dot) or <b>multi-instance</b> (several dots; R1 with 3 instances has 3 dots). Edges: <b>resource → process = assigned</b> (the process holds it); <b>process → resource = request</b>.</div>
+<p>Figure 8.2 above is a RAG: two single-instance resources and a cycle. The RAG is used again for <b>avoidance</b> (claim edges, 8.9), <b>detection</b> (wait-for graph, 8.12) and the cycle rules in 8.16–8.17.</p>
+</section>
+
+<!-- 8.3 -->
+<section id="s3">
+<h3><span class="n">8.3</span>Necessary Conditions for Deadlock</h3>
 <p>Coffman's four conditions (1971): a deadlock can occur <b>only if all four hold simultaneously</b>.</p>
 <div class="tw"><table>
 <tr><th>#</th><th>Condition</th><th>Meaning</th></tr>
@@ -267,12 +292,12 @@ P1 holds <b>R1</b> but also wants <b>R2</b>. P2 holds <b>R2</b> but also wants <
 Deadlock is a <b>chair with four legs</b>, one leg per condition. Only when all four legs are strong can you "sit on the deadlock chair". <b>Break even one leg</b> and the chair falls: <b>no deadlock</b>. This idea leads directly to <b>prevention</b>.
 <p>If P1 waits for P2's R2 but P2 does <b>not</b> want R1, there is <b>no circle</b>. P2 finishes, releases R2, P1 takes it, and there is no deadlock. "<b>All conditions must hold.</b>"</p></div>
 <div class="box trap"><span class="t">⚠️ Exam trap</span>
-The four conditions are <b>necessary</b>, not sufficient (in general). With <b>single-instance</b> resources, circular wait is both necessary and sufficient. Circular wait also <b>implies</b> hold and wait, so the four conditions are not completely independent.</div>
+The four conditions are <b>necessary</b>, not sufficient (in general). With <b>single-instance</b> resources, a <b>cycle in the RAG</b> is both necessary and sufficient for deadlock. Circular wait also <b>implies</b> hold and wait, so the four conditions are not completely independent.</div>
 </section>
 
-<!-- 8.3 -->
-<section id="s3">
-<h3><span class="n">8.3</span>Deadlock Handling Methods</h3>
+<!-- 8.4 -->
+<section id="s4">
+<h3><span class="n">8.4</span>Deadlock Handling Methods</h3>
 <figure>
 <svg viewBox="0 0 680 150" role="img" aria-label="Four deadlock handling strategies from most strict to least strict">
   <defs><marker id="a84" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
@@ -283,37 +308,39 @@ The four conditions are <b>necessary</b>, not sufficient (in general). With <b>s
   <path d="M20 110 H660" class="lna" marker-end="url(#a84)"/>
   <text x="20" y="135" class="mut">most strict · most overhead</text><text x="660" y="135" text-anchor="end" class="mut">least strict · least overhead (Windows, UNIX)</text>
 </svg>
-<figcaption>Figure 8.3: Deadlock-handling strategies, strict → lenient</figcaption>
+<figcaption>Figure 8.4: Deadlock-handling strategies, strict → lenient</figcaption>
 </figure>
 <div class="box lec"><span class="t">🎓 From the lecture</span>
 <b>Prevention</b>: "prevention is always better than cure"; deadlock must <b>never</b> happen, which is very strict. <b>Avoidance</b> is a lighter, less strict version. <b>Detection and recovery</b>: it has happened, so detect it and then recover. <b>Ignorance</b>: "Deadlock? What's that?" As you move left to right, <b>strictness decreases</b>.</div>
 </section>
 
-<!-- 8.4 -->
-<section id="s4">
-<h3><span class="n">8.4</span>Deadlock Prevention: Violating Mutual Exclusion</h3>
+<!-- 8.5 -->
+<section id="s5">
+<h3><span class="n">8.5</span>Deadlock Prevention: Violating Mutual Exclusion</h3>
 <div class="box lec"><span class="t">🎓 From the lecture</span>
 "<b>Drive slow to prevent accidents</b>." Here the accident is deadlock. Can we break mutual exclusion? Some resources (read-only files) <b>can be shared</b>, but others (a <b>printer</b> takes one command from one process at a time) are <b>inherently non-sharable</b>. "<b>Not all resources can be made sharable</b>", so in general this leg <b>can't be broken</b>. "Yahan to daal nahi gali" (no luck here).</div>
 <div class="box add"><span class="t">➕ Partial trick</span>
 <b>Spooling</b> makes a printer look sharable: jobs go to a disk spool and only the printer daemon touches the printer. But this doesn't work for every resource, for example a mutex lock or a semaphore.</div>
 </section>
 
-<!-- 8.5 -->
-<section id="s5">
-<h3><span class="n">8.5</span>Deadlock Prevention: Violating Hold and Wait</h3>
+<!-- 8.6 -->
+<section id="s6">
+<h3><span class="n">8.6</span>Deadlock Prevention: Violating Hold and Wait</h3>
 <div class="box lec"><span class="t">🎓 From the lecture — three ways</span>
 <ol>
 <li><b>Get everything before running</b>: P1 needs R1, R2, R3, so it must acquire <b>all of them</b> first, or it is not allowed to run. It can't ask for more mid-way. This is <b>expensive</b>: the process waits until all are free.</li>
 <li><b>Release before requesting</b>: P1 holds R1 and wants R2, so it must <b>release R1 first</b> and only then gets R2. "A better approach", because maybe someone else needed R1.</li>
-<li><b>Time-out on waiting</b>: a process may hold a resource for a limited time (e.g. 5 minutes). When the time-out expires, it must release it.</li>
+<li><b>Time-out on holding</b>: a process may hold a resource only for a limited time (e.g. 5 minutes). When the time-out expires, it must release it, even if it is still waiting for something else.</li>
 </ol></div>
+<div class="box trap"><span class="t">⚠️ Note on way 3</span>
+Forcing a process to give up a resource it holds is really breaking <b>No Preemption</b> (8.7), not Hold and Wait. The textbook (Galvin) lists only ways 1 and 2 under Hold and Wait. If an MCQ asks how to break Hold and Wait, pick "request all resources at once" or "release before requesting".</div>
 <div class="box add"><span class="t">➕ Drawbacks (Galvin)</span>
 <b>Low resource utilisation</b> (resources are allocated long before they are used) and <b>starvation</b> (a process needing several popular resources may wait forever).</div>
 </section>
 
-<!-- 8.6 -->
-<section id="s6">
-<h3><span class="n">8.6</span>Deadlock Prevention: Violating No Preemption</h3>
+<!-- 8.7 -->
+<section id="s7">
+<h3><span class="n">8.7</span>Deadlock Prevention: Violating No Preemption</h3>
 <div class="box lec"><span class="t">🎓 From the lecture</span>
 <b>Allow preemption based on priority.</b> P1 is running and holds R1, R2 and R3. A <b>higher-priority</b> P2 arrives and needs them. Preempt P1, so its resources are <b>released</b>, and P2 acquires them and runs.</div>
 <div class="box add"><span class="t">➕ Textbook rules and limits</span>
@@ -324,14 +351,14 @@ The four conditions are <b>necessary</b>, not sufficient (in general). With <b>s
 </ul></div>
 </section>
 
-<!-- 8.7 -->
-<section id="s7">
-<h3><span class="n">8.7</span>Deadlock Prevention: Violating Circular Wait</h3>
+<!-- 8.8 -->
+<section id="s8">
+<h3><span class="n">8.8</span>Deadlock Prevention: Violating Circular Wait</h3>
 <div class="def"><b>Resource ordering:</b> number every resource type (R1 &lt; R2 &lt; R3 …). A process may request resources <b>only in increasing order</b> of these numbers.</div>
 <div class="box lec"><span class="t">🎓 From the lecture</span>
 P1 holds R1 and requests R2, which is fine because the order increases. P2 holds R2, so it may request R3, R4, R5 … R100, but <b>never R1</b> (a lower number). The edge P2 → R1 that would close the circle is <b>forbidden</b>, so <b>no circular wait</b> and no deadlock. "A very beautiful thing."</div>
 <div class="box add"><span class="t">➕ Why it works</span>
-Suppose a cycle existed: P0 waits for R(1), held by P1 waiting for R(2), and so on. Then the resource numbers would satisfy F(R0) &lt; F(R1) &lt; … &lt; F(R0), which is impossible. Resource ordering is the <b>most practical</b> prevention technique; Linux lock-ordering rules (and tools like <i>lockdep</i>) use it. It is also why the reversed philosopher in Chapter 7.37 works.</div>
+Let F(R) be the number given to resource R. Suppose a cycle existed: P0 holds R0 and waits for R1, P1 holds R1 and waits for R2, …, Pn holds Rn and waits for R0. A process asks only for a <b>higher</b> number than it holds, so F(R0) &lt; F(R1) &lt; … &lt; F(Rn) &lt; F(R0). That says F(R0) &lt; F(R0), which is impossible, so the cycle can never form. Resource ordering is the <b>most practical</b> prevention technique; Linux lock-ordering rules (and tools like <i>lockdep</i>) use it. It is also why the reversed philosopher in Chapter 7.37 works.</div>
 <div class="tw"><table>
 <tr><th>Condition</th><th>How to violate it</th><th>Practical?</th></tr>
 <tr><td>Mutual exclusion</td><td>Make resources sharable</td><td>✗ Mostly impossible</td></tr>
@@ -341,22 +368,39 @@ Suppose a cycle existed: P0 waits for R(1), held by P1 waiting for R(2), and so 
 </table></div>
 </section>
 
-<!-- 8.8 -->
-<section id="s8">
-<h3><span class="n">8.8</span>Deadlock Avoidance</h3>
+<!-- 8.9 -->
+<section id="s9">
+<h3><span class="n">8.9</span>Deadlock Avoidance</h3>
 <div class="def"><b>Avoidance:</b> "if we can't prevent it, avoid it." Before granting each request, the OS checks whether granting it keeps the system in a <b>safe state</b>. It needs <b>advance information</b>: the <b>maximum</b> number of each resource every process may ever need.</div>
 <div class="box lec"><span class="t">🎓 From the lecture</span>
-It is less strict than prevention, but has an <b>overhead</b>: the full requirement list of every process (which resources and how many) must be given to the system <b>in advance</b>, its complete "kundali". This is what the <b>Banker's algorithm</b> uses. (The lecturer's glasses fell off from excitement here!)</div>
+It is less strict than prevention, but has an <b>overhead</b>: the full requirement list of every process (which resources and how many) must be given to the system <b>in advance</b>, its complete "kundali". This is what the <b>Banker's algorithm</b> uses.</div>
+<div class="def"><b>Safe sequence:</b> an order of the processes, say ⟨P1, P0, P2⟩, in which <b>each process can get everything it still needs</b> from the free resources plus whatever the earlier processes released, <b>finish, and hand everything back</b> for the next one. <b>Safe state</b> = at least one safe sequence exists.</div>
 <div class="box add"><span class="t">➕ Two avoidance algorithms</span>
 <ul>
 <li><b>Single instance per resource type</b>: use the <b>Resource-Allocation Graph with claim edges</b> (dashed P → R, "may request in future"). Grant a request only if converting it into an assignment edge creates <b>no cycle</b>.</li>
 <li><b>Multiple instances</b>: use the <b>Banker's algorithm</b> (Dijkstra). It is named after a banker who never lends cash in a way that leaves him unable to satisfy all his customers.</li>
 </ul></div>
+<div class="box add"><span class="t">➕ Drawbacks of Banker's algorithm (often asked as "which is NOT true")</span>
+<ul>
+<li>Every process must declare its <b>Max</b> need <b>in advance</b>, which is rarely known in real systems.</li>
+<li>Assumes the <b>number of processes and resources is fixed</b>; a resource going down or a new process arriving breaks the analysis.</li>
+<li>Runs the safety check on <b>every request</b>: O(m × n²) overhead.</li>
+<li>Processes must return all resources in finite time; a request may be made to <b>wait even when resources are free</b> (if granting it would make the state unsafe).</li>
+<li>So it is mostly <b>theoretical</b>; general-purpose OSs don't use it.</li>
+</ul></div>
 </section>
 
-<!-- 8.9 -->
-<section id="s9">
-<h3><span class="n">8.9</span>Banker's Algorithm: Numerical Example</h3>
+<!-- 8.10 -->
+<section id="s10">
+<h3><span class="n">8.10</span>Banker's Algorithm: Numerical Example</h3>
+<div class="box add"><span class="t">➕ Four terms to know first</span>
+<ul>
+<li><b>Max</b>: the most of each resource a process will ever need (declared in advance).</li>
+<li><b>Allocation</b>: what the process holds right now.</li>
+<li><b>Need</b> = Max − Allocation: what it may still ask for before it can finish.</li>
+<li><b>Available</b> = Total − (sum of all Allocations): what is free right now.</li>
+</ul>
+The lecture's example gives Need directly; the Galvin example in 8.10A starts from Max.</div>
 <div class="num"><span class="t">Numerical 1 (lecture): 3 processes, 3 resource types</span>
 <b>Total instances:</b> R1 = 5, R2 = 5, R3 = 5.
 <div class="tw"><table>
@@ -379,12 +423,15 @@ It is less strict than prevention, but has an <b>overhead</b>: the full requirem
 <div class="box lec"><span class="t">🎓 Lecture's recipe</span>
 If <b>Available ≥ Need</b>, fulfil that process. It completes and <b>releases what it held</b>; add that to the old Available to get the new Available. Repeat with the new Available on the processes still pending, until all are done and a <b>safe sequence</b> is formed.</div>
 <div class="box trap"><span class="t">⚠️ Exam trap (What gets released?)</span>
-When a process finishes, the new Available = <b>old Available + its Allocation</b>. The lecture describes it as "allocation + need", which gives the same number here only because P1's Need happened to equal the Available. In general, use <b>Available + Allocation</b>: the need was lent and returned, so it cancels out.</div>
+When a process finishes, the new Available = <b>old Available + its Allocation</b>. The lecture describes it as "allocation + need", which gives the same number here only because P1's Need happened to equal the Available. In general, use <b>Available + Allocation</b>. Why: to finish, the process first <b>borrows</b> its Need, then returns <b>everything</b> it holds (Allocation + Need):
+<div class="formula">new Available = (Available − Need) + (Allocation + Need)
+              = Available + Allocation        ← the Need cancels out</div>
+Check with P1: (0,1,2) + (2,0,1) = (2,1,3) ✔.</div>
 </section>
 
-<!-- 8.9A -->
-<section id="s9a">
-<h3><span class="n">8.9A</span>Banker's Full Algorithm, Request Numerical <span class="badge">ADDED</span></h3>
+<!-- 8.10A -->
+<section id="s10a">
+<h3><span class="n">8.10A</span>Banker's Full Algorithm, Request Numerical <span class="badge">ADDED</span></h3>
 <div class="num"><span class="t">Essential data structures (n processes, m resource types)</span>
 <div class="formula">Available[m]      – free instances of each type
 Max[n][m]         – maximum demand of each process (declared in advance)
@@ -424,9 +471,9 @@ Step 4: safety. P1 (0,2,0) → (5,3,2), P3 → (7,4,3), P4 → (7,4,5), P0 → (
 <b>Follow-ups:</b> P4 then requests (3,3,0): (3,3,0) ≤ Available (2,3,0) fails, so P4 <b>must wait</b>. P0 then requests (0,2,0): this leaves Available (2,1,0), with which no process's Need can be met, so the state is <b>unsafe</b> and P0 <b>waits</b>, even though the resources are physically free.</div>
 </section>
 
-<!-- 8.10 -->
-<section id="s10">
-<h3><span class="n">8.10</span>Safe and Unsafe States</h3>
+<!-- 8.11 -->
+<section id="s11">
+<h3><span class="n">8.11</span>Safe and Unsafe States</h3>
 <figure>
 <svg viewBox="0 0 520 260" role="img" aria-label="Nested regions: deadlock inside unsafe, unsafe and safe separate">
   <ellipse cx="260" cy="130" rx="240" ry="115" class="gr"/>
@@ -436,17 +483,29 @@ Step 4: safety. P1 (0,2,0) → (5,3,2), P3 → (7,4,3), P4 → (7,4,5), P0 → (
   <ellipse cx="380" cy="145" rx="70" ry="45" style="fill:var(--bad);opacity:.25;stroke:var(--bad)"/>
   <text x="380" y="150" text-anchor="middle" class="b">DEADLOCK</text>
 </svg>
-<figcaption>Figure 8.4: Safe, unsafe and deadlocked state spaces</figcaption>
+<figcaption>Figure 8.5: Safe, unsafe and deadlocked state spaces</figcaption>
 </figure>
 <div class="box lec"><span class="t">🎓 From the lecture</span>
 If you can build a <b>safe sequence</b>, you are in the <b>safe area</b> and 100% guaranteed no deadlock. If no safe sequence exists, you are in the <b>unsafe area</b>, and that is where deadlock lives.</div>
 <div class="box trap"><span class="t">⚠️ Exam trap</span>
 <b>Safe state → no deadlock</b> (guaranteed). <b>Unsafe state ≠ deadlock</b>: an unsafe state only <b>may</b> lead to deadlock, for example if processes ask for their full Max. <b>Deadlock ⊂ unsafe</b>. Avoidance keeps the system out of the whole unsafe region.</div>
+<div class="num"><span class="t">Numerical (Galvin): one resource type, 12 tape drives</span>
+<div class="tw"><table>
+<tr><th>Process</th><th>Max</th><th>Holds</th><th>Need</th></tr>
+<tr><td>P0</td><td>10</td><td>5</td><td>5</td></tr>
+<tr><td>P1</td><td>4</td><td>2</td><td>2</td></tr>
+<tr><td>P2</td><td>9</td><td>2</td><td>7</td></tr>
+</table></div>
+Available = 12 − (5+2+2) = <b>3</b>.<br>
+P1 needs 2 ≤ 3 ✔ → finishes, Available 3 + 2 = 5 · P0 needs 5 ≤ 5 ✔ → 5 + 5 = 10 · P2 needs 7 ≤ 10 ✔ → 12.<br>
+Safe sequence <b>⟨P1, P0, P2⟩</b>, so the state is <b>safe</b>.<br><br>
+<b>Now suppose P2 is given 1 more drive</b> (holds 3, needs 6). Available = 2.<br>
+P1 needs 2 ≤ 2 ✔ → Available 4. P0 needs 5 &gt; 4 ✗, P2 needs 6 &gt; 4 ✗. Stuck, so the state is <b>unsafe</b>. Granting P2 that one drive was the mistake; Banker's would have made P2 wait.</div>
 </section>
 
-<!-- 8.11 -->
-<section id="s11">
-<h3><span class="n">8.11</span>Deadlock Detection</h3>
+<!-- 8.12 -->
+<section id="s12">
+<h3><span class="n">8.12</span>Deadlock Detection</h3>
 <div class="box lec"><span class="t">🎓 From the lecture</span>
 "You couldn't prevent it and couldn't avoid it, and the deadlock has occurred. At least <b>detect</b> it first, <b>then recover</b>." The Banker's-style check (can a safe sequence be formed?) and the <b>Resource Allocation Graph</b> help in detection.</div>
 <div class="box add"><span class="t">➕ Detection algorithms</span>
@@ -475,13 +534,13 @@ If you can build a <b>safe sequence</b>, you are in the <b>safe area</b> and 100
   <path d="M558 110 H464" class="lna" marker-end="url(#a85)"/>
   <text x="510" y="150" text-anchor="middle" style="fill:var(--bad)">cycle ⇒ deadlock</text>
 </svg>
-<figcaption>Figure 8.5: Collapsing a resource-allocation graph into a wait-for graph</figcaption>
+<figcaption>Figure 8.6: Collapsing a resource-allocation graph into a wait-for graph</figcaption>
 </figure>
 </section>
 
-<!-- 8.12 -->
-<section id="s12">
-<h3><span class="n">8.12</span>Deadlock Recovery: Process Termination</h3>
+<!-- 8.13 -->
+<section id="s13">
+<h3><span class="n">8.13</span>Deadlock Recovery: Process Termination</h3>
 <div class="box lec"><span class="t">🎓 From the lecture</span>
 <ol>
 <li><b>Abort all</b> deadlocked processes (P1, P2, P3, P4) at once: "nobody is going to finish anyway."</li>
@@ -491,9 +550,9 @@ If you can build a <b>safe sequence</b>, you are in the <b>safe area</b> and 100
 Abort-all is expensive: lots of computation is lost. Abort-one-at-a-time has the overhead of rerunning detection after every kill. Victim-selection criteria: the process's <b>priority</b>; <b>how long it has run</b> and how much remains; <b>resources it holds</b> (and of what type); resources it still needs; <b>how many processes</b> must be terminated; and whether it is <b>interactive or batch</b>.</div>
 </section>
 
-<!-- 8.13 -->
-<section id="s13">
-<h3><span class="n">8.13</span>Deadlock Recovery: Resource Preemption and Rollback</h3>
+<!-- 8.14 -->
+<section id="s14">
+<h3><span class="n">8.14</span>Deadlock Recovery: Resource Preemption and Rollback</h3>
 <div class="box lec"><span class="t">🎓 From the lecture</span>
 Resources caused the problem, so <b>preempt them</b>. Take P1 and <b>roll it back</b> step by step, as in DBMS when conflicts occur. After each rollback step, check whether the released resource has broken the deadlock. If so, <b>stop rolling back</b>.</div>
 <div class="box add"><span class="t">➕ Three issues (Galvin)</span>
@@ -504,35 +563,13 @@ Resources caused the problem, so <b>preempt them</b>. Take P1 and <b>roll it bac
 </ol></div>
 </section>
 
-<!-- 8.14 -->
-<section id="s14">
-<h3><span class="n">8.14</span>Deadlock Ignorance (Ostrich Algorithm)</h3>
-<div class="box lec"><span class="t">🎓 From the lecture — the ostrich</span>
-When danger comes, the ostrich <b>buries its head in the sand</b> and acts as if nothing happened ("danger ke liye to main danger hoon"). In the same way, the OS assumes "<b>no concept of deadlock exists</b>". Deadlock is treated as a <b>very rare event</b>, and the <b>cost of handling it</b> (all the checks and overhead of prevention and avoidance) is <b>very high</b>. Spending that much on a rare event makes no sense. Popular OSs do exactly this.</div>
-<div class="box add"><span class="t">➕ In practice</span>
-<b>Windows</b> and <b>UNIX / Linux</b> use the ostrich approach for general resources. If the system hangs, the user or administrator <b>reboots</b> or kills the process. Application developers are expected to avoid deadlocks themselves, for example through lock ordering. Databases, by contrast, <b>detect and recover</b> (they abort a victim transaction).</div>
-</section>
-
 <!-- 8.15 -->
 <section id="s15">
-<h3><span class="n">8.15</span>Resource Allocation Graph (RAG)</h3>
-<div class="def"><b>Resource Allocation Graph:</b> a directed graph G = (V, E). The vertices are <b>processes (circles)</b> and <b>resource types (rectangles)</b>, with <b>a dot for each instance</b>. The edges are <b>request edges</b> (Pi → Rj) and <b>assignment edges</b> (Rj → Pi).</div>
-<figure>
-<svg viewBox="0 0 680 160" role="img" aria-label="RAG notation: process circle, single instance resource, multi instance resource, request edge, assignment edge">
-  <defs><marker id="a86" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="aha"/></marker></defs>
-  <circle cx="60" cy="60" r="26" class="ac"/><text x="60" y="65" text-anchor="middle" class="b">Pi</text><text x="60" y="110" text-anchor="middle" class="mut">process</text>
-  <rect x="140" y="35" width="60" height="50" class="gr"/><circle cx="170" cy="60" r="5" style="fill:var(--ink)"/><text x="170" y="110" text-anchor="middle" class="mut">single instance</text>
-  <rect x="240" y="35" width="80" height="50" class="gr"/><circle cx="258" cy="60" r="5" style="fill:var(--ink)"/><circle cx="280" cy="60" r="5" style="fill:var(--ink)"/><circle cx="302" cy="60" r="5" style="fill:var(--ink)"/><text x="280" y="110" text-anchor="middle" class="mut">3 instances</text>
-  <circle cx="370" cy="60" r="16" class="ac"/><text x="370" y="65" text-anchor="middle">P</text>
-  <path d="M386 60 H446" class="lna" marker-end="url(#a86)"/><rect x="448" y="45" width="30" height="30" class="gr"/><text x="430" y="110" text-anchor="middle" class="mut">request edge P → R</text>
-  <rect x="530" y="45" width="30" height="30" class="gr"/><circle cx="545" cy="60" r="4" style="fill:var(--ink)"/>
-  <path d="M560 60 H620" class="lna" marker-end="url(#a86)"/><circle cx="638" cy="60" r="16" class="ac"/><text x="638" y="65" text-anchor="middle">P</text><text x="590" y="110" text-anchor="middle" class="mut">assignment edge R → P</text>
-  <text x="340" y="148" text-anchor="middle" class="mut">The assignment edge starts from a specific instance (dot); the request edge points to the resource box.</text>
-</svg>
-<figcaption>Figure 8.6: RAG notation</figcaption>
-</figure>
-<div class="box lec"><span class="t">🎓 From the lecture</span>
-Vertices (nodes) are either <b>processes</b> (circles: P1, P2, P3…) or <b>resources</b> (rectangles). A resource can be <b>single-instance</b> (one dot) or <b>multi-instance</b> (several dots; R1 with 3 instances has 3 dots). Edges: <b>resource → process = assigned</b> (the process holds it); <b>process → resource = request</b>.</div>
+<h3><span class="n">8.15</span>Deadlock Ignorance (Ostrich Algorithm)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture — the ostrich</span>
+When danger comes, the ostrich <b>buries its head in the sand</b> and acts as if nothing happened ("danger ke liye to main danger hoon": "I am the danger to danger itself"). In the same way, the OS assumes "<b>no concept of deadlock exists</b>". Deadlock is treated as a <b>very rare event</b>, and the <b>cost of handling it</b> (all the checks and overhead of prevention and avoidance) is <b>very high</b>. Spending that much on a rare event makes no sense. Popular OSs do exactly this.</div>
+<div class="box add"><span class="t">➕ In practice</span>
+<b>Windows</b> and <b>UNIX / Linux</b> use the ostrich approach for general resources. If the system hangs, the user or administrator <b>reboots</b> or kills the process. Application developers are expected to avoid deadlocks themselves, for example through lock ordering. Databases, by contrast, <b>detect and recover</b> (they abort a victim transaction).</div>
 </section>
 
 <!-- 8.16 -->
@@ -551,8 +588,9 @@ R1 (1 instance) is held by P0, and R2 (1 instance) is held by P1. P0 requests R2
 <tr><td>P0</td><td>1 0</td><td>0 1</td></tr>
 <tr><td>P1</td><td>0 1</td><td>1 0</td></tr>
 </table></div>
-Available = (1,1) − (1,1) = <b>(0,0)</b>. Neither request can be met, so <b>no safe sequence</b> exists.<br>
-<b>Conclusion:</b> a cycle, single-instance resources and no safe sequence: <b>DEADLOCK ✔</b>.</div>
+Available = (1,1) − (1,1) = <b>(0,0)</b>. Neither request can be met, so <b>no process can finish</b> and nothing will ever be released.<br>
+<b>Conclusion:</b> a cycle, single-instance resources, and no process can finish: <b>DEADLOCK ✔</b>.<br>
+<i>Note:</i> in detection we compare the current <b>Request</b> (what each process is waiting for right now) with Available, not Need/Max. "Safe sequence" belongs to avoidance (8.9–8.11).</div>
 </section>
 
 <!-- 8.17 -->
@@ -575,7 +613,7 @@ Available = (1,1) − (1,1) = <b>(0,0)</b>. Neither request can be met, so <b>no
 <figcaption>Figure 8.7: A cycle exists, but spare instances break it</figcaption>
 </figure>
 <div class="box lec"><span class="t">🎓 From the lecture</span>
-Same picture, but R1 and R2 each have <b>2 instances</b>. One instance of each is allocated, so <b>Available = (1,1)</b> and <b>Requested = (1,1)</b>. The free R2 goes to P0 and the free R1 goes to P1. A <b>safe sequence exists</b>, so there is <b>no deadlock</b>, even though a cycle is visible.</div>
+Same picture, but R1 and R2 each have <b>2 instances</b>. One instance of each is allocated, so <b>Available = (1,1)</b> and <b>Requested = (1,1)</b>. The free R2 goes to P0 and the free R1 goes to P1. <b>Both requests can be met</b>, so both processes finish and release everything: <b>no deadlock</b>, even though a cycle is visible.</div>
 <div class="box add"><span class="t">➕ The full decision table</span>
 <div class="tw"><table>
 <tr><th>RAG</th><th>Single instance per resource</th><th>Multiple instances</th></tr>
@@ -616,21 +654,39 @@ More generally (process i needs kᵢ):   R ≥ Σ(kᵢ − 1) + 1</div>
 </ul></div>
 </section>
 
+<!-- 8.19 -->
+<section id="s19">
+<h3><span class="n">8.19</span>Practice MCQs <span class="badge">ADDED</span></h3>
+<ol>
+<li>Which is <b>not</b> a necessary condition for deadlock? (a) Mutual exclusion (b) Hold and wait (c) Preemption (d) Circular wait</li>
+<li>Banker's algorithm is used for deadlock: (a) prevention (b) avoidance (c) detection (d) recovery</li>
+<li>Ordering all resource types and requesting them only in increasing order breaks which condition? (a) Mutual exclusion (b) Hold and wait (c) No preemption (d) Circular wait</li>
+<li>A system is in an unsafe state. Then: (a) it is deadlocked (b) it can never deadlock (c) it may deadlock (d) all processes are blocked</li>
+<li>A RAG with only single-instance resources contains a cycle. Then: (a) deadlock certainly exists (b) deadlock may exist (c) no deadlock (d) the system is safe</li>
+<li>4 processes each need at most 3 units of a resource. The minimum number of units that guarantees no deadlock is: (a) 8 (b) 9 (c) 10 (d) 12</li>
+<li>In Banker's algorithm, Need is computed as: (a) Max + Allocation (b) Max − Allocation (c) Available − Allocation (d) Max − Available</li>
+<li>Windows and UNIX mostly deal with deadlock by: (a) prevention (b) avoidance (c) detection (d) ignoring it (ostrich)</li>
+</ol>
+<div class="box lec"><span class="t">Answers</span>
+1 (c): the condition is <b>No</b> preemption · 2 (b) · 3 (d) · 4 (c) · 5 (a) · 6 (b): 4(3−1)+1 = 9 · 7 (b) · 8 (d)</div>
+</section>
+
 <!-- Rapid revision -->
 <div class="rapid" id="rr">
 <h3>⚡ Rapid Revision — Chapter 8</h3>
 <ul>
 <li><b>Deadlock</b>: every process in a set holds something and waits for another's resource, forever. Analogies: "<b>aap pehle</b>" with one chair, four cars at a crossing, the dining philosophers.</li>
 <li><b>Example</b>: P1 holds R1 and wants R2; P2 holds R2 and wants R1. Arrows: R→P = assigned, P→R = request.</li>
+<li><b>Safe sequence</b>: an order in which every process can get its remaining Need, finish and release everything for the next. Banker's drawbacks: Max needed in advance, fixed processes and resources, check on every request.</li>
 <li><b>4 conditions</b> (the four-legged chair; break one leg and there is no deadlock): Mutual Exclusion, Hold and Wait, No Preemption, Circular Wait. All must hold.</li>
 <li><b>Handling</b> (strict → lenient): Prevention → Avoidance → Detection + Recovery → Ignorance.</li>
-<li><b>Prevention</b>: ME can't be broken (printer). H&amp;W: get everything first, release before requesting, or time-out. No preemption: preempt by priority (CPU and memory only). Circular wait: request in <b>increasing resource order</b> (the best method).</li>
+<li><b>Prevention</b>: ME can't be broken (printer). H&amp;W: get everything first, or release before requesting. No preemption: preempt by priority (CPU and memory only). Circular wait: request in <b>increasing resource order</b> (the best method).</li>
 <li><b>Avoidance</b>: needs every process's requirements in advance. <b>Banker's</b>: if Need ≤ Available, run it, then Available += Allocation. Lecture: total (5,5,5), Available (0,1,2) → safe sequence <b>⟨P1, P0, P2⟩</b>. Galvin: ⟨P1, P3, P4, P0, P2⟩.</li>
 <li><b>Safe</b> ⇒ no deadlock; <b>unsafe</b> ⇒ may deadlock; deadlock ⊂ unsafe.</li>
 <li><b>Detection</b>: wait-for graph (single instance) or a Banker's-like algorithm with the Request matrix.</li>
 <li><b>Recovery</b>: kill all or one at a time; preempt resources and roll back (watch for starvation of the victim).</li>
 <li><b>Ostrich</b>: ignore deadlock because it is rare and handling it is costly (Windows, UNIX).</li>
-<li><b>RAG</b>: circles are processes, boxes are resources, dots are instances. No cycle ⇒ no deadlock. Cycle + single instance ⇒ deadlock. Cycle + multi-instance ⇒ maybe (lecture: Available (1,1) = Request (1,1), so a safe sequence exists and there is no deadlock).</li>
+<li><b>RAG</b>: circles are processes, boxes are resources, dots are instances. No cycle ⇒ no deadlock. Cycle + single instance ⇒ deadlock. Cycle + multi-instance ⇒ maybe (lecture: Available (1,1) = Request (1,1), so both requests are met and there is no deadlock).</li>
 <li><b>Minimum resources</b>: R ≥ n(k−1) + 1 (3 processes needing 2 each → 4).</li>
 </ul>
 </div>
