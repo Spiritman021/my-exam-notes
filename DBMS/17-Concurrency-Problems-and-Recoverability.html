@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Concurrency Problems Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="16-Transactions-and-ACID.html">← Ch 16: Transactions and ACID Properties</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 17: Concurrency Problems and Recoverability</h1>
+  <p class="sub">Volume 05 · Part 17 · Follows the lecture outline for concurrency problems and recoverable schedules, plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. The five things that go wrong when transactions interleave, and the four classes of schedule that decide whether a failure can be cleanly undone.</p>
+  <ul class="tags"><li>Dirty read</li><li>Lost update</li><li>Incorrect summary</li><li>Unrepeatable read</li><li>Phantom read</li><li>Recoverable schedule</li><li>Cascading rollback</li><li>Cascadeless schedule</li><li>Strict schedule</li><li>Isolation levels</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">17.1</span>Dirty Read Problem (Copying Answers in the Exam Hall)</a></li>
+<li><a href="#s2"><span class="n">17.2</span>Incorrect Summary and Lost Update Problems</a></li>
+<li><a href="#s3"><span class="n">17.3</span>Unrepeatable Read and Phantom Read Problems</a></li>
+<li><a href="#s4"><span class="n">17.4</span>Cascading vs Cascadeless Schedules</a></li>
+<li><a href="#s5"><span class="n">17.5</span>Recoverable vs Irrecoverable Schedules</a></li>
+<li><a href="#s6"><span class="n">17.6</span>Strict Schedule and the Schedule Hierarchy</a></li>
+<li><a href="#s7"><span class="n">17.7</span>Problems, Conflicts and SQL Isolation Levels<span class="x">ADDED</span></a></li>
+<li><a href="#s8"><span class="n">17.8</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 17</div>
+<h2 class="ch">Concurrency Problems and Recoverability</h2>
+<p>Chapter 16 showed an interleaving that worked. This chapter shows the ones that don't. Each problem below is a schedule read top to bottom in time order, with T1's operations on the left and T2's on the right. Unless stated otherwise, A starts at ₹1,000 and B at ₹2,000. The second half of the chapter asks a different question: if a transaction <b>fails</b>, can the DBMS undo it cleanly?</p>
+
+<section id="s1">
+<h3><span class="n">17.1</span>Dirty Read Problem (Copying Answers in the Exam Hall)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+A <b>dirty read</b> happens when a transaction reads a value written by another transaction that has <b>not committed yet</b>. If the writer then aborts, the reader has used a value that officially never existed.</div>
+<div class="tw"><table>
+<tr><th>Time</th><th>T1</th><th>T2</th><th>A in database</th></tr>
+<tr><td>1</td><td>R(A) → 1000</td><td></td><td>1000</td></tr>
+<tr><td>2</td><td>A = A − 500; W(A)</td><td></td><td>500 (uncommitted)</td></tr>
+<tr><td>3</td><td></td><td>R(A) → 500 <b>(dirty)</b></td><td>500</td></tr>
+<tr><td>4</td><td></td><td>uses 500 in its own work</td><td></td></tr>
+<tr><td>5</td><td>fails → ROLLBACK</td><td></td><td>1000</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Analogy: copying answers in the exam hall</h4>
+You copy an answer from your neighbour's sheet. A minute later they realise it's wrong and erase it. Their sheet is now correct, but your sheet still has the wrong answer you copied, and you've built the next steps on it. T2 copied a value T1 hadn't finalised.
+<br><br>Also called the <b>temporary update</b> problem, or a <b>W–R conflict</b> (T1 writes, T2 reads before T1 commits).</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">17.2</span>Incorrect Summary and Lost Update Problems</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Incorrect summary (inconsistent analysis)</h4>
+T2 computes the bank's total balance while T1 moves ₹500 from A to B. T2 reads A <b>after</b> the debit and B <b>before</b> the credit.</div>
+<div class="tw"><table>
+<tr><th>Time</th><th>T1 (transfer)</th><th>T2 (sum)</th></tr>
+<tr><td>1</td><td>R(A); A = A − 500; W(A) → 500</td><td></td></tr>
+<tr><td>2</td><td></td><td>sum = 0; R(A) → 500; sum = 500</td></tr>
+<tr><td>3</td><td></td><td>R(B) → 2000; sum = <b>2500</b></td></tr>
+<tr><td>4</td><td>R(B); B = B + 500; W(B) → 2500</td><td></td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+The true total is 3,000 before and after, but T2 reports <b>2,500</b>: it saw half of T1's work. No transaction failed; the interleaving alone caused it.
+<h4>Lost update</h4>
+Two transactions read the same value, both change it, and the second write <b>overwrites</b> the first. T1 withdraws ₹500; T2 deposits ₹200.</div>
+<div class="tw"><table>
+<tr><th>Time</th><th>T1 (−500)</th><th>T2 (+200)</th><th>A in database</th></tr>
+<tr><td>1</td><td>R(A) → 1000</td><td></td><td>1000</td></tr>
+<tr><td>2</td><td></td><td>R(A) → 1000</td><td>1000</td></tr>
+<tr><td>3</td><td>A = 500; W(A)</td><td></td><td>500</td></tr>
+<tr><td>4</td><td></td><td>A = 1200; W(A)</td><td><b>1200</b></td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+The correct result is 1,000 − 500 + 200 = <b>700</b>. T2 calculated from the old value 1,000, so T1's withdrawal is <b>lost</b>. This is a <b>W–W conflict</b> (two writes on A with no commit between them).</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">17.3</span>Unrepeatable Read and Phantom Read Problems</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Unrepeatable read</h4>
+A transaction reads the same item twice and gets <b>different values</b>, because another transaction changed it in between.</div>
+<div class="tw"><table>
+<tr><th>Time</th><th>T1</th><th>T2</th></tr>
+<tr><td>1</td><td>R(A) → 1000</td><td></td></tr>
+<tr><td>2</td><td></td><td>R(A); A = A − 500; W(A); COMMIT</td></tr>
+<tr><td>3</td><td>R(A) → <b>500</b></td><td></td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+T1 hasn't changed anything, yet A is different on the second read. Here T2 even committed, so nothing was dirty; the problem is purely that T1's view didn't stay fixed. This is an <b>R–W conflict</b>.
+<h4>Phantom read</h4>
+A transaction runs the same <b>query</b> twice and gets a different <b>set of rows</b>, because another transaction <b>inserted</b> (or deleted) matching rows in between.</div>
+<div class="tw"><table>
+<tr><th>Time</th><th>T1</th><th>T2</th></tr>
+<tr><td>1</td><td>SELECT COUNT(*) FROM Emp WHERE Dept = 'IT' → 5</td><td></td></tr>
+<tr><td>2</td><td></td><td>INSERT INTO Emp VALUES (…, 'IT'); COMMIT</td></tr>
+<tr><td>3</td><td>SELECT COUNT(*) FROM Emp WHERE Dept = 'IT' → <b>6</b></td><td></td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Unrepeatable read</b> = an <b>existing</b> row's value changed (UPDATE). <b>Phantom read</b> = <b>new or vanished</b> rows appear in the result (INSERT/DELETE). Locking the rows you read stops the first, but not the second, because the phantom row didn't exist when you locked.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">17.4</span>Cascading vs Cascadeless Schedules</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Cascading rollback</h4>
+If T2 read T1's uncommitted value, and T3 read T2's, then when T1 aborts, T2 must abort too (it used a value that never existed), and so must T3. One failure <b>cascades</b> into many rollbacks. That wastes a lot of work.</div>
+<div class="tw"><table>
+<tr><th>Time</th><th>T1</th><th>T2</th><th>T3</th></tr>
+<tr><td>1</td><td>W(A)</td><td></td><td></td></tr>
+<tr><td>2</td><td></td><td>R(A); W(B)</td><td></td></tr>
+<tr><td>3</td><td></td><td></td><td>R(B)</td></tr>
+<tr><td>4</td><td>ABORT</td><td>must abort</td><td>must abort</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Cascadeless schedule</h4>
+A schedule is <b>cascadeless</b> (avoids cascading aborts, ACA) if every transaction reads only values written by <b>committed</b> transactions. No dirty reads, so one abort never drags others down.
+<div class="formula">Cascadeless: if Tj reads X written by Ti, then Ti has already committed (or aborted) before that read</div>
+Fix for the example above: T2 waits to read A until T1 commits.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">17.5</span>Recoverable vs Irrecoverable Schedules</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Irrecoverable schedule</h4>
+T2 reads T1's dirty value and <b>commits</b>; then T1 aborts. T2 should be rolled back, but it's committed, and durability says committed changes can't be undone. The database is stuck in a wrong state.</div>
+<div class="tw"><table>
+<tr><th>Time</th><th>T1</th><th>T2</th></tr>
+<tr><td>1</td><td>W(A)</td><td></td></tr>
+<tr><td>2</td><td></td><td>R(A) (dirty)</td></tr>
+<tr><td>3</td><td></td><td><b>COMMIT</b></td></tr>
+<tr><td>4</td><td>ABORT</td><td>can't roll back ❌</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Recoverable schedule</h4>
+<div class="formula">Recoverable: if Tj reads X written by Ti, then Ti commits before Tj commits</div>
+Swap steps 3 and 4 above, so T2 can't commit until T1 does. If T1 commits, T2 can commit. If T1 aborts, T2 is still uncommitted and can be rolled back (a cascading rollback, but a possible one).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A dirty read <b>alone</b> doesn't make a schedule irrecoverable. What matters is the <b>commit order</b>: the reader committing <b>before</b> the writer. A schedule with dirty reads where every writer commits first is recoverable (but not cascadeless).</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">17.6</span>Strict Schedule and the Schedule Hierarchy</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Strict schedule</h4>
+A schedule is <b>strict</b> if no transaction <b>reads or writes</b> X until the last transaction that wrote X has committed or aborted. Cascadeless only bans dirty <b>reads</b>; strict also bans <b>overwriting</b> uncommitted data.
+<br><br>Why it matters: to undo an aborted write in a strict schedule, the DBMS just restores X's old value (its before-image). No other transaction can have touched X in between.
+<h4>Example: cascadeless but not strict</h4></div>
+<div class="tw"><table>
+<tr><th>Time</th><th>T1</th><th>T2</th></tr>
+<tr><td>1</td><td>W(A)</td><td></td></tr>
+<tr><td>2</td><td></td><td>W(A) (blind write, no read)</td></tr>
+<tr><td>3</td><td>COMMIT</td><td></td></tr>
+<tr><td>4</td><td></td><td>COMMIT</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+No one reads uncommitted data → <b>cascadeless</b> ✅. But T2 writes A while T1's write is uncommitted → <b>not strict</b> ❌. If T1 had aborted, restoring A's old value would also wipe out T2's write.
+<h4>The hierarchy</h4></div>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Serial inside strict inside cascadeless inside recoverable inside all schedules">
+<rect class="ln" x="20" y="10" width="640" height="180" rx="8" fill="none"/><text x="40" y="32" class="b">All schedules</text>
+<text x="640" y="32" text-anchor="end" class="mut">irrecoverable ones live only here</text>
+<rect class="ln" x="80" y="42" width="560" height="140" rx="8" fill="none"/><text x="100" y="64" class="b">Recoverable</text>
+<rect class="ac" x="140" y="74" width="480" height="100" rx="8"/><text x="160" y="96" class="b">Cascadeless (ACA)</text>
+<rect class="gr" x="250" y="106" width="350" height="60" rx="6"/><text x="270" y="130" class="b">Strict</text>
+<rect class="ac" x="440" y="118" width="140" height="38" rx="4"/><text x="510" y="142" text-anchor="middle" class="b">Serial</text>
+</svg>
+<figcaption>Strict ⊂ Cascadeless ⊂ Recoverable ⊂ All schedules. Every serial schedule is strict.</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Class</th><th>Rule</th><th>Prevents</th></tr>
+<tr><td>Recoverable</td><td>Reader commits after the writer it read from</td><td>Committing on top of data that later vanishes</td></tr>
+<tr><td>Cascadeless</td><td>Read only committed data</td><td>Cascading rollbacks</td></tr>
+<tr><td>Strict</td><td>Read <b>or write</b> only committed data</td><td>Messy undo of overwritten values</td></tr>
+</table></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">17.7</span>Problems, Conflicts and SQL Isolation Levels<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span></div>
+<div class="tw"><table>
+<tr><th>Problem</th><th>Also called</th><th>Conflict</th><th>Effect</th></tr>
+<tr><td>Dirty read</td><td>Temporary update, uncommitted dependency</td><td>W–R</td><td>Uses data that's rolled back</td></tr>
+<tr><td>Lost update</td><td>—</td><td>W–W</td><td>One write overwrites another</td></tr>
+<tr><td>Incorrect summary</td><td>Inconsistent analysis</td><td>W–R</td><td>Aggregate sees half a transaction</td></tr>
+<tr><td>Unrepeatable read</td><td>Non-repeatable read</td><td>R–W</td><td>Same row, different value</td></tr>
+<tr><td>Phantom read</td><td>—</td><td>R–(INSERT/DELETE)</td><td>Same query, different rows</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam: SQL isolation levels</span>
+SQL lets an application choose how much isolation to trade for speed, with <code>SET TRANSACTION ISOLATION LEVEL …</code>:</div>
+<div class="tw"><table>
+<tr><th>Isolation level</th><th>Dirty read</th><th>Unrepeatable read</th><th>Phantom read</th></tr>
+<tr><td>READ UNCOMMITTED</td><td>Possible</td><td>Possible</td><td>Possible</td></tr>
+<tr><td>READ COMMITTED</td><td>Prevented</td><td>Possible</td><td>Possible</td></tr>
+<tr><td>REPEATABLE READ</td><td>Prevented</td><td>Prevented</td><td>Possible</td></tr>
+<tr><td>SERIALIZABLE</td><td>Prevented</td><td>Prevented</td><td>Prevented</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Expect: name the problem from a schedule (look for the conflict type and whether anyone aborted), "which isolation level prevents dirty reads but allows phantoms?" (READ COMMITTED or REPEATABLE READ — read the options), and "is this schedule recoverable / cascadeless / strict?". For the last, check the commit order of every read-from pair.</div>
+</section>
+
+<section id="s8">
+<h3><span class="n">17.8</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>T2 reads a value written by T1 before T1 commits, and T1 then aborts. Which problem?<br><b>Answer: dirty read</b> (temporary update).</div>
+<div class="num"><span class="t">Q2</span>Two transactions update the same item and one update is overwritten. Which problem?<br><b>Answer: lost update.</b></div>
+<div class="num"><span class="t">Q3</span>A transaction re-runs a query and finds new rows inserted by another transaction. Which problem?<br><b>Answer: phantom read.</b></div>
+<div class="num"><span class="t">Q4</span>Schedule: W1(A), R2(A), C2, C1. Recoverable?<br><b>Answer: No.</b> T2 read from T1 but committed first.</div>
+<div class="num"><span class="t">Q5</span>Schedule: W1(A), R2(A), C1, C2. Recoverable? Cascadeless?<br><b>Answer: Recoverable, not cascadeless</b> (T2 read uncommitted A).</div>
+<div class="num"><span class="t">Q6</span>Schedule: W1(A), C1, R2(A), W2(A), C2. Which classes?<br><b>Answer: strict</b> (and therefore cascadeless and recoverable).</div>
+<div class="num"><span class="t">Q7</span>Which relation is correct? (a) Recoverable ⊂ Cascadeless (b) Strict ⊂ Cascadeless ⊂ Recoverable (c) Cascadeless ⊂ Strict (d) Recoverable ⊂ Strict<br><b>Answer: (b).</b></div>
+<div class="num"><span class="t">Q8</span>Which isolation level allows dirty reads?<br><b>Answer: READ UNCOMMITTED.</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Dirty read</b> (W–R): read uncommitted data, writer aborts. Copying an answer the neighbour later erases.</li>
+<li><b>Incorrect summary</b>: SUM sees A after debit, B before credit → 2,500 instead of 3,000.</li>
+<li><b>Lost update</b> (W–W): both read 1,000; −500 then +200 written → 1,200 instead of 700.</li>
+<li><b>Unrepeatable read</b> (R–W): same row read twice, different value. <b>Phantom</b>: same query twice, new/vanished rows.</li>
+<li><b>Cascading rollback</b>: one abort forces readers of its dirty data to abort. <b>Cascadeless</b>: read only committed data.</li>
+<li><b>Irrecoverable</b>: reader commits before the writer it read from, then the writer aborts. <b>Recoverable</b>: writer commits first.</li>
+<li><b>Strict</b>: no read <b>or write</b> of X until X's last writer finishes. W1(A) W2(A) C1 C2 is cascadeless, not strict.</li>
+<li>Hierarchy: Serial ⊂ Strict ⊂ Cascadeless ⊂ Recoverable ⊂ All.</li>
+<li>➕ Isolation levels: READ UNCOMMITTED (all 3 problems) → READ COMMITTED (no dirty) → REPEATABLE READ (no unrepeatable) → SERIALIZABLE (no phantom).</li>
+</ul>
+</div>
+<div class="end">End of Chapter 17 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="16-Transactions-and-ACID.html">← Ch 16: Transactions and ACID Properties</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
