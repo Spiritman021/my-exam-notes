@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Relational Algebra Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="09-Joins.html">← Ch 9: Joins</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 10: Relational Algebra</h1>
+  <p class="sub">Volume 05 · Part 10 · Follows the lecture outline for relational algebra, plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. The six basic operators, the derived ones, and division built step by step from the basics.</p>
+  <ul class="tags"><li>Procedural language</li><li>Selection σ</li><li>Projection π</li><li>Union ∪</li><li>Set difference −</li><li>Cross product ×</li><li>Rename ρ</li><li>Intersection ∩</li><li>Division ÷</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">10.1</span>Procedural vs Non-Procedural Languages; Basic and Derived Operators</a></li>
+<li><a href="#s2"><span class="n">10.2</span>Projection (π) and Selection (σ)</a></li>
+<li><a href="#s3"><span class="n">10.3</span>Union and Set Difference (Cricket and Hockey Tables)</a></li>
+<li><a href="#s4"><span class="n">10.4</span>Cross Product and Rename (ρ) (Student → Alumni)</a></li>
+<li><a href="#s5"><span class="n">10.5</span>Division and Building It from Basic Operators — Solved</a></li>
+<li><a href="#s6"><span class="n">10.6</span>Equivalence Rules and Writing Queries<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">10.7</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 10</div>
+<h2 class="ch">Relational Algebra</h2>
+<p><b>Relational algebra</b> is the formal query language behind SQL. Each operator takes one or two relations and returns a new relation, so operators can be chained like arithmetic. The joins of chapter 9 are just combinations of these operators. SQL queries are translated into relational algebra before the database runs them.</p>
+
+<section id="s1">
+<h3><span class="n">10.1</span>Procedural vs Non-Procedural Languages; Basic and Derived Operators</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<ul>
+<li><b>Procedural</b>: you say <b>what</b> you want <b>and how</b> to get it, as a sequence of steps. <b>Relational algebra</b> is procedural: the order of operators is the plan.</li>
+<li><b>Non-procedural (declarative)</b>: you say only <b>what</b> you want; the system works out how. <b>Relational calculus</b> (chapter 11) is non-procedural, and so is SQL.</li>
+</ul>
+<h4>Basic (fundamental) operators: six</h4>
+These can't be built from each other:</div>
+<div class="tw"><table>
+<tr><th>Operator</th><th>Symbol</th><th>Type</th><th>Does</th></tr>
+<tr><td>Selection</td><td>σ</td><td>Unary</td><td>Picks rows</td></tr>
+<tr><td>Projection</td><td>π</td><td>Unary</td><td>Picks columns</td></tr>
+<tr><td>Rename</td><td>ρ</td><td>Unary</td><td>Renames a relation or its attributes</td></tr>
+<tr><td>Union</td><td>∪</td><td>Binary</td><td>Rows in either</td></tr>
+<tr><td>Set difference</td><td>−</td><td>Binary</td><td>Rows in the first, not the second</td></tr>
+<tr><td>Cross product</td><td>×</td><td>Binary</td><td>Every row with every row</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Derived operators</h4>
+Built from the basic six, kept because they're convenient:
+<ul>
+<li><b>Intersection</b>: R ∩ S = R − (R − S)</li>
+<li><b>Joins</b> (⋈, ⋈<sub>θ</sub>, outer joins): R ⋈<sub>θ</sub> S = σ<sub>θ</sub>(R × S)</li>
+<li><b>Division</b> (÷): built in 10.5</li>
+<li><b>Assignment</b> (←): stores an intermediate result under a name</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Intersection and join are <b>not</b> basic operators, even though they're used everywhere. If asked "which of these is not a fundamental operator?", the answer is usually ∩, ⋈ or ÷.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">10.2</span>Projection (π) and Selection (σ)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Example table <b>Student(Roll, Name, City, Marks)</b>: (1, Asha, Delhi, 82), (2, Ravi, Pune, 65), (3, Neha, Delhi, 74).
+<h4>Selection σ: pick rows (horizontal)</h4>
+<div class="formula">σ<sub>City = 'Delhi'</sub>(Student) → rows 1 and 3, all four columns</div>
+<ul>
+<li>The condition can use =, ≠, &lt;, ≤, &gt;, ≥ and combine with ∧ (and), ∨ (or), ¬ (not): σ<sub>City='Delhi' ∧ Marks&gt;80</sub>(Student) → row 1.</li>
+<li>Degree (columns) stays the same; cardinality (rows) can only stay the same or shrink.</li>
+</ul>
+<h4>Projection π: pick columns (vertical)</h4>
+<div class="formula">π<sub>City</sub>(Student) → {Delhi, Pune}: 2 rows, not 3</div>
+<ul>
+<li>Relational algebra works on <b>sets</b>, so projection <b>removes duplicate rows</b>. Delhi appears once.</li>
+<li>Combine them: names of students from Delhi = π<sub>Name</sub>(σ<sub>City='Delhi'</sub>(Student)) → {Asha, Neha}.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>π removes duplicates, but SQL's <code>SELECT City FROM Student</code> does <b>not</b> (it returns Delhi twice). π matches <code>SELECT DISTINCT</code>.</li>
+<li>Don't mix up the symbols: σ (sigma) = <b>s</b>election = rows; π (pi) = <b>p</b>rojection = columns. SQL's <code>SELECT</code> clause is really π, and its <code>WHERE</code> clause is σ.</li>
+<li>Order matters with π: π<sub>Name</sub>(σ<sub>City='Delhi'</sub>(Student)) works, but σ<sub>City='Delhi'</sub>(π<sub>Name</sub>(Student)) fails, because City is already gone.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">10.3</span>Union and Set Difference (Cricket and Hockey Tables)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Two tables list the students in the cricket team and the hockey team:</div>
+<div class="tw"><table>
+<tr><th colspan="2">Cricket</th><th></th><th colspan="2">Hockey</th></tr>
+<tr><th>Roll</th><th>Name</th><th></th><th>Roll</th><th>Name</th></tr>
+<tr><td>1</td><td>Asha</td><td></td><td>2</td><td>Ravi</td></tr>
+<tr><td>2</td><td>Ravi</td><td></td><td>4</td><td>Karan</td></tr>
+<tr><td>3</td><td>Neha</td><td></td><td></td><td></td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<ul>
+<li><b>Cricket ∪ Hockey</b> = students who play <b>at least one</b> game → 1, 2, 3, 4. Ravi appears once (duplicates removed).</li>
+<li><b>Cricket − Hockey</b> = cricket but <b>not</b> hockey → 1, 3.</li>
+<li><b>Hockey − Cricket</b> = hockey but not cricket → 4. Difference is <b>not commutative</b>.</li>
+<li><b>Cricket ∩ Hockey</b> (derived) = both games → 2. Check: Cricket − (Cricket − Hockey) = {1,2,3} − {1,3} = {2} ✅</li>
+</ul>
+<h4>Union compatibility</h4>
+∪, − and ∩ only work when the two relations are <b>union compatible</b>:
+<ol>
+<li>the same number of attributes (same degree), and</li>
+<li>the i-th attribute of each has the same domain.</li>
+</ol>
+Cricket(Roll, Name) and Hockey(Roll, Name) qualify. Cricket(Roll, Name) and Fees(Roll, Amount) don't: Name and Amount have different domains.</div>
+<div class="tw"><table>
+<tr><th>Operation (R has m rows, S has n)</th><th>Minimum rows</th><th>Maximum rows</th></tr>
+<tr><td>R ∪ S</td><td>max(m, n)</td><td>m + n</td></tr>
+<tr><td>R ∩ S</td><td>0</td><td>min(m, n)</td></tr>
+<tr><td>R − S</td><td>0</td><td>m</td></tr>
+</table></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">10.4</span>Cross Product and Rename (ρ) (Student → Alumni)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Cross product ×</h4>
+Same as chapter 9: R × S pairs every row of R with every row of S. Rows multiply (m × n), columns add. The two relations do <b>not</b> need to be union compatible.
+<h4>Rename ρ</h4>
+ρ gives a relation, or its attributes, a new name. It changes no data.
+<ul>
+<li>ρ<sub>Alumni</sub>(Student): the same table, now called Alumni.</li>
+<li>ρ<sub>Alumni(R, N, C, M)</sub>(Student): renames the table and all four attributes.</li>
+</ul>
+Why we need it: when a table is combined with <b>itself</b> (a self join), both copies would have identical column names. Renaming one copy lets you tell Student.Marks from Alumni.Marks.</div>
+<div class="box add"><span class="t">➕ Added for exam: highest marks with no MAX function</span>
+Relational algebra has no aggregate functions in its basic form, but rename makes "highest" possible:
+<ol>
+<li>T = ρ<sub>T(Roll2, Marks2)</sub>(π<sub>Roll, Marks</sub>(Student))</li>
+<li>Marks that are beaten by someone: Lower = π<sub>Marks</sub>(σ<sub>Marks &lt; Marks2</sub>(Student × T))</li>
+<li>Highest = π<sub>Marks</sub>(Student) − Lower</li>
+</ol>
+With marks 82, 65, 74: Lower = {65, 74}, so Highest = {82} ✅. This "find the losers, subtract them" pattern is a favourite exam question.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">10.5</span>Division and Building It from Basic Operators — Solved</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<b>Division</b> answers "<b>for all</b>" questions: which students have taken <b>every</b> course? For R(A, B) ÷ S(B), the result is the A values that are paired in R with <b>every</b> B value in S.
+<h4>Example: Enrol ÷ Course</h4></div>
+<div class="tw"><table>
+<tr><th colspan="2">Enrol(Roll, Course)</th><th></th><th>Course</th></tr>
+<tr><td>1</td><td>DBMS</td><td></td><td>DBMS</td></tr>
+<tr><td>1</td><td>OS</td><td></td><td>OS</td></tr>
+<tr><td>2</td><td>DBMS</td><td></td><td></td></tr>
+<tr><td>3</td><td>DBMS</td><td></td><td></td></tr>
+<tr><td>3</td><td>OS</td><td></td><td></td></tr>
+<tr><td>3</td><td>CN</td><td></td><td></td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Roll 1 has DBMS and OS ✅. Roll 2 is missing OS ❌. Roll 3 has both, and an extra CN that doesn't matter ✅. <b>Enrol ÷ Course = {1, 3}</b>.
+<h4>Building ÷ from the basic operators</h4>
+Idea: work out every pair that <b>should</b> exist, find the ones that are <b>missing</b>, and remove the students who have a missing pair.
+<ol>
+<li><b>All students</b>: π<sub>Roll</sub>(Enrol) = {1, 2, 3}</li>
+<li><b>Every pair that should exist</b>: π<sub>Roll</sub>(Enrol) × Course = (1,DBMS), (1,OS), (2,DBMS), (2,OS), (3,DBMS), (3,OS)</li>
+<li><b>Missing pairs</b>: step 2 − Enrol = {(2, OS)}</li>
+<li><b>Students with a missing pair</b>: π<sub>Roll</sub>(step 3) = {2}</li>
+<li><b>Answer</b>: step 1 − step 4 = {1, 3} ✅</li>
+</ol></div>
+<div class="formula">R ÷ S = π<sub>A</sub>(R) − π<sub>A</sub>( (π<sub>A</sub>(R) × S) − R )</div>
+<figure>
+<svg viewBox="0 0 680 140" role="img" aria-label="Division pipeline: all students, times courses, minus enrolments, project, subtract">
+<rect class="ac" x="10" y="45" width="110" height="46" rx="4"/><text x="65" y="66" text-anchor="middle" class="b">π Roll(R)</text><text class="mut" x="65" y="83" text-anchor="middle">{1,2,3}</text>
+<line class="lna" x1="120" y1="68" x2="140" y2="68"/><polygon class="aha" points="138,63 148,68 138,73"/>
+<rect class="ac" x="148" y="45" width="120" height="46" rx="4"/><text x="208" y="66" text-anchor="middle" class="b">× Course</text><text class="mut" x="208" y="83" text-anchor="middle">6 pairs</text>
+<line class="lna" x1="268" y1="68" x2="288" y2="68"/><polygon class="aha" points="286,63 296,68 286,73"/>
+<rect class="ac" x="296" y="45" width="110" height="46" rx="4"/><text x="351" y="66" text-anchor="middle" class="b">− Enrol</text><text class="mut" x="351" y="83" text-anchor="middle">{(2,OS)}</text>
+<line class="lna" x1="406" y1="68" x2="426" y2="68"/><polygon class="aha" points="424,63 434,68 424,73"/>
+<rect class="ac" x="434" y="45" width="100" height="46" rx="4"/><text x="484" y="66" text-anchor="middle" class="b">π Roll</text><text class="mut" x="484" y="83" text-anchor="middle">{2}</text>
+<line class="lna" x1="534" y1="68" x2="554" y2="68"/><polygon class="aha" points="552,63 562,68 552,73"/>
+<rect class="gr" x="562" y="45" width="110" height="46" rx="4"/><text x="617" y="66" text-anchor="middle" class="b">{1,2,3} − {2}</text><text class="mut" x="617" y="83" text-anchor="middle">= {1, 3}</text>
+<text class="mut" x="340" y="125" text-anchor="middle">Find who should have every course, find who is missing one, subtract</text>
+</svg>
+<figcaption>Division uses only π, ×, and − (all basic operators)</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Keywords "<b>all</b>", "<b>every</b>" or "<b>each</b>" in a query point to division.</li>
+<li>Result attributes = attributes of R that are <b>not</b> in S. Degree of R ÷ S = degree(R) − degree(S).</li>
+<li>SQL has no division operator; it's written with a double NOT EXISTS ("there is no course this student hasn't taken").</li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">10.6</span>Equivalence Rules and Writing Queries<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+The query optimizer rewrites algebra into an equivalent, cheaper form. The rules you're most likely to be asked about:
+<ul>
+<li><b>Cascade of σ</b>: σ<sub>c1 ∧ c2</sub>(R) = σ<sub>c1</sub>(σ<sub>c2</sub>(R))</li>
+<li><b>σ is commutative</b>: σ<sub>c1</sub>(σ<sub>c2</sub>(R)) = σ<sub>c2</sub>(σ<sub>c1</sub>(R))</li>
+<li><b>Cascade of π</b>: π<sub>A</sub>(π<sub>A,B</sub>(R)) = π<sub>A</sub>(R). Only the outermost projection matters.</li>
+<li>∪, ∩, × and ⋈ are <b>commutative and associative</b>; − is neither.</li>
+<li><b>Push selections down</b>: σ<sub>c</sub>(R ⋈ S) = σ<sub>c</sub>(R) ⋈ S when c uses only R's attributes. Filtering early makes the join smaller.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Query (Student, Enrol, Course)</th><th>Relational algebra</th></tr>
+<tr><td>Names of students with marks above 70</td><td>π<sub>Name</sub>(σ<sub>Marks&gt;70</sub>(Student))</td></tr>
+<tr><td>Rolls of students enrolled in DBMS</td><td>π<sub>Roll</sub>(σ<sub>Course='DBMS'</sub>(Enrol))</td></tr>
+<tr><td>Names of students enrolled in DBMS</td><td>π<sub>Name</sub>(Student ⋈ σ<sub>Course='DBMS'</sub>(Enrol))</td></tr>
+<tr><td>Rolls in DBMS but not OS</td><td>π<sub>Roll</sub>(σ<sub>Course='DBMS'</sub>(Enrol)) − π<sub>Roll</sub>(σ<sub>Course='OS'</sub>(Enrol))</td></tr>
+<tr><td>Rolls enrolled in every course</td><td>Enrol ÷ Course</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Expect: matching a symbol to its operator (σ, π, ρ, ÷), "which is a unary operator?" (σ, π, ρ), "which needs union compatibility?" (∪, −, ∩), counting rows/columns of a result, and "which query does this expression answer?".</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">10.7</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Relational algebra is a ____ language.<br><b>Answer: procedural.</b> Relational calculus is non-procedural.</div>
+<div class="num"><span class="t">Q2</span>Which is not a fundamental operator? (a) σ (b) ρ (c) ∩ (d) ×<br><b>Answer: (c) ∩.</b> It's derived: R ∩ S = R − (R − S).</div>
+<div class="num"><span class="t">Q3</span>Which operator selects columns? (a) σ (b) π (c) ρ (d) ×<br><b>Answer: (b) π (projection).</b></div>
+<div class="num"><span class="t">Q4</span>R has 5 rows, S has 3 rows, and they are union compatible. Max rows in R ∪ S and R ∩ S?<br><b>Answer: 8 and 3.</b></div>
+<div class="num"><span class="t">Q5</span>R(A, B, C) ÷ S(C) has which attributes?<br><b>Answer: A, B</b> (R's attributes not in S).</div>
+<div class="num"><span class="t">Q6</span>Which operator is needed to join a relation with itself?<br><b>Answer: rename (ρ)</b>, so the two copies have distinct names.</div>
+<div class="num"><span class="t">Q7</span>"Find the suppliers who supply all parts" uses which operator?<br><b>Answer: division (÷).</b></div>
+<div class="num"><span class="t">Q8</span>Is R − S = S − R?<br><b>Answer: No</b>, set difference is not commutative (Cricket − Hockey = {1, 3}, Hockey − Cricket = {4}).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Relational algebra = <b>procedural</b> (what + how). Relational calculus and SQL = non-procedural (what only).</li>
+<li><b>Six basic operators</b>: σ, π, ρ (unary) and ∪, −, × (binary). <b>Derived</b>: ∩, ⋈, ÷, ←.</li>
+<li><b>σ</b> picks rows (SQL WHERE); <b>π</b> picks columns and removes duplicates (SQL SELECT DISTINCT).</li>
+<li><b>∪, −, ∩</b> need union compatibility: same degree, matching domains. Cricket ∪ Hockey = 1,2,3,4; Cricket − Hockey = 1,3; ∩ = 2.</li>
+<li>R ∩ S = R − (R − S). Difference is not commutative.</li>
+<li><b>×</b>: rows multiply, columns add. <b>ρ</b> renames (Student → Alumni), needed for self joins.</li>
+<li>➕ Highest value without MAX: π(R) − π(values beaten in R × ρ(R)).</li>
+<li><b>÷</b> = "for all": Enrol ÷ Course = students in every course. R ÷ S = π<sub>A</sub>(R) − π<sub>A</sub>((π<sub>A</sub>(R) × S) − R).</li>
+<li>➕ Optimizer rules: cascade σ and π, push selections below joins; ∪, ∩, ×, ⋈ commute, − doesn't.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 10 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="09-Joins.html">← Ch 9: Joins</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
