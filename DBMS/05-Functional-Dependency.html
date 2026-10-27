@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Functional Dependency Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="04-Integrity-Constraints-and-Keys.html">← Ch 4: Integrity Constraints and Keys</a><a href="index.html">☰ All topics</a><a href="06-Minimal-Cover-and-Equivalence.html">Ch 6: Minimal Cover and Equivalence of FDs →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 5: Functional Dependency</h1>
+  <p class="sub">Volume 05 · Part 5 · Built from the one-shot DBMS lecture transcript (functional dependency), plus the exam points the lecture skipped. What an FD means, how to check one on a table, Armstrong's axioms and the secondary rules, attribute closure, and using closure to find candidate and super keys.</p>
+  <ul class="tags"><li>Functional dependency</li><li>Determinant</li><li>Dependent</li><li>Trivial FD</li><li>Armstrong's axioms</li><li>Union</li><li>Decomposition</li><li>Pseudo-transitivity</li><li>Attribute closure</li><li>Candidate key</li><li>Super key</li><li>Prime attribute</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">5.1</span>Meaning of FD: Determinant and Dependent (Phone and Its Cover)</a></li>
+<li><a href="#s2"><span class="n">5.2</span>Tuple-Based Definition and Checking an FD on a Table</a></li>
+<li><a href="#s3"><span class="n">5.3</span>Armstrong's Axioms: Reflexivity, Augmentation, Transitivity</a></li>
+<li><a href="#s4"><span class="n">5.4</span>Secondary Rules: Union, Decomposition, Pseudo-Transitivity, Composition</a></li>
+<li><a href="#s5"><span class="n">5.5</span>Attribute Closure and Finding Candidate/Super Keys — Solved Problems</a></li>
+<li><a href="#s6"><span class="n">5.6</span>Types of FD and Finding All Candidate Keys<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">5.7</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 5</div>
+<h2 class="ch">Functional Dependency</h2>
+<p>Chapter 4 ended with keys: attributes that identify a row uniquely. A <b>functional dependency (FD)</b> is the general idea behind that: <b>knowing one attribute's value fixes another attribute's value</b>. If you know a student's roll number you know their name, so <i>RollNo → Name</i>. FDs are the raw material for everything that follows: closure finds the keys (this chapter), minimal cover simplifies the FD set (chapter 6), and normalization uses FDs to split badly designed tables (chapters 7 and 8).</p>
+
+<section id="s1">
+<h3><span class="n">5.1</span>Meaning of FD: Determinant and Dependent (Phone and Its Cover)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<h4>Example: a phone and its cover</h4>
+Take two phone covers, each made for one particular phone. The cover tells you <b>which phone will fit in it</b>. A phone won't work in just any cover: if the camera is on one side and the cover's camera hole is on the other, you can't even use the camera. Which phone fits depends on <b>whose cover it is</b>.
+<ul>
+<li>Call the cover side <b>A</b> (or <b>α</b>) and the phone side <b>B</b> (or <b>β</b>). We say <b>A determines B</b>, written <b>A → B</b> or <b>α → β</b>. Both notations are popular.</li>
+<li>A (α) is the <b>determinant</b>, because it determines.</li>
+<li>B (β) is the <b>dependent</b>, because it depends on A.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="A determines B: the determinant on the left, the dependent on the right">
+<rect class="ac" x="60" y="40" width="200" height="60" rx="4"/>
+<text x="160" y="66" text-anchor="middle" class="b">A  (α)</text>
+<text class="mut" x="160" y="86" text-anchor="middle">Determinant · the cover</text>
+<line class="lna" x1="260" y1="70" x2="410" y2="70"/><polygon class="aha" points="410,64 422,70 410,76"/>
+<text x="340" y="58" text-anchor="middle" class="b">determines</text>
+<rect class="gr" x="422" y="40" width="200" height="60" rx="4"/>
+<text x="522" y="66" text-anchor="middle" class="b">B  (β)</text>
+<text class="mut" x="522" y="86" text-anchor="middle">Dependent · the phone</text>
+<text class="mut" x="340" y="135" text-anchor="middle">Read “A → B” as “A functionally determines B” or “B is functionally dependent on A”</text>
+</svg>
+<figcaption>The left side of an FD decides the right side</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Bank examples: <b>AccountNo → Balance, Branch</b>; <b>IFSC → Bank, Branch</b>; <b>PAN → Name</b>. But <b>Name → PAN</b> does not hold, because two customers can share a name.</li>
+<li>An FD is a statement about the <b>schema</b> (the meaning of the data), not about one snapshot of rows. It comes from business rules: "each account belongs to exactly one branch".</li>
+<li>Both sides can be sets of attributes: <b>{RollNo, SubjectID} → Marks</b>.</li>
+</ul></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">5.2</span>Tuple-Based Definition and Checking an FD on a Table</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Take a relation with two attributes A (α) and B (β). If A determines B, then every time the <b>same A value</b> appears, the <b>same B value</b> must appear with it.
+<ul>
+<li>Wherever A = 1 appears, B must be 5 — every single time.</li>
+<li>A = 3 appears with B = 7 twice, but a third row has A = 3 with B = 6. For 3 we needed 7, so <b>A → B does not hold</b>. One such record is enough to break it.</li>
+</ul>
+<h4>The definition in terms of two records</h4>
+Call two records t1 and t2. If t1's α value is the same as t2's α value (both 1 in our case), you must make sure their β values are also the same (both 5). For that α value, the same β value must be generated again and again.</div>
+<div class="formula">If  t1[α] = t2[α]  then  t1[β] = t2[β]      for every pair of tuples t1, t2</div>
+<div class="tw"><table>
+<tr><th>A</th><th>B</th><th></th></tr>
+<tr><td>1</td><td>5</td><td></td></tr>
+<tr><td>3</td><td>7</td><td></td></tr>
+<tr><td>1</td><td>5</td><td>✅ same A, same B</td></tr>
+<tr><td>3</td><td>7</td><td>✅</td></tr>
+<tr><td>3</td><td>6</td><td>❌ A = 3 again, but B changed → A → B fails</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 From the lecture — first look at closure</span>
+FDs tell you where you can "reach". In R(A, B, C) with <b>A → B</b> and <b>B → C</b>: if A is known you can reach B, and if B is known you can reach C. The <b>closure</b> of an attribute is everything you can reach from it:
+<ul>
+<li><b>A⁺</b>: start with A. A → B adds B. Now with B, B → C adds C. <b>A⁺ = {A, B, C}</b>.</li>
+<li><b>B⁺</b>: start with B. B → C adds C. C is not on the left of any FD, so stop. <b>B⁺ = {B, C}</b>.</li>
+<li><b>C⁺</b>: C is on the left of no FD. <b>C⁺ = {C}</b>.</li>
+</ul>
+Closure is covered properly with solved problems in 5.5.</div>
+<div class="box add"><span class="t">➕ Added for exam: checking an FD on a given table</span>
+<ul>
+<li>Group the rows by the <b>left side</b>. Inside each group, the right side must have <b>one value only</b>. If any group shows two different values, the FD is <b>violated</b>.</li>
+<li>If every value of the left side is <b>unique</b> in the table (no repeats), the FD is <b>satisfied</b> trivially, whatever the right side is.</li>
+<li>A table instance can <b>disprove</b> an FD, but it can never <b>prove</b> that the FD holds for the schema. Exam wording: "Which FD is <b>satisfied by the instance</b>?" or "Which FD <b>does not hold</b>?"</li>
+<li>Same right side for different left values is fine: A = 1 → 5 and A = 2 → 5 does not break A → B.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A → B does <b>not</b> mean B → A. In the table above, B = 5 only ever appears with A = 1, but that's a coincidence of this instance. Check each direction separately.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">5.3</span>Armstrong's Axioms: Reflexivity, Augmentation, Transitivity</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Armstrong's axioms are simple, basic properties that help you work with FDs. Questions on them come in university exams, so remember the examples.
+<ul>
+<li><b>Reflexivity</b>: if <b>B ⊆ A</b>, then <b>A → B</b>. This is called the <b>trivial</b> property. If B is already inside A, then from A you can obviously reach B; "you're not telling me anything new."</li>
+<li><b>Augmentation</b>: if <b>A → B</b>, then <b>AC → BC</b>. Add the same attribute (column) to <b>both</b> sides, left and right; it makes no difference.</li>
+<li><b>Transitivity</b>: if <b>A → B</b> and <b>B → C</b>, then <b>A → C</b>. Just like "if a = b and b = c, then a = c".</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="The three Armstrong axioms">
+<rect class="bx" x="20" y="20" width="200" height="120" rx="4"/>
+<text x="120" y="44" text-anchor="middle" class="b">Reflexivity</text>
+<circle cx="120" cy="92" r="36" class="ac"/><circle cx="132" cy="100" r="15" class="gr"/>
+<text x="100" y="80" text-anchor="middle" class="b">A</text><text x="132" y="105" text-anchor="middle" class="b">B</text>
+<text class="mut" x="120" y="160" text-anchor="middle">B ⊆ A  ⇒  A → B</text>
+<rect class="bx" x="240" y="20" width="200" height="120" rx="4"/>
+<text x="340" y="44" text-anchor="middle" class="b">Augmentation</text>
+<text x="340" y="82" text-anchor="middle">A → B</text>
+<text x="340" y="104" text-anchor="middle" class="mut">add C to both sides</text>
+<text x="340" y="126" text-anchor="middle" class="b">AC → BC</text>
+<text class="mut" x="340" y="160" text-anchor="middle">A → B  ⇒  AC → BC</text>
+<rect class="bx" x="460" y="20" width="200" height="120" rx="4"/>
+<text x="560" y="44" text-anchor="middle" class="b">Transitivity</text>
+<text x="490" y="96" text-anchor="middle" class="b">A</text><line class="lna" x1="500" y1="92" x2="538" y2="92"/><polygon class="aha" points="538,87 547,92 538,97"/>
+<text x="560" y="96" text-anchor="middle" class="b">B</text><line class="lna" x1="570" y1="92" x2="608" y2="92"/><polygon class="aha" points="608,87 617,92 608,97"/>
+<text x="630" y="96" text-anchor="middle" class="b">C</text>
+<path class="ln" d="M490 104 Q560 136 630 104"/>
+<text class="mut" x="560" y="160" text-anchor="middle">A → B, B → C  ⇒  A → C</text>
+</svg>
+<figcaption>The three primary rules</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Armstrong's axioms are <b>sound</b> (they never produce an FD that doesn't really follow) and <b>complete</b> (every FD that follows can be derived with them). This pair of words is a favourite one-mark question.</li>
+<li>All FDs that can be derived from a set F form the <b>closure of F</b>, written <b>F⁺</b>. Don't mix it up with the attribute closure X⁺ in 5.5.</li>
+<li>Augmentation also works with only the left side growing: from A → B you get <b>AC → B</b> (augment to AC → BC, then BC → B by reflexivity, then transitivity).</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">5.4</span>Secondary Rules: Union, Decomposition, Pseudo-Transitivity, Composition</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+The three axioms are the basic (primary) rules. There are also some additional <b>secondary rules</b>; if asked, mention them.
+<ul>
+<li><b>Union</b>: A → B and A → C give <b>A → BC</b>. Just combine the right-hand sides; the meaning doesn't change.</li>
+<li><b>Decomposition</b>: the reverse of union. A → BC can be split into <b>A → B</b> and <b>A → C</b>. But if AB → C, can you write A → C and B → C? <b>No.</b> You can't decompose the left-hand side this way; focus only on the <b>right-hand side</b>.</li>
+<li><b>Pseudo-transitivity</b>: from A → B and BC → D you can write <b>AC → D</b>. It's valid and the meaning doesn't change.</li>
+<li><b>Composition</b>: A → B and C → D give <b>AC → BD</b>. Combine both the left and right sides.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Rule</th><th>Given</th><th>Derive</th><th>How (from the axioms) ➕</th></tr>
+<tr><td><b>Union</b></td><td>A → B, A → C</td><td>A → BC</td><td>Augment A → C with A: A → AC. Augment A → B with C: AC → BC. Transitivity.</td></tr>
+<tr><td><b>Decomposition</b></td><td>A → BC</td><td>A → B, A → C</td><td>BC → B by reflexivity, then transitivity.</td></tr>
+<tr><td><b>Pseudo-transitivity</b></td><td>A → B, BC → D</td><td>AC → D</td><td>Augment A → B with C: AC → BC. Then transitivity with BC → D.</td></tr>
+<tr><td><b>Composition</b></td><td>A → B, C → D</td><td>AC → BD</td><td>Augment each and apply transitivity.</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam: a correction</span>
+In the video, pseudo-transitivity is read out as "A → B and BC → D, so A → D". That last step is wrong: A alone does not give D, because D needs both B <b>and C</b>. The correct result is <b>AC → D</b>, as written above.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Only the right side can be split.</b> A → BC ⇒ A → B ✅. But AB → C does <b>not</b> give A → C ❌. Example: {RollNo, SubjectID} → Marks is true, but RollNo → Marks is false, because a student has different marks in different subjects.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">5.5</span>Attribute Closure and Finding Candidate/Super Keys — Solved Problems</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<h4>Problem 1: R(A, B, C, D) with A → B, B → C, C → D</h4>
+To find the closure of an attribute, start with that attribute and then keep referring to the FDs: "from what I have now, where can I go next?"
+<ul>
+<li><b>A⁺</b>: start with A. A → B adds B. B → C adds C. C → D adds D. <b>A⁺ = {A, B, C, D}</b>.</li>
+</ul>
+Now one important characteristic. When the closure of an attribute <b>includes every attribute of the relation</b>, you can say comfortably that it is <b>a candidate key</b>. Through A you reach B, C and D, so <b>A is a candidate key</b>.
+<ul>
+<li><b>B⁺</b>: start with B. B → C adds C. C → D adds D. Can we go back to A? No FD gives A. <b>B⁺ = {B, C, D}</b>, so B <b>cannot be a candidate key</b>, because A is missing.</li>
+</ul>
+<h4>Closure of two attributes together: (AB)⁺</h4>
+First write down the given attributes as they are: A, B. From A we reach B, from B we reach C, from C we reach D. Everything is included, so <b>(AB)⁺ = {A, B, C, D}</b>.<br>
+But AB is <b>not a candidate key; it is a super key</b>. "Sir, above you called A a candidate key when it reached everything; why is AB a super key?" Look at the difference: A is <b>already</b> a candidate key. B is a <b>non-prime</b> attribute (it's not in any candidate key). Adding a non-prime attribute to a candidate key gives a <b>super key</b> (chapter 4). This distinction is a core question in GATE and many competitive exams.
+<h4>Problem 2: add one more FD, D → A</h4>
+Can B become a candidate key now?
+<ul>
+<li><b>B⁺</b>: B → C adds C. C → D adds D. Now D → A adds A. <b>B⁺ = {A, B, C, D}</b>, so <b>B is now a candidate key</b>. "D's role has become very big."</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 190" role="img" aria-label="Closure step by step for A and B with A to B, B to C, C to D">
+<text x="20" y="30" class="b">A⁺</text>
+<rect class="ac" x="60" y="14" width="60" height="26" rx="3"/><text x="90" y="32" text-anchor="middle">A</text>
+<line class="ln" x1="120" y1="27" x2="150" y2="27"/><text class="mut" x="135" y="9" text-anchor="middle">A→B</text>
+<rect class="ac" x="150" y="14" width="90" height="26" rx="3"/><text x="195" y="32" text-anchor="middle">A B</text>
+<line class="ln" x1="240" y1="27" x2="270" y2="27"/><text class="mut" x="255" y="9" text-anchor="middle">B→C</text>
+<rect class="ac" x="270" y="14" width="110" height="26" rx="3"/><text x="325" y="32" text-anchor="middle">A B C</text>
+<line class="ln" x1="380" y1="27" x2="410" y2="27"/><text class="mut" x="395" y="9" text-anchor="middle">C→D</text>
+<rect class="ac" x="410" y="14" width="130" height="26" rx="3"/><text x="475" y="32" text-anchor="middle" class="b">A B C D</text>
+<text x="555" y="32" class="b">✅ candidate key</text>
+<text x="20" y="90" class="b">B⁺</text>
+<rect class="bx" x="60" y="74" width="60" height="26" rx="3"/><text x="90" y="92" text-anchor="middle">B</text>
+<line class="ln" x1="120" y1="87" x2="150" y2="87"/><text class="mut" x="135" y="69" text-anchor="middle">B→C</text>
+<rect class="bx" x="150" y="74" width="90" height="26" rx="3"/><text x="195" y="92" text-anchor="middle">B C</text>
+<line class="ln" x1="240" y1="87" x2="270" y2="87"/><text class="mut" x="255" y="69" text-anchor="middle">C→D</text>
+<rect class="or" x="270" y="74" width="110" height="26" rx="3"/><text x="325" y="92" text-anchor="middle">B C D</text>
+<text x="400" y="92" class="b">❌ A missing → not a key</text>
+<text x="20" y="150" class="b">B⁺</text><text class="mut" x="20" y="166">+ D→A</text>
+<rect class="bx" x="60" y="134" width="60" height="26" rx="3"/><text x="90" y="152" text-anchor="middle">B</text>
+<line class="ln" x1="120" y1="147" x2="150" y2="147"/>
+<rect class="bx" x="150" y="134" width="90" height="26" rx="3"/><text x="195" y="152" text-anchor="middle">B C</text>
+<line class="ln" x1="240" y1="147" x2="270" y2="147"/>
+<rect class="bx" x="270" y="134" width="110" height="26" rx="3"/><text x="325" y="152" text-anchor="middle">B C D</text>
+<line class="ln" x1="380" y1="147" x2="410" y2="147"/><text class="mut" x="395" y="129" text-anchor="middle">D→A</text>
+<rect class="gr" x="410" y="134" width="130" height="26" rx="3"/><text x="475" y="152" text-anchor="middle" class="b">A B C D</text>
+<text x="555" y="152" class="b">✅ now a key</text>
+</svg>
+<figcaption>Keep adding whatever the FDs let you reach; stop when nothing new is added</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>The closure algorithm</b>: result = X. Repeat: for every FD L → R, if L ⊆ result, add R to result. Stop when a full pass adds nothing.</li>
+<li>X is a <b>super key</b> if X⁺ = all attributes. X is a <b>candidate key</b> if, in addition, no proper subset of X has that property (it's <b>minimal</b>).</li>
+<li>So to check that AB is a candidate key, you must also check A⁺ and B⁺. If either reaches everything, AB is only a super key.</li>
+<li>In Problem 2 (with D → A), every attribute reaches everything: A⁺ = B⁺ = C⁺ = D⁺ = ABCD. So <b>A, B, C and D are all candidate keys</b>, and every attribute is prime.</li>
+<li>Closure also answers "does F imply X → Y?": compute X⁺ using F, and the answer is yes exactly when Y ⊆ X⁺. Chapter 6 uses this to find redundant FDs.</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+The typical question gives R and an FD set and asks "Which of these is a candidate key?" Don't compute everything. Compute the closure of each option and check two things: (1) does it reach all attributes, and (2) is it minimal?</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">5.6</span>Types of FD and Finding All Candidate Keys<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<div class="tw"><table>
+<tr><th>Type</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><b>Trivial</b></td><td>Right side ⊆ left side; always true</td><td>AB → A, A → A</td></tr>
+<tr><td><b>Non-trivial</b></td><td>Right side has nothing in common with the left side</td><td>A → B</td></tr>
+<tr><td><b>Semi-trivial</b></td><td>Right side partly overlaps the left side</td><td>AB → BC</td></tr>
+<tr><td><b>Full</b></td><td>Y depends on the whole of X, not on any part of it</td><td>{RollNo, SubjectID} → Marks</td></tr>
+<tr><td><b>Partial</b></td><td>A non-prime attribute depends on <b>part</b> of a candidate key (breaks 2NF)</td><td>{RollNo, SubjectID} → Name, because RollNo → Name</td></tr>
+<tr><td><b>Transitive</b></td><td>Non-prime → non-prime, reached through another attribute (breaks 3NF)</td><td>RollNo → PinCode → City</td></tr>
+</table></div>
+<h4>Finding all candidate keys quickly</h4>
+<ol>
+<li>Find the attributes that <b>never appear on the right side</b> of any FD. They can't be reached from anything, so they must be in <b>every</b> candidate key. Call this set E.</li>
+<li>Compute E⁺. If it covers everything, <b>E is the only candidate key</b>.</li>
+<li>Otherwise, add one more attribute at a time to E (then two, …), computing closures. Keep the minimal sets that reach everything.</li>
+<li>If a candidate key K contains X, and some FD Y → X exists, then (K − X) ∪ Y may be another candidate key. Check its closure and minimality.</li>
+</ol>
+Example: R(A, B, C, D, E) with A → B, BC → D, D → E. A and C never appear on the right, so both are in every key. (AC)⁺ = A, C, B (A → B), D (BC → D), E (D → E) = everything. So <b>AC is the only candidate key</b>.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">5.7</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>In A → B, A is called the: (a) dependent (b) determinant (c) prime attribute (d) super key<br><b>Answer: (b) Determinant.</b> B is the dependent.</div>
+<div class="num"><span class="t">Q2</span>Which of these is a trivial FD? (a) A → B (b) AB → C (c) AB → A (d) A → BC<br><b>Answer: (c) AB → A</b>, because A ⊆ AB (reflexivity).</div>
+<div class="num"><span class="t">Q3</span>Rows (A, B): (1, x), (2, y), (1, x), (3, y), (2, z). Does A → B hold? Does B → A hold?<br><b>Answer: A → B fails</b> (A = 2 gives y and z). <b>B → A fails</b> (B = y gives 2 and 3).</div>
+<div class="num"><span class="t">Q4</span>Armstrong's axioms are said to be:<br><b>Answer: Sound and complete.</b></div>
+<div class="num"><span class="t">Q5</span>From A → B and BC → D, which follows? (a) A → D (b) AC → D (c) C → D (d) B → D<br><b>Answer: (b) AC → D</b> (pseudo-transitivity).</div>
+<div class="num"><span class="t">Q6</span>R(A, B, C, D, E), F = {A → BC, CD → E, B → D, E → A}. Find B⁺.<br><b>Answer: B⁺ = {B, D}.</b> B → D adds D. No FD has B, D or BD alone on the left with everything satisfied (CD → E needs C). Stop.</div>
+<div class="num"><span class="t">Q7</span>Same F as Q6. Find the candidate keys.<br><b>Answer: A, E, CD and BC.</b> A⁺ = ABCDE. E → A, so E⁺ = ABCDE. CD → E, so CD⁺ = ABCDE. BC → D (via B → D), then CD → E, so BC⁺ = ABCDE. None of C, D or B alone reaches everything.</div>
+<div class="num"><span class="t">Q8</span>R(A, B, C, D), F = {AB → C, C → D}. Is AB → D implied? Is A → C implied?<br><b>Answer:</b> (AB)⁺ = ABCD, so <b>AB → D is implied</b>. A⁺ = {A}, so <b>A → C is not</b>.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>FD A → B</b>: A determines B. A (α) = <b>determinant</b>, B (β) = <b>dependent</b> (cover → phone).</li>
+<li>Definition: if t1[A] = t2[A] then t1[B] = t2[B]. Same A value must always come with the same B value (1 → 5 every time; 3 with 7 and then 6 ⇒ fails). ➕ A table can disprove an FD but can't prove it.</li>
+<li><b>Armstrong's axioms</b>: reflexivity (B ⊆ A ⇒ A → B, trivial), augmentation (A → B ⇒ AC → BC), transitivity (A → B, B → C ⇒ A → C). ➕ Sound and complete.</li>
+<li><b>Secondary rules</b>: union (A → B, A → C ⇒ A → BC), decomposition (A → BC ⇒ A → B, A → C; only the right side), pseudo-transitivity (A → B, BC → D ⇒ AC → D), composition (A → B, C → D ⇒ AC → BD).</li>
+<li><b>Closure X⁺</b>: start with X, keep adding right sides of FDs whose left side you already have; stop when nothing changes.</li>
+<li>X⁺ = all attributes ⇒ X is a <b>super key</b>; plus minimal ⇒ <b>candidate key</b>. A⁺ = ABCD ⇒ A is a CK; (AB)⁺ = ABCD but A alone works ⇒ AB is only a super key.</li>
+<li>B⁺ = BCD (A missing) ⇒ not a key; add D → A and B⁺ = ABCD ⇒ B becomes a key.</li>
+<li>➕ Attributes never on any right side must be in every candidate key. Partial dependency breaks 2NF; transitive dependency breaks 3NF.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 5 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="04-Integrity-Constraints-and-Keys.html">← Ch 4: Integrity Constraints and Keys</a><a href="index.html">☰ All topics</a><a href="06-Minimal-Cover-and-Equivalence.html">Ch 6: Minimal Cover and Equivalence of FDs →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

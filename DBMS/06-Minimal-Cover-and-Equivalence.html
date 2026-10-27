@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Minimal Cover Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="05-Functional-Dependency.html">← Ch 5: Functional Dependency</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 6: Minimal Cover and Equivalence of FDs</h1>
+  <p class="sub">Volume 05 · Part 6 · Built from the one-shot DBMS lecture transcript (minimal cover and equivalence of FD sets), plus the exam points the lecture skipped. Why we remove redundant FDs, the three steps of the minimal cover worked in full, and how to test whether two FD sets are equivalent.</p>
+  <ul class="tags"><li>Minimal cover</li><li>Canonical cover</li><li>Redundant FD</li><li>Extraneous attribute</li><li>Attribute closure</li><li>Equivalence of FD sets</li><li>F covers G</li></ul>
+  <div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">6.1</span>Minimal (Canonical) Cover: Purpose (Two Routes to the Same Destination)</a></li>
+<li><a href="#s2"><span class="n">6.2</span>Three Steps of Minimal Cover — Solved (A→B, C→B, D→ABC, AC→D)</a></li>
+<li><a href="#s3"><span class="n">6.3</span>Equivalence of FD Sets — Solved Problems</a></li>
+<li><a href="#s4"><span class="n">6.4</span>Extraneous Attributes, Step Order and a Second Worked Example<span class="x">ADDED</span></a></li>
+<li><a href="#s5"><span class="n">6.5</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 6</div>
+<h2 class="ch">Minimal Cover and Equivalence of FDs</h2>
+<p>An FD set given in a question often says the same thing more than once. Some FDs can be worked out from the others, and some left sides carry attributes that aren't needed. The <b>minimal cover</b> strips all of that away and keeps the smallest set that still means exactly the same thing. <b>Equivalence</b> asks the related question: do two different-looking FD sets mean the same thing? Both are answered with one tool you already know from chapter 5: <b>attribute closure</b>.</p>
+
+<section id="s1">
+<h3><span class="n">6.1</span>Minimal (Canonical) Cover: Purpose (Two Routes to the Same Destination)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Why do we use a minimal cover? <b>Just to remove redundancy.</b> Say we're given many FDs, like <b>A → B, C → B, D → ABC, AC → D</b>. Can we remove the redundancy in them and generate a minimal cover?
+<h4>When is an FD redundant?</h4>
+Suppose A → B is one of my FDs. It is <b>redundant</b> if, after removing it, I can <b>still reach B from A</b> using the other FDs.
+<h4>Example: two roads</h4>
+Here is my <b>source</b> and here is my <b>destination</b>. I have one road to get there and a second road too. When do I call one road redundant? When, even with that road cut, I can still get from the source to the destination by the other road. Then the road I just cut was redundant, and it's right to remove it. An FD is a road from its left side to its right side.</div>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="Two roads from source to destination; cutting one still leaves a way through">
+<rect class="ac" x="40" y="62" width="120" height="44" rx="4"/><text x="100" y="89" text-anchor="middle" class="b">Source (D)</text>
+<rect class="gr" x="520" y="62" width="120" height="44" rx="4"/><text x="580" y="89" text-anchor="middle" class="b">Destination (B)</text>
+<path class="lna" d="M160 76 Q340 10 512 76"/><polygon class="aha" points="510,70 520,78 508,82"/>
+<text x="340" y="30" text-anchor="middle">Road 1: D → A → B</text>
+<path class="ln" d="M160 92 Q340 158 512 92" stroke-dasharray="6 5"/>
+<text x="340" y="148" text-anchor="middle" class="b">Road 2: D → B  ✂ cut</text>
+<line class="ln" x1="330" y1="112" x2="350" y2="132"/><line class="ln" x1="350" y1="112" x2="330" y2="132"/>
+<text class="mut" x="340" y="166" text-anchor="middle">B is still reachable without road 2 → D → B is redundant</text>
+</svg>
+<figcaption>An FD is redundant when its right side is still reachable without it</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>A <b>minimal cover</b> (also called <b>canonical cover</b> or <b>irreducible set</b>), written F<sub>c</sub> or F<sub>min</sub>, is a set equivalent to F such that: (1) every right side is a <b>single attribute</b>, (2) no left side has an <b>extraneous attribute</b>, and (3) no FD is <b>redundant</b>.</li>
+<li>"Equivalent" means F<sub>c</sub> and F imply exactly the same FDs: F<sub>c</sub>⁺ = F⁺.</li>
+<li>Why bother? Fewer FDs mean less checking on every insert and update, and the minimal cover is the starting point of the <b>3NF synthesis</b> algorithm (chapter 8).</li>
+</ul></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">6.2</span>Three Steps of Minimal Cover — Solved (A→B, C→B, D→ABC, AC→D)</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+<h4>Step 1: split the right-hand sides</h4>
+If any FD has more than one attribute on the right, decompose it (the decomposition rule from chapter 5). <b>D → ABC</b> becomes <b>D → A, D → B, D → C</b>. Same meaning.
+<h4>Step 2: remove redundant FDs, one at a time</h4>
+Take each FD, pretend it isn't there, and find the closure of its left side using the <b>remaining</b> FDs. If the right side still shows up, the FD is redundant. "It may look lengthy because I'm explaining; when you do it yourself it's quick."
+<ul>
+<li><b>A → B</b>: without it, A⁺ = {A}. A appears on the left of no other FD (it's inside AC, but that needs C too, so it's no use). No other way to B → <b>keep</b>.</li>
+<li><b>C → B</b>: without it, C⁺ = {C}. C alone is on the left of nothing → <b>keep</b>.</li>
+<li><b>D → A</b>: without it, D⁺ = D, then B (D → B), then C (D → C); from C we reach B, already there. D⁺ = {D, B, C}: <b>no A</b> → <b>keep</b>.</li>
+<li><b>D → B</b>: without it, D⁺ = D, A (D → A), B (A → B), C (D → C). <b>B is reached</b>: there's an alternate path from source to destination → <b>remove</b>.</li>
+<li><b>D → C</b>: without it, D⁺ = D, A, B. Can't reach C → <b>keep</b>.</li>
+<li><b>AC → D</b>: without it, (AC)⁺ = A, C, B (A → B, C → B). D can't be reached; no FD gives D without this one → <b>keep</b>.</li>
+</ul>
+<h4>Step 3: reduce the left-hand sides</h4>
+Step 1 dealt with more than one attribute on the right; step 3 deals with FDs that have more than one attribute on the <b>left</b>. Here that's <b>AC → D</b>. Can we drop A or C? Only if one can reach the other through some FD.
+<ul>
+<li>A⁺ = {A, B}: no C. C⁺ = {C, B}: no A.</li>
+<li>No way to go from A to C or from C to A, so we can remove <b>neither A nor C</b>. Both stay.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>FD tested (removed)</th><th>Closure of left side using the rest</th><th>Right side reached?</th><th>Result</th></tr>
+<tr><td>A → B</td><td>A⁺ = {A}</td><td>No</td><td>Keep</td></tr>
+<tr><td>C → B</td><td>C⁺ = {C}</td><td>No</td><td>Keep</td></tr>
+<tr><td>D → A</td><td>D⁺ = {D, B, C}</td><td>No</td><td>Keep</td></tr>
+<tr><td>D → B</td><td>D⁺ = {D, A, B, C}</td><td><b>Yes</b> (via D → A → B)</td><td><b>Remove</b></td></tr>
+<tr><td>D → C</td><td>D⁺ = {D, A, B}</td><td>No</td><td>Keep</td></tr>
+<tr><td>AC → D</td><td>(AC)⁺ = {A, B, C}</td><td>No</td><td>Keep</td></tr>
+</table></div>
+<div class="formula">Minimal cover = { A → B,  C → B,  D → A,  D → C,  AC → D }</div>
+<div class="box add"><span class="t">➕ Added for exam: the textbook step order</span>
+The lecture removes redundant FDs first and reduces left sides last. Most textbooks (and GATE solutions) do it the other way round: <b>1. split right sides → 2. remove extraneous left-side attributes → 3. remove redundant FDs</b>. The safe order is left-side reduction <b>before</b> redundancy removal, because shrinking a left side can make another FD redundant that wasn't before. In this example, no left side can be reduced, so both orders give the same answer. 6.4 works a second example in the textbook order.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+When you test an FD, compute the closure <b>without that FD</b> but <b>with every FD you've kept so far</b>, including the split pieces. Once an FD is removed, it stays removed for the later checks. (D → C was checked after D → B had already gone.)</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">6.3</span>Equivalence of FD Sets — Solved Problems</h3>
+<div class="box lec"><span class="t">🎓 From the lecture</span>
+Two FD sets are given; are they equivalent? Students get confused here, but it's simple. The condition: if FD1 covers FD2 <b>and</b> FD2 covers FD1, then <b>FD1 = FD2</b>.
+<ol>
+<li>Does FD1 cover FD2? If no, stop: not equivalent.</li>
+<li>If yes, does FD2 cover FD1?</li>
+<li>Both yes → equivalent.</li>
+</ol>
+<h4>What does "FD1 covers FD2" mean?</h4>
+Can FD1 produce every FD in FD2? Take each FD of FD2 and find the closure of its left side, but <b>by referring to FD1</b>. "Here it's the other way round": the FD belongs to FD2, yet we use FD1 to compute the closure, because we want to know whether FD1 can make that journey.
+<h4>Solved example: FD1 = {A → B, B → C}, FD2 = {A → B, B → C, A → C}</h4>
+<b>Does FD1 cover FD2?</b> (closures computed with FD1)
+<ul>
+<li>A⁺ = A, B (A → B), C (B → C) = {A, B, C}. So A → B ✅ and A → C ✅ are both covered.</li>
+<li>B⁺ = B, C (B → C) = {B, C}. So B → C ✅ is covered.</li>
+<li>FD1 covers FD2: <b>yes</b>.</li>
+</ul>
+<b>Does FD2 cover FD1?</b> (closures computed with FD2)
+<ul>
+<li>A⁺ = {A, B, C} (A → B, A → C). A → B ✅. "C also comes, but we're not interested in C right now."</li>
+<li>B⁺ = {B, C} (B → C). B → C ✅.</li>
+<li>FD2 covers FD1: <b>yes</b>.</li>
+</ul>
+Both yes, so <b>FD1 = FD2</b>: the two sets are equivalent.
+<h4>Modified example: remove B → C from FD1</h4>
+Now FD1 = {A → B}. Does FD1 cover FD2? From A you only reach B. B → C can't be covered under any circumstances. The answer is <b>no</b>, so the two sets are <b>not equivalent</b>.</div>
+<figure>
+<svg viewBox="0 0 680 160" role="img" aria-label="Equivalence needs both directions to be yes">
+<rect class="ac" x="40" y="50" width="160" height="50" rx="4"/><text x="120" y="80" text-anchor="middle" class="b">FD1</text>
+<rect class="gr" x="480" y="50" width="160" height="50" rx="4"/><text x="560" y="80" text-anchor="middle" class="b">FD2</text>
+<line class="lna" x1="200" y1="62" x2="470" y2="62"/><polygon class="aha" points="470,57 480,62 470,67"/>
+<text x="340" y="52" text-anchor="middle">FD1 covers FD2? (closures using FD1)</text>
+<line class="lna" x1="480" y1="90" x2="210" y2="90"/><polygon class="aha" points="210,85 200,90 210,95"/>
+<text x="340" y="112" text-anchor="middle">FD2 covers FD1? (closures using FD2)</text>
+<text class="mut" x="340" y="148" text-anchor="middle">Both yes → equivalent (FD1 ≡ FD2) · either no → not equivalent</text>
+</svg>
+<figcaption>Equivalence is a two-way check</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>The lecture's "FD1 ⊆ FD2" is shorthand. Strictly, "F covers G" means <b>G ⊆ F⁺</b>: every FD in G can be derived from F. F and G are equivalent when <b>F⁺ = G⁺</b>, written <b>F ≡ G</b>.</li>
+<li>Equivalent sets can look very different and have different numbers of FDs. FD1 above has 2 FDs, FD2 has 3.</li>
+<li>Every FD set is equivalent to its minimal cover. That's what makes the minimal cover a valid replacement.</li>
+<li>Exam options are often "F covers G", "G covers F", "both" or "neither". Check each direction separately and pick the matching option.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Use the <b>other</b> set when computing closures. To check whether FD1 covers FD2, take FD2's left sides but compute their closures with <b>FD1's</b> FDs. Using the set the FD came from always gives "yes" and proves nothing.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">6.4</span>Extraneous Attributes, Step Order and a Second Worked Example<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<h4>Extraneous attribute on the left side</h4>
+In XY → Z, the attribute Y is <b>extraneous</b> if X → Z already follows from F. Test: compute X⁺ using the <b>full</b> F (including XY → Z). If Z ∈ X⁺, drop Y.
+<h4>Worked example: F = {A → BC, B → C, A → B, AB → C}</h4>
+<ol>
+<li><b>Split right sides</b>: A → B, A → C, B → C, A → B (duplicate, keep one), AB → C. Now {A → B, A → C, B → C, AB → C}.</li>
+<li><b>Reduce left sides</b>: AB → C. A⁺ = {A, B, C} contains C, so B is extraneous. AB → C becomes A → C, a duplicate. Now {A → B, A → C, B → C}.</li>
+<li><b>Remove redundant FDs</b>:
+<ul>
+<li>A → B: without it, A⁺ = {A, C}. No B → keep.</li>
+<li>A → C: without it, A⁺ = {A, B, C} (A → B → C). C reached → <b>remove</b>.</li>
+<li>B → C: without it, B⁺ = {B}. Keep.</li>
+</ul></li>
+</ol>
+<div class="formula">F<sub>c</sub> = { A → B,  B → C }</div>
+<h4>The minimal cover is not always unique</h4>
+F = {A → B, B → A, A → C, B → C}. A → C is redundant (A → B → C), and so is B → C (B → A → C), but you can't remove both. Removing either one gives a valid minimal cover:
+<ul>
+<li>{A → B, B → A, B → C}, or</li>
+<li>{A → B, B → A, A → C}.</li>
+</ul>
+Both are correct. The answer depends on the order in which you test the FDs.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+The usual question is "Which of the following is the canonical cover of F?" The quick method: for each option, check that (1) every right side is a single attribute (or the option's FDs can be split that way), (2) the option is <b>equivalent</b> to F (6.3), and (3) nothing in it is redundant. Equivalence alone isn't enough; F itself is equivalent to F, but it isn't minimal.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">6.5</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>The main purpose of finding a minimal cover is to:<br><b>Answer: remove redundant FDs and extraneous attributes</b> while keeping the set equivalent to the original.</div>
+<div class="num"><span class="t">Q2</span>Find the minimal cover of F = {AB → C, A → B}.<br><b>Answer: {A → B, A → C}.</b> A⁺ = {A, B, C}, so B is extraneous in AB → C, giving A → C. Neither A → B nor A → C is redundant.</div>
+<div class="num"><span class="t">Q3</span>F = {A → B, B → C}, G = {A → B, A → C}. Which is true? (a) F covers G only (b) G covers F only (c) both (d) neither<br><b>Answer: (a).</b> Using F: A⁺ = ABC, so both FDs of G hold. Using G: B⁺ = {B}, so B → C does not hold.</div>
+<div class="num"><span class="t">Q4</span>F = {A → C, AC → D, E → AD, E → H}, G = {A → CD, E → AH}. Are they equivalent?<br><b>Answer: Yes.</b> Using F: A⁺ = ACD (covers A → CD), E⁺ = EADHC (covers E → AH). Using G: A⁺ = ACD (covers A → C, AC → D), E⁺ = EAHCD (covers E → AD, E → H).</div>
+<div class="num"><span class="t">Q5</span>In AB → C, B is extraneous if:<br><b>Answer: C ∈ A⁺</b>, computed with the full FD set.</div>
+<div class="num"><span class="t">Q6</span>Which property must every FD in a minimal cover have? (a) right side is a single attribute (b) left side is a single attribute (c) both sides are keys (d) it is trivial<br><b>Answer: (a).</b> The left side may still have several attributes (like AC → D in 6.2), as long as none of them is extraneous.</div>
+<div class="num"><span class="t">Q7</span>Is the minimal cover of an FD set always unique?<br><b>Answer: No.</b> F = {A → B, B → A, A → C, B → C} has two minimal covers (6.4).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Minimal cover</b> = the smallest FD set equivalent to F; its purpose is to remove redundancy. ➕ Also called the canonical cover (F<sub>c</sub>).</li>
+<li><b>Redundant FD</b> = its right side is still reachable from its left side without it (two roads to one destination; cut one and you still get there).</li>
+<li><b>Lecture steps</b>: (1) split right sides (D → ABC ⇒ D → A, D → B, D → C); (2) drop each FD and check the closure of its left side using the rest; (3) try to shrink multi-attribute left sides.</li>
+<li>Worked: A → B, C → B, D → ABC, AC → D ⇒ D → B is redundant (D → A → B); AC → D can't shrink (A⁺ = AB, C⁺ = CB) ⇒ <b>{A → B, C → B, D → A, D → C, AC → D}</b>.</li>
+<li>➕ Textbook order: split → remove extraneous left-side attributes → remove redundant FDs. Y in XY → Z is extraneous if Z ∈ X⁺.</li>
+<li><b>Equivalence</b>: FD1 ≡ FD2 if FD1 covers FD2 <b>and</b> FD2 covers FD1. To check "FD1 covers FD2", take each FD of FD2 and compute the closure of its left side <b>using FD1</b>.</li>
+<li>{A → B, B → C} ≡ {A → B, B → C, A → C} ✅. {A → B} vs {A → B, B → C, A → C}: B → C not covered ⇒ not equivalent.</li>
+<li>➕ The minimal cover is not always unique, but it's always equivalent to F.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 6 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="05-Functional-Dependency.html">← Ch 5: Functional Dependency</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
