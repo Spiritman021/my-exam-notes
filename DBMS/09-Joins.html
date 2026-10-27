@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Joins Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="08-Normalization.html">← Ch 8: Normalization</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 9: Joins</h1>
+  <p class="sub">Volume 05 · Part 9 · Follows the lecture outline for joins, plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. Why we join tables, and how cross product, natural, equi, self and outer joins differ, all worked on the same two small tables.</p>
+  <ul class="tags"><li>Join</li><li>Cross product</li><li>Natural join</li><li>Equi join</li><li>Theta join</li><li>Self join</li><li>Left outer join</li><li>Right outer join</li><li>Full outer join</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">9.1</span>Why Joins and Types of Joins (Two Friends Invited to Dinner)</a></li>
+<li><a href="#s2"><span class="n">9.2</span>Cross (Cartesian) Product</a></li>
+<li><a href="#s3"><span class="n">9.3</span>Natural Join and Equi Join (Exam in the Home City)</a></li>
+<li><a href="#s4"><span class="n">9.4</span>Self Join (Students in More Than One Subject)</a></li>
+<li><a href="#s5"><span class="n">9.5</span>Left, Right and Full Outer Join</a></li>
+<li><a href="#s6"><span class="n">9.6</span>Theta, Semi and Anti Joins; Counting Rows<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">9.7</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 9</div>
+<h2 class="ch">Joins</h2>
+<p>Normalization (chapter 8) spreads one fact across several tables. A <b>join</b> puts them back together for a query: it combines rows of two tables that are related through a common column. Every join below is worked on the same two tables, so you can compare the results side by side.</p>
+
+<div class="tw"><table>
+<tr><th colspan="3">Student</th><th></th><th colspan="2">Centre</th></tr>
+<tr><th>Roll</th><th>Name</th><th>City</th><th></th><th>CentreID</th><th>City</th></tr>
+<tr><td>1</td><td>Asha</td><td>Delhi</td><td></td><td>E1</td><td>Delhi</td></tr>
+<tr><td>2</td><td>Ravi</td><td>Pune</td><td></td><td>E2</td><td>Pune</td></tr>
+<tr><td>3</td><td>Neha</td><td>Jaipur</td><td></td><td>E3</td><td>Mumbai</td></tr>
+</table></div>
+
+<section id="s1">
+<h3><span class="n">9.1</span>Why Joins and Types of Joins (Two Friends Invited to Dinner)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+The data you want often sits in two tables. "Which students can take the exam in their own city?" needs Student (who lives where) and Centre (which city has a centre). A join answers it in one query.
+<h4>Analogy: two friends invited to dinner</h4>
+Think of each table as one friend's guest list, and the common column as the thing that pairs guests up. An <b>inner</b> join seats only the pairs where both sides turn up. An <b>outer</b> join also seats the guests who came without a partner, with an empty chair (NULL) beside them.
+<h4>Types of joins</h4>
+<ul>
+<li><b>Cross product</b> (×): every row paired with every row.</li>
+<li><b>Inner joins</b>, which keep only matching rows: <b>theta join</b> (any condition), <b>equi join</b> (condition uses =), <b>natural join</b> (⋈, equality on all same-named columns).</li>
+<li><b>Self join</b>: a table joined with itself.</li>
+<li><b>Outer joins</b>, which also keep non-matching rows: <b>left</b> (⟕), <b>right</b> (⟖), <b>full</b> (⟗).</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 160" role="img" aria-label="Inner join keeps only the overlap; outer joins also keep unmatched rows">
+<circle class="ac" cx="140" cy="80" r="56" opacity=".75"/><circle class="gr" cx="210" cy="80" r="56" opacity=".75"/>
+<text x="100" y="84" text-anchor="middle" class="b">Student</text><text x="250" y="84" text-anchor="middle" class="b">Centre</text>
+<text x="175" y="150" text-anchor="middle" class="mut">overlap = inner join</text>
+<text x="330" y="40">Inner: matched rows only</text>
+<text x="330" y="66">Left outer: matched + unmatched Student rows</text>
+<text x="330" y="92">Right outer: matched + unmatched Centre rows</text>
+<text x="330" y="118">Full outer: matched + unmatched from both</text>
+</svg>
+<figcaption>Inner joins keep the overlap; outer joins also keep one or both of the unmatched sides, filled with NULLs</figcaption>
+</figure>
+</section>
+
+<section id="s2">
+<h3><span class="n">9.2</span>Cross (Cartesian) Product</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Student × Centre pairs <b>every</b> Student row with <b>every</b> Centre row, with no condition at all.
+<ul>
+<li>Rows = 3 × 3 = <b>9</b>. Columns = 3 + 2 = <b>5</b>.</li>
+<li>Most of these rows are meaningless: (Asha, Delhi, E3, Mumbai) pairs a Delhi student with a Mumbai centre.</li>
+<li>Every other join is a cross product followed by a filter. That's why the cross product is the base operator.</li>
+</ul></div>
+<div class="formula">|R × S| = |R| × |S| rows · degree(R × S) = degree(R) + degree(S)</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>In SQL: <code>SELECT * FROM Student CROSS JOIN Centre;</code> or simply <code>FROM Student, Centre</code> with no WHERE.</li>
+<li>If either table is empty, the cross product is empty.</li>
+<li>Forgetting the join condition in a WHERE clause silently turns a join into a cross product, a classic bug.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">9.3</span>Natural Join and Equi Join (Exam in the Home City)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+"Which students can write the exam in their home city?" Keep only the cross-product rows where Student.City = Centre.City.
+<h4>Equi join: Student ⋈<sub>Student.City = Centre.City</sub> Centre</h4>
+A join whose condition uses only <b>=</b>. Both City columns stay in the result.</div>
+<div class="tw"><table>
+<tr><th>Roll</th><th>Name</th><th>Student.City</th><th>CentreID</th><th>Centre.City</th></tr>
+<tr><td>1</td><td>Asha</td><td>Delhi</td><td>E1</td><td>Delhi</td></tr>
+<tr><td>2</td><td>Ravi</td><td>Pune</td><td>E2</td><td>Pune</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Natural join: Student ⋈ Centre</h4>
+No condition is written. The join automatically matches on <b>all columns with the same name</b> (here, City) and keeps that column <b>once</b>.</div>
+<div class="tw"><table>
+<tr><th>Roll</th><th>Name</th><th>City</th><th>CentreID</th></tr>
+<tr><td>1</td><td>Asha</td><td>Delhi</td><td>E1</td></tr>
+<tr><td>2</td><td>Ravi</td><td>Pune</td><td>E2</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Neha (Jaipur) has no centre, and centre E3 (Mumbai) has no student, so neither appears. Both are <b>inner</b> joins.</div>
+<div class="formula">Natural join = cross product → keep rows where same-named columns are equal → drop the duplicate column</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>If the two tables share <b>no</b> column name, a natural join gives the <b>cross product</b>.</li>
+<li>If they share a column name by accident (say both have a "Name" column meaning different things), the natural join matches on it too and gives wrong results. That's why natural join is risky in real SQL.</li>
+<li>Equi join keeps both copies of the join column; natural join keeps one.</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">9.4</span>Self Join (Students in More Than One Subject)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+A <b>self join</b> joins a table with itself, using two aliases so each copy can be named. It's how you compare rows <b>within</b> one table.
+<h4>Example: which students are enrolled in more than one subject?</h4></div>
+<div class="tw"><table>
+<tr><th>Roll</th><th>Subject</th></tr>
+<tr><td>1</td><td>DBMS</td></tr><tr><td>1</td><td>OS</td></tr>
+<tr><td>2</td><td>DBMS</td></tr>
+<tr><td>3</td><td>CN</td></tr><tr><td>3</td><td>OS</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Take two copies, E1 and E2, of Enrol. Look for pairs of rows with the <b>same Roll</b> but a <b>different Subject</b>:
+<div class="formula">SELECT DISTINCT E1.Roll FROM Enrol E1, Enrol E2 WHERE E1.Roll = E2.Roll AND E1.Subject &lt;&gt; E2.Subject;</div>
+Roll 1 pairs (DBMS, OS) and Roll 3 pairs (CN, OS); Roll 2 has only one row, so it can never find a partner. <b>Answer: 1, 3.</b></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Without <code>E1.Subject &lt;&gt; E2.Subject</code>, every row matches itself and every student qualifies. Without <code>DISTINCT</code>, Roll 1 appears twice (DBMS–OS and OS–DBMS).</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">9.5</span>Left, Right and Full Outer Join</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+An inner join drops rows that have no match. An <b>outer join</b> keeps them and fills the missing side with <b>NULL</b>.
+<ul>
+<li><b>Left outer</b> (Student ⟕ Centre): all Student rows; Neha gets NULL for CentreID.</li>
+<li><b>Right outer</b> (Student ⟖ Centre): all Centre rows; E3 gets NULL for Roll and Name.</li>
+<li><b>Full outer</b> (Student ⟗ Centre): all rows of both.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Roll</th><th>Name</th><th>City</th><th>CentreID</th><th>Left</th><th>Right</th><th>Full</th></tr>
+<tr><td>1</td><td>Asha</td><td>Delhi</td><td>E1</td><td>✅</td><td>✅</td><td>✅</td></tr>
+<tr><td>2</td><td>Ravi</td><td>Pune</td><td>E2</td><td>✅</td><td>✅</td><td>✅</td></tr>
+<tr><td>3</td><td>Neha</td><td>Jaipur</td><td>NULL</td><td>✅</td><td></td><td>✅</td></tr>
+<tr><td>NULL</td><td>NULL</td><td>Mumbai</td><td>E3</td><td></td><td>✅</td><td>✅</td></tr>
+</table></div>
+<div class="formula">Full outer join = left outer join ∪ right outer join</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>SQL: <code>Student LEFT JOIN Centre ON Student.City = Centre.City</code>; likewise RIGHT JOIN and FULL OUTER JOIN. MySQL has no FULL OUTER JOIN; it's written as a LEFT JOIN UNION a RIGHT JOIN.</li>
+<li>A ⟕ B gives the same rows as B ⟖ A (only the column order differs).</li>
+<li>Left outer join rows ≥ rows of the left table. Full outer join rows ≥ the larger of the two tables.</li>
+<li>To find rows with <b>no</b> match (students with no centre), use a left join and then <code>WHERE Centre.CentreID IS NULL</code>.</li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">9.6</span>Theta, Semi and Anti Joins; Counting Rows<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Theta join</b> R ⋈<sub>θ</sub> S = σ<sub>θ</sub>(R × S), where θ can use any of =, ≠, &lt;, ≤, &gt;, ≥. An <b>equi join</b> is a theta join that uses only =.</li>
+<li><b>Semi join</b> (R ⋉ S): the rows of R that have <b>at least one</b> match in S, with only R's columns. SQL: <code>WHERE EXISTS</code> / <code>IN</code>.</li>
+<li><b>Anti join</b> (R ▷ S): the rows of R with <b>no</b> match in S. SQL: <code>WHERE NOT EXISTS</code> / <code>NOT IN</code>.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Join (R has m rows, S has n)</th><th>Minimum rows</th><th>Maximum rows</th></tr>
+<tr><td>Cross product</td><td>m × n</td><td>m × n</td></tr>
+<tr><td>Inner / natural / equi</td><td>0</td><td>m × n</td></tr>
+<tr><td>Left outer</td><td>m</td><td>m × n (if n ≥ 1)</td></tr>
+<tr><td>Right outer</td><td>n</td><td>m × n (if m ≥ 1)</td></tr>
+<tr><td>Full outer</td><td>max(m, n)</td><td>m + n when nothing matches; up to m × n when everything does</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Common: "R has 10 rows, S has 5 rows. Maximum rows in R ⋈ S?" → <b>50</b> (every row matches every row). "Rows in R × S?" → <b>exactly 50</b>. And for a natural join on a foreign key that references S's primary key, with no NULL foreign keys → <b>exactly 10</b>, one match per R row.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">9.7</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>R has 4 columns and 6 rows; S has 3 columns and 5 rows. Degree and cardinality of R × S?<br><b>Answer: degree 7, cardinality 30.</b></div>
+<div class="num"><span class="t">Q2</span>The natural join of two relations with no common attributes is:<br><b>Answer: their Cartesian product.</b></div>
+<div class="num"><span class="t">Q3</span>Which join keeps all rows of the left table, filling NULLs where there is no match?<br><b>Answer: left outer join.</b></div>
+<div class="num"><span class="t">Q4</span>How do equi join and natural join differ?<br><b>Answer:</b> Equi join uses an explicit = condition and keeps both copies of the join column; natural join matches all same-named columns automatically and keeps one copy.</div>
+<div class="num"><span class="t">Q5</span>To list employees together with their managers' names from a single Employee(EID, Name, MgrID) table, you need a:<br><b>Answer: self join</b> (E.MgrID = M.EID).</div>
+<div class="num"><span class="t">Q6</span>A theta join whose condition uses only equality is called a(n):<br><b>Answer: equi join.</b></div>
+<div class="num"><span class="t">Q7</span>Full outer join is equivalent to:<br><b>Answer: the union of the left outer join and the right outer join.</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Join</b> = combine related rows of two tables through a common column; needed because normalization splits data.</li>
+<li><b>Cross product</b>: every row × every row; rows m × n, columns add up. The base of all joins.</li>
+<li><b>Equi join</b>: condition with =, both join columns kept. <b>Natural join</b>: auto-match on same-named columns, kept once. No common column ⇒ cross product.</li>
+<li>Exam in the home city: Student ⋈ Centre on City → Asha (E1), Ravi (E2); Neha and E3 drop out.</li>
+<li><b>Self join</b>: one table, two aliases. More than one subject: same Roll, different Subject, DISTINCT.</li>
+<li><b>Outer joins</b> keep unmatched rows with NULLs: left (all left rows), right (all right rows), full (both). Full = left ∪ right.</li>
+<li>➕ Theta join = σ<sub>θ</sub>(R × S); equi join is the = case. Semi join = EXISTS; anti join = NOT EXISTS.</li>
+<li>➕ Inner join: 0 to m × n rows. Left outer ≥ m. Full outer ≥ max(m, n).</li>
+</ul>
+</div>
+<div class="end">End of Chapter 9 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="08-Normalization.html">← Ch 8: Normalization</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
