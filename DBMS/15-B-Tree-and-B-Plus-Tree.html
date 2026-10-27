@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS B-Tree Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="14-Indexing.html">← Ch 14: Indexing</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 15: B-Tree and B+ Tree</h1>
+  <p class="sub">Volume 05 · Part 15 · Follows the lecture outline for B-trees and B+ trees, plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. What sits inside a node, how order fixes the minimum and maximum keys, inserting 1 to 12 step by step, how a B+ tree differs, and the node-order numericals.</p>
+  <ul class="tags"><li>B-tree</li><li>B+ tree</li><li>Order</li><li>Block pointer</li><li>Data pointer</li><li>Node split</li><li>Leaf node</li><li>Internal node</li><li>Fan-out</li><li>Range query</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">15.1</span>B-Tree Node Structure: Block Pointers, Keys, Data Pointers</a></li>
+<li><a href="#s2"><span class="n">15.2</span>Order of a B-Tree: Minimum and Maximum Keys</a></li>
+<li><a href="#s3"><span class="n">15.3</span>Inserting 1 to 12 into a B-Tree of Order 4 — Solved</a></li>
+<li><a href="#s4"><span class="n">15.4</span>B+ Tree: Leaf vs Non-Leaf Nodes and Linked Leaves</a></li>
+<li><a href="#s5"><span class="n">15.5</span>Finding the Order of B-Tree and B+ Tree Nodes — Solved Numericals</a></li>
+<li><a href="#s6"><span class="n">15.6</span>B-Tree vs B+ Tree; Height and Capacity<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">15.7</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 15</div>
+<h2 class="ch">B-Tree and B+ Tree</h2>
+<p>Chapter 14 ended with the multi-level index: an index on an index, read one block per level. Its weakness is that it's <b>static</b>; inserts and deletes slowly unbalance it. A <b>B-tree</b> is a multi-level index that keeps itself <b>balanced</b> automatically: every leaf is always at the same depth, so every search costs the same few block reads. The <b>B+ tree</b> is the variant almost every real DBMS uses for its indexes.</p>
+
+<section id="s1">
+<h3><span class="n">15.1</span>B-Tree Node Structure: Block Pointers, Keys, Data Pointers</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Each node of a B-tree is <b>one disk block</b>. Inside it, three kinds of item alternate:
+<ul>
+<li><b>Keys</b> K<sub>1</sub> &lt; K<sub>2</sub> &lt; … &lt; K<sub>q−1</sub>, kept in sorted order.</li>
+<li><b>Block (tree) pointers</b> P<sub>1</sub> … P<sub>q</sub>: one more than the number of keys. Each points to a child node.</li>
+<li><b>Data (record) pointers</b> Pr<sub>i</sub>: one next to each key, pointing to the record with that key in the data file.</li>
+</ul>
+<div class="formula">&lt; P<sub>1</sub>, (K<sub>1</sub>, Pr<sub>1</sub>), P<sub>2</sub>, (K<sub>2</sub>, Pr<sub>2</sub>), …, (K<sub>q−1</sub>, Pr<sub>q−1</sub>), P<sub>q</sub> &gt;</div>
+<b>Search rule</b>: everything under P<sub>i</sub> lies <b>between</b> K<sub>i−1</sub> and K<sub>i</sub>. So to find X, compare it with the keys in the node; if it matches, follow the data pointer; otherwise go down the block pointer between the two keys it falls between.</div>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="B-tree node with block pointers between keys and a data pointer beside each key">
+<rect class="ac" x="120" y="20" width="440" height="50" rx="4"/>
+<text x="150" y="50" text-anchor="middle" class="b">P1</text>
+<text x="225" y="50" text-anchor="middle" class="b">K1 | Pr1</text>
+<text x="300" y="50" text-anchor="middle" class="b">P2</text>
+<text x="375" y="50" text-anchor="middle" class="b">K2 | Pr2</text>
+<text x="450" y="50" text-anchor="middle" class="b">P3</text>
+<text x="525" y="50" text-anchor="middle" class="mut">…</text>
+<line class="lna" x1="150" y1="70" x2="110" y2="112"/><polygon class="aha" points="104,106 108,118 115,108"/>
+<line class="lna" x1="300" y1="70" x2="300" y2="112"/><polygon class="aha" points="295,110 300,120 305,110"/>
+<line class="lna" x1="450" y1="70" x2="490" y2="112"/><polygon class="aha" points="485,108 492,118 496,106"/>
+<text x="100" y="138" text-anchor="middle">keys &lt; K1</text>
+<text x="300" y="138" text-anchor="middle">K1 &lt; keys &lt; K2</text>
+<text x="500" y="138" text-anchor="middle">keys &gt; K2</text>
+<text class="mut" x="340" y="162" text-anchor="middle">Pr = data pointer to the record; P = block pointer to a child node</text>
+</svg>
+<figcaption>A B-tree node: q block pointers around q − 1 keys, each key with its own data pointer</figcaption>
+</figure>
+</section>
+
+<section id="s2">
+<h3><span class="n">15.2</span>Order of a B-Tree: Minimum and Maximum Keys</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+The <b>order p</b> of a B-tree is the <b>maximum number of children</b> (block pointers) a node may have. Everything else follows from it:</div>
+<div class="tw"><table>
+<tr><th>Node</th><th>Children (min – max)</th><th>Keys (min – max)</th><th>Order 4 example</th></tr>
+<tr><td>Root (if not a leaf)</td><td>2 – p</td><td>1 – (p − 1)</td><td>2–4 children, 1–3 keys</td></tr>
+<tr><td>Internal (non-root)</td><td>⌈p/2⌉ – p</td><td>⌈p/2⌉ − 1 – (p − 1)</td><td>2–4 children, 1–3 keys</td></tr>
+<tr><td>Leaf (non-root)</td><td>0</td><td>⌈p/2⌉ − 1 – (p − 1)</td><td>1–3 keys</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Rules that keep it balanced:
+<ul>
+<li>Every node except the root is <b>at least half full</b>.</li>
+<li><b>All leaves are at the same level.</b></li>
+<li>A node with k keys has exactly k + 1 children.</li>
+<li>The tree grows <b>upward</b>: when a node overflows, it splits and pushes its middle key up. Only a root split adds a new level.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Books define "order" differently. Most (and IBPS-level questions) use <b>p = maximum children</b>, as here. Some (Cormen) use <b>minimum degree t</b>: each node has between t and 2t children, so max keys = 2t − 1. Read the question's definition. If it says "order p, max keys?" the answer is <b>p − 1</b>.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">15.3</span>Inserting 1 to 12 into a B-Tree of Order 4 — Solved</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Order 4 → a node holds at most <b>3 keys</b>. Insertion rule:
+<ol>
+<li>Search down to the correct <b>leaf</b> and insert the key there in sorted order.</li>
+<li>If the leaf now has <b>4 keys</b> (overflow), <b>split</b> it: push a middle key up to the parent, and divide the rest into two nodes.</li>
+<li>If the parent overflows, split it the same way. If the root splits, a new root is made and the tree grows one level.</li>
+</ol>
+With 4 keys there are two middle keys. We'll push up the <b>second</b> one (left-biased): [a, b, c, d] → b goes up, [a] and [c, d] stay. Inserting 1, 2, …, 12 in order:</div>
+<div class="tw"><table>
+<tr><th>Insert</th><th>What happens</th><th>Tree after (root / level 2 / level 3)</th></tr>
+<tr><td>1, 2, 3</td><td>Fill the root (it's also a leaf)</td><td>[1, 2, 3]</td></tr>
+<tr><td>4</td><td>[1,2,3,4] overflows → 2 goes up, new root</td><td>[2] / [1] [3, 4]</td></tr>
+<tr><td>5</td><td>Into leaf [3, 4]</td><td>[2] / [1] [3, 4, 5]</td></tr>
+<tr><td>6</td><td>[3,4,5,6] overflows → 4 goes up</td><td>[2, 4] / [1] [3] [5, 6]</td></tr>
+<tr><td>7</td><td>Into leaf [5, 6]</td><td>[2, 4] / [1] [3] [5, 6, 7]</td></tr>
+<tr><td>8</td><td>[5,6,7,8] overflows → 6 goes up</td><td>[2, 4, 6] / [1] [3] [5] [7, 8]</td></tr>
+<tr><td>9</td><td>Into leaf [7, 8]</td><td>[2, 4, 6] / [1] [3] [5] [7, 8, 9]</td></tr>
+<tr><td>10</td><td>[7,8,9,10] overflows → 8 goes up → root [2,4,6,8] overflows → 4 goes up, new root</td><td>[4] / [2] [6, 8] / [1] [3] [5] [7] [9, 10]</td></tr>
+<tr><td>11</td><td>Into leaf [9, 10]</td><td>[4] / [2] [6, 8] / [1] [3] [5] [7] [9, 10, 11]</td></tr>
+<tr><td>12</td><td>[9,10,11,12] overflows → 10 goes up into [6, 8]</td><td>[4] / [2] [6, 8, 10] / [1] [3] [5] [7] [9] [11, 12]</td></tr>
+</table></div>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Final B-tree of order 4 after inserting 1 to 12">
+<rect class="ac" x="310" y="10" width="60" height="34" rx="4"/><text x="340" y="32" text-anchor="middle" class="b">4</text>
+<rect class="ac" x="120" y="80" width="60" height="34" rx="4"/><text x="150" y="102" text-anchor="middle" class="b">2</text>
+<rect class="ac" x="430" y="80" width="130" height="34" rx="4"/><text x="495" y="102" text-anchor="middle" class="b">6 | 8 | 10</text>
+<line class="ln" x1="320" y1="44" x2="160" y2="80"/><line class="ln" x1="360" y1="44" x2="480" y2="80"/>
+<rect class="gr" x="40" y="150" width="50" height="34" rx="4"/><text x="65" y="172" text-anchor="middle">1</text>
+<rect class="gr" x="140" y="150" width="50" height="34" rx="4"/><text x="165" y="172" text-anchor="middle">3</text>
+<rect class="gr" x="300" y="150" width="50" height="34" rx="4"/><text x="325" y="172" text-anchor="middle">5</text>
+<rect class="gr" x="370" y="150" width="50" height="34" rx="4"/><text x="395" y="172" text-anchor="middle">7</text>
+<rect class="gr" x="440" y="150" width="50" height="34" rx="4"/><text x="465" y="172" text-anchor="middle">9</text>
+<rect class="gr" x="510" y="150" width="80" height="34" rx="4"/><text x="550" y="172" text-anchor="middle">11 | 12</text>
+<line class="ln" x1="135" y1="114" x2="70" y2="150"/><line class="ln" x1="165" y1="114" x2="165" y2="150"/>
+<line class="ln" x1="440" y1="114" x2="330" y2="150"/><line class="ln" x1="470" y1="114" x2="400" y2="150"/><line class="ln" x1="510" y1="114" x2="470" y2="150"/><line class="ln" x1="550" y1="114" x2="550" y2="150"/>
+</svg>
+<figcaption>After inserting 1–12 (left-biased split): 3 levels, every leaf at the same depth</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+The answer depends on which middle key goes up. Pushing up the <b>third</b> key (right-biased: [a, b, c, d] → c up, [a, b] and [d] stay) gives a different tree for the same input: <b>[3, 6, 9] / [1, 2] [4, 5] [7, 8] [10, 11, 12]</b>, only 2 levels. Both are valid B-trees. In an exam, follow the convention the question states; if none is stated, say which one you used.</div>
+<div class="box add"><span class="t">➕ Added for exam: deletion in one paragraph</span>
+Delete from a leaf; if that leaves it below the minimum, first try to <b>borrow</b> a key from a sibling (through the parent). If the sibling is also at the minimum, <b>merge</b> the two with the separating key from the parent. Merging can underflow the parent, and if the root loses its last key, the tree shrinks by one level. Deleting a key in an internal node first swaps it with its in-order predecessor or successor from a leaf.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">15.4</span>B+ Tree: Leaf vs Non-Leaf Nodes and Linked Leaves</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+A <b>B+ tree</b> changes two things about the B-tree:
+<ol>
+<li><b>Data pointers only in the leaves.</b> Internal (non-leaf) nodes hold only keys and block pointers; they're a pure signpost. Every key appears in a leaf, and some keys are <b>repeated</b> in internal nodes as guides.</li>
+<li><b>Leaves are linked.</b> Each leaf has a pointer to the next leaf, so the leaves form a sorted linked list of every key.</li>
+</ol>
+<h4>Two kinds of node</h4></div>
+<div class="tw"><table>
+<tr><th></th><th>Internal (non-leaf) node</th><th>Leaf node</th></tr>
+<tr><td>Holds</td><td>Keys + block pointers to children</td><td>Keys + data pointers to records</td></tr>
+<tr><td>Extra pointer</td><td>None</td><td>One "next leaf" pointer</td></tr>
+<tr><td>Purpose</td><td>Route the search</td><td>Point to the actual data</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Why the change helps</h4>
+<ul>
+<li><b>Bigger fan-out</b>: internal nodes have no data pointers, so more keys fit per block. A wider tree is a shorter tree, and fewer levels mean fewer block reads.</li>
+<li><b>Range queries</b>: for <code>Marks BETWEEN 60 AND 80</code>, find 60 once, then walk along the linked leaves until 80. A B-tree would have to keep going up and down.</li>
+<li><b>Uniform search cost</b>: every search goes all the way to a leaf, so every lookup costs the same.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam: insertion difference</span>
+When a B+ tree <b>leaf</b> splits, the middle key is <b>copied</b> up (it stays in the leaf too, because leaves must hold every key). When an <b>internal</b> node splits, the middle key is <b>moved</b> up, exactly as in a B-tree.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">15.5</span>Finding the Order of B-Tree and B+ Tree Nodes — Solved Numericals</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+A node is one block, so its contents must fit in the block size B. With order p, key size K, block pointer P and data (record) pointer Pr:</div>
+<div class="tw"><table>
+<tr><th>Node</th><th>Contents</th><th>Inequality</th></tr>
+<tr><td>B-tree node</td><td>p block pointers, p − 1 keys, p − 1 data pointers</td><td>p·P + (p − 1)(K + Pr) ≤ B</td></tr>
+<tr><td>B+ internal node</td><td>p block pointers, p − 1 keys</td><td>p·P + (p − 1)·K ≤ B</td></tr>
+<tr><td>B+ leaf node</td><td>m (key, data pointer) pairs + 1 next-leaf pointer</td><td>m(K + Pr) + P ≤ B</td></tr>
+</table></div>
+<div class="num"><span class="t">Solved</span>Block size B = <b>1024 bytes</b>, key K = <b>9 bytes</b>, block pointer P = <b>6 bytes</b>, data pointer Pr = <b>7 bytes</b>. Find the orders.<br><br>
+<b>B-tree</b>: 6p + 16(p − 1) ≤ 1024 → 22p ≤ 1040 → p ≤ 47.27 → <b>p = 47</b> (46 keys per node).<br>
+<b>B+ internal</b>: 6p + 9(p − 1) ≤ 1024 → 15p ≤ 1033 → p ≤ 68.87 → <b>p = 68</b>.<br>
+<b>B+ leaf</b>: 16m + 6 ≤ 1024 → m ≤ 63.6 → <b>m = 63</b> keys per leaf.<br><br>
+The B+ internal node holds 68 children against the B-tree's 47: that's the bigger fan-out from 15.4, in numbers.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Always round the order <b>down</b> (a node can't hold a fraction of a pointer, and it must fit in the block). Check by substituting: p = 47 → 6·47 + 16·46 = 282 + 736 = 1018 ≤ 1024 ✅; p = 48 → 288 + 752 = 1040 &gt; 1024 ❌.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">15.6</span>B-Tree vs B+ Tree; Height and Capacity<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span></div>
+<div class="tw"><table>
+<tr><th></th><th>B-tree</th><th>B+ tree</th></tr>
+<tr><td>Data pointers</td><td>In every node</td><td>Only in leaves</td></tr>
+<tr><td>Keys repeated?</td><td>No, each key once</td><td>Yes, internal keys repeat in leaves</td></tr>
+<tr><td>Leaves linked?</td><td>No</td><td>Yes</td></tr>
+<tr><td>Fan-out</td><td>Lower</td><td>Higher (shorter tree)</td></tr>
+<tr><td>Search can stop</td><td>At any level</td><td>Always at a leaf</td></tr>
+<tr><td>Range queries</td><td>Slow (tree traversal)</td><td>Fast (walk the leaves)</td></tr>
+<tr><td>Used in</td><td>Some file systems</td><td>Almost every DBMS index (MySQL InnoDB, Oracle, PostgreSQL)</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam: how much a few levels can hold</span>
+With the B+ tree from 15.5 (internal fan-out 68, 63 keys per leaf), if every node is full:
+<ul>
+<li>Root: 68 children. Level 2: 68 × 68 = 4,624 children. Level 3 (leaves): 4,624 × 63 = <b>2,91,312 keys</b>.</li>
+<li>So about 3 lakh records can be found in <b>3 index block reads + 1 data block read</b>. One more level takes it to about 2 crore.</li>
+</ul>
+That's why B+ trees are rarely more than 3–4 levels deep, even for huge tables.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Expect: "max keys in a B-tree node of order p" (p − 1), "min children of a non-root internal node" (⌈p/2⌉), "in which tree are all records at the leaf level?" (B+), "which supports range queries better?" (B+), and the node-order numerical from 15.5.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">15.7</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>A B-tree of order 5: maximum and minimum keys in a non-root node?<br><b>Answer: max 4, min 2</b> (⌈5/2⌉ − 1 = 2).</div>
+<div class="num"><span class="t">Q2</span>Minimum number of children of the root of a B-tree (when it isn't a leaf)?<br><b>Answer: 2.</b></div>
+<div class="num"><span class="t">Q3</span>In a B+ tree, data pointers are stored in:<br><b>Answer: leaf nodes only.</b></div>
+<div class="num"><span class="t">Q4</span>Which property is common to B-trees and B+ trees? (a) linked leaves (b) all leaves at the same level (c) data in leaves only (d) keys repeated<br><b>Answer: (b).</b> Both are balanced.</div>
+<div class="num"><span class="t">Q5</span>B = 512 bytes, K = 10, P = 6. Order of a B+ tree internal node?<br><b>Answer: 32.</b> 6p + 10(p − 1) ≤ 512 → 16p ≤ 522 → p ≤ 32.6.</div>
+<div class="num"><span class="t">Q6</span>A B-tree grows in height when:<br><b>Answer: the root splits.</b> B-trees grow upward, from the root.</div>
+<div class="num"><span class="t">Q7</span>Why does a B+ tree usually have fewer levels than a B-tree for the same data?<br><b>Answer:</b> its internal nodes have no data pointers, so they hold more keys (higher fan-out).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>B-tree = self-balancing multi-level index; one node = one block; <b>all leaves at the same level</b>; grows upward via root splits.</li>
+<li>Node: block pointers P, sorted keys K, data pointers Pr. q block pointers around q − 1 keys.</li>
+<li>Order p = max children. Max keys p − 1. Non-root: min children ⌈p/2⌉, min keys ⌈p/2⌉ − 1. Root: min 2 children, min 1 key.</li>
+<li>Order 4, insert 1–12 (left-biased split): splits at 4, 6, 8, 10 (root splits twice: at 4 and at 10), 12 → [4] / [2] [6,8,10] / [1] [3] [5] [7] [9] [11,12]. Right-biased gives [3,6,9] / [1,2] [4,5] [7,8] [10,11,12].</li>
+<li><b>B+ tree</b>: data pointers only in leaves, leaves linked, internal keys repeated in leaves. Higher fan-out, fast range queries. Leaf split copies the key up; internal split moves it.</li>
+<li>Node orders: B-tree p·P + (p−1)(K+Pr) ≤ B; B+ internal p·P + (p−1)K ≤ B; B+ leaf m(K+Pr) + P ≤ B. Round down.</li>
+<li>B = 1024, K = 9, P = 6, Pr = 7 → B-tree 47, B+ internal 68, B+ leaf 63.</li>
+<li>➕ 3 B+ levels at fan-out 68 hold ~3 lakh keys. B+ trees are the standard DBMS index.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 15 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="14-Indexing.html">← Ch 14: Indexing</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
