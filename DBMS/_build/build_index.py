@@ -25,6 +25,14 @@ for i,(t,subs) in enumerate(chs):
     li = ''.join(f'<li><span class="n">{n}</span>{e(s)}</li>' for n,s in subs)
     cards.append(f'<details class="card{" ready" if ok else ""}"{" open" if ok else ""}><summary><span class="cn">Chapter {i+1}</span>'
                  f'<span class="ct">{title}</span><span class="cs">{len(subs)} subtopics · {act}</span></summary><ol class="subs">{li}</ol></details>')
+QUIZ = '20-DBMS-Quiz.html'   # built by build_quiz.py from quiz_bank.py
+if os.path.exists(os.path.join(D,QUIZ)):
+    import sys; sys.path.insert(0, B); from quiz_bank import BANK
+    li = ''.join(f'<li><span class="n">Ch {c}</span>{html.escape(chs[c-1][0])} — {len(qs)} questions</li>' for c,qs in sorted(BANK.items()))
+    cards.append(f'<details class="card ready" open><summary><span class="cn">Chapter {len(chs)+1}</span>'
+                 f'<span class="ct"><a href="{QUIZ}" target="_blank" rel="noopener">Mock Test: Chapter-wise and Mixed</a></span>'
+                 f'<span class="cs">{sum(map(len, BANK.values()))} questions · <a class="open" href="{QUIZ}" target="_blank" rel="noopener">Start test →</a></span></summary>'
+                 f'<ol class="subs">{li}<li><span class="n">Mix</span>All chapters together, spread evenly · Easy, Medium, Hard</li></ol></details>')
 n = len(chs)
 status = f'All {n} chapters ready.' if ready == n else f'{ready} of {n} chapters ready.'
 head = open(os.path.join(B,'index_head.html'),encoding='utf-8').read()
@@ -33,7 +41,8 @@ page = (head + '<body><button class="themer" id="themer" type="button">Theme</bu
  '<h1>DBMS — Notes Index</h1>\n'
  f'<p class="sub">Volume 05 · {n} chapters from the one-shot DBMS lecture, plus exam additions. {status}</p>\n'
  '<div class="legend"><span class="l1">🎓 From the lecture</span><span class="l2">➕ Added for exam</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>\n'
- '<p style="margin-top:12px;font-size:14px"><a href="../Software-Engineering/index.html">← Software Engineering notes</a></p></header>\n'
+ '<p style="margin-top:12px;font-size:14px"><a href="../Software-Engineering/index.html">← Software Engineering notes</a>'
+ + (f' · <a href="{QUIZ}" target="_blank" rel="noopener"><b>Take a mock test →</b></a>' if os.path.exists(os.path.join(D,QUIZ)) else '') + '</p></header>\n'
  + ''.join(cards) + '</div><script>\n(function(){\n  var root=document.documentElement, btn=document.getElementById(\'themer\');\n'
  "  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}\n"
  "  btn.addEventListener('click',function(){\n    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');\n"
