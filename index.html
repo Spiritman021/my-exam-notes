@@ -137,6 +137,7 @@ iframe{flex:1;width:100%;border:0;background:var(--ground)}
    To add a subject: drop its folder next to this file and add
    an entry below. `chapters` = [file name without .html, title].
    `group` = sidebar/home heading the entry sits under.
+   `links` (optional) = [file, title] pages that open full-page in a new tab, e.g. mock tests.
    ============================================================ */
 var SUBJECTS = [
   {
@@ -243,8 +244,24 @@ var SUBJECTS = [
       ['01-Introduction-to-DBMS', 'Introduction to DBMS'],
       ['02-Architecture-and-Schemas', 'DBMS Architecture and Schemas'],
       ['03-ER-Model', 'ER Model'],
-      ['04-Integrity-Constraints-and-Keys', 'Integrity Constraints and Keys']
-    ]
+      ['04-Integrity-Constraints-and-Keys', 'Integrity Constraints and Keys'],
+      ['05-Functional-Dependency', 'Functional Dependency'],
+      ['06-Minimal-Cover-and-Equivalence', 'Minimal Cover and Equivalence of FDs'],
+      ['07-Decomposition', 'Decomposition'],
+      ['08-Normalization', 'Normalization'],
+      ['09-Joins', 'Joins'],
+      ['10-Relational-Algebra', 'Relational Algebra'],
+      ['11-Relational-Calculus', 'Relational Calculus'],
+      ['12-SQL-Basics-and-DDL', 'SQL Basics: Command Types and DDL'],
+      ['13-SQL-Queries', 'SQL Queries'],
+      ['14-Indexing', 'Indexing'],
+      ['15-B-Tree-and-B-Plus-Tree', 'B-Tree and B+ Tree'],
+      ['16-Transactions-and-ACID', 'Transactions and ACID Properties'],
+      ['17-Concurrency-Problems-and-Recoverability', 'Concurrency Problems and Recoverability'],
+      ['18-Serializability', 'Serializability'],
+      ['19-Concurrency-Control-Protocols', 'Concurrency Control Protocols']
+    ],
+    links: [['20-DBMS-Quiz', 'Mock Test: Chapter-wise and Mixed']]
   },
   {
     id: 'ca', group: 'Current Affairs', name: 'Current Affairs', folder: 'Current-Affairs', color: '#A8501C',
@@ -257,6 +274,10 @@ var SUBJECTS = [
       ['2026-08-August-Class-3', 'August 2026 · Class 3'],
       ['2026-08-August-Class-4', 'August 2026 · Class 4'],
       ['2026-08-August-Class-5', 'August 2026 · Class 5'],
+      ['2026-08-August-Class-6', 'August 2026 · Class 6'],
+      ['2026-08-August-Class-7', 'August 2026 · Class 7'],
+      ['2026-08-August-Class-8', 'August 2026 · Class 8'],
+      ['2026-08-August-Class-9', 'August 2026 · Class 9'],
       ['2026-07-July-Class-1', 'July 2026 · Class 1'],
       ['2026-07-July-Class-2', 'July 2026 · Class 2'],
       ['2026-07-July-Class-3', 'July 2026 · Class 3'],
@@ -337,6 +358,9 @@ var SUBJECTS = [
         return '<li data-k="' + esc(k) + '"><a href="#' + k + '"><span class="n">' + (s.numbered === false ? '•' : i + 1) + '</span>' + esc(c[1]) + '</a>' +
           '<span class="ck"><label title="Read"><input type="checkbox" class="r" data-kind="r" aria-label="Read: ' + esc(c[1]) + '"></label>' +
           '<label title="Revised"><input type="checkbox" class="v" data-kind="v" aria-label="Revised: ' + esc(c[1]) + '"></label></span></li>';
+      }).join('') +
+      (s.links || []).map(function(l){   // full-page tools (mock tests): open in a new tab, outside the frame
+        return '<li><a href="' + esc(s.folder + '/' + l[0] + '.html') + '" target="_blank" rel="noopener"><span class="n">↗</span>' + esc(l[1]) + '</a></li>';
       }).join('') + '</ol></div>';
   }).join('');
 
