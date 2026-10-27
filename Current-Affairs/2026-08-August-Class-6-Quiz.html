@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CA Mock Test August 2026 · Class 6</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+
+:root{--rev:#6B4FA0;--na:#C0392B;--ans:#2E8B57;--nv-bg:#E9EEF1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--rev:#A88BD8;--na:#E06C6C;--ans:#5DBB8A;--nv-bg:#22313A}}
+:root[data-theme="dark"]{--rev:#A88BD8;--na:#E06C6C;--ans:#5DBB8A;--nv-bg:#22313A}
+body{min-height:100vh}
+[hidden]{display:none!important}
+.xbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--accent);color:#fff;padding:8px 16px}
+:root[data-theme="dark"] .xbar{color:#0C1317}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .xbar{color:#0C1317}}
+.xbar .ttl{font-weight:700;font-size:15px;flex:1;min-width:180px;line-height:1.3}
+.xbar .ttl small{display:block;font-weight:500;opacity:.85;font-size:12px}
+.xbar .timer{font:700 15px var(--code);background:rgba(255,255,255,.16);border-radius:4px;padding:4px 10px;white-space:nowrap}
+.xbar .timer.low{background:var(--na);color:#fff;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.6}}
+.xbar button{font:13px var(--body);background:rgba(255,255,255,.16);color:inherit;border:1px solid rgba(255,255,255,.4);border-radius:4px;padding:5px 10px;cursor:pointer}
+.xbar button.themer{position:static}
+#palbtn,#palx{display:none}
+.xwrap{max-width:1180px;margin:0 auto;padding:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:0}
+.card h2{margin:0 0 10px;font-size:20px}
+.card table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+.card th,.card td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+.card th{background:var(--surface-2)}
+.ins ol li{margin:4px 0}
+.agree{display:flex;gap:8px;align-items:flex-start;margin:16px 0 4px;font-size:14.5px}
+.btn{font:600 14px var(--body);border-radius:4px;padding:9px 16px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn:not(.ghost){color:#0C1317}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn:not(.ghost){color:#0C1317}}
+.btn.ghost{background:var(--surface);color:var(--accent)}
+.btn.rev{background:var(--rev);border-color:var(--rev)}
+.btn.ok{background:var(--ans);border-color:var(--ans)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.hist{font-size:13.5px;color:var(--muted)}
+/* exam layout */
+.exam{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+.qpane{display:flex;flex-direction:column;min-height:calc(100vh - 110px)}
+.sec{font-size:13px;color:var(--muted);margin-bottom:8px}
+.sec b{color:var(--accent)}
+.qhead{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px;font-weight:700}
+.qhead .mk{font-weight:500;font-size:13px;color:var(--muted)}
+.qhead .mk b{color:var(--ans)} .qhead .mk i{font-style:normal;color:var(--na);font-weight:700}
+.qtext{font-size:17px;margin:0 0 16px;line-height:1.55}
+.opts{list-style:none;margin:0;padding:0}
+.opts label{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:5px;margin:8px 0;cursor:pointer;background:var(--surface)}
+.opts label:hover{border-color:var(--accent)}
+.opts input{margin-top:5px;accent-color:var(--accent)}
+.opts .l{font-weight:700;color:var(--muted);min-width:18px}
+.opts label.on{border-color:var(--accent);background:var(--accent-soft)}
+.acts{margin-top:auto;padding-top:16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+.acts .sp{flex:1}
+.kbd{font-size:12px;color:var(--muted);margin-top:8px}
+/* palette */
+.pal{position:sticky;top:64px}
+.leg{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;font-size:12.5px;margin-bottom:14px}
+.leg span{display:flex;align-items:center;gap:6px}
+.st{display:inline-flex;align-items:center;justify-content:center;width:34px;height:30px;font:600 13px var(--body);border:1px solid var(--line);border-radius:4px;background:var(--nv-bg);color:var(--ink);position:relative;flex:none}
+.leg .st{width:26px;height:22px;font-size:11.5px}
+.st.na{background:var(--na);border-color:var(--na);color:#fff;border-radius:4px 4px 14px 14px}
+.st.a{background:var(--ans);border-color:var(--ans);color:#fff;border-radius:14px 14px 4px 4px}
+.st.m{background:var(--rev);border-color:var(--rev);color:#fff;border-radius:50%}
+.st.am{background:var(--rev);border-color:var(--rev);color:#fff;border-radius:50%}
+.st.am::after{content:"";position:absolute;right:-2px;bottom:-2px;width:10px;height:10px;border-radius:50%;background:var(--ans);border:2px solid var(--surface)}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;justify-items:center;max-height:44vh;overflow:auto;padding:4px 2px}
+.grid button.st{cursor:pointer}
+.grid button.cur{outline:2px solid var(--accent);outline-offset:2px}
+.palh{font-size:13px;font-weight:700;background:var(--surface-2);border-radius:4px;padding:6px 10px;margin-bottom:10px}
+.pal .btn{width:100%;margin-top:14px}
+/* modal */
+.modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal .card{max-width:560px;width:100%}
+/* result */
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.score div{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--surface-2)}
+.score b{display:block;font-size:22px}
+.score span{font-size:12.5px;color:var(--muted)}
+.score .c b{color:var(--ans)} .score .w b{color:var(--na)}
+.verdict{font-weight:600}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 10px}
+.tabs button{font:13px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
+.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.sol{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:5px;padding:12px 14px;margin:10px 0;background:var(--surface)}
+.sol.c{border-left-color:var(--ans)} .sol.w{border-left-color:var(--na)} .sol.s{border-left-color:var(--muted)}
+.sol .qn{font-size:12.5px;color:var(--muted);font-weight:700}
+.sol .qn em{font-style:normal;margin-left:8px}
+.sol.c .qn em{color:var(--ans)} .sol.w .qn em{color:var(--na)}
+.sol p{margin:4px 0 8px}
+.sol ol{list-style:upper-alpha;margin:0 0 6px;padding-left:24px}
+.sol li{padding:1px 4px;border-radius:3px}
+.sol li.right{color:var(--ans);font-weight:700}
+.sol li.right::after{content:"  ✓ correct"}
+.sol li.mine{color:var(--na);font-weight:700;text-decoration:line-through}
+.sol li.mine::after{content:"  ✗ your answer";text-decoration:none;display:inline-block;margin-left:4px}
+.sol .ex{font-size:14px;background:var(--surface-2);border-radius:4px;padding:6px 10px}
+@media (max-width:860px){
+  .exam{grid-template-columns:1fr}
+  #palbtn,#palx{display:inline-block}
+  .pal #palx{display:block;width:100%;margin:0 0 14px}
+  .qhead{flex-wrap:wrap}
+  .pal{position:fixed;top:0;right:0;bottom:0;width:300px;max-width:88vw;z-index:20;overflow:auto;border-radius:0;transform:translateX(105%);transition:transform .2s;box-shadow:-8px 0 24px rgba(0,0,0,.25)}
+  body.palopen .pal{transform:none}
+  .qpane{min-height:calc(100vh - 140px)}
+  .acts .btn{flex:1 1 40%;padding:9px 8px}
+  .acts .sp{display:none}
+}
+</style>
+<script>if (window.self !== window.top) { try { window.top.location.replace(location.href); } catch (e) {} }</script>
+</head>
+<body>
+<header class="xbar">
+  <div class="ttl">Current Affairs Mock Test — August 2026 · Class 6<small>25 questions · 20 minutes · +1 / −0.25</small></div>
+  <span class="timer" id="timer" hidden>Time Left --:--</span>
+  <button type="button" id="palbtn" hidden>Question palette</button>
+  <button class="themer" id="themer" type="button">Theme</button>
+</header>
+<div class="xwrap">
+
+<div id="ins" class="card ins" hidden>
+  <h2>General Instructions</h2>
+  <table>
+    <tr><th>Section</th><th>No. of questions</th><th>Maximum marks</th><th>Time</th></tr>
+    <tr><td>Current Affairs — August 2026 · Class 6</td><td>25</td><td>25</td><td>20 minutes</td></tr>
+  </table>
+  <ol>
+    <li>The clock starts when you click <b>I am ready to begin</b>. When the timer reaches 00:00 the test is <b>submitted automatically</b>.</li>
+    <li>Each question has five options and only one is correct. <b>+1</b> for a correct answer, <b>−0.25</b> (one-fourth) for a wrong answer, 0 for an unattempted question.</li>
+    <li>Your answer is saved <b>only</b> when you click <b>Save &amp; Next</b> or <b>Mark for Review &amp; Next</b>. If you choose an option and then move to another question with <b>Previous</b> or the palette, the choice is <b>not saved</b>.</li>
+    <li><b>Clear Response</b> removes the saved answer of the current question.</li>
+    <li>Questions that are <b>answered and marked for review</b> are evaluated. Questions marked for review without an answer are not.</li>
+    <li>The question palette on the right shows the status of each question:
+      <div class="leg" style="max-width:520px;margin-top:8px">
+        <span><i class="st nv">1</i>Not visited</span><span><i class="st na">2</i>Not answered</span>
+        <span><i class="st a">3</i>Answered</span><span><i class="st m">4</i>Marked for review</span>
+        <span><i class="st am">5</i>Answered &amp; marked for review</span>
+      </div></li>
+    <li>You can also press <b>A–E</b> on the keyboard to choose an option.</li>
+    <li>Your progress is kept in this browser, so you can resume if the page is closed (the timer keeps running).</li>
+  </ol>
+  <label class="agree"><input type="checkbox" id="agree"> I have read and understood the instructions.</label>
+  <div class="row" style="margin-top:12px">
+    <button class="btn" id="begin" type="button" disabled>I am ready to begin</button>
+    <button class="btn ok" id="resume" type="button" hidden>Resume attempt</button>
+    <button class="btn ghost" id="lastres" type="button" hidden>View last result</button>
+    <a href="2026-08-August-Class-6.html">← Back to class notes</a>
+  </div>
+  <p class="hist" id="hist"></p>
+</div>
+
+<div id="exam" class="exam" hidden>
+  <div class="card qpane">
+    <div class="sec">Section: <b>Current Affairs</b></div>
+    <div class="qhead"><span id="qno">Question No. 1</span><span class="mk">Marks: <b>+1</b> · Negative: <i>−0.25</i></span></div>
+    <p class="qtext" id="qtext"></p>
+    <ul class="opts" id="opts"></ul>
+    <div class="acts">
+      <button class="btn rev" id="marknext" type="button">Mark for Review &amp; Next</button>
+      <button class="btn ghost" id="clear" type="button">Clear Response</button>
+      <span class="sp"></span>
+      <button class="btn ghost" id="prev" type="button">‹ Previous</button>
+      <button class="btn ok" id="savenext" type="button">Save &amp; Next ›</button>
+    </div>
+  </div>
+  <aside class="card pal">
+    <button class="btn ghost" id="palx" type="button">✕ Close</button>
+    <div class="leg">
+      <span><i class="st a" id="c-a">0</i>Answered</span><span><i class="st na" id="c-na">0</i>Not answered</span>
+      <span><i class="st nv" id="c-nv">0</i>Not visited</span><span><i class="st m" id="c-m">0</i>Marked for review</span>
+      <span style="grid-column:1/-1"><i class="st am" id="c-am">0</i>Answered &amp; marked for review (will be evaluated)</span>
+    </div>
+    <div class="palh">Current Affairs — choose a question</div>
+    <div class="grid" id="grid"></div>
+    <button class="btn" id="submit" type="button">Submit Test</button>
+  </aside>
+</div>
+
+<div class="modal" id="confirm" hidden>
+  <div class="card">
+    <h2>Submit the test?</h2>
+    <table id="sum"></table>
+    <p>Once submitted, you cannot change your answers.</p>
+    <div class="row"><button class="btn" id="yes" type="button">Yes, submit</button><button class="btn ghost" id="no" type="button">No, go back</button></div>
+  </div>
+</div>
+
+<div id="res" hidden>
+  <div class="card">
+    <h2>Scorecard</h2>
+    <p id="timeup" class="verdict" style="color:var(--na)" hidden>Time is up. The test was submitted automatically.</p>
+    <div class="score" id="score"></div>
+    <p class="verdict" id="verdict"></p>
+    <div class="row"><button class="btn" id="retake" type="button">Retake test</button><a href="2026-08-August-Class-6.html">← Back to class notes</a></div>
+  </div>
+  <h2 style="margin:22px 0 0;font-size:18px">Solutions</h2>
+  <div class="tabs" id="tabs"><button data-f="all" type="button">All</button><button data-f="w" type="button">Wrong</button><button data-f="s" type="button">Not attempted</button><button data-f="c" type="button">Correct</button></div>
+  <div id="sols"></div>
+</div>
+
+</div>
+<script>
+var DATA = {"id": "2026-08-August-Class-6", "sig": "95d82537", "questions": [{"q": "YES Bank's new \"YES Essence\" credit card is aimed at:", "o": ["Students, with zero annual fee", "Women, combining rewards with health and lifestyle benefits", "MSMEs, with business expense tracking", "Frequent flyers, with lounge access", "Senior citizens, with healthcare benefits"], "a": 1, "e": "YES Essence is a women-focused card with health and lifestyle benefits. YES Bank: founded 2004, HQ Mumbai."}, {"q": "IDFC FIRST Bank raised $500 million through its maiden international bond issue via:", "o": ["Its IFSC Banking Unit at GIFT City", "The India INX in Mumbai", "Its London branch", "Its Dubai (DIFC) branch", "Its Singapore branch"], "a": 0, "e": "Issued through the GIFT City IBU. (SBI's $500 mn in Class 5 was via its London branch.)"}, {"q": "What are the tenure and coupon of IDFC FIRST Bank's maiden $500 million senior notes?", "o": ["5 years at 5.25%", "5 years at 5.625%", "3 years at 5.625%", "3 years at 5.25%", "10 years at 6.125%"], "a": 2, "e": "Three-year fixed-rate senior notes due 2029, coupon 5.625%, under Regulation S."}, {"q": "Which rating did S&P Global Ratings give IDFC FIRST Bank (long-term issuer credit rating)?", "o": ["BB+ with Stable Outlook", "BBB- with Negative Outlook", "A- with Stable Outlook", "BBB with Positive Outlook", "BBB- with Stable Outlook"], "a": 4, "e": "'BBB-' with Stable Outlook from S&P Global Ratings."}, {"q": "Gross loans outstanding of Regional Rural Banks grew 10.3% in FY 2025-26 to:", "o": ["₹5.24 lakh crore", "₹5.78 lakh crore", "₹3.49 lakh crore", "₹3.78 lakh crore", "₹6.24 lakh crore"], "a": 1, "e": "From ₹5.24 lakh crore (FY25) to ₹5.78 lakh crore (FY26)."}, {"q": "RBI's overall Priority Sector Lending target for Regional Rural Banks is:", "o": ["60% of ANBC", "40% of ANBC", "91.7% of ANBC", "18% of ANBC", "75% of ANBC"], "a": 4, "e": "75% of ANBC for RRBs (and SFBs); 40% for ordinary commercial banks. RRBs achieved an average 91.7%."}, {"q": "RRB credit to agriculture and allied activities in FY 2025-26 was ₹3.78 lakh crore. What share of total PSL is this?", "o": ["98%", "91.7%", "75%", "77%", "13.6%"], "a": 3, "e": "77% of total PSL; farm credit was ~98% of agricultural lending; MSME share 13.6% (₹66,978 crore)."}, {"q": "How much credit did RRBs provide to weaker sections in FY 2025-26?", "o": ["₹5.24 lakh crore", "₹66,978 crore", "₹3.78 lakh crore", "₹3.49 lakh crore", "₹2.49 lakh crore"], "a": 3, "e": "₹3.49 lakh crore to weaker sections."}, {"q": "RBI imposed a monetary penalty on IndusInd Bank for violating rules on Interest Rate on Deposits and Securitisation of Standard Assets. The amount was:", "o": ["₹95.20 lakh", "₹59.20 crore", "₹52.90 lakh", "₹59.20 lakh", "₹1.48 crore"], "a": 3, "e": "₹59.20 lakh on IndusInd Bank."}, {"q": "PhonePe processed how many UPI transactions in July 2026?", "o": ["23.66 billion", "7.62 billion", "10.86 billion", "14.44 billion", "8.16 billion"], "a": 2, "e": "10.86 billion transactions worth ₹14.44 lakh crore. (Total UPI in July: 23.66 bn — Class 1.)"}, {"q": "PhonePe's share of UPI transactions in July 2026 by VOLUME was:", "o": ["32.33%", "48.33%", "33.51%", "50.12%", "45.89%"], "a": 4, "e": "Volume share 45.89%; value share 48.33%. Google Pay was second."}, {"q": "PhonePe, the UPI market leader, is owned by:", "o": ["Alphabet (Google)", "Tata Group", "Amazon", "Paytm (One97)", "Walmart"], "a": 4, "e": "PhonePe: founded 2015, HQ Bengaluru, owned by Walmart."}, {"q": "India Ratings & Research (Ind-Ra) has projected India's GDP growth for FY 2026-27 at:", "o": ["6.5%", "6.8%", "6.4%", "7.0%", "6.7%"], "a": 1, "e": "Ind-Ra 6.8%; RBI revised its forecast to 6.7%."}, {"q": "India Ratings & Research (Ind-Ra) is a 100% owned subsidiary of:", "o": ["Fitch Group", "CARE Ratings", "Morningstar", "S&P Global", "Moody's"], "a": 0, "e": "Fitch. (ICRA → Moody's; CRISIL → S&P Global.)"}, {"q": "Razorpay's AI foundation model built specifically for digital payments is named:", "o": ["Vulcan", "Titan", "Muse Glimmer", "Atlas", "Orion"], "a": 0, "e": "Razorpay Vulcan — India's first transformer-based AI foundation model for payments."}, {"q": "Razorpay Vulcan was built using technology from:", "o": ["Meta and AMD", "Microsoft Azure and OpenAI", "NVIDIA and Microsoft Azure", "Google Cloud and Intel", "NVIDIA and Amazon Web Services"], "a": 4, "e": "Built with NVIDIA and AWS technology."}, {"q": "CCI approved Tata Steel's acquisition of an additional 23% stake in TM International Logistics from:", "o": ["Tata Sons", "IQ Martrade", "Mitsui & Co", "NYK Europe", "Adani Logistics"], "a": 1, "e": "IQ Martrade sells its entire 23%. After the deal: Tata Steel 74%, NYK Europe 26%."}, {"q": "After acquiring IQ Martrade's stake, what will be Tata Steel's stake in TM International Logistics Ltd?", "o": ["23%", "51%", "74%", "100%", "77%"], "a": 2, "e": "Tata Steel 74% : NYK Europe 26%."}, {"q": "ONGC secured a licence to resume full operations in Venezuela from:", "o": ["Office of Foreign Assets Control (OFAC), US Treasury", "Government of Venezuela's PDVSA", "OPEC Secretariat", "US State Department", "US Department of Commerce (BIS)"], "a": 0, "e": "OFAC, under the US Treasury. Venezuela's capital: Caracas."}, {"q": "EPFO's \"VISHWAS, 2026\" is a one-time settlement scheme for:", "o": ["Pensioners, to settle pension arrears", "Employers, to waive all PF dues", "Banks, to settle EPFO deposit disputes", "Employers, to settle disputes over damages and penalties", "Employees, to settle pending PF withdrawals"], "a": 3, "e": "For employers; in effect from 29 June 2026, open for 6 months."}, {"q": "Under VISHWAS, 2026, the reduced penalty rates apply to defaults that occurred before:", "o": ["1 April 2025", "14 June 2024", "31 December 2023", "29 June 2026", "4 March 2024"], "a": 1, "e": "Defaults before 14 June 2024: 0.25%/month (≤2 months delay), 0.50% (>2 months), 1% (>4 months)."}, {"q": "Under VISHWAS, 2026, what is the reduced damages rate for a delay of up to 2 months?", "o": ["0.25% per month", "0.50% per month", "1% per month", "0.75% per month", "2% per month"], "a": 0, "e": "Up to 2 months → 0.25%; more than 2 months → 0.50%; more than 4 months → 1% per month."}, {"q": "The Ministry of MSME has made it mandatory for all operating CPSEs to:", "o": ["Route MSME payments through CBDC wallets", "Register on the Udyam portal", "Settle MSME suppliers' invoices through RBI-authorised TReDS platforms", "Buy 50% of goods from MSMEs", "Pay MSMEs within 15 days through GeM"], "a": 2, "e": "From 30 June 2026, settlement through TReDS is mandatory for CPSEs (earlier only onboarding was required)."}, {"q": "How many TReDS platforms operate in India?", "o": ["Three", "Four", "Seven", "Five", "Six"], "a": 3, "e": "RXIL, M1xchange, Invoicemart, C2treds and DTX."}, {"q": "In November 2024, the turnover threshold for companies that must onboard on TReDS was reduced to:", "o": ["₹100 crore", "₹50 crore", "₹250 crore", "₹500 crore", "₹1,000 crore"], "a": 2, "e": "Nov 2018: above ₹500 crore + all CPSEs; Nov 2024: threshold cut to ₹250 crore."}], "seconds": 1200, "plus": 1, "minus": 0.25};
+
+(function(){
+  var Q = DATA.questions, N = Q.length, KEY = 'ca-quiz-' + DATA.id, RUN = KEY + ':run:' + DATA.sig, L = 'ABCDE';
+  var root = document.documentElement, $ = function(id){ return document.getElementById(id); };
+  var store = {
+    get: function(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+    set: function(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+    del: function(k){ try{ localStorage.removeItem(k); }catch(e){} }
+  };
+  try{ var t = localStorage.getItem('ca-notes-theme'); if (t) root.setAttribute('data-theme', t); }catch(e){}
+  $('themer').onclick = function(){
+    var cur = root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var nxt = cur === 'dark' ? 'light' : 'dark'; root.setAttribute('data-theme', nxt);
+    try{ localStorage.setItem('ca-notes-theme', nxt); }catch(e){}
+  };
+
+  var S = null, tick = null;   // S = attempt in progress
+  function show(id){ ['ins', 'exam', 'res'].forEach(function(x){ $(x).hidden = x !== id; }); $('timer').hidden = id !== 'exam'; $('palbtn').hidden = id !== 'exam'; window.scrollTo(0, 0); }
+  function save(){ if (S) store.set(RUN, S); }
+  function fmt(s){ s = Math.max(0, Math.round(s)); var m = Math.floor(s / 60); return (m < 10 ? '0' : '') + m + ':' + ('0' + s % 60).slice(-2); }
+
+  /* ---------- instructions ---------- */
+  function initIns(){
+    var run = store.get(RUN), hist = store.get(KEY + ':hist') || [];
+    $('resume').hidden = !run;
+    $('begin').textContent = run ? 'Start a fresh attempt' : 'I am ready to begin';
+    $('hist').innerHTML = hist.length ? 'Previous attempts: ' + hist.slice(-5).map(function(h){
+      return '<b>' + h.score + '</b>/' + N + ' <span>(' + h.date + ')</span>'; }).join(' · ') : '';
+    show('ins');
+  }
+  $('agree').onchange = function(){ $('begin').disabled = !this.checked; };
+  $('begin').onclick = function(){
+    S = { i: 0, ans: [], st: [], sel: null, end: Date.now() + DATA.seconds * 1000, start: Date.now() };
+    for (var k = 0; k < N; k++){ S.ans.push(null); S.st.push('nv'); }
+    startExam();
+  };
+  $('resume').onclick = function(){ S = store.get(RUN); startExam(); };
+
+  /* ---------- exam ---------- */
+  function startExam(){
+    buildPalette(); go(S.i, true); show('exam');
+    clearInterval(tick); tick = setInterval(clock, 1000); clock();
+  }
+  function clock(){
+    var left = (S.end - Date.now()) / 1000;
+    $('timer').textContent = 'Time Left ' + fmt(left);
+    $('timer').classList.toggle('low', left <= 120);
+    if (left <= 0){ clearInterval(tick); finish(true); }
+  }
+  function go(i, keepSel){
+    S.i = (i + N) % N;
+    if (S.st[S.i] === 'nv') S.st[S.i] = 'na';
+    if (!keepSel || S.sel === undefined) S.sel = S.ans[S.i];
+    var q = Q[S.i];
+    $('qno').textContent = 'Question No. ' + (S.i + 1);
+    $('qtext').textContent = q.q;
+    var ul = $('opts'); ul.innerHTML = '';
+    q.o.forEach(function(o, k){
+      var li = document.createElement('li'), lab = document.createElement('label');
+      lab.innerHTML = '<input type="radio" name="opt"><span class="l">' + L[k] + '.</span><span></span>';
+      lab.lastChild.textContent = o;
+      var inp = lab.firstChild; inp.checked = S.sel === k; lab.classList.toggle('on', S.sel === k);
+      inp.onchange = function(){ S.sel = k; mark(); save(); };
+      li.appendChild(lab); ul.appendChild(li);
+    });
+    paint(); save();
+    document.body.classList.remove('palopen');
+  }
+  function mark(){ [].forEach.call($('opts').querySelectorAll('label'), function(l, k){ l.classList.toggle('on', S.sel === k); l.firstChild.checked = S.sel === k; }); }
+  function buildPalette(){
+    var g = $('grid'); g.innerHTML = '';
+    for (var k = 0; k < N; k++) (function(k){
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'st'; b.textContent = k + 1;
+      b.onclick = function(){ go(k); };   // unsaved choice is discarded, as in the real exam
+      g.appendChild(b);
+    })(k);
+  }
+  function counts(){
+    var c = { a: 0, na: 0, nv: 0, m: 0, am: 0 };
+    S.st.forEach(function(s){ c[s]++; }); return c;
+  }
+  function paint(){
+    [].forEach.call($('grid').children, function(b, k){ b.className = 'st ' + S.st[k] + (k === S.i ? ' cur' : ''); });
+    var c = counts();
+    ['a', 'na', 'nv', 'm', 'am'].forEach(function(s){ $('c-' + s).textContent = c[s]; });
+  }
+  function next(){ go(S.i + 1); }
+  $('savenext').onclick = function(){
+    S.ans[S.i] = S.sel; S.st[S.i] = S.sel == null ? 'na' : 'a'; next();
+  };
+  $('marknext').onclick = function(){
+    S.ans[S.i] = S.sel; S.st[S.i] = S.sel == null ? 'm' : 'am'; next();
+  };
+  $('clear').onclick = function(){
+    S.sel = null; S.ans[S.i] = null;
+    S.st[S.i] = (S.st[S.i] === 'm' || S.st[S.i] === 'am') ? 'm' : 'na';
+    mark(); paint(); save();
+  };
+  $('prev').onclick = function(){ go(S.i - 1); };
+  $('palbtn').onclick = function(){ document.body.classList.toggle('palopen'); };
+  $('palx').onclick = function(){ document.body.classList.remove('palopen'); };
+  document.addEventListener('keydown', function(e){
+    if ($('exam').hidden || !$('confirm').hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+    var k = L.indexOf(e.key.toUpperCase());
+    if (k >= 0 && k < Q[S.i].o.length){ S.sel = k; mark(); save(); }
+  });
+
+  /* ---------- submit ---------- */
+  $('submit').onclick = function(){
+    var c = counts();
+    $('sum').innerHTML = '<tr><th>Total questions</th><td>' + N + '</td></tr>' +
+      '<tr><th>Answered</th><td>' + c.a + '</td></tr>' +
+      '<tr><th>Answered &amp; marked for review <small>(will be evaluated)</small></th><td>' + c.am + '</td></tr>' +
+      '<tr><th>Marked for review (no answer)</th><td>' + c.m + '</td></tr>' +
+      '<tr><th>Not answered</th><td>' + c.na + '</td></tr>' +
+      '<tr><th>Not visited</th><td>' + c.nv + '</td></tr>';
+    $('confirm').hidden = false;
+  };
+  $('no').onclick = function(){ $('confirm').hidden = true; };
+  $('yes').onclick = function(){ $('confirm').hidden = true; finish(false); };
+
+  function finish(timeUp){
+    clearInterval(tick);
+    var r = { right: 0, wrong: 0, skip: 0, ans: S.ans.slice(),
+              secs: Math.min(DATA.seconds, Math.round((Math.min(Date.now(), S.end) - S.start) / 1000)), timeUp: timeUp };
+    Q.forEach(function(q, k){ if (r.ans[k] == null) r.skip++; else if (r.ans[k] === q.a) r.right++; else r.wrong++; });
+    r.score = Math.round((r.right * DATA.plus - r.wrong * DATA.minus) * 100) / 100;
+    var hist = store.get(KEY + ':hist') || [];
+    hist.push({ score: r.score, date: new Date().toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) });
+    store.set(KEY + ':hist', hist.slice(-20)); store.set(KEY + ':last', r); store.del(RUN);
+    S = null; result(r);
+  }
+
+  /* ---------- result ---------- */
+  function result(r){
+    var att = r.right + r.wrong, acc = att ? Math.round(r.right / att * 100) : 0, pct = Math.round(Math.max(0, r.score) / N * 100);
+    $('timeup').hidden = !r.timeUp;
+    $('score').innerHTML =
+      '<div><b>' + r.score + ' / ' + N + '</b><span>Score (+' + DATA.plus + ' / −' + DATA.minus + ')</span></div>' +
+      '<div class="c"><b>' + r.right + '</b><span>Correct</span></div>' +
+      '<div class="w"><b>' + r.wrong + '</b><span>Wrong (−' + (r.wrong * DATA.minus) + ')</span></div>' +
+      '<div><b>' + r.skip + '</b><span>Not attempted</span></div>' +
+      '<div><b>' + acc + '%</b><span>Accuracy</span></div>' +
+      '<div><b>' + fmt(r.secs) + '</b><span>Time taken of ' + fmt(DATA.seconds) + '</span></div>';
+    $('verdict').textContent = pct >= 80 ? 'Excellent — this class is locked in. Revise again in a week.'
+      : pct >= 60 ? 'Good. Re-read the topics you got wrong, then retake tomorrow.'
+      : 'Needs revision. Go through the class notes once more (use Recall mode), then retake.';
+    var box = $('sols'); box.innerHTML = '';
+    Q.forEach(function(q, k){
+      var mine = r.ans[k], cls = mine == null ? 's' : mine === q.a ? 'c' : 'w';
+      var d = document.createElement('div'); d.className = 'sol ' + cls; d.dataset.k = cls;
+      d.innerHTML = '<div class="qn">Q' + (k + 1) + '<em>' + (cls === 'c' ? 'Correct +' + DATA.plus : cls === 'w' ? 'Wrong −' + DATA.minus : 'Not attempted') + '</em></div><p></p><ol></ol><div class="ex"><b>Explanation:</b> <span></span></div>';
+      d.querySelector('p').textContent = q.q;
+      q.o.forEach(function(o, j){
+        var li = document.createElement('li'); li.textContent = o;
+        if (j === q.a) li.className = 'right'; else if (j === mine) li.className = 'mine';
+        d.querySelector('ol').appendChild(li);
+      });
+      d.querySelector('.ex span').textContent = q.e;
+      box.appendChild(d);
+    });
+    filter('all'); show('res');
+  }
+  function filter(f){
+    [].forEach.call($('tabs').children, function(b){ b.classList.toggle('on', b.dataset.f === f); });
+    [].forEach.call($('sols').children, function(d){ d.hidden = f !== 'all' && d.dataset.k !== f; });
+  }
+  [].forEach.call($('tabs').children, function(b){ b.onclick = function(){ filter(b.dataset.f); }; });
+  $('retake').onclick = initIns;
+
+  var last = store.get(KEY + ':last');
+  if (location.hash === '#result' && last) result(last); else initIns();
+  $('lastres').hidden = !last;
+  $('lastres').onclick = function(){ result(store.get(KEY + ':last')); };
+})();
+</script>
+</body>
+</html>

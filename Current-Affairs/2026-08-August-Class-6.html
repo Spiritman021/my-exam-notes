@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CA August 2026 · Class 6</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+
+.item{border-top:1px solid var(--line);padding:12px 0 4px}
+.item:first-of-type{border-top:0;padding-top:0}
+.item h4{margin:0 0 4px;font-size:16.5px}
+.item ul{margin:4px 0}
+.gk{font-size:13.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:6px 10px;margin:6px 0 4px}
+.gk b{color:var(--ink)}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+.tag.bank{color:var(--lec);border:1px solid var(--lec)}
+.tag.hot{color:var(--alert);border:1px solid var(--alert)}
+.recallbar{position:sticky;top:0;z-index:4;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--alert);border-radius:6px;padding:10px 14px;margin:16px 0;font-size:14px}
+.recallbar button{font:inherit;font-size:13px;background:var(--accent);color:#fff;border:0;border-radius:4px;padding:5px 12px;cursor:pointer}
+.recallbar button.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+.recallbar .hint{color:var(--muted);flex:1;min-width:200px}
+html.recall .item b.k{background:var(--surface-2);color:transparent;border-radius:3px;outline:1px dashed var(--muted);cursor:pointer;user-select:none}
+html.recall .item b.k.shown{color:inherit;background:var(--accent-soft);outline:0}
+.quiz details{border:1px solid var(--line);border-radius:5px;margin:6px 0;background:var(--surface)}
+.quiz summary{cursor:pointer;padding:8px 12px;font-weight:550}
+.quiz details p{margin:0;padding:0 12px 10px 32px;color:var(--accent);font-weight:600}
+.mock{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.mock a.go{font-weight:600;background:var(--accent);color:var(--surface);text-decoration:none;border-radius:4px;padding:8px 14px}
+.howto ol{margin:6px 0 0}
+.item::after{content:"";display:block;clear:both}
+.item figure.pic{float:right;width:150px;margin:2px 0 8px 16px;text-align:center}
+.item figure.pic img{width:150px;height:110px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px;display:block}
+.item figure.pic figcaption{font-size:11px;letter-spacing:0;text-transform:none;font-weight:500;margin-top:3px;line-height:1.3}
+.item figure.pic figcaption a{color:var(--muted);text-decoration:none}
+@media (max-width:600px){.item figure.pic{width:110px;margin-left:10px}.item figure.pic img{width:110px;height:84px}}
+@media print{.item figure.pic{break-inside:avoid}}
+.gt{position:relative;border-bottom:1.5px dotted var(--accent);cursor:help;outline:0}
+.gt .pop{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:270px;max-width:80vw;padding:10px 12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13px;font-weight:400;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal}
+.gt .pop::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.gt:hover .pop,.gt:focus .pop,.gt:focus-within .pop{display:block}
+.gt .pop img{float:right;width:64px;height:48px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:4px;padding:2px;margin:0 0 4px 8px}
+.gt .pop .pt{display:block;color:var(--accent);font-size:13.5px;margin-bottom:2px}
+.gt .pop .ps{display:block;color:var(--muted);font-size:12.5px;margin-bottom:4px}
+.gt .pop .pl{display:block;clear:both;margin:0;padding:0}
+.gt .pop .pi{display:block;position:relative;padding-left:14px;margin:2px 0}
+.gt .pop .pi::before{content:"";position:absolute;left:3px;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+html.recall .gt .pop{color:var(--ink)}
+html.recall b.k:not(.shown) .gt{border-bottom:0}
+html.recall b.k:not(.shown) .gt .pop{display:none!important}
+@media print{.gt .pop{display:none!important}}
+</style>
+<script src="../assets/embed.js"></script>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Class navigation"><a href="2026-08-August-Class-5.html">← Class 5</a><a href="index.html">☰ All classes</a><a href="2026-08-August-Class-7.html">Class 7 →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT · Current Affairs · August 2026</div>
+  <h1>Current Affairs — August 2026 · Class 6</h1>
+  <p class="sub">Class 6 of the August 2026 monthly series (Ashish Gautam, Adda247) · 11 topics, grouped by exam category.</p>
+  <div class="legend"><span class="l1">🏦 Banking focus</span><span class="l2">➕ Static GK link</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 Likely question</span></div>
+</header>
+<div class="box lec howto"><span class="t">🎓 How to study this page</span>
+<ol>
+<li><b>Read once</b> with Recall mode off. Hover over (or tap) any <span style="border-bottom:1.5px dotted var(--accent)">dotted name</span> to see its static GK.</li>
+<li><b>Turn Recall mode on</b>: the key facts are hidden. Say each one before you click to reveal it.</li>
+<li><b>Take the self-test</b> at the end. Revise again tomorrow, in a week and in a month, using only the Rapid Revision box after that.</li>
+</ol></div>
+<div class="recallbar"><button id="recall" type="button">Recall mode: off</button><button id="revealall" class="ghost" type="button">Reveal all</button><span class="hint">Hides the key facts. Click any blank to reveal it.</span></div>
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#c1"><span class="n">1</span>Banking, Finance &amp; Payments</a></li><li><a href="#c2"><span class="n">2</span>Economy &amp; Reports</a></li><li><a href="#c3"><span class="n">3</span>Business &amp; Corporate</a></li><li><a href="#c4"><span class="n">4</span>Government, Schemes &amp; Policy</a></li><li><a href="#quiz"><span class="n">5</span>Self-test (15 questions)</a></li><li><a href="2026-08-August-Class-6-Quiz.html" target="_blank" rel="noopener"><span class="n">📝</span>Mock test (25 MCQs, exam mode)</a></li><li><a href="#rapid"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+<section id="c1"><h3><span class="n">1</span>Banking, Finance &amp; Payments</h3><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p01-06.jpg" alt="YES Bank" loading="lazy"><figcaption><span title="From the class PDF">YES Bank</span></figcaption></figure><h4><span class="tag bank">🏦 Banking</span><span class="gt" tabindex="0">YES Bank<span class="pop" role="tooltip"><img src="img/2026-08-class-6-p01-06.jpg" alt=""><b class="pt">YES Bank</b><span class="pl"><span class="pi">Founded <b class="k">2004</b></span><span class="pi">HQ <b class="k">Mumbai</b></span></span></span></span> Launches YES Essence Credit Card</h4><ul><li><b class="k">YES Bank</b> has launched the <b class="k">YES Essence Credit Card</b>.</li><li>It is a <b class="k">women-focused</b> credit card that combines spending rewards with <b class="k">health and lifestyle</b> benefits.</li></ul></div><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p01-03.jpg" alt="IDFC FIRST international bond" loading="lazy"><figcaption><span title="From the class PDF">IDFC FIRST international bond</span></figcaption></figure><h4><span class="tag bank">🏦 Banking</span><span class="gt" tabindex="0">IDFC FIRST Bank<span class="pop" role="tooltip"><img src="img/2026-08-class-6-p01-03.jpg" alt=""><b class="pt">IDFC FIRST Bank</b><span class="pl"><span class="pi">Formed <b class="k">December 2018</b> by the merger of <b class="k">IDFC Bank</b> and <b class="k">Capital First</b></span><span class="pi">HQ <b class="k">Mumbai</b></span></span></span></span> Raises $500 Million Through Maiden International Bond Issue</h4><ul><li><b class="k">IDFC FIRST Bank</b> raised <b class="k">$500 million</b> through its <b class="k">maiden three-year fixed-rate senior notes</b>, due in <b class="k">2029</b>.</li><li>The notes were issued through the bank’s <b class="k">IFSC Banking Unit at <span class="gt" tabindex="0">GIFT City<span class="pop" role="tooltip"><img src="img/gift-city-4e4e29.png" alt=""><b class="pt">GIFT City</b><span class="ps">Gujarat International Finance Tec-City</span><span class="pl"><span class="pi">Near <b>Gandhinagar, Gujarat</b></span><span class="pi">India's first IFSC</span><span class="pi">Regulated by <b>IFSCA</b></span></span></span></span></b> and carry a fixed coupon rate of <b class="k">5.625%</b>.</li><li>The bonds were placed with investors outside the United States under <b class="k">Regulation S</b>.</li><li>This is the bank’s <b class="k">first international bond issuance</b>, marking its entry into the global debt capital markets.</li><li>The bank also received a <b class="k">‘BBB-’</b> long-term issuer credit rating with <b class="k">Stable Outlook</b> from <b class="k">S&amp;P Global Ratings</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Compare with Class 5: <b>SBI</b> raised $500 mn via its <b>London</b> branch (5 yr, 5.25%); <b>IDFC FIRST</b> raised $500 mn via <b>GIFT City IBU</b> (3 yr, <b>5.625%</b>). Both are Reg S.</div></div><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p02-05.jpg" alt="RRB branch" loading="lazy"><figcaption><span title="From the class PDF">RRB branch</span></figcaption></figure><h4><span class="tag bank">🏦 Banking</span>Regional Rural Banks’ Loans Rise 10.3% to ₹5.78 Lakh Crore in FY 2025-26</h4><ul><li><b class="k">Regional Rural Banks (<span class="gt" tabindex="0">RRBs<span class="pop" role="tooltip"><img src="img/2026-08-class-6-p02-05.jpg" alt=""><b class="pt">RRBs</b><span class="pl"><span class="pi">Est. <b class="k">2 October 1975</b> (RRB Act <b class="k">1976</b>) on the Narasimham Working Group’s advice</span><span class="pi">First RRB <b class="k">Prathama Bank</b> (Moradabad, UP)</span><span class="pi">Ownership Centre <b class="k">50%</b> : Sponsor bank <b class="k">35%</b> : State <b class="k">15%</b></span><span class="pi"><b class="k">28</b> RRBs after “One State, One RRB” (1 May 2025)</span></span></span></span>)</b> recorded gross loans outstanding growth of <b class="k">10.3%</b> in <b class="k">FY 2025-26</b>.</li><li>Gross loans rose from <b class="k">₹5.24 lakh crore</b> (FY 2024-25) to <b class="k">₹5.78 lakh crore</b> (FY 2025-26).</li><li><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> prescribes an overall <b class="k">Priority Sector Lending (PSL)</b> target of <b class="k">75% of ANBC</b> (Adjusted Net Bank Credit) for RRBs; RRBs achieved an average of <b class="k">91.7%</b> of ANBC.</li><li>Credit to agriculture and allied activities: <b class="k">₹3.78 lakh crore</b>, i.e. <b class="k">77%</b> of total PSL. Farm credit was nearly <b class="k">98%</b> of agricultural lending.</li><li>RRB credit to the <b class="k">MSME</b> sector reached <b class="k">₹66,978 crore</b> (<b class="k">13.6%</b> of total PSL).</li><li>RRBs provided <b class="k">₹3.49 lakh crore</b> of credit to <b class="k">weaker sections</b> in FY 2025-26.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>PSL target: <b>75%</b> of ANBC for <b>RRBs</b> (and Small Finance Banks), but <b>40%</b> for ordinary commercial banks.</div></div><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p02-02.jpg" alt="IndusInd Bank" loading="lazy"><figcaption><span title="From the class PDF">IndusInd Bank</span></figcaption></figure><h4><span class="tag bank">🏦 Banking</span><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span> Imposes ₹59.20 Lakh Penalty on <span class="gt" tabindex="0">IndusInd Bank<span class="pop" role="tooltip"><img src="img/2026-08-class-6-p02-02.jpg" alt=""><b class="pt">IndusInd Bank</b><span class="pl"><span class="pi">Founded <b class="k">1994</b></span><span class="pi">HQ <b class="k">Mumbai</b></span></span></span></span></h4><ul><li><b class="k">RBI</b> imposed a monetary penalty of <b class="k">₹59.20 lakh</b> on <b class="k">IndusInd Bank</b>.</li><li>Reason: violating RBI rules on <b class="k">Interest Rate on Deposits</b> and <b class="k">Securitisation of Standard Assets</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p02-01.jpg" alt="UPI payment" loading="lazy"><figcaption><span title="From the class PDF">UPI payment</span></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">PhonePe<span class="pop" role="tooltip"><img src="img/2026-08-class-6-p02-01.jpg" alt=""><b class="pt">PhonePe</b><span class="pl"><span class="pi">Founded <b class="k">2015</b></span><span class="pi">HQ <b class="k">Bengaluru</b></span><span class="pi">Owned by <b class="k">Walmart</b></span></span></span></span> Leads <span class="gt" tabindex="0">UPI<span class="pop" role="tooltip"><img src="img/file-upi-logo-svg-7ab817.png" alt=""><b class="pt">UPI</b><span class="ps">Unified Payments Interface</span><span class="pl"><span class="pi">Launched <b>2016</b> by <b>NPCI</b></span></span></span></span> Transactions in July 2026</h4><ul><li><b class="k">PhonePe</b> processed <b class="k">10.86 billion</b> UPI transactions in <b class="k">July 2026</b>.</li><li>Share by volume: <b class="k">45.89%</b>. Payments worth <b class="k">₹14.44 lakh crore</b>, a <b class="k">48.33%</b> share by value.</li><li><b class="k">Google Pay</b> was second (32.33% by volume, 33.51% by value, per the PDF’s chart).</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Two PhonePe numbers: <b>45.89%</b> by <b>volume</b>, <b>48.33%</b> by <b>value</b>. Don’t swap them.</div></div></section>
+<section id="c2"><h3><span class="n">2</span>Economy &amp; Reports</h3><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p02-03.jpg" alt="GDP growth" loading="lazy"><figcaption><span title="From the class PDF">GDP growth</span></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span>India Ratings Projects India’s GDP Growth at 6.8% in FY 2026-27</h4><ul><li><b class="k">India Ratings &amp; Research (Ind-Ra)</b> projected India’s GDP growth at <b class="k">6.8%</b> for <b class="k">FY 2026-27</b>.</li><li>The <b class="k"><span class="gt" tabindex="0">RBI<span class="pop" role="tooltip"><img src="img/reserve-bank-of-india-fcec6f.png" alt=""><b class="pt">RBI</b><span class="ps">Reserve Bank of India</span><span class="pl"><span class="pi">Est. <b>1 April 1935</b> (RBI Act 1934)</span><span class="pi">Nationalised <b>1949</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span></b> also revised its FY 2026-27 GDP growth forecast upward, to <b class="k">6.7%</b>.</li><li>Ind-Ra is a <b class="k"><span class="gt" tabindex="0">SEBI<span class="pop" role="tooltip"><img src="img/securities-and-exchange-board-of-india-7083e6.jpg" alt=""><b class="pt">SEBI</b><span class="ps">Securities and Exchange Board of India</span><span class="pl"><span class="pi">Formed <b>12 April 1988</b></span><span class="pi">Statutory <b>30 January 1992</b></span><span class="pi">HQ <b>Mumbai</b></span></span></span></span></b>-registered credit rating agency, recognised by SEBI and the RBI; HQ <b class="k">Mumbai</b>.</li><li>Ind-Ra is a <b class="k">100%</b> owned subsidiary of the <b class="k">Fitch Group</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Ind-Ra <b>6.8%</b> vs RBI <b>6.7%</b>. Parent: <b>Fitch</b> (not Moody’s, which owns ICRA; not S&amp;P, which owns CRISIL).</div></div></section>
+<section id="c3"><h3><span class="n">3</span>Business &amp; Corporate</h3><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p03-03.jpg" alt="Razorpay" loading="lazy"><figcaption><span title="From the class PDF">Razorpay</span></figcaption></figure><h4><span class="gt" tabindex="0">Razorpay<span class="pop" role="tooltip"><img src="img/2026-08-class-6-p03-03.jpg" alt=""><b class="pt">Razorpay</b><span class="pl"><span class="pi">Founded <b class="k">2014</b> by <b class="k">Harshil Mathur</b> and <b class="k">Shashank Kumar</b></span><span class="pi">HQ <b class="k">Bengaluru</b></span></span></span></span> Launches AI-Powered Payments Foundation Model ‘Vulcan’</h4><ul><li>Fintech company <b class="k">Razorpay</b> launched <b class="k">Razorpay Vulcan</b>, an AI-powered foundation model designed specifically for <b class="k">digital payments</b>.</li><li>Razorpay calls it <b class="k">India’s first transformer-based AI foundation model</b> built for payments.</li><li>Built using technology from <b class="k">NVIDIA</b> and <b class="k">Amazon Web Services (AWS)</b>.</li></ul></div><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p03-02.jpg" alt="Tata Steel" loading="lazy"><figcaption><span title="From the class PDF">Tata Steel</span></figcaption></figure><h4><span class="gt" tabindex="0">CCI<span class="pop" role="tooltip"><img src="img/2026-08-class-6-p03-02.jpg" alt=""><b class="pt">CCI</b><span class="pl"><span class="pi">Est. <b class="k">14 October 2003</b> under the <b class="k">Competition Act, 2002</b></span><span class="pi">HQ <b class="k">New Delhi</b></span><span class="pi">Tata Steel founded <b class="k">1907</b>, HQ <b class="k">Mumbai</b></span></span></span></span> Approves Tata Steel’s Additional 23% Stake in TM International Logistics</h4><ul><li>The <b class="k">Competition Commission of India (CCI)</b> approved <b class="k">Tata Steel</b>’s acquisition of an additional <b class="k">23%</b> equity stake in <b class="k">TM International Logistics Ltd (TMILL)</b>.</li><li>Tata Steel will buy the entire 23% stake held by <b class="k">IQ Martrade</b> in the joint venture.</li><li>After the deal: Tata Steel <b class="k">74%</b>, <b class="k">NYK Europe</b> <b class="k">26%</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>Seller = <b>IQ Martrade</b>; the remaining partner = <b>NYK Europe</b> (26%).</div></div><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p03-07.jpg" alt="ONGC" loading="lazy"><figcaption><span title="From the class PDF">ONGC</span></figcaption></figure><h4><span class="gt" tabindex="0">ONGC<span class="pop" role="tooltip"><img src="img/2026-08-class-6-p03-07.jpg" alt=""><b class="pt">ONGC</b><span class="pl"><span class="pi">Est. <b class="k">14 August 1956</b></span><span class="pi">HQ <b class="k">New Delhi</b></span><span class="pi">Maharatna; overseas arm <b class="k">ONGC Videsh</b></span><span class="pi">Venezuela capital <b class="k">Caracas</b></span></span></span></span> Gets US Licence to Resume Full Operations in Venezuela</h4><ul><li>State-owned <b class="k">ONGC</b> secured a licence from the US Treasury’s <b class="k">Office of Foreign Assets Control (OFAC)</b>.</li><li>It can now resume <b class="k">full operations in Venezuela</b> after years of restricted activity due to <b class="k">US sanctions</b>.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>The licence came from <b>OFAC</b> (US <b>Treasury</b>), not the US State Department.</div></div></section>
+<section id="c4"><h3><span class="n">4</span>Government, Schemes &amp; Policy</h3><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p03-01.jpg" alt="VISHWAS 2026" loading="lazy"><figcaption><span title="From the class PDF">VISHWAS 2026</span></figcaption></figure><h4><span class="tag hot">🎯 Likely Q</span><span class="gt" tabindex="0">EPFO<span class="pop" role="tooltip"><img src="img/2026-08-class-6-p03-01.jpg" alt=""><b class="pt">EPFO</b><span class="pl"><span class="pi"><b class="k">Employees’ Provident Fund Organisation</b></span><span class="pi">Under the <b class="k">Ministry of Labour and Employment</b></span><span class="pi">Formed <b class="k">4 March 1952</b></span><span class="pi">HQ <b class="k">New Delhi</b></span></span></span></span> Launches ‘VISHWAS, 2026’ to Settle Damages and Penalty Disputes</h4><ul><li><b class="k">EPFO</b> launched <b class="k">VISHWAS, 2026</b>, a <b class="k">one-time settlement scheme</b> for <b class="k">employers</b>.</li><li>It settles old disputes related to <b class="k">damages and penalties</b>.</li><li>In effect from <b class="k">29 June 2026</b>; open for <b class="k">6 months</b>.</li><li>Aims: reduce litigation, encourage voluntary compliance and settle old cases faster through a fully digital, time-bound process.</li><li>Reduced penalty rates for defaults before <b class="k">14 June 2024</b>: up to 2 months’ delay → <b class="k">0.25%</b> per month; more than 2 months → <b class="k">0.50%</b> per month; more than 4 months → <b class="k">1%</b> per month.</li></ul><div class="box trap"><span class="t">⚠️ Exam trap</span>VISHWAS is for <b>employers</b> (not employees). Cut-off for old defaults: <b>14 June 2024</b>; scheme start: <b>29 June 2026</b>.</div></div><div class="item"><figure class="pic"><img src="img/2026-08-class-6-p04-05.jpg" alt="Invoice discounting" loading="lazy"><figcaption><span title="From the class PDF">Invoice discounting</span></figcaption></figure><h4><span class="tag bank">🏦 Banking</span>Government Makes TReDS Mandatory for CPSE Payments to MSMEs</h4><ul><li>The <b class="k">Ministry of MSME</b> made it mandatory for all operating <b class="k">Central Public Sector Enterprises (CPSEs)</b> to settle invoices of their MSME suppliers through RBI-authorised <b class="k">TReDS</b> platforms.</li><li>Aim: tackle <b class="k">delayed payments to MSMEs</b> and improve their access to <b class="k">working capital</b>.</li><li>MSME invoices for goods and services supplied to CPSEs will be routed through the Trade Receivables Discounting System (TReDS).</li><li>Once an invoice is approved, the MSME can get paid <b class="k">before the due date</b> by having it discounted by participating <b class="k">banks and NBFCs</b>.</li><li>TReDS: an <b class="k">RBI-regulated</b> electronic platform, operational since <b class="k">2017</b>, for MSMEs to finance receivables from corporates, government departments and PSUs.</li><li><b class="k">Five</b> TReDS platforms operate: <b class="k">RXIL</b>, <b class="k">M1xchange</b>, <b class="k">Invoicemart</b>, <b class="k">C2treds</b> and <b class="k">DTX</b>.</li><li>Timeline (PDF chart): 2017 TReDS goes live → Nov 2018 companies with turnover above ₹500 crore and all CPSEs must onboard → Nov 2024 threshold cut to <b class="k">₹250 crore</b> → <b class="k">30 June 2026</b> settlement through TReDS mandatory for CPSEs.</li></ul><div class="gk">➕ <b>Static GK:</b> MSMED Act, 2006 — buyers must pay MSME suppliers within <b class="k">45 days</b> (Section 15) · Ministry of MSME formed <b class="k">2007</b></div><div class="box trap"><span class="t">⚠️ Exam trap</span>Earlier rules only required CPSEs to <b>register/onboard</b> on TReDS; the 2026 rule makes <b>settling invoices</b> through TReDS mandatory.</div></div></section>
+<section id="quiz" class="quiz"><h3><span class="n">5</span>Self-test</h3><div class="box alert mock"><span><span class="t">📝 Exam-mode mock test</span>25 MCQs · 20 minutes · +1 / −0.25 · question palette, mark for review and a scorecard with solutions.</span><a class="go" href="2026-08-August-Class-6-Quiz.html" target="_blank" rel="noopener">Start mock test ↗</a></div><p class="cs">Answer out loud first, then click to check. Re-test the ones you missed tomorrow.</p><details><summary>YES Essence credit card is aimed at whom?</summary><p>Women — rewards plus health and lifestyle benefits</p></details><details><summary>IDFC FIRST Bank’s maiden international bond — amount, tenure, coupon, where issued?</summary><p>$500 million; 3 years (due 2029); 5.625%; IFSC Banking Unit, GIFT City</p></details><details><summary>Which agency rated IDFC FIRST Bank ‘BBB-’ (Stable)?</summary><p>S&amp;P Global Ratings</p></details><details><summary>RRB gross loans in FY 2025-26 and growth?</summary><p>₹5.78 lakh crore, up 10.3% (from ₹5.24 lakh crore)</p></details><details><summary>PSL target for RRBs, and what they achieved in FY26?</summary><p>75% of ANBC; achieved 91.7%</p></details><details><summary>RBI penalty on IndusInd Bank — amount and rules violated?</summary><p>₹59.20 lakh; interest rate on deposits and securitisation of standard assets</p></details><details><summary>PhonePe’s UPI share in July 2026 by volume and by value?</summary><p>45.89% by volume (10.86 bn txns), 48.33% by value (₹14.44 lakh crore)</p></details><details><summary>Ind-Ra’s and RBI’s FY 2026-27 GDP growth forecasts?</summary><p>Ind-Ra 6.8%, RBI 6.7%</p></details><details><summary>Ind-Ra is a subsidiary of which group?</summary><p>Fitch Group (100%)</p></details><details><summary>What is Razorpay Vulcan, and whose technology does it use?</summary><p>India’s first transformer-based AI foundation model for payments; NVIDIA and AWS</p></details><details><summary>Tata Steel’s stake in TMILL after the deal, and who sold the 23%?</summary><p>74% (NYK Europe 26%); seller IQ Martrade</p></details><details><summary>Which US body licensed ONGC to resume operations in Venezuela?</summary><p>OFAC — US Treasury’s Office of Foreign Assets Control</p></details><details><summary>VISHWAS, 2026 — whose scheme, for whom, start date and duration?</summary><p>EPFO; employers; from 29 June 2026; open 6 months</p></details><details><summary>Under VISHWAS, penalty rate for a delay of more than 4 months?</summary><p>1% per month (defaults before 14 June 2024)</p></details><details><summary>Name the five TReDS platforms.</summary><p>RXIL, M1xchange, Invoicemart, C2treds, DTX</p></details></section><div class="rapid" id="rapid"><h3>⚡ Rapid Revision</h3><ul><li>YES Essence card (women-focused) · IDFC FIRST $500 mn maiden bond: 3 yr, 5.625%, GIFT City IBU, Reg S, S&amp;P ‘BBB-’ Stable.</li><li>RRBs FY26: loans ₹5.78 lakh cr (+10.3%) · PSL target 75% ANBC, achieved 91.7% · agri ₹3.78 lakh cr (77% of PSL) · MSME ₹66,978 cr (13.6%) · weaker sections ₹3.49 lakh cr.</li><li>RBI fined IndusInd ₹59.20 lakh · PhonePe July: 10.86 bn txns, 45.89% volume, 48.33% value (₹14.44 lakh cr).</li><li>GDP FY27: Ind-Ra 6.8% (Fitch-owned, Mumbai) · RBI 6.7%.</li><li>Razorpay Vulcan: first transformer-based payments AI model (NVIDIA + AWS) · CCI OKs Tata Steel +23% in TMILL (from IQ Martrade → 74:26 with NYK Europe) · ONGC gets OFAC licence for Venezuela.</li><li>EPFO VISHWAS 2026: employers’ one-time settlement, from 29 June 2026 for 6 months; old defaults (before 14 June 2024) at 0.25% / 0.50% / 1% per month.</li><li>TReDS mandatory for CPSE payments to MSMEs (30 June 2026) · 5 platforms: RXIL, M1xchange, Invoicemart, C2treds, DTX · TReDS live since 2017.</li></ul></div>
+<p class="end" id="fin">End of August 2026 · Class 6</p>
+<nav class="topnav" aria-label="Class navigation"><a href="2026-08-August-Class-5.html">← Class 5</a><a href="index.html">☰ All classes</a><a href="2026-08-August-Class-7.html">Class 7 →</a></nav>
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('ca-notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('ca-notes-theme',nxt);}catch(e){}
+  });
+  var rb=document.getElementById('recall');
+  if(!rb) return;
+  // Recall mode: blank out key facts; click one to reveal it.
+  function setRecall(on){
+    root.classList.toggle('recall',on);
+    rb.textContent='Recall mode: '+(on?'on':'off');
+    document.querySelectorAll('b.k.shown').forEach(function(b){b.classList.remove('shown');});
+  }
+  rb.addEventListener('click',function(){ setRecall(!root.classList.contains('recall')); });
+  document.getElementById('revealall').addEventListener('click',function(){
+    document.querySelectorAll('b.k').forEach(function(b){b.classList.add('shown');});
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('b.k'); if(b && root.classList.contains('recall')) b.classList.toggle('shown');
+  });
+})();
+</script>
+</body>
+</html>

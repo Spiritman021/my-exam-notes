@@ -2,6 +2,7 @@
 
 One data file per class PDF, named YYYY-MM-class-N.py (e.g. 2026-07-class-3.py).
 Each defines S (sections), QUIZ and RAPID; use k('…') to mark a key fact.
+An optional MCQ list also writes an exam-style mock test page, YYYY-MM-Month-Class-N-Quiz.html (quiz.py).
 
 Run:  python3 Current-Affairs/_build/build.py
 Pictures: fetch_images.py (Wikipedia) and/or pdf_images.py (images taken from the class PDF).
@@ -9,6 +10,7 @@ Writes Current-Affairs/YYYY-MM-Month-Class-N.html, refreshes the month list on
 Current-Affairs/index.html and the Current Affairs entries in the hub (../../index.html).
 """
 import os, re, json, glob, calendar
+from quiz import render_quiz, minutes
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CA = os.path.dirname(HERE)
@@ -36,6 +38,8 @@ html.recall .item b.k.shown{color:inherit;background:var(--accent-soft);outline:
 .quiz details{border:1px solid var(--line);border-radius:5px;margin:6px 0;background:var(--surface)}
 .quiz summary{cursor:pointer;padding:8px 12px;font-weight:550}
 .quiz details p{margin:0;padding:0 12px 10px 32px;color:var(--accent);font-weight:600}
+.mock{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.mock a.go{font-weight:600;background:var(--accent);color:var(--surface);text-decoration:none;border-radius:4px;padding:8px 14px}
 .howto ol{margin:6px 0 0}
 .item::after{content:"";display:block;clear:both}
 .item figure.pic{float:right;width:150px;margin:2px 0 8px 16px;text-align:center}
@@ -99,11 +103,11 @@ def k(s):
 
 
 def load(path):
-    ns = {'k': k, 'S': [], 'QUIZ': [], 'RAPID': [], 'IMG': {}}
+    ns = {'k': k, 'S': [], 'QUIZ': [], 'RAPID': [], 'IMG': {}, 'MCQ': []}
     exec(open(path).read(), ns)
     y, m, n = re.match(r'(\d{4})-(\d{2})-class-(\d+)\.py$', os.path.basename(path)).groups()
     month = calendar.month_name[int(m)]
-    return dict(S=ns['S'], QUIZ=ns['QUIZ'], RAPID=ns['RAPID'], IMG=ns['IMG'], ym=f'{y}-{m}', month=f'{month} {y}',
+    return dict(S=ns['S'], QUIZ=ns['QUIZ'], RAPID=ns['RAPID'], IMG=ns['IMG'], MCQ=ns['MCQ'], ym=f'{y}-{m}', month=f'{month} {y}',
                 cls=int(n), file=f'{y}-{m}-{month}-Class-{n}', topics=sum(len(x[2]) for x in ns['S']))
 
 
@@ -200,8 +204,15 @@ def render(d, prev, nxt):
         secs += (f'<section id="c{i}"><h3><span class="n">{i}</span>{t}</h3>' + (f'<p class="cs">{intro}</p>' if intro else '')
                  + ''.join(item_html(x, d['IMG']) for x in items) + '</section>\n')
     n = len(d['S']) + 1
-    toc += f'<li><a href="#quiz"><span class="n">{n}</span>Self-test ({len(d["QUIZ"])} questions)</a></li><li><a href="#rapid"><span class="n">⚡</span>Rapid Revision</a></li>'
-    quiz = (f'<section id="quiz" class="quiz"><h3><span class="n">{n}</span>Self-test</h3><p class="cs">Answer out loud first, then click to check. Re-test the ones you missed tomorrow.</p>'
+    toc += f'<li><a href="#quiz"><span class="n">{n}</span>Self-test ({len(d["QUIZ"])} questions)</a></li>'
+    mock = ''
+    if d['MCQ']:
+        mins = minutes(len(d['MCQ']))
+        toc += f'<li><a href="{d["file"]}-Quiz.html" target="_blank" rel="noopener"><span class="n">📝</span>Mock test ({len(d["MCQ"])} MCQs, exam mode)</a></li>'
+        mock = (f'<div class="box alert mock"><span><span class="t">📝 Exam-mode mock test</span>{len(d["MCQ"])} MCQs · {mins} minutes · +1 / −0.25 · '
+                f'question palette, mark for review and a scorecard with solutions.</span><a class="go" href="{d["file"]}-Quiz.html" target="_blank" rel="noopener">Start mock test ↗</a></div>')
+    toc += '<li><a href="#rapid"><span class="n">⚡</span>Rapid Revision</a></li>'
+    quiz = (f'<section id="quiz" class="quiz"><h3><span class="n">{n}</span>Self-test</h3>{mock}<p class="cs">Answer out loud first, then click to check. Re-test the ones you missed tomorrow.</p>'
             + ''.join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in d['QUIZ']) + '</section>')
     rapid = '<div class="rapid" id="rapid"><h3>⚡ Rapid Revision</h3><ul>' + ''.join(f'<li>{r}</li>' for r in d['RAPID']) + '</ul></div>'
     nav = nav_html(prev, nxt)
@@ -246,6 +257,9 @@ def main():
             html = render(d, lst[i - 1] if i else None, lst[i + 1] if i + 1 < len(lst) else None)
             open(os.path.join(CA, d['file'] + '.html'), 'w').write(html)
             print('wrote', d['file'] + '.html', f'({d["topics"]} topics, {len(d["QUIZ"])} questions)')
+            if d['MCQ']:
+                open(os.path.join(CA, d['file'] + '-Quiz.html'), 'w').write(render_quiz(d, BASE_HEAD))
+                print('wrote', d['file'] + '-Quiz.html', f'({len(d["MCQ"])} MCQs)')
 
     # Overview page: one card per month (newest first), classes listed inside.
     cards = ''
@@ -254,7 +268,8 @@ def main():
         cards += (f'<details class="card ready" open><summary><span class="cn">{lst[0]["month"]}</span>'
                   f'<span class="ct"><a href="{lst[0]["file"]}.html">Current Affairs — {lst[0]["month"]}</a></span>'
                   f'<span class="cs">{len(lst)} class{"es" if len(lst) > 1 else ""} · {sum(d["topics"] for d in lst)} topics</span></summary><ol class="subs">'
-                  + ''.join(f'<li><span class="n">C{d["cls"]}</span><a href="{d["file"]}.html">Class {d["cls"]}</a> — ' + ', '.join(t for t, _, _ in d['S']) + '</li>' for d in lst)
+                  + ''.join(f'<li><span class="n">C{d["cls"]}</span><a href="{d["file"]}.html">Class {d["cls"]}</a> — ' + ', '.join(t for t, _, _ in d['S'])
+                     + (f' · <a href="{d["file"]}-Quiz.html" target="_blank" rel="noopener">📝 Mock test ↗</a>' if d['MCQ'] else '') + '</li>' for d in lst)
                   + '</ol></details>')
     ip = os.path.join(CA, 'index.html')
     s = open(ip).read()

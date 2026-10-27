@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CA Mock Test August 2026 · Class 7</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0}
+.card.ready{border-left:4px solid var(--accent)}
+.card summary{cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:110px 1fr auto;gap:4px 14px;align-items:baseline;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.cn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ct{font-size:18px;font-weight:650} .ct a{color:var(--ink);text-decoration:none} .ct a:hover{color:var(--accent)}
+.cs{font-size:13px;color:var(--muted)}
+.open{font-weight:600;text-decoration:none}
+.soon{border:1px dashed var(--line);border-radius:3px;padding:1px 6px}
+.subs{list-style:none;margin:0;padding:4px 18px 14px 142px;columns:2 260px;font-size:14px;color:var(--muted)}
+.subs li{break-inside:avoid} .subs .n{display:inline-block;min-width:40px;color:var(--accent)}
+.card:not(.ready) .ct{color:var(--muted)}
+@media (max-width:600px){.card summary{grid-template-columns:1fr} .subs{padding-left:18px}}
+
+:root{--rev:#6B4FA0;--na:#C0392B;--ans:#2E8B57;--nv-bg:#E9EEF1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--rev:#A88BD8;--na:#E06C6C;--ans:#5DBB8A;--nv-bg:#22313A}}
+:root[data-theme="dark"]{--rev:#A88BD8;--na:#E06C6C;--ans:#5DBB8A;--nv-bg:#22313A}
+body{min-height:100vh}
+[hidden]{display:none!important}
+.xbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--accent);color:#fff;padding:8px 16px}
+:root[data-theme="dark"] .xbar{color:#0C1317}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .xbar{color:#0C1317}}
+.xbar .ttl{font-weight:700;font-size:15px;flex:1;min-width:180px;line-height:1.3}
+.xbar .ttl small{display:block;font-weight:500;opacity:.85;font-size:12px}
+.xbar .timer{font:700 15px var(--code);background:rgba(255,255,255,.16);border-radius:4px;padding:4px 10px;white-space:nowrap}
+.xbar .timer.low{background:var(--na);color:#fff;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.6}}
+.xbar button{font:13px var(--body);background:rgba(255,255,255,.16);color:inherit;border:1px solid rgba(255,255,255,.4);border-radius:4px;padding:5px 10px;cursor:pointer}
+.xbar button.themer{position:static}
+#palbtn,#palx{display:none}
+.xwrap{max-width:1180px;margin:0 auto;padding:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:0}
+.card h2{margin:0 0 10px;font-size:20px}
+.card table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+.card th,.card td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+.card th{background:var(--surface-2)}
+.ins ol li{margin:4px 0}
+.agree{display:flex;gap:8px;align-items:flex-start;margin:16px 0 4px;font-size:14.5px}
+.btn{font:600 14px var(--body);border-radius:4px;padding:9px 16px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn:not(.ghost){color:#0C1317}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn:not(.ghost){color:#0C1317}}
+.btn.ghost{background:var(--surface);color:var(--accent)}
+.btn.rev{background:var(--rev);border-color:var(--rev)}
+.btn.ok{background:var(--ans);border-color:var(--ans)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.hist{font-size:13.5px;color:var(--muted)}
+/* exam layout */
+.exam{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+.qpane{display:flex;flex-direction:column;min-height:calc(100vh - 110px)}
+.sec{font-size:13px;color:var(--muted);margin-bottom:8px}
+.sec b{color:var(--accent)}
+.qhead{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px;font-weight:700}
+.qhead .mk{font-weight:500;font-size:13px;color:var(--muted)}
+.qhead .mk b{color:var(--ans)} .qhead .mk i{font-style:normal;color:var(--na);font-weight:700}
+.qtext{font-size:17px;margin:0 0 16px;line-height:1.55}
+.opts{list-style:none;margin:0;padding:0}
+.opts label{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:5px;margin:8px 0;cursor:pointer;background:var(--surface)}
+.opts label:hover{border-color:var(--accent)}
+.opts input{margin-top:5px;accent-color:var(--accent)}
+.opts .l{font-weight:700;color:var(--muted);min-width:18px}
+.opts label.on{border-color:var(--accent);background:var(--accent-soft)}
+.acts{margin-top:auto;padding-top:16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+.acts .sp{flex:1}
+.kbd{font-size:12px;color:var(--muted);margin-top:8px}
+/* palette */
+.pal{position:sticky;top:64px}
+.leg{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;font-size:12.5px;margin-bottom:14px}
+.leg span{display:flex;align-items:center;gap:6px}
+.st{display:inline-flex;align-items:center;justify-content:center;width:34px;height:30px;font:600 13px var(--body);border:1px solid var(--line);border-radius:4px;background:var(--nv-bg);color:var(--ink);position:relative;flex:none}
+.leg .st{width:26px;height:22px;font-size:11.5px}
+.st.na{background:var(--na);border-color:var(--na);color:#fff;border-radius:4px 4px 14px 14px}
+.st.a{background:var(--ans);border-color:var(--ans);color:#fff;border-radius:14px 14px 4px 4px}
+.st.m{background:var(--rev);border-color:var(--rev);color:#fff;border-radius:50%}
+.st.am{background:var(--rev);border-color:var(--rev);color:#fff;border-radius:50%}
+.st.am::after{content:"";position:absolute;right:-2px;bottom:-2px;width:10px;height:10px;border-radius:50%;background:var(--ans);border:2px solid var(--surface)}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;justify-items:center;max-height:44vh;overflow:auto;padding:4px 2px}
+.grid button.st{cursor:pointer}
+.grid button.cur{outline:2px solid var(--accent);outline-offset:2px}
+.palh{font-size:13px;font-weight:700;background:var(--surface-2);border-radius:4px;padding:6px 10px;margin-bottom:10px}
+.pal .btn{width:100%;margin-top:14px}
+/* modal */
+.modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal .card{max-width:560px;width:100%}
+/* result */
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.score div{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--surface-2)}
+.score b{display:block;font-size:22px}
+.score span{font-size:12.5px;color:var(--muted)}
+.score .c b{color:var(--ans)} .score .w b{color:var(--na)}
+.verdict{font-weight:600}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 10px}
+.tabs button{font:13px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
+.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.sol{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:5px;padding:12px 14px;margin:10px 0;background:var(--surface)}
+.sol.c{border-left-color:var(--ans)} .sol.w{border-left-color:var(--na)} .sol.s{border-left-color:var(--muted)}
+.sol .qn{font-size:12.5px;color:var(--muted);font-weight:700}
+.sol .qn em{font-style:normal;margin-left:8px}
+.sol.c .qn em{color:var(--ans)} .sol.w .qn em{color:var(--na)}
+.sol p{margin:4px 0 8px}
+.sol ol{list-style:upper-alpha;margin:0 0 6px;padding-left:24px}
+.sol li{padding:1px 4px;border-radius:3px}
+.sol li.right{color:var(--ans);font-weight:700}
+.sol li.right::after{content:"  ✓ correct"}
+.sol li.mine{color:var(--na);font-weight:700;text-decoration:line-through}
+.sol li.mine::after{content:"  ✗ your answer";text-decoration:none;display:inline-block;margin-left:4px}
+.sol .ex{font-size:14px;background:var(--surface-2);border-radius:4px;padding:6px 10px}
+@media (max-width:860px){
+  .exam{grid-template-columns:1fr}
+  #palbtn,#palx{display:inline-block}
+  .pal #palx{display:block;width:100%;margin:0 0 14px}
+  .qhead{flex-wrap:wrap}
+  .pal{position:fixed;top:0;right:0;bottom:0;width:300px;max-width:88vw;z-index:20;overflow:auto;border-radius:0;transform:translateX(105%);transition:transform .2s;box-shadow:-8px 0 24px rgba(0,0,0,.25)}
+  body.palopen .pal{transform:none}
+  .qpane{min-height:calc(100vh - 140px)}
+  .acts .btn{flex:1 1 40%;padding:9px 8px}
+  .acts .sp{display:none}
+}
+</style>
+<script>if (window.self !== window.top) { try { window.top.location.replace(location.href); } catch (e) {} }</script>
+</head>
+<body>
+<header class="xbar">
+  <div class="ttl">Current Affairs Mock Test — August 2026 · Class 7<small>51 questions · 35 minutes · +1 / −0.25</small></div>
+  <span class="timer" id="timer" hidden>Time Left --:--</span>
+  <button type="button" id="palbtn" hidden>Question palette</button>
+  <button class="themer" id="themer" type="button">Theme</button>
+</header>
+<div class="xwrap">
+
+<div id="ins" class="card ins" hidden>
+  <h2>General Instructions</h2>
+  <table>
+    <tr><th>Section</th><th>No. of questions</th><th>Maximum marks</th><th>Time</th></tr>
+    <tr><td>Current Affairs — August 2026 · Class 7</td><td>51</td><td>51</td><td>35 minutes</td></tr>
+  </table>
+  <ol>
+    <li>The clock starts when you click <b>I am ready to begin</b>. When the timer reaches 00:00 the test is <b>submitted automatically</b>.</li>
+    <li>Each question has five options and only one is correct. <b>+1</b> for a correct answer, <b>−0.25</b> (one-fourth) for a wrong answer, 0 for an unattempted question.</li>
+    <li>Your answer is saved <b>only</b> when you click <b>Save &amp; Next</b> or <b>Mark for Review &amp; Next</b>. If you choose an option and then move to another question with <b>Previous</b> or the palette, the choice is <b>not saved</b>.</li>
+    <li><b>Clear Response</b> removes the saved answer of the current question.</li>
+    <li>Questions that are <b>answered and marked for review</b> are evaluated. Questions marked for review without an answer are not.</li>
+    <li>The question palette on the right shows the status of each question:
+      <div class="leg" style="max-width:520px;margin-top:8px">
+        <span><i class="st nv">1</i>Not visited</span><span><i class="st na">2</i>Not answered</span>
+        <span><i class="st a">3</i>Answered</span><span><i class="st m">4</i>Marked for review</span>
+        <span><i class="st am">5</i>Answered &amp; marked for review</span>
+      </div></li>
+    <li>You can also press <b>A–E</b> on the keyboard to choose an option.</li>
+    <li>Your progress is kept in this browser, so you can resume if the page is closed (the timer keeps running).</li>
+  </ol>
+  <label class="agree"><input type="checkbox" id="agree"> I have read and understood the instructions.</label>
+  <div class="row" style="margin-top:12px">
+    <button class="btn" id="begin" type="button" disabled>I am ready to begin</button>
+    <button class="btn ok" id="resume" type="button" hidden>Resume attempt</button>
+    <button class="btn ghost" id="lastres" type="button" hidden>View last result</button>
+    <a href="2026-08-August-Class-7.html">← Back to class notes</a>
+  </div>
+  <p class="hist" id="hist"></p>
+</div>
+
+<div id="exam" class="exam" hidden>
+  <div class="card qpane">
+    <div class="sec">Section: <b>Current Affairs</b></div>
+    <div class="qhead"><span id="qno">Question No. 1</span><span class="mk">Marks: <b>+1</b> · Negative: <i>−0.25</i></span></div>
+    <p class="qtext" id="qtext"></p>
+    <ul class="opts" id="opts"></ul>
+    <div class="acts">
+      <button class="btn rev" id="marknext" type="button">Mark for Review &amp; Next</button>
+      <button class="btn ghost" id="clear" type="button">Clear Response</button>
+      <span class="sp"></span>
+      <button class="btn ghost" id="prev" type="button">‹ Previous</button>
+      <button class="btn ok" id="savenext" type="button">Save &amp; Next ›</button>
+    </div>
+  </div>
+  <aside class="card pal">
+    <button class="btn ghost" id="palx" type="button">✕ Close</button>
+    <div class="leg">
+      <span><i class="st a" id="c-a">0</i>Answered</span><span><i class="st na" id="c-na">0</i>Not answered</span>
+      <span><i class="st nv" id="c-nv">0</i>Not visited</span><span><i class="st m" id="c-m">0</i>Marked for review</span>
+      <span style="grid-column:1/-1"><i class="st am" id="c-am">0</i>Answered &amp; marked for review (will be evaluated)</span>
+    </div>
+    <div class="palh">Current Affairs — choose a question</div>
+    <div class="grid" id="grid"></div>
+    <button class="btn" id="submit" type="button">Submit Test</button>
+  </aside>
+</div>
+
+<div class="modal" id="confirm" hidden>
+  <div class="card">
+    <h2>Submit the test?</h2>
+    <table id="sum"></table>
+    <p>Once submitted, you cannot change your answers.</p>
+    <div class="row"><button class="btn" id="yes" type="button">Yes, submit</button><button class="btn ghost" id="no" type="button">No, go back</button></div>
+  </div>
+</div>
+
+<div id="res" hidden>
+  <div class="card">
+    <h2>Scorecard</h2>
+    <p id="timeup" class="verdict" style="color:var(--na)" hidden>Time is up. The test was submitted automatically.</p>
+    <div class="score" id="score"></div>
+    <p class="verdict" id="verdict"></p>
+    <div class="row"><button class="btn" id="retake" type="button">Retake test</button><a href="2026-08-August-Class-7.html">← Back to class notes</a></div>
+  </div>
+  <h2 style="margin:22px 0 0;font-size:18px">Solutions</h2>
+  <div class="tabs" id="tabs"><button data-f="all" type="button">All</button><button data-f="w" type="button">Wrong</button><button data-f="s" type="button">Not attempted</button><button data-f="c" type="button">Correct</button></div>
+  <div id="sols"></div>
+</div>
+
+</div>
+<script>
+var DATA = {"id": "2026-08-August-Class-7", "sig": "386e50b0", "questions": [{"q": "What is the outlay of the Mobile Phone Manufacturing Scheme (MPMS) approved by the Union Cabinet for FY 2026-27 to 2030-31?", "o": ["₹62,500 crore", "₹40,951 crore", "₹26,500 crore", "₹1,27,500 crore", "₹76,000 crore"], "a": 0, "e": "₹62,500 crore over 5 years; it succeeds PLI-LSEM, which ended on 31 March 2026."}, {"q": "Under MPMS, Indian brands investing in design and R&D get an additional incentive of:", "o": ["3% on eligible sales", "10% on eligible sales", "1.5% on eligible sales", "2.25% on eligible sales", "5% on eligible sales"], "a": 0, "e": "Base 2.25–5%; +1.5% for domestic sourcing; +3% for Indian brands doing design and R&D."}, {"q": "The Greenfield Shipbuilding Cluster approved under the Shipbuilding Development Scheme will come up at:", "o": ["Kuchhadi, Porbandar, Gujarat", "Mundra, Kutch, Gujarat", "Vadinar, Gulf of Kutch, Gujarat", "Alang, Bhavnagar, Gujarat", "Dholera, Ahmedabad, Gujarat"], "a": 0, "e": "About 2,000 acres at Kuchhadi via NSHIP-Gujarat. Vadinar is the separate ₹1,570 crore ship-repair facility."}, {"q": "The ₹1,570 crore ship repair facility at Vadinar will be developed by Deendayal Port Authority and:", "o": ["Garden Reach Shipbuilders", "Larsen & Toubro", "Mazagon Dock Shipbuilders", "Hindustan Shipyard", "Cochin Shipyard"], "a": 4, "e": "Deendayal Port Authority + Cochin Shipyard; 25% assistance on eligible capital cost under SbDS."}, {"q": "The \"Seafarer-First\" initiative was launched after attacks on merchant vessels in which strait?", "o": ["Palk Strait", "Strait of Malacca", "Strait of Gibraltar", "Strait of Hormuz", "Bab-el-Mandeb"], "a": 3, "e": "After attacks on MT Al Bahiyah and MT Mombasa; launched by Sarbananda Sonowal."}, {"q": "\"Friends of MY Bharat\", to connect Indian-origin youth abroad with India's youth programmes, was announced at:", "o": ["National Youth Festival, Nashik", "BRICS Youth Summit 2026, Gandhinagar", "G20 Youth Summit, New Delhi", "SCO Youth Council, Astana", "Pravasi Bharatiya Divas 2026, Bhubaneswar"], "a": 1, "e": "Announced by MoS Raksha Khadse. MY Bharat (Mera Yuva Bharat) was launched on 31 October 2023."}, {"q": "What was the closing balance of the PM CARES Fund on 31 March 2025?", "o": ["About ₹8,452 crore", "About ₹7,847 crore", "About ₹6,452 crore", "About ₹10,990 crore", "About ₹7,173 crore"], "a": 0, "e": "₹8,452.07 crore, up about 18% from ₹7,173.03 crore; about 93% was in fixed deposits."}, {"q": "PM Modi's 80th Independence Day address in 2026 was his ______ consecutive speech from the Red Fort.", "o": ["17th", "12th", "11th", "13th", "14th"], "a": 3, "e": "13th consecutive (2014–2026). Nehru holds the record with 17; Modi passed Indira Gandhi in 2025."}, {"q": "How long was PM Modi's 2026 Independence Day speech, his shortest in four years?", "o": ["90 minutes", "103 minutes", "65 minutes", "82 minutes", "75 minutes"], "a": 4, "e": "75 minutes. First (2014): 65 minutes. Longest (2025): 103 minutes."}, {"q": "In his 2026 Independence Day address, PM Modi announced AI-skilling for how many youth within one year?", "o": ["10 lakh", "1 crore", "10 crore", "50 lakh", "5 crore"], "a": 1, "e": "AI-skilling for 1 crore youth in a year, plus free online coaching and a sports talent hunt for ages 5–15."}, {"q": "\"Sapt Dhara\", mentioned in PM Modi's 80th Independence Day address, refers to:", "o": ["Seven rivers to be interlinked", "Seven streams of India's strength", "Seven new AIIMS", "Seven pillars of Viksit Bharat 2047 budget", "Seven new semiconductor fabs"], "a": 1, "e": "Manufacturing, Agriculture, Technology, Gati Shakti, Defence, Green & Blue Economy and Soft Power."}, {"q": "NIELIT's national cybersecurity and AI hackathon launched in 2026 is called:", "o": ["Kavach 2026", "Cyber Surakshit Bharat 2026", "Hack2Secure 2026", "Cyber Kushti 2026", "Cyber Dangal 2026"], "a": 3, "e": "Cyber Kushti 2026; run with ISAC Foundation under the National Security Database; CERT-In is Knowledge Partner."}, {"q": "IN-SPACe has proposed that launch operators take third-party insurance of up to:", "o": ["₹250 crore", "₹500 crore", "₹1,000 crore", "₹50 crore", "₹100 crore"], "a": 1, "e": "Up to ₹500 crore, covering damage to people, ground property and other space objects. IN-SPACe HQ: Bopal, Ahmedabad."}, {"q": "India's first virtual zoo, along with a 14-D cinema and virtual jungle safari, has opened in:", "o": ["Bhopal, Madhya Pradesh", "Hyderabad, Telangana", "Indore, Madhya Pradesh", "Mysuru, Karnataka", "Lucknow, Uttar Pradesh"], "a": 2, "e": "At Indore Zoo (Kamla Nehru Prani Sangrahalaya), inaugurated by CM Dr Mohan Yadav."}, {"q": "Karnataka's Vidyarthi Sahayahastha Scheme gives students from rural government schools a special horizontal reservation in professional courses of:", "o": ["15%", "27%", "10%", "5%", "7.5%"], "a": 4, "e": "7.5% horizontal reservation, which cuts across the vertical categories."}, {"q": "Andhra Pradesh's \"Pillale Sampada\" initiative means:", "o": ["Every Girl a Treasure", "Children are Wealth", "Education is Wealth", "Healthy Children, Happy State", "Wealth for Mothers"], "a": 1, "e": "Shift from population control to population conservation. Talliki Vandanam gives ₹15,000 per child."}, {"q": "The Athachamayam procession that marks the start of Onam is held at:", "o": ["Kozhikode", "Tripunithura, Ernakulam", "Thiruvananthapuram", "Thrissur", "Aranmula, Pathanamthitta"], "a": 1, "e": "Tripunithura (Ernakulam); Pulikali (the \"Tiger Dance\") is performed. Onam falls in the month of Chingam."}, {"q": "ADB approved a $182.89 million loan for which programme?", "o": ["Maharashtra Model Schools Program", "Tamil Nadu Smart Schools Program", "Strengthening Karnataka Public Schools Program", "Andhra Pradesh Secondary Education Program", "Kerala School Modernisation Program"], "a": 2, "e": "500 integrated school clusters; IFFEd adds a $10 mn grant and $25 mn guarantee."}, {"q": "Borjuli, notified as a Biodiversity Heritage Site to conserve wild rice (Oryza rufipogon), is in which district?", "o": ["Majuli, Assam", "Sonitpur, Assam", "Jorhat, Assam", "Kamrup, Assam", "Dibrugarh, Assam"], "a": 1, "e": "Borjuli, Sonitpur; project funded by NRAA, run by ICAR-NBPGR with the Assam State Biodiversity Board."}, {"q": "The scientific name of the wild rice protected at the Borjuli Biodiversity Heritage Site is:", "o": ["Zizania aquatica", "Oryza nivara", "Oryza glaberrima", "Oryza rufipogon", "Oryza sativa"], "a": 3, "e": "Wild rice = Oryza rufipogon; cultivated rice = Oryza sativa."}, {"q": "The 140-year-old Parichha Dam in Jhansi, selected as a World Heritage Irrigation Structure, is on which river?", "o": ["Betwa", "Dhasan", "Ken", "Chambal", "Sindh"], "a": 0, "e": "Betwa (a Yamuna tributary). Award by ICID at its 26th Congress in Marseille, France."}, {"q": "World Heritage Irrigation Structure (WHIS) recognition is given by:", "o": ["UNESCO", "World Water Council", "International Water Management Institute", "Food and Agriculture Organization", "International Commission on Irrigation and Drainage (ICID)"], "a": 4, "e": "ICID, est. 1950, HQ New Delhi — not UNESCO."}, {"q": "How many of India's 58 tiger reserves were identified by MoEFCC as \"potential recipient sites\" needing priority conservation?", "o": ["18", "51", "5", "25", "30"], "a": 3, "e": "25 of 58; reports released in Alwar, marking 18 years of tiger reintroduction at Sariska."}, {"q": "Which of these tiger reserves has ZERO tigers, as per the MoEFCC report?", "o": ["Ranthambore (Rajasthan)", "Similipal (Odisha)", "Kawal (Telangana)", "Sariska (Rajasthan)", "Nagarjunasagar-Srisailam (Andhra Pradesh)"], "a": 2, "e": "Zero-tiger reserves: Satkosia, Kawal, Buxa, Dampa, Kamlang."}, {"q": "The Natural History Museum of Mizoram University has been notified as India's ______ Designated Repository under the Biological Diversity Act, 2002.", "o": ["18th", "20th", "25th", "1st", "21st"], "a": 4, "e": "21st Designated Repository, on the recommendation of the National Biodiversity Authority (HQ Chennai)."}, {"q": "\"PosTransfer powered by UPI\" lets people send money from which country directly to UPI-enabled accounts in India?", "o": ["Oman", "Kuwait", "Bahrain", "United Arab Emirates", "Qatar"], "a": 4, "e": "Qatar Post + India Post via UPU-IP and NIPL; QAR 10–4,000 per transaction, flat fee QAR 15."}, {"q": "Under PosTransfer (Qatar–India), each transaction is capped at:", "o": ["₹50,000", "₹25,000", "₹1,00,000", "₹4,000", "₹2,00,000"], "a": 2, "e": "QAR 10 to QAR 4,000, capped at ₹1,00,000 per transaction."}, {"q": "Who has been appointed Chairperson of Airtel Payments Bank for a three-year term?", "o": ["Anubrata Biswas", "Gopal Vittal", "Sunil Bharti Mittal", "Shabnam Sinha", "Shobana Kamineni"], "a": 3, "e": "Shabnam Sinha, after RBI approval; Sunil Bharti Mittal leaves the Board on 30 Sept 2026."}, {"q": "Dr Haragopal Yandra has been appointed MD of NABFINS Ltd. NABFINS is headquartered in:", "o": ["Hyderabad", "New Delhi", "Mumbai", "Chennai", "Bengaluru"], "a": 4, "e": "NABFINS (NABARD's microfinance NBFC) is in Bengaluru; NABARD itself is in Mumbai."}, {"q": "BSE signed an MoU to promote equity financing for MSMEs through the BSE SME Platform with:", "o": ["CII", "PHD Chamber of Commerce and Industry", "SIDBI", "ASSOCHAM", "FICCI"], "a": 1, "e": "BSE + PHDCCI. BSE (est. 9 July 1875) is Asia's oldest stock exchange."}, {"q": "Hakainde Hichilema has been re-elected for a second term as President of:", "o": ["Zambia", "Botswana", "Malawi", "Namibia", "Zimbabwe"], "a": 0, "e": "Zambia (capital Lusaka, currency Kwacha); first elected in 2021."}, {"q": "India's campaign for a UNSC non-permanent seat for 2028–29 has the guiding vision \"SHANTI\", which stands for:", "o": ["Shared Hope and Agenda for Nations in Transition", "Securing Holistic Advancement through Norms, Trust and Integrity", "Sustainable Harmony and Nations' Trust Initiative", "Strengthening Harmony, Accountability, Norms, Trust and Inclusion", "Securing Humanity through Action, Norms and Trust Internationally"], "a": 1, "e": "Launched by Dr S. Jaishankar at UN HQ; India has served 8 terms, the latest 2021–22."}, {"q": "How many terms has India already served as a non-permanent member of the UN Security Council?", "o": ["Seven", "Six", "Eight", "Ten", "Nine"], "a": 2, "e": "Eight terms (latest 2021–22); 2028–29 would be the 9th."}, {"q": "\"Divyastra Mk3\", a jet-powered loitering munition that made its maiden flight, was developed by:", "o": ["NewSpace Research, Bengaluru", "Tata Advanced Systems, Hyderabad", "Solar Industries, Nagpur", "Kawa UAV Pvt Ltd (HoverIt), Lucknow", "ideaForge, Mumbai"], "a": 3, "e": "Kawa UAV (HoverIt), a Lucknow-based defence-tech firm."}, {"q": "How many defence items are in the 6th Positive Indigenisation List notified by the MoD?", "o": ["780", "346", "405", "509", "101"], "a": 2, "e": "405 items, worth about ₹3,070 crore of business. The 1st PIL (Aug 2020) had 101 items."}, {"q": "The MoD has leased two MQ-9B SeaGuardian drones for the Indian Navy from General Atomics for:", "o": ["30 months", "12 months", "5 years", "36 months", "24 months"], "a": 0, "e": "Lease of 2 HALE drones for 30 months — separate from the 31-drone purchase of October 2024."}, {"q": "The 15th edition of Exercise MAITREE is between the Indian Army and the army of:", "o": ["Malaysia", "Indonesia", "Sri Lanka", "Thailand", "Myanmar"], "a": 3, "e": "With the Royal Thai Army at Vibhavadi Rangsit Camp, Surat Thani; Indian contingent from the Gorkha Rifles."}, {"q": "The Indian Army's \"Adab Aur Saqafat – Literary Festival 2026\" was held in:", "o": ["Tawang, Arunachal Pradesh", "Leh, Ladakh", "Gulmarg, J&K", "Srinagar, J&K", "Kargil, Ladakh"], "a": 4, "e": "At Government Degree College, Kargil; theme \"Celebrating the Culture of Ladakh Highland\"."}, {"q": "What is the theme of SEMICON India 2026, its 5th edition at Yashobhoomi, New Delhi?", "o": ["Make in India for the World", "Shaping the Semiconductor Future", "Silicon to Systems: Building the Ecosystem", "Building the Semiconductor Ecosystem", "Catalysing India's Semiconductor Ecosystem"], "a": 2, "e": "Organised by ISM, MeitY and SEMI."}, {"q": "What is the outlay of Semicon India Programme 2.0, approved on 15 July 2026?", "o": ["₹1,00,000 crore", "₹76,000 crore", "₹1,76,000 crore", "₹1,27,500 crore", "₹62,500 crore"], "a": 3, "e": "Semicon 2.0 = ₹1,27,500 crore; Semicon 1.0 (Dec 2021) = ₹76,000 crore for 12 projects."}, {"q": "The 3rd India International Coffee Festival (IICF) 2027 will be held in:", "o": ["Chikkamagaluru", "Coorg (Madikeri)", "Bengaluru", "Hyderabad", "Kochi"], "a": 2, "e": "From 26 Feb 2027, by the Coffee Board with SCAI; it hosts the 26th National Barista Championship."}, {"q": "Rishabh Pant became the first Indian to hit 100 Test sixes. Who holds the record for the most Test sixes?", "o": ["Chris Gayle", "Adam Gilchrist", "Ben Stokes", "Virender Sehwag", "Brendon McCullum"], "a": 2, "e": "Ben Stokes 138, McCullum 107, Gilchrist 100, Pant 100."}, {"q": "Rishabh Pant became the fastest to 100 Test sixes, reaching the mark in:", "o": ["51 Tests", "89 Tests", "60 Tests", "48 Tests", "45 Tests"], "a": 0, "e": "51 Tests, 89 innings, 4,918 balls."}, {"q": "Magnus Carlsen defended his Esports World Cup chess title in Paris by beating whom in the final?", "o": ["R. Praggnanandhaa", "Alireza Firouzja", "Denis Lazavik", "Hikaru Nakamura", "Javokhir Sindarov"], "a": 2, "e": "Beat Belarus's Denis Lazavik 2–0, playing for Team Liquid; Nakamura took third."}, {"q": "World Humanitarian Day (19 August) marks the 2003 bomb attack on:", "o": ["The Taj Hotel, Mumbai", "The Canal Hotel, Baghdad", "The Marriott Hotel, Islamabad", "The UN Office in Kabul", "The UN compound in Abuja"], "a": 1, "e": "22 aid workers killed, including UN envoy Sergio Vieira de Mello. 2026 campaign: \"Families of Fallen Humanitarians\"."}, {"q": "Which two days are both observed on 19 August?", "o": ["World Humanitarian Day and World Elephant Day", "World Lion Day and World Biofuel Day", "World Photography Day and International Youth Day", "World Humanitarian Day and World Photography Day", "World Humanitarian Day and World Organ Donation Day"], "a": 3, "e": "Both on 19 August. (Lion & Biofuel: 10 Aug; Youth & Elephant: 12 Aug; Organ Donation: 13 Aug.)"}, {"q": "Sculptor Chandrashekhar Y. Shilpi, who passed away, had received which award for 2024?", "o": ["National Award for Master Craftspersons", "Sangeet Natak Akademi Award", "Shilp Guru Award", "Lalit Kala Akademi Award", "Padma Shri"], "a": 0, "e": "National Award for Master Craftspersons (2024), Ministry of Textiles; presented by President Murmu."}, {"q": "Filmmaker Raja Sen, who passed away at 71, made which debut feature that won the National Award for Best Children's Film?", "o": ["Goopy Gyne Bagha Byne", "Sonar Kella", "Hirak Rajar Deshe", "Pather Panchali", "Damu"], "a": 4, "e": "Damu; Raja Sen was a three-time National Film Award-winning Bengali filmmaker."}, {"q": "The Hindi biography \"Janpriya Neta Venkaiah Naidu: Udayagiri se Uparashtrapati Tak\" was written by:", "o": ["Y. Lakshmi Prasad", "D.P.K. Pillay", "M. Venkaiah Naidu himself", "Rekha Gupta", "Rajnath Singh"], "a": 0, "e": "Written by former Rajya Sabha MP Y. Lakshmi Prasad; released by Rajnath Singh and Rekha Gupta."}, {"q": "Sonia Gandhi's memoir \"Belonging: A Journey of Love\" is published by:", "o": ["Alfred A. Knopf", "Rupa Publications", "Penguin Random House India", "HarperCollins India", "Bloomsbury India"], "a": 0, "e": "Publisher: Alfred A. Knopf."}, {"q": "The book \"India at War: Empires, Battles and the Making of a Nation\" is written by:", "o": ["Shiv Kunal Verma", "Lt Gen. H.S. Panag", "Gen. V.K. Singh", "Srinath Raghavan", "Col. D.P.K. Pillay"], "a": 4, "e": "Author: Col. D.P.K. Pillay."}], "seconds": 2100, "plus": 1, "minus": 0.25};
+
+(function(){
+  var Q = DATA.questions, N = Q.length, KEY = 'ca-quiz-' + DATA.id, RUN = KEY + ':run:' + DATA.sig, L = 'ABCDE';
+  var root = document.documentElement, $ = function(id){ return document.getElementById(id); };
+  var store = {
+    get: function(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+    set: function(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+    del: function(k){ try{ localStorage.removeItem(k); }catch(e){} }
+  };
+  try{ var t = localStorage.getItem('ca-notes-theme'); if (t) root.setAttribute('data-theme', t); }catch(e){}
+  $('themer').onclick = function(){
+    var cur = root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var nxt = cur === 'dark' ? 'light' : 'dark'; root.setAttribute('data-theme', nxt);
+    try{ localStorage.setItem('ca-notes-theme', nxt); }catch(e){}
+  };
+
+  var S = null, tick = null;   // S = attempt in progress
+  function show(id){ ['ins', 'exam', 'res'].forEach(function(x){ $(x).hidden = x !== id; }); $('timer').hidden = id !== 'exam'; $('palbtn').hidden = id !== 'exam'; window.scrollTo(0, 0); }
+  function save(){ if (S) store.set(RUN, S); }
+  function fmt(s){ s = Math.max(0, Math.round(s)); var m = Math.floor(s / 60); return (m < 10 ? '0' : '') + m + ':' + ('0' + s % 60).slice(-2); }
+
+  /* ---------- instructions ---------- */
+  function initIns(){
+    var run = store.get(RUN), hist = store.get(KEY + ':hist') || [];
+    $('resume').hidden = !run;
+    $('begin').textContent = run ? 'Start a fresh attempt' : 'I am ready to begin';
+    $('hist').innerHTML = hist.length ? 'Previous attempts: ' + hist.slice(-5).map(function(h){
+      return '<b>' + h.score + '</b>/' + N + ' <span>(' + h.date + ')</span>'; }).join(' · ') : '';
+    show('ins');
+  }
+  $('agree').onchange = function(){ $('begin').disabled = !this.checked; };
+  $('begin').onclick = function(){
+    S = { i: 0, ans: [], st: [], sel: null, end: Date.now() + DATA.seconds * 1000, start: Date.now() };
+    for (var k = 0; k < N; k++){ S.ans.push(null); S.st.push('nv'); }
+    startExam();
+  };
+  $('resume').onclick = function(){ S = store.get(RUN); startExam(); };
+
+  /* ---------- exam ---------- */
+  function startExam(){
+    buildPalette(); go(S.i, true); show('exam');
+    clearInterval(tick); tick = setInterval(clock, 1000); clock();
+  }
+  function clock(){
+    var left = (S.end - Date.now()) / 1000;
+    $('timer').textContent = 'Time Left ' + fmt(left);
+    $('timer').classList.toggle('low', left <= 120);
+    if (left <= 0){ clearInterval(tick); finish(true); }
+  }
+  function go(i, keepSel){
+    S.i = (i + N) % N;
+    if (S.st[S.i] === 'nv') S.st[S.i] = 'na';
+    if (!keepSel || S.sel === undefined) S.sel = S.ans[S.i];
+    var q = Q[S.i];
+    $('qno').textContent = 'Question No. ' + (S.i + 1);
+    $('qtext').textContent = q.q;
+    var ul = $('opts'); ul.innerHTML = '';
+    q.o.forEach(function(o, k){
+      var li = document.createElement('li'), lab = document.createElement('label');
+      lab.innerHTML = '<input type="radio" name="opt"><span class="l">' + L[k] + '.</span><span></span>';
+      lab.lastChild.textContent = o;
+      var inp = lab.firstChild; inp.checked = S.sel === k; lab.classList.toggle('on', S.sel === k);
+      inp.onchange = function(){ S.sel = k; mark(); save(); };
+      li.appendChild(lab); ul.appendChild(li);
+    });
+    paint(); save();
+    document.body.classList.remove('palopen');
+  }
+  function mark(){ [].forEach.call($('opts').querySelectorAll('label'), function(l, k){ l.classList.toggle('on', S.sel === k); l.firstChild.checked = S.sel === k; }); }
+  function buildPalette(){
+    var g = $('grid'); g.innerHTML = '';
+    for (var k = 0; k < N; k++) (function(k){
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'st'; b.textContent = k + 1;
+      b.onclick = function(){ go(k); };   // unsaved choice is discarded, as in the real exam
+      g.appendChild(b);
+    })(k);
+  }
+  function counts(){
+    var c = { a: 0, na: 0, nv: 0, m: 0, am: 0 };
+    S.st.forEach(function(s){ c[s]++; }); return c;
+  }
+  function paint(){
+    [].forEach.call($('grid').children, function(b, k){ b.className = 'st ' + S.st[k] + (k === S.i ? ' cur' : ''); });
+    var c = counts();
+    ['a', 'na', 'nv', 'm', 'am'].forEach(function(s){ $('c-' + s).textContent = c[s]; });
+  }
+  function next(){ go(S.i + 1); }
+  $('savenext').onclick = function(){
+    S.ans[S.i] = S.sel; S.st[S.i] = S.sel == null ? 'na' : 'a'; next();
+  };
+  $('marknext').onclick = function(){
+    S.ans[S.i] = S.sel; S.st[S.i] = S.sel == null ? 'm' : 'am'; next();
+  };
+  $('clear').onclick = function(){
+    S.sel = null; S.ans[S.i] = null;
+    S.st[S.i] = (S.st[S.i] === 'm' || S.st[S.i] === 'am') ? 'm' : 'na';
+    mark(); paint(); save();
+  };
+  $('prev').onclick = function(){ go(S.i - 1); };
+  $('palbtn').onclick = function(){ document.body.classList.toggle('palopen'); };
+  $('palx').onclick = function(){ document.body.classList.remove('palopen'); };
+  document.addEventListener('keydown', function(e){
+    if ($('exam').hidden || !$('confirm').hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+    var k = L.indexOf(e.key.toUpperCase());
+    if (k >= 0 && k < Q[S.i].o.length){ S.sel = k; mark(); save(); }
+  });
+
+  /* ---------- submit ---------- */
+  $('submit').onclick = function(){
+    var c = counts();
+    $('sum').innerHTML = '<tr><th>Total questions</th><td>' + N + '</td></tr>' +
+      '<tr><th>Answered</th><td>' + c.a + '</td></tr>' +
+      '<tr><th>Answered &amp; marked for review <small>(will be evaluated)</small></th><td>' + c.am + '</td></tr>' +
+      '<tr><th>Marked for review (no answer)</th><td>' + c.m + '</td></tr>' +
+      '<tr><th>Not answered</th><td>' + c.na + '</td></tr>' +
+      '<tr><th>Not visited</th><td>' + c.nv + '</td></tr>';
+    $('confirm').hidden = false;
+  };
+  $('no').onclick = function(){ $('confirm').hidden = true; };
+  $('yes').onclick = function(){ $('confirm').hidden = true; finish(false); };
+
+  function finish(timeUp){
+    clearInterval(tick);
+    var r = { right: 0, wrong: 0, skip: 0, ans: S.ans.slice(),
+              secs: Math.min(DATA.seconds, Math.round((Math.min(Date.now(), S.end) - S.start) / 1000)), timeUp: timeUp };
+    Q.forEach(function(q, k){ if (r.ans[k] == null) r.skip++; else if (r.ans[k] === q.a) r.right++; else r.wrong++; });
+    r.score = Math.round((r.right * DATA.plus - r.wrong * DATA.minus) * 100) / 100;
+    var hist = store.get(KEY + ':hist') || [];
+    hist.push({ score: r.score, date: new Date().toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) });
+    store.set(KEY + ':hist', hist.slice(-20)); store.set(KEY + ':last', r); store.del(RUN);
+    S = null; result(r);
+  }
+
+  /* ---------- result ---------- */
+  function result(r){
+    var att = r.right + r.wrong, acc = att ? Math.round(r.right / att * 100) : 0, pct = Math.round(Math.max(0, r.score) / N * 100);
+    $('timeup').hidden = !r.timeUp;
+    $('score').innerHTML =
+      '<div><b>' + r.score + ' / ' + N + '</b><span>Score (+' + DATA.plus + ' / −' + DATA.minus + ')</span></div>' +
+      '<div class="c"><b>' + r.right + '</b><span>Correct</span></div>' +
+      '<div class="w"><b>' + r.wrong + '</b><span>Wrong (−' + (r.wrong * DATA.minus) + ')</span></div>' +
+      '<div><b>' + r.skip + '</b><span>Not attempted</span></div>' +
+      '<div><b>' + acc + '%</b><span>Accuracy</span></div>' +
+      '<div><b>' + fmt(r.secs) + '</b><span>Time taken of ' + fmt(DATA.seconds) + '</span></div>';
+    $('verdict').textContent = pct >= 80 ? 'Excellent — this class is locked in. Revise again in a week.'
+      : pct >= 60 ? 'Good. Re-read the topics you got wrong, then retake tomorrow.'
+      : 'Needs revision. Go through the class notes once more (use Recall mode), then retake.';
+    var box = $('sols'); box.innerHTML = '';
+    Q.forEach(function(q, k){
+      var mine = r.ans[k], cls = mine == null ? 's' : mine === q.a ? 'c' : 'w';
+      var d = document.createElement('div'); d.className = 'sol ' + cls; d.dataset.k = cls;
+      d.innerHTML = '<div class="qn">Q' + (k + 1) + '<em>' + (cls === 'c' ? 'Correct +' + DATA.plus : cls === 'w' ? 'Wrong −' + DATA.minus : 'Not attempted') + '</em></div><p></p><ol></ol><div class="ex"><b>Explanation:</b> <span></span></div>';
+      d.querySelector('p').textContent = q.q;
+      q.o.forEach(function(o, j){
+        var li = document.createElement('li'); li.textContent = o;
+        if (j === q.a) li.className = 'right'; else if (j === mine) li.className = 'mine';
+        d.querySelector('ol').appendChild(li);
+      });
+      d.querySelector('.ex span').textContent = q.e;
+      box.appendChild(d);
+    });
+    filter('all'); show('res');
+  }
+  function filter(f){
+    [].forEach.call($('tabs').children, function(b){ b.classList.toggle('on', b.dataset.f === f); });
+    [].forEach.call($('sols').children, function(d){ d.hidden = f !== 'all' && d.dataset.k !== f; });
+  }
+  [].forEach.call($('tabs').children, function(b){ b.onclick = function(){ filter(b.dataset.f); }; });
+  $('retake').onclick = initIns;
+
+  var last = store.get(KEY + ':last');
+  if (location.hash === '#result' && last) result(last); else initIns();
+  $('lastres').hidden = !last;
+  $('lastres').onclick = function(){ result(store.get(KEY + ':last')); };
+})();
+</script>
+</body>
+</html>
