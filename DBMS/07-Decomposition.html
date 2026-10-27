@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Decomposition Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="06-Minimal-Cover-and-Equivalence.html">← Ch 6: Minimal Cover and Equivalence of FDs</a><a href="index.html">☰ All topics</a><a href="08-Normalization.html">Ch 8: Normalization →</a></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 7: Decomposition</h1>
+  <p class="sub">Volume 05 · Part 7 · Follows the lecture outline for decomposition (lossless join and dependency preservation), plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. Why a table gets split, how to tell whether the split loses information, and how to check whether every FD survives it.</p>
+  <ul class="tags"><li>Decomposition</li><li>Lossless join</li><li>Lossy join</li><li>Spurious tuples</li><li>Common attribute</li><li>Dependency preservation</li><li>Projection of FDs</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">7.1</span>Lossless vs Lossy Decomposition (Movie Story with Extra Scenes)</a></li>
+<li><a href="#s2"><span class="n">7.2</span>Lossless Condition: Common Attribute Must Be a Key — Solved</a></li>
+<li><a href="#s3"><span class="n">7.3</span>Dependency-Preserving Decomposition — Solved R(A,B,C)</a></li>
+<li><a href="#s4"><span class="n">7.4</span>Dependency Not Preserved — Solved R(A,B,C,D)</a></li>
+<li><a href="#s5"><span class="n">7.5</span>Decomposition and the Normal Forms<span class="x">ADDED</span></a></li>
+<li><a href="#s6"><span class="n">7.6</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 7</div>
+<h2 class="ch">Decomposition</h2>
+<p>Normalization (chapter 8) fixes redundancy by <b>splitting</b> one table into smaller ones. That split is called a <b>decomposition</b>. A split is only useful if it is safe, and "safe" has two parts. <b>Lossless join</b>: joining the pieces back gives exactly the original table, no more and no less. <b>Dependency preservation</b>: every FD of the original can still be checked inside the pieces, without joining them. Both checks use the tools from chapters 5 and 6: keys and attribute closure.</p>
+
+<section id="s1">
+<h3><span class="n">7.1</span>Lossless vs Lossy Decomposition (Movie Story with Extra Scenes)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Decomposing R means replacing it with smaller relations R1, R2, … whose attributes together make up R. To get the original data back, we <b>natural-join</b> the pieces.
+<ul>
+<li><b>Lossless</b>: R1 ⋈ R2 = R. The join gives back exactly the original tuples.</li>
+<li><b>Lossy</b>: R1 ⋈ R2 ⊃ R. The join gives back the original tuples <b>plus extra ones</b> that were never in R. These are called <b>spurious tuples</b>.</li>
+</ul>
+<h4>Analogy: a movie story with extra scenes</h4>
+You cut a film into reels and stitch them back together. If the stitched film has scenes that were never in the original story, you can no longer tell which scenes are real. Nothing was deleted, yet the story is ruined. A lossy join works the same way: it doesn't drop rows, it <b>adds</b> fake ones, and the information about which rows were genuine is what gets lost.
+<h4>Example: R(A, B, C) = {(1, a, x), (2, a, y)}</h4>
+Split it as R1(A, B) and R2(B, C). The common attribute is B, and B = a appears in both rows.</div>
+<div class="tw"><table>
+<tr><th>R1(A, B)</th><th>R2(B, C)</th><th>R1 ⋈ R2 (on B)</th></tr>
+<tr><td>(1, a)<br>(2, a)</td><td>(a, x)<br>(a, y)</td><td>(1, a, x) ✅<br>(1, a, y) ❌ spurious<br>(2, a, x) ❌ spurious<br>(2, a, y) ✅</td></tr>
+</table></div>
+<p>The original had 2 rows; the join returns 4. The split R1(A, B), R2(A, C) instead joins on A, which is unique in both pieces, so it returns exactly the 2 original rows: lossless.</p>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="Lossless join returns the original; lossy join returns extra spurious tuples">
+<rect class="ac" x="30" y="60" width="130" height="48" rx="4"/><text x="95" y="89" text-anchor="middle" class="b">R (2 rows)</text>
+<line class="lna" x1="160" y1="72" x2="262" y2="40"/><polygon class="aha" points="258,35 270,38 262,46"/>
+<line class="lna" x1="160" y1="96" x2="262" y2="128"/><polygon class="aha" points="262,122 270,130 258,133"/>
+<rect class="gr" x="270" y="18" width="160" height="40" rx="4"/><text x="350" y="43" text-anchor="middle">R1(A,B) ⋈ R2(A,C)</text>
+<rect class="gr" x="270" y="110" width="160" height="40" rx="4"/><text x="350" y="135" text-anchor="middle">R1(A,B) ⋈ R2(B,C)</text>
+<line class="lna" x1="430" y1="38" x2="492" y2="38"/><polygon class="aha" points="490,33 500,38 490,43"/>
+<line class="lna" x1="430" y1="130" x2="492" y2="130"/><polygon class="aha" points="490,125 500,130 490,135"/>
+<text x="505" y="43" class="b">2 rows = R → lossless</text>
+<text x="505" y="135" class="b">4 rows ⊃ R → lossy</text>
+<text class="mut" x="340" y="166" text-anchor="middle">A lossy join never loses rows; it adds spurious ones</text>
+</svg>
+<figcaption>Same table, two splits: only the one joined on a key comes back unchanged</figcaption>
+</figure>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Lossy" does <b>not</b> mean the join has fewer rows. A natural join of projections always contains every original row (R ⊆ R1 ⋈ R2). Lossy means it has <b>more</b> rows than R. If an option says "lossy decomposition loses tuples", it's wrong.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">7.2</span>Lossless Condition: Common Attribute Must Be a Key — Solved</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Checking with sample data only shows a split is lossy; to prove it's lossless for <b>every</b> possible instance, use the FDs. A decomposition of R into R1 and R2 is lossless if all three hold:
+<ol>
+<li><b>R1 ∪ R2 = R</b>: no attribute is left out.</li>
+<li><b>R1 ∩ R2 ≠ ∅</b>: there's a common attribute to join on.</li>
+<li><b>The common attribute is a (super) key of R1 or of R2</b>: (R1 ∩ R2) → R1 or (R1 ∩ R2) → R2.</li>
+</ol>
+Condition 3 is the heart of it. If the common value is a key on one side, each row on the other side matches <b>at most one</b> row there, so no spurious combinations can form. In 7.1, B = a matched two rows on both sides, which is why the join exploded.
+<h4>Solved: R(A, B, C, D), F = {A → B, C → D}</h4>
+<ul>
+<li><b>R1(A, B), R2(C, D)</b>: R1 ∩ R2 = ∅. Nothing to join on, so the join is a cross product → <b>lossy</b>.</li>
+<li><b>R1(A, B, C), R2(C, D)</b>: union = ABCD ✅, common = {C} ✅. C⁺ = {C, D} ⊇ R2, so C is a key of R2 ✅ → <b>lossless</b>.</li>
+<li><b>R1(A, B), R2(B, C, D)</b>: common = {B}. B⁺ = {B}: not a key of R1 (needs A) and not of R2 (needs C, D) → <b>lossy</b>.</li>
+</ul>
+<h4>More than two pieces: join two at a time</h4>
+R(A, B, C, D), F = {A → B, B → C, C → D}, split into R1(A, B), R2(B, C), R3(C, D).
+<ul>
+<li>R2 ⋈ R3 on C: C⁺ = {C, D} ⊇ R3 → lossless, giving (B, C, D).</li>
+<li>R1 ⋈ (B, C, D) on B: B⁺ = {B, C, D} ⊇ BCD → lossless, giving (A, B, C, D) = R.</li>
+</ul>
+Every step is lossless, so the whole decomposition is <b>lossless</b>.</div>
+<div class="formula">Lossless ⇔ R1 ∪ R2 = R, R1 ∩ R2 ≠ ∅, and (R1 ∩ R2)⁺ ⊇ R1 or (R1 ∩ R2)⁺ ⊇ R2</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>The common attribute needs to be a key of <b>only one</b> of the two pieces, not both, and not of R.</li>
+<li>For three or more pieces where pairwise merging gets stuck, textbooks use the <b>chase (tableau / matrix) test</b>: one row per piece, fill "a" for attributes the piece has, then apply the FDs to equate cells. If some row becomes all "a", the decomposition is lossless. For IBPS-level questions, merging two at a time is enough.</li>
+<li>Lossless join is <b>mandatory</b>. A lossy decomposition is never acceptable, however good its normal form.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Compute the closure of the common attribute with the <b>full F</b> of R, then compare it with the attribute list of R1 or R2. Don't stop at "C appears on the left of some FD"; C must determine <b>every</b> attribute of that piece.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">7.3</span>Dependency-Preserving Decomposition — Solved R(A,B,C)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+After a split, each piece can only enforce the FDs whose attributes all sit inside it. Call F<sub>i</sub> the FDs of F⁺ that fall entirely inside R<sub>i</sub>. The decomposition is <b>dependency preserving</b> if those pieces together still imply everything F did:
+<div class="formula">(F1 ∪ F2 ∪ … ∪ Fn)⁺ = F⁺</div>
+If an FD is lost, the database can only check it by joining tables on every insert or update, which defeats the purpose of splitting.
+<h4>Solved: R(A, B, C), F = {A → B, B → C, C → A}, split into R1(A, B), R2(B, C)</h4>
+<b>Step 1: find what each piece can enforce</b> (use closures, not just the FDs as written).
+<ul>
+<li>R1(A, B): A⁺ = {A, B, C} → A → B. B⁺ = {B, C, A} → B → A. So F1 = {A → B, B → A}.</li>
+<li>R2(B, C): B⁺ = {B, C, A} → B → C. C⁺ = {C, A, B} → C → B. So F2 = {B → C, C → B}.</li>
+</ul>
+<b>Step 2: check each original FD using F1 ∪ F2</b> = {A → B, B → A, B → C, C → B}.
+<ul>
+<li>A → B: in F1 ✅</li>
+<li>B → C: in F2 ✅</li>
+<li>C → A: not written anywhere, but C⁺ = C, B (C → B), A (B → A). A is reached ✅</li>
+</ul>
+All three survive → <b>dependency preserving</b>. C → A looked lost because no piece has both C and A, but it is implied by the pieces.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Don't just look for each original FD inside a single piece. An FD that spans two pieces (like C → A here) can still be preserved through FDs that are <b>derived</b> on each piece (C → B, B → A). Always project F⁺, not F.</div>
+<div class="box add"><span class="t">➕ Added for exam: the quick per-FD test</span>
+To check whether X → Y is preserved without listing F1, F2 in full:
+<ol>
+<li>result = X</li>
+<li>For each piece R<sub>i</sub>: result = result ∪ ((result ∩ R<sub>i</sub>)⁺ ∩ R<sub>i</sub>), with closures computed under F.</li>
+<li>Repeat until result stops changing. X → Y is preserved if Y ⊆ result.</li>
+</ol>
+For C → A above: result = {C}; piece R2: (C)⁺ ∩ BC = {B, C} → result = {B, C}; piece R1: (B)⁺ ∩ AB = {A, B} → result = {A, B, C}. A is in it ✅.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">7.4</span>Dependency Not Preserved — Solved R(A,B,C,D)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Solved: R(A, B, C, D), F = {A → B, B → C, C → D}, split into R1(A, B), R2(A, C), R3(C, D)</h4>
+<b>Lossless?</b> R1 ⋈ R2 on A: A⁺ = {A, B, C, D}, a key of both → (A, B, C). Then ⋈ R3 on C: C⁺ = {C, D} ⊇ R3 → R. <b>Lossless ✅</b>
+<br><br><b>Dependency preserving?</b>
+<ul>
+<li>F1 on R1(A, B): A → B. (B⁺ = {B, C, D}: no A.)</li>
+<li>F2 on R2(A, C): A → C (A⁺ contains C). C⁺ = {C, D}: no A.</li>
+<li>F3 on R3(C, D): C → D.</li>
+</ul>
+F1 ∪ F2 ∪ F3 = {A → B, A → C, C → D}. Check each original FD:
+<ul>
+<li>A → B ✅ (F1)</li>
+<li>C → D ✅ (F3)</li>
+<li>B → C: B⁺ under {A → B, A → C, C → D} = {B}. B is on the left of nothing → <b>not preserved ❌</b></li>
+</ul>
+The split is <b>lossless but not dependency preserving</b>. B and C never sit in the same table, so the database can't stop two rows with the same B and different C without joining R1 and R2.</div>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="B and C end up in different tables so B to C cannot be checked">
+<rect class="ac" x="40" y="40" width="150" height="50" rx="4"/><text x="115" y="62" text-anchor="middle" class="b">R1(A, B)</text><text class="mut" x="115" y="80" text-anchor="middle">A → B</text>
+<rect class="ac" x="265" y="40" width="150" height="50" rx="4"/><text x="340" y="62" text-anchor="middle" class="b">R2(A, C)</text><text class="mut" x="340" y="80" text-anchor="middle">A → C</text>
+<rect class="ac" x="490" y="40" width="150" height="50" rx="4"/><text x="565" y="62" text-anchor="middle" class="b">R3(C, D)</text><text class="mut" x="565" y="80" text-anchor="middle">C → D</text>
+<path class="ln" d="M150 90 Q245 140 345 90" stroke-dasharray="6 5"/>
+<text x="245" y="138" text-anchor="middle" class="b">B → C ✂ spans two tables</text>
+<text class="mut" x="560" y="130" text-anchor="middle">lossless, but B → C is lost</text>
+</svg>
+<figcaption>An FD is lost when its attributes are split across tables and no chain of local FDs rebuilds it</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+The fix is to choose the pieces along the FDs: R1(A, B), R2(B, C), R3(C, D) is lossless (7.2) <b>and</b> keeps all three FDs, one in each table. As a rule of thumb, a piece built from an FD's left side plus its right side keeps that FD.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">7.5</span>Decomposition and the Normal Forms<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<div class="tw"><table>
+<tr><th>Property</th><th>Meaning</th><th>Required?</th><th>Test</th></tr>
+<tr><td>Lossless join</td><td>R1 ⋈ R2 = R, no spurious tuples</td><td><b>Always</b></td><td>Common attribute is a key of R1 or R2</td></tr>
+<tr><td>Dependency preserving</td><td>(F1 ∪ … ∪ Fn)⁺ = F⁺</td><td>Desirable, can be traded off</td><td>Closure of each FD's left side using the projected FDs</td></tr>
+</table></div>
+<ul>
+<li><b>3NF</b>: a decomposition that is <b>both</b> lossless and dependency preserving <b>always exists</b> (the 3NF synthesis algorithm, built from the minimal cover of chapter 6).</li>
+<li><b>BCNF</b>: a lossless decomposition always exists, but it <b>may not</b> preserve dependencies.</li>
+<li>Classic case: R(A, B, C), F = {AB → C, C → B}. C → B breaks BCNF (C is not a key). Splitting into (C, B) and (A, C) is lossless (C is a key of CB) but AB → C is lost: no piece has A, B and C together.</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+The most-asked one-liner: "BCNF decomposition is always lossless but not always dependency preserving; 3NF can always be both." Expect it as a true/false statement or as "Which normal form guarantees a lossless, dependency-preserving decomposition?" → <b>3NF</b>.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">7.6</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>A decomposition is lossy when the natural join of the pieces:<br><b>Answer: produces extra (spurious) tuples</b> not in the original relation.</div>
+<div class="num"><span class="t">Q2</span>R(A, B, C) with F = {A → B}. Is the split R1(A, B), R2(A, C) lossless?<br><b>Answer: Yes.</b> Common = {A}; A⁺ = {A, B} ⊇ R1, so A is a key of R1.</div>
+<div class="num"><span class="t">Q3</span>R(A, B, C) with F = {A → B}. Is the split R1(A, B), R2(B, C) lossless?<br><b>Answer: No.</b> Common = {B}; B⁺ = {B}, a key of neither piece.</div>
+<div class="num"><span class="t">Q4</span>R(A, B, C, D), F = {A → B, C → D}, split into (A, B) and (C, D). Lossless?<br><b>Answer: No.</b> The pieces share no attribute, so the join is a Cartesian product.</div>
+<div class="num"><span class="t">Q5</span>R(A, B, C, D), F = {AB → C, C → D}, split into R1(A, B, C), R2(C, D). Lossless and dependency preserving?<br><b>Answer: Both.</b> Common C, C⁺ = {C, D} ⊇ R2 → lossless. AB → C lives in R1 and C → D in R2 → preserved.</div>
+<div class="num"><span class="t">Q6</span>Which property must every decomposition satisfy? (a) lossless join (b) dependency preservation (c) both (d) neither<br><b>Answer: (a).</b> Dependency preservation is sometimes given up (BCNF); lossless join never is.</div>
+<div class="num"><span class="t">Q7</span>Which normal form always allows a lossless, dependency-preserving decomposition? (a) 2NF only (b) 3NF (c) BCNF (d) 4NF<br><b>Answer: (b) 3NF.</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Decomposition</b> = splitting R into smaller relations; rebuild with natural join.</li>
+<li><b>Lossless</b>: R1 ⋈ R2 = R. <b>Lossy</b>: R1 ⋈ R2 ⊃ R, extra <b>spurious tuples</b> (a movie stitched back with scenes that were never in the story). Lossy adds rows, it never drops them.</li>
+<li><b>Lossless test</b>: R1 ∪ R2 = R, R1 ∩ R2 ≠ ∅, and the common attribute is a key of R1 <b>or</b> R2 ((R1 ∩ R2)⁺ ⊇ R1 or R2).</li>
+<li>3+ pieces: merge two at a time, each merge must be lossless. ➕ Or use the chase/tableau test.</li>
+<li><b>Dependency preserving</b>: (F1 ∪ … ∪ Fn)⁺ = F⁺, where F<sub>i</sub> = FDs of <b>F⁺</b> inside R<sub>i</sub>.</li>
+<li>R(A, B, C), F = {A → B, B → C, C → A} → (A, B), (B, C): preserved, since C → B, B → A rebuild C → A.</li>
+<li>R(A, B, C, D), F = {A → B, B → C, C → D} → (A, B), (A, C), (C, D): lossless, but <b>B → C lost</b>.</li>
+<li>➕ 3NF: lossless + dependency preserving always possible. BCNF: lossless always, preservation not guaranteed (AB → C, C → B).</li>
+</ul>
+</div>
+<div class="end">End of Chapter 7 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="06-Minimal-Cover-and-Equivalence.html">← Ch 6: Minimal Cover and Equivalence of FDs</a><a href="index.html">☰ All topics</a><a href="08-Normalization.html">Ch 8: Normalization →</a></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
