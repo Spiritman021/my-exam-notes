@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Concurrency Control Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="18-Serializability.html">← Ch 18: Serializability</a><a href="index.html">☰ All topics</a><span class="off">Last chapter</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 19: Concurrency Control Protocols</h1>
+  <p class="sub">Volume 05 · Part 19 · Follows the lecture outline for concurrency control protocols, plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. How the DBMS actually enforces serializability: shared and exclusive locks, two-phase locking and its variants, and timestamp ordering with its read and write rules.</p>
+  <ul class="tags"><li>Shared lock</li><li>Exclusive lock</li><li>Compatibility matrix</li><li>Two-phase locking</li><li>Lock point</li><li>Strict 2PL</li><li>Deadlock</li><li>Timestamp ordering</li><li>RTS / WTS</li><li>Thomas write rule</li><li>Wait-die</li><li>Wound-wait</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">19.1</span>Lock-Based Protocol: Shared and Exclusive Locks; Compatibility Matrix</a></li>
+<li><a href="#s2"><span class="n">19.2</span>Two-Phase Locking: Growing and Shrinking Phases — Solved</a></li>
+<li><a href="#s3"><span class="n">19.3</span>Timestamp Ordering: TS, RTS and WTS (Bade Miyan, Chhote Miyan)</a></li>
+<li><a href="#s4"><span class="n">19.4</span>Read and Write Rules of Timestamp Ordering — Solved</a></li>
+<li><a href="#s5"><span class="n">19.5</span>2PL Variants, Deadlock Prevention and Thomas Write Rule<span class="x">ADDED</span></a></li>
+<li><a href="#s6"><span class="n">19.6</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 19</div>
+<h2 class="ch">Concurrency Control Protocols</h2>
+<p>Chapter 18 tested a schedule <b>after</b> the fact. A real DBMS can't wait and check; it needs rules that make bad schedules <b>impossible</b> while transactions run. Those rules are <b>concurrency control protocols</b>. The two families are <b>locking</b> (a transaction must hold a lock on an item before touching it) and <b>timestamp ordering</b> (conflicting operations must run in the order the transactions started).</p>
+
+<section id="s1">
+<h3><span class="n">19.1</span>Lock-Based Protocol: Shared and Exclusive Locks; Compatibility Matrix</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Before reading or writing an item, a transaction must ask the <b>lock manager</b> for a lock on it. If the lock can't be granted, the transaction <b>waits</b>.
+<ul>
+<li><b>Shared lock (S)</b>, lock-S(A): for <b>reading</b> only. Many transactions can hold S on the same item at once.</li>
+<li><b>Exclusive lock (X)</b>, lock-X(A): for <b>reading and writing</b>. Only one transaction can hold it, and nobody else can hold any lock on that item meanwhile.</li>
+<li><b>unlock(A)</b> releases the lock.</li>
+</ul>
+<h4>Compatibility matrix</h4>
+"If one transaction already holds this lock, can another be granted that one?"</div>
+<div class="tw"><table>
+<tr><th>Held ↓ / Requested →</th><th>S</th><th>X</th></tr>
+<tr><td><b>S</b></td><td>✅ Yes</td><td>❌ No</td></tr>
+<tr><td><b>X</b></td><td>❌ No</td><td>❌ No</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Only S with S is compatible, which mirrors chapter 18: only read–read pairs don't conflict.
+<h4>Locks alone aren't enough</h4>
+If T1 locks A, writes it, unlocks it immediately, then locks B, another transaction can slip in between and read the new A with the old B, the incorrect summary of chapter 17. Locking only works with a rule about <b>when</b> locks may be released. That rule is two-phase locking.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Upgrade</b>: S → X (a transaction that read A now wants to write it). <b>Downgrade</b>: X → S.</li>
+<li><b>Starvation</b>: a transaction waits forever because others keep getting the lock first (e.g. a stream of S requests keeps an X request waiting). The lock manager prevents this by granting requests in arrival order.</li>
+</ul></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">19.2</span>Two-Phase Locking: Growing and Shrinking Phases — Solved</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<b>Two-phase locking (2PL)</b> splits each transaction's life into two phases:
+<ol>
+<li><b>Growing phase</b>: the transaction may <b>acquire</b> locks (and upgrade), but may not release any.</li>
+<li><b>Shrinking phase</b>: once it releases its <b>first</b> lock, it may only <b>release</b> locks (and downgrade), never acquire a new one.</li>
+</ol>
+The moment a transaction acquires its last lock is its <b>lock point</b>.
+<div class="formula">2PL guarantees conflict serializability. Equivalent serial order = order of the transactions' lock points.</div></div>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="Number of locks held rises in the growing phase, peaks at the lock point, then falls in the shrinking phase">
+<line class="ln" x1="50" y1="140" x2="640" y2="140"/><line class="ln" x1="50" y1="140" x2="50" y2="20"/>
+<text x="345" y="162" text-anchor="middle" class="mut">time →</text>
+<text x="40" y="80" text-anchor="end" class="mut">locks</text>
+<path class="lna" d="M60 135 L130 135 L130 105 L210 105 L210 75 L290 75 L290 45 L380 45 L380 75 L460 75 L460 105 L540 105 L540 135 L620 135" fill="none"/>
+<text x="175" y="30" text-anchor="middle" class="b">Growing: acquire only</text>
+<text x="500" y="30" text-anchor="middle" class="b">Shrinking: release only</text>
+<line class="ln" x1="335" y1="45" x2="335" y2="140" stroke-dasharray="4 4"/>
+<text x="335" y="155" text-anchor="middle" class="b">lock point</text>
+</svg>
+<figcaption>Under 2PL the number of locks held only goes up, then only goes down</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Solved: does each transaction follow 2PL?</h4></div>
+<div class="tw"><table>
+<tr><th>T1</th><th>T2</th></tr>
+<tr><td>lock-X(A)<br>R(A); W(A)<br>lock-X(B)<br>unlock(A)<br>R(B); W(B)<br>unlock(B)</td><td>lock-S(A)<br>R(A)<br>unlock(A)<br>lock-X(B)<br>W(B)<br>unlock(B)</td></tr>
+<tr><td><b>Follows 2PL ✅</b>: both locks are taken before the first unlock. Lock point = lock-X(B).</td><td><b>Violates 2PL ❌</b>: lock-X(B) comes after unlock(A), a lock acquired in the shrinking phase.</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Fix for T2: move lock-X(B) above unlock(A).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Basic 2PL guarantees serializability but does <b>not</b> prevent:
+<ul>
+<li><b>Deadlock</b>: T1 holds X(A) and waits for B; T2 holds X(B) and waits for A. Both are still growing, so neither will release.</li>
+<li><b>Cascading rollback</b>: T1 may unlock A in its shrinking phase before committing; T2 reads A; T1 then aborts.</li>
+</ul>
+The variants in 19.5 fix these.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">19.3</span>Timestamp Ordering: TS, RTS and WTS (Bade Miyan, Chhote Miyan)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Timestamp ordering uses <b>no locks</b> and never makes a transaction wait. Instead, it fixes the serial order <b>in advance</b>: the order in which transactions started.
+<ul>
+<li>Each transaction Ti gets a unique <b>timestamp TS(Ti)</b> when it starts (the system clock or a counter). An <b>older</b> transaction has a <b>smaller</b> timestamp.</li>
+<li>Rule: conflicting operations must happen in timestamp order, so the schedule is equivalent to the serial order oldest → youngest.</li>
+</ul>
+<h4>Bade Miyan, Chhote Miyan</h4>
+The elder (Bade Miyan, smaller TS) always goes first. If the younger one (Chhote Miyan) has already done something to an item that the elder should have done before him, the elder is too late, and the elder must go back and start again with a new, later timestamp.
+<h4>Two timestamps per data item</h4>
+<ul>
+<li><b>RTS(X)</b>, read timestamp: the largest TS of any transaction that has <b>read</b> X so far (the youngest reader).</li>
+<li><b>WTS(X)</b>, write timestamp: the largest TS of any transaction that has <b>written</b> X so far (the youngest writer).</li>
+</ul>
+Both start at 0.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">19.4</span>Read and Write Rules of Timestamp Ordering — Solved</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Transaction Ti with timestamp TS(Ti) wants to:</div>
+<div class="tw"><table>
+<tr><th>Operation</th><th>Reject (roll back Ti) if</th><th>Meaning</th><th>Otherwise</th></tr>
+<tr><td><b>R(X)</b></td><td>TS(Ti) &lt; WTS(X)</td><td>A younger transaction already overwrote X; the value Ti should have seen is gone</td><td>Allow; RTS(X) = max(RTS(X), TS(Ti))</td></tr>
+<tr><td rowspan="2"><b>W(X)</b></td><td>TS(Ti) &lt; RTS(X)</td><td>A younger transaction already read the old X; Ti's write is too late for it</td><td rowspan="2">Allow; WTS(X) = TS(Ti)</td></tr>
+<tr><td>TS(Ti) &lt; WTS(X)</td><td>A younger transaction already wrote X; Ti would overwrite a newer value</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+A rolled-back transaction restarts with a <b>new, larger</b> timestamp.
+<h4>Solved 1: TS(T1) = 10, TS(T2) = 20. Schedule R1(A), R2(A), W2(A), W1(A)</h4></div>
+<div class="tw"><table>
+<tr><th>Step</th><th>Check</th><th>Result</th><th>RTS(A)</th><th>WTS(A)</th></tr>
+<tr><td>start</td><td></td><td></td><td>0</td><td>0</td></tr>
+<tr><td>R1(A)</td><td>10 &lt; WTS 0? No</td><td>Allowed</td><td>10</td><td>0</td></tr>
+<tr><td>R2(A)</td><td>20 &lt; WTS 0? No</td><td>Allowed</td><td>20</td><td>0</td></tr>
+<tr><td>W2(A)</td><td>20 &lt; RTS 20? No. 20 &lt; WTS 0? No</td><td>Allowed</td><td>20</td><td>20</td></tr>
+<tr><td>W1(A)</td><td>10 &lt; RTS 20? <b>Yes</b></td><td><b>T1 rolled back</b></td><td>20</td><td>20</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+The elder T1 wanted to write A, but the younger T2 had already read and written it. In the serial order T1 → T2, T1's write should have come first, so T1 is too late. (This schedule is chapter 17's lost update, caught.)
+<h4>Solved 2: same timestamps. Schedule R1(A), W1(A), R2(A), W2(A)</h4>
+<ul>
+<li>R1(A): 10 ≥ WTS 0 → allowed, RTS = 10.</li>
+<li>W1(A): 10 ≥ RTS 10 and ≥ WTS 0 → allowed, WTS = 10.</li>
+<li>R2(A): 20 ≥ WTS 10 → allowed, RTS = 20.</li>
+<li>W2(A): 20 ≥ RTS 20 and ≥ WTS 10 → allowed, WTS = 20.</li>
+</ul>
+All allowed: the elder did everything first, exactly the serial order T1 → T2.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>The check is always "is the <b>requesting</b> transaction <b>older</b> (smaller TS) than someone who already acted?" A younger transaction acting after an older one is always fine.</li>
+<li>Reads only check WTS. Writes check <b>both</b> RTS and WTS.</li>
+<li>RTS is updated with <b>max</b>: an older reader arriving later doesn't lower it.</li>
+</ul></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">19.5</span>2PL Variants, Deadlock Prevention and Thomas Write Rule<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam: variants of 2PL</span></div>
+<div class="tw"><table>
+<tr><th>Variant</th><th>Rule</th><th>Serializable</th><th>No cascading rollback</th><th>No deadlock</th></tr>
+<tr><td>Basic 2PL</td><td>Growing, then shrinking</td><td>✅</td><td>❌</td><td>❌</td></tr>
+<tr><td>Strict 2PL</td><td>Hold all <b>X</b> locks until commit/abort</td><td>✅</td><td>✅ (schedules are strict)</td><td>❌</td></tr>
+<tr><td>Rigorous 2PL</td><td>Hold <b>all</b> locks (S and X) until commit/abort</td><td>✅ (serial order = commit order)</td><td>✅</td><td>❌</td></tr>
+<tr><td>Conservative (static) 2PL</td><td>Acquire every lock needed <b>before starting</b></td><td>✅</td><td>❌</td><td>✅</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam: deadlock prevention using timestamps</span>
+When Ti requests a lock held by Tj:
+<ul>
+<li><b>Wait-die</b> (non-preemptive): if Ti is <b>older</b>, it <b>waits</b>; if Ti is younger, it <b>dies</b> (rolls back and restarts with the same timestamp).</li>
+<li><b>Wound-wait</b> (preemptive): if Ti is <b>older</b>, it <b>wounds</b> Tj (forces Tj to roll back); if Ti is younger, it <b>waits</b>.</li>
+</ul>
+In both, the older transaction is never rolled back, so it eventually finishes: no starvation. Other approaches detect deadlocks instead: build a <b>wait-for graph</b> (Ti → Tj if Ti waits for Tj); a cycle means deadlock, and one transaction (the victim) is rolled back.
+<h4>Thomas write rule</h4>
+A relaxation of timestamp ordering: if TS(Ti) &lt; WTS(X) on a write (and the RTS check passed), <b>ignore</b> the write instead of rolling back Ti. A younger transaction has already written a newer value that nobody older needed, so Ti's write is obsolete. This allows some <b>view-serializable</b> schedules that basic timestamp ordering rejects (chapter 18.4's blind writes).</div>
+<div class="tw"><table>
+<tr><th></th><th>2PL</th><th>Timestamp ordering</th></tr>
+<tr><td>Mechanism</td><td>Locks; transactions wait</td><td>Timestamps; transactions roll back, never wait</td></tr>
+<tr><td>Serial order decided by</td><td>Lock points (at run time)</td><td>Start times (in advance)</td></tr>
+<tr><td>Guarantees</td><td>Conflict serializability</td><td>Conflict serializability</td></tr>
+<tr><td>Deadlock</td><td>Possible</td><td>Impossible (no waiting)</td></tr>
+<tr><td>Starvation</td><td>Possible</td><td>Possible (a transaction may keep restarting)</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Expect: the compatibility matrix, "which phase acquires locks?" (growing), "2PL guarantees?" (serializability, not deadlock freedom), which 2PL variant avoids cascading rollback (strict) or deadlock (conservative), a timestamp-ordering trace, "timestamp ordering is deadlock-free" (true), and wait-die vs wound-wait.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">19.6</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>T1 holds a shared lock on A. Which requests by T2 are granted immediately?<br><b>Answer: only a shared lock.</b> An exclusive lock must wait.</div>
+<div class="num"><span class="t">Q2</span>In 2PL, during which phase can locks be released?<br><b>Answer: the shrinking phase.</b></div>
+<div class="num"><span class="t">Q3</span>Which protocol guarantees freedom from deadlock? (a) basic 2PL (b) strict 2PL (c) conservative 2PL (d) rigorous 2PL<br><b>Answer: (c) conservative 2PL.</b></div>
+<div class="num"><span class="t">Q4</span>Which 2PL variant holds exclusive locks until commit?<br><b>Answer: strict 2PL.</b></div>
+<div class="num"><span class="t">Q5</span>TS(T1) = 5, TS(T2) = 8. WTS(A) = 8. T1 issues R(A). Result?<br><b>Answer: T1 is rolled back</b> (5 &lt; WTS 8: a younger transaction already wrote A).</div>
+<div class="num"><span class="t">Q6</span>TS(T1) = 5, RTS(A) = 3, WTS(A) = 2. T1 issues W(A). Result?<br><b>Answer: allowed</b>; WTS(A) becomes 5.</div>
+<div class="num"><span class="t">Q7</span>In wait-die, an older transaction requesting a lock held by a younger one:<br><b>Answer: waits.</b> (In wound-wait, it would roll back the younger one.)</div>
+<div class="num"><span class="t">Q8</span>Under the Thomas write rule, an obsolete write (TS(Ti) &lt; WTS(X)) is:<br><b>Answer: ignored</b>, and Ti continues.</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>S lock</b> = read, shareable. <b>X lock</b> = read + write, exclusive. Only S–S is compatible.</li>
+<li>Locks without a release rule don't guarantee serializability.</li>
+<li><b>2PL</b>: growing (acquire only) → shrinking (release only). Lock point = last lock acquired. Guarantees conflict serializability; order = lock points. Doesn't stop deadlock or cascading rollback.</li>
+<li>A lock taken after any unlock ⇒ not 2PL.</li>
+<li>➕ Strict 2PL: X locks till commit (no cascading). Rigorous: all locks till commit. Conservative: all locks up front (no deadlock).</li>
+<li><b>Timestamp ordering</b>: older = smaller TS = goes first (Bade Miyan before Chhote Miyan). RTS(X) / WTS(X) = youngest reader / writer.</li>
+<li><b>R(X)</b>: reject if TS &lt; WTS(X); else RTS = max(RTS, TS). <b>W(X)</b>: reject if TS &lt; RTS(X) or TS &lt; WTS(X); else WTS = TS. Rejected ⇒ restart with a new TS.</li>
+<li>TS 10, 20: R1 R2 W2 W1 → W1 rejected (10 &lt; RTS 20). R1 W1 R2 W2 → all allowed.</li>
+<li>➕ TO is deadlock-free, can starve. Thomas write rule: ignore obsolete writes. Wait-die: old waits, young dies. Wound-wait: old wounds young, young waits.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 19 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="18-Serializability.html">← Ch 18: Serializability</a><a href="index.html">☰ All topics</a><span class="off">Last chapter</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
