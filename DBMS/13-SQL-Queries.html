@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS SQL Queries Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="12-SQL-Basics-and-DDL.html">← Ch 12: SQL Basics: Command Types and DDL</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 13: SQL Queries</h1>
+  <p class="sub">Volume 05 · Part 13 · Follows the lecture outline for SQL queries, plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. SELECT from simple filters up to grouping, views and nested subqueries, all run on one small Student table so you can check every answer by hand.</p>
+  <ul class="tags"><li>SELECT</li><li>WHERE</li><li>DISTINCT</li><li>BETWEEN</li><li>LIKE</li><li>UNION</li><li>INTERSECT</li><li>EXCEPT</li><li>JOIN</li><li>Aggregate functions</li><li>GROUP BY</li><li>HAVING</li><li>ORDER BY</li><li>View</li><li>Subquery</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">13.1</span>SELECT, WHERE, DISTINCT and Arithmetic (+10 for an Out-of-Syllabus Question)</a></li>
+<li><a href="#s2"><span class="n">13.2</span>AND/OR, BETWEEN and NOT BETWEEN (Marks and Attendance)</a></li>
+<li><a href="#s3"><span class="n">13.3</span>LIKE with % and _ Wildcards</a></li>
+<li><a href="#s4"><span class="n">13.4</span>UNION, INTERSECT, EXCEPT (and ALL)</a></li>
+<li><a href="#s5"><span class="n">13.5</span>Joins in SQL</a></li>
+<li><a href="#s6"><span class="n">13.6</span>Aggregate Functions, ORDER BY and GROUP BY (WhatsApp Group per State)</a></li>
+<li><a href="#s7"><span class="n">13.7</span>Views (Student, Teacher and Admin Views)</a></li>
+<li><a href="#s8"><span class="n">13.8</span>Subqueries and Nested Subqueries (Inception; an Investigation)</a></li>
+<li><a href="#s9"><span class="n">13.9</span>Order of Execution, NULLs, IN / EXISTS / ANY / ALL<span class="x">ADDED</span></a></li>
+<li><a href="#s10"><span class="n">13.10</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 13</div>
+<h2 class="ch">SQL Queries</h2>
+<p>Chapter 12 built the tables; this chapter asks them questions. Every query below runs on the same <b>Student</b> table. Pooja's marks are NULL on purpose, so you can see how each feature treats a missing value.</p>
+<div class="tw"><table>
+<tr><th>Roll</th><th>Name</th><th>State</th><th>Marks</th><th>Attendance</th></tr>
+<tr><td>1</td><td>Asha</td><td>Delhi</td><td>82</td><td>90</td></tr>
+<tr><td>2</td><td>Ravi</td><td>Bihar</td><td>65</td><td>70</td></tr>
+<tr><td>3</td><td>Neha</td><td>Delhi</td><td>74</td><td>85</td></tr>
+<tr><td>4</td><td>Karan</td><td>Punjab</td><td>45</td><td>60</td></tr>
+<tr><td>5</td><td>Amit</td><td>Bihar</td><td>91</td><td>95</td></tr>
+<tr><td>6</td><td>Pooja</td><td>Bihar</td><td>NULL</td><td>75</td></tr>
+</table></div>
+
+<section id="s1">
+<h3><span class="n">13.1</span>SELECT, WHERE, DISTINCT and Arithmetic (+10 for an Out-of-Syllabus Question)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<div class="formula">SELECT columns FROM table WHERE condition;</div>
+<ul>
+<li>Every column: <code>SELECT * FROM Student;</code></li>
+<li>Some columns: <code>SELECT Name, Marks FROM Student;</code> (this is π from chapter 10)</li>
+<li>Some rows: <code>SELECT * FROM Student WHERE State = 'Delhi';</code> → Asha, Neha (this is σ)</li>
+<li>No repeats: <code>SELECT DISTINCT State FROM Student;</code> → Delhi, Bihar, Punjab. Without DISTINCT, Bihar appears 3 times.</li>
+</ul>
+<h4>Arithmetic: +10 grace marks for an out-of-syllabus question</h4>
+One exam question was out of syllabus, so everyone gets 10 extra marks. You can show this without changing the stored data:
+<div class="formula">SELECT Name, Marks + 10 AS NewMarks FROM Student;</div>
+Asha 92, Ravi 75, Neha 84, Karan 55, Amit 101, Pooja <b>NULL</b>. <b>AS</b> gives the computed column a name (an alias). To change the stored marks permanently, you'd use <code>UPDATE Student SET Marks = Marks + 10;</code> (chapter 12).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Any arithmetic with NULL gives NULL: NULL + 10 = NULL, not 10. NULL means "unknown", and unknown plus 10 is still unknown.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">13.2</span>AND/OR, BETWEEN and NOT BETWEEN (Marks and Attendance)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>AND / OR</h4>
+<ul>
+<li>Eligible for a prize: marks above 70 <b>and</b> attendance at least 75:<br><code>WHERE Marks &gt; 70 AND Attendance &gt;= 75</code> → Asha, Neha, Amit</li>
+<li>Needs counselling: marks below 50 <b>or</b> attendance below 75:<br><code>WHERE Marks &lt; 50 OR Attendance &lt; 75</code> → Ravi (attendance 70), Karan (both)</li>
+<li>AND binds tighter than OR. Use brackets when you mix them: <code>WHERE State = 'Bihar' AND (Marks &gt; 80 OR Attendance &gt; 90)</code> → Amit.</li>
+</ul>
+<h4>BETWEEN … AND … (inclusive)</h4>
+<code>WHERE Marks BETWEEN 65 AND 82</code> → Asha (82), Ravi (65), Neha (74). Both ends are <b>included</b>: it means Marks &gt;= 65 AND Marks &lt;= 82.
+<h4>NOT BETWEEN</h4>
+<code>WHERE Marks NOT BETWEEN 65 AND 82</code> → Karan (45), Amit (91).</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Pooja appears in <b>neither</b> BETWEEN nor NOT BETWEEN. A comparison with NULL is neither true nor false but <b>unknown</b>, and WHERE keeps only rows where the condition is true. BETWEEN 65 AND 82 plus NOT BETWEEN 65 AND 82 gives 5 rows, not 6. Also, BETWEEN 82 AND 65 (bounds reversed) returns nothing.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">13.3</span>LIKE with % and _ Wildcards</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+LIKE matches text against a pattern:
+<ul>
+<li><b>%</b> = any number of characters (including none)</li>
+<li><b>_</b> = exactly one character</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Pattern</th><th>Means</th><th>Matches</th></tr>
+<tr><td>'A%'</td><td>Starts with A</td><td>Asha, Amit</td></tr>
+<tr><td>'%a'</td><td>Ends with a</td><td>Asha, Neha, Pooja</td></tr>
+<tr><td>'%ar%'</td><td>Contains "ar"</td><td>Karan</td></tr>
+<tr><td>'_a%'</td><td>Second letter is a</td><td>Ravi, Karan</td></tr>
+<tr><td>'____'</td><td>Exactly 4 characters</td><td>Asha, Ravi, Neha, Amit</td></tr>
+<tr><td>'A___'</td><td>A followed by exactly 3 characters</td><td>Asha, Amit</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><code>NOT LIKE 'A%'</code> = doesn't start with A.</li>
+<li>To match a literal % or _, escape it: <code>WHERE Code LIKE '%\_%' ESCAPE '\'</code> finds codes containing an underscore.</li>
+<li>Whether LIKE is case-sensitive depends on the DBMS: MySQL is not by default; PostgreSQL and Oracle are.</li>
+<li>Use = for an exact match; LIKE without wildcards works but is unusual.</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">13.4</span>UNION, INTERSECT, EXCEPT (and ALL)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+These are relational algebra's ∪, ∩ and − (chapter 10) in SQL. Using the Cricket(Roll, Name) = {1, 2, 3} and Hockey(Roll, Name) = {2, 4} tables:
+<ul>
+<li><code>SELECT Roll FROM Cricket UNION SELECT Roll FROM Hockey;</code> → 1, 2, 3, 4</li>
+<li><code>SELECT Roll FROM Cricket INTERSECT SELECT Roll FROM Hockey;</code> → 2</li>
+<li><code>SELECT Roll FROM Cricket EXCEPT SELECT Roll FROM Hockey;</code> → 1, 3</li>
+</ul>
+<h4>With ALL</h4>
+UNION, INTERSECT and EXCEPT <b>remove duplicates</b>. Add <b>ALL</b> to keep them: <code>UNION ALL</code> → 1, 2, 3, 2, 4 (Roll 2 twice). UNION ALL is also faster, because there's no duplicate check.</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Both SELECTs must have the same number of columns with compatible types (union compatibility). Column names come from the first SELECT.</li>
+<li>Oracle calls EXCEPT <b>MINUS</b>.</li>
+<li>ORDER BY may appear only once, at the very end, and sorts the combined result.</li>
+</ul></div>
+</section>
+
+<section id="s5">
+<h3><span class="n">13.5</span>Joins in SQL</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Chapter 9's joins, written in SQL, on Student(Roll, Name, City) and Centre(CentreID, City):</div>
+<div class="tw"><table>
+<tr><th>Join</th><th>SQL</th></tr>
+<tr><td>Inner (equi)</td><td><code>SELECT * FROM Student S INNER JOIN Centre C ON S.City = C.City;</code></td></tr>
+<tr><td>Same, old style</td><td><code>SELECT * FROM Student S, Centre C WHERE S.City = C.City;</code></td></tr>
+<tr><td>Natural</td><td><code>SELECT * FROM Student NATURAL JOIN Centre;</code></td></tr>
+<tr><td>Left outer</td><td><code>… FROM Student S LEFT JOIN Centre C ON S.City = C.City;</code></td></tr>
+<tr><td>Right outer</td><td><code>… FROM Student S RIGHT JOIN Centre C ON S.City = C.City;</code></td></tr>
+<tr><td>Full outer</td><td><code>… FROM Student S FULL OUTER JOIN Centre C ON S.City = C.City;</code></td></tr>
+<tr><td>Cross</td><td><code>SELECT * FROM Student CROSS JOIN Centre;</code></td></tr>
+<tr><td>Self</td><td><code>… FROM Enrol E1 JOIN Enrol E2 ON E1.Roll = E2.Roll AND E1.Subject &lt;&gt; E2.Subject;</code></td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>JOIN on its own means INNER JOIN; LEFT JOIN means LEFT OUTER JOIN.</li>
+<li><code>USING (City)</code> is shorthand for <code>ON S.City = C.City</code> and keeps one City column.</li>
+<li>Students with no centre: <code>… LEFT JOIN Centre C ON S.City = C.City WHERE C.CentreID IS NULL;</code></li>
+</ul></div>
+</section>
+
+<section id="s6">
+<h3><span class="n">13.6</span>Aggregate Functions, ORDER BY and GROUP BY (WhatsApp Group per State)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Aggregate functions: many rows in, one value out</h4></div>
+<div class="tw"><table>
+<tr><th>Query</th><th>Result</th><th>Why</th></tr>
+<tr><td>COUNT(*)</td><td>6</td><td>Counts rows, NULLs included</td></tr>
+<tr><td>COUNT(Marks)</td><td>5</td><td>Skips Pooja's NULL</td></tr>
+<tr><td>COUNT(DISTINCT State)</td><td>3</td><td>Delhi, Bihar, Punjab</td></tr>
+<tr><td>SUM(Marks)</td><td>357</td><td>82 + 65 + 74 + 45 + 91</td></tr>
+<tr><td>AVG(Marks)</td><td>71.4</td><td>357 ÷ 5, not ÷ 6</td></tr>
+<tr><td>MAX(Marks) / MIN(Marks)</td><td>91 / 45</td><td>NULL ignored</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>ORDER BY: sort the result</h4>
+<code>SELECT Name, Marks FROM Student ORDER BY Marks DESC;</code> → Amit 91, Asha 82, Neha 74, Ravi 65, Karan 45 (and Pooja, whose NULL sorts first or last depending on the DBMS). ASC (ascending) is the default. Sort on several columns: <code>ORDER BY State ASC, Marks DESC</code>.
+<h4>GROUP BY: one WhatsApp group per state</h4>
+Imagine putting every student into a WhatsApp group for their state. GROUP BY does that: it collects rows with the same State into one group, and an aggregate then gives <b>one answer per group</b>.
+<div class="formula">SELECT State, COUNT(*) AS Members, AVG(Marks) AS AvgMarks FROM Student GROUP BY State;</div></div>
+<div class="tw"><table>
+<tr><th>State</th><th>Members</th><th>AvgMarks</th></tr>
+<tr><td>Delhi</td><td>2</td><td>78 (82, 74)</td></tr>
+<tr><td>Bihar</td><td>3</td><td>78 (65, 91; Pooja's NULL skipped)</td></tr>
+<tr><td>Punjab</td><td>1</td><td>45</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>HAVING: filter the groups</h4>
+<code>… GROUP BY State HAVING COUNT(*) &gt;= 2;</code> → Delhi, Bihar. WHERE filters <b>rows before</b> grouping; HAVING filters <b>groups after</b> grouping, so only HAVING can use aggregates.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li><code>SELECT Name, State, COUNT(*) FROM Student GROUP BY State;</code> is an <b>error</b> in standard SQL: a group has many names, so which one would it show? Every column in SELECT must be in GROUP BY or inside an aggregate.</li>
+<li><code>WHERE AVG(Marks) &gt; 70</code> is an error; use HAVING.</li>
+<li>AVG skips NULLs: AVG(Marks) = 71.4, but SUM(Marks)/COUNT(*) = 59.5.</li>
+</ul></div>
+</section>
+
+<section id="s7">
+<h3><span class="n">13.7</span>Views (Student, Teacher and Admin Views)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+A <b>view</b> is a saved query that behaves like a table. It's a <b>virtual table</b>: it stores the query, not the data, and runs the query each time it is used. It's the external level of the three-schema architecture (chapter 2.4): different users see different views of the same data.
+<ul>
+<li><b>Student view</b> (marks only, attendance hidden): <code>CREATE VIEW StudentView AS SELECT Roll, Name, Marks FROM Student;</code></li>
+<li><b>Teacher view</b> (marks and attendance, for teaching): <code>CREATE VIEW TeacherView AS SELECT Roll, Name, Marks, Attendance FROM Student;</code></li>
+<li><b>Admin</b>: works on the base table Student and sees everything.</li>
+</ul>
+Use a view like a table: <code>SELECT * FROM TeacherView WHERE Attendance &lt; 75;</code> Remove it with <code>DROP VIEW TeacherView;</code> (the base table is untouched).
+<h4>Why views</h4>
+<ul>
+<li><b>Security</b>: grant users access to the view only (chapter 12.5), and they can't see the hidden columns or rows.</li>
+<li><b>Simplicity</b>: a complex join is written once and reused by name.</li>
+<li><b>Logical data independence</b>: if the base table changes, the view can be redefined so users' queries keep working.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>A view is generally <b>updatable</b> (you can INSERT/UPDATE/DELETE through it) only if it's built on <b>one table</b> with no DISTINCT, GROUP BY, HAVING, aggregates, UNION or joins, and includes every NOT NULL column without a default.</li>
+<li><code>WITH CHECK OPTION</code> stops updates through a view that would create rows the view itself can't see.</li>
+<li>A <b>materialized view</b> does store its result physically and is refreshed periodically. It's used for fast reporting.</li>
+<li><code>CREATE OR REPLACE VIEW</code> redefines an existing view.</li>
+</ul></div>
+</section>
+
+<section id="s8">
+<h3><span class="n">13.8</span>Subqueries and Nested Subqueries (Inception; an Investigation)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+A <b>subquery</b> is a query inside another query, like a dream inside a dream in <i>Inception</i>. The <b>innermost</b> one runs first, and its answer feeds the level above it.
+<h4>An investigation, one clue at a time</h4>
+<b>Clue 1</b>: who scored the highest marks? You can't write <code>WHERE Marks = MAX(Marks)</code>, so first find the highest marks, then find who has them:
+<div class="formula">SELECT Name FROM Student WHERE Marks = (SELECT MAX(Marks) FROM Student);</div>
+Inner query → 91. Outer query → <b>Amit</b>.
+<br><br><b>Clue 2</b>: the second-highest marks: the highest of the marks below the highest.
+<div class="formula">SELECT MAX(Marks) FROM Student WHERE Marks &lt; (SELECT MAX(Marks) FROM Student);</div>
+→ <b>82</b> (Asha).
+<br><br><b>Clue 3 (nested two deep)</b>: everyone from the same state as the topper.
+<div class="formula">SELECT Name FROM Student WHERE State = (SELECT State FROM Student WHERE Marks = (SELECT MAX(Marks) FROM Student));</div>
+Innermost → 91. Middle → Bihar. Outer → <b>Ravi, Amit, Pooja</b>.</div>
+<div class="box add"><span class="t">➕ Added for exam: correlated subquery</span>
+A <b>correlated</b> subquery refers to the outer row, so it runs <b>once per outer row</b> instead of once in total. Students who beat their own state's average:
+<div class="formula">SELECT Name FROM Student S WHERE Marks &gt; (SELECT AVG(Marks) FROM Student T WHERE T.State = S.State);</div>
+Delhi average 78 → Asha (82) ✅, Neha (74) ❌. Bihar average 78 → Amit (91) ✅, Ravi ❌. Punjab average 45 → Karan (45) ❌ (not greater). <b>Answer: Asha, Amit.</b></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<code>WHERE Marks = (subquery)</code> needs the subquery to return <b>one</b> value. If it can return several rows, use <b>IN</b>, <b>ANY</b> or <b>ALL</b> instead, or the query fails with "subquery returns more than one row".</div>
+</section>
+
+<section id="s9">
+<h3><span class="n">13.9</span>Order of Execution, NULLs, IN / EXISTS / ANY / ALL<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam: the order SQL actually runs a query</span></div>
+<figure>
+<svg viewBox="0 0 680 110" role="img" aria-label="Logical execution order: FROM, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT">
+<rect class="ac" x="6" y="30" width="72" height="40" rx="4"/><text x="42" y="55" text-anchor="middle" class="b">FROM</text>
+<rect class="ac" x="90" y="30" width="72" height="40" rx="4"/><text x="126" y="55" text-anchor="middle" class="b">WHERE</text>
+<rect class="ac" x="174" y="30" width="86" height="40" rx="4"/><text x="217" y="55" text-anchor="middle" class="b">GROUP BY</text>
+<rect class="ac" x="272" y="30" width="78" height="40" rx="4"/><text x="311" y="55" text-anchor="middle" class="b">HAVING</text>
+<rect class="gr" x="362" y="30" width="76" height="40" rx="4"/><text x="400" y="55" text-anchor="middle" class="b">SELECT</text>
+<rect class="ac" x="450" y="30" width="80" height="40" rx="4"/><text x="490" y="55" text-anchor="middle" class="b">DISTINCT</text>
+<rect class="ac" x="542" y="30" width="80" height="40" rx="4"/><text x="582" y="55" text-anchor="middle" class="b">ORDER BY</text>
+<text x="652" y="55" text-anchor="middle" class="b">LIMIT</text>
+<text class="mut" x="340" y="96" text-anchor="middle">SELECT runs late: an alias made in SELECT can't be used in WHERE, but can be used in ORDER BY</text>
+</svg>
+<figcaption>Written order is SELECT … FROM … WHERE …; logical order starts at FROM</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<h4>NULL</h4>
+<ul>
+<li>Test with <b>IS NULL</b> / <b>IS NOT NULL</b>. <code>WHERE Marks = NULL</code> returns nothing, even for Pooja.</li>
+<li><code>COALESCE(Marks, 0)</code> (or IFNULL / NVL) replaces NULL with 0.</li>
+</ul>
+<h4>Subquery operators</h4>
+<ul>
+<li><b>IN</b>: <code>WHERE State IN ('Delhi', 'Punjab')</code> or <code>IN (subquery)</code>, equal to any value in the list.</li>
+<li><b>EXISTS</b>: true if the subquery returns at least one row. Usually correlated.</li>
+<li><b>&gt; ANY</b> (or SOME): greater than <b>at least one</b> value, i.e. greater than the minimum.</li>
+<li><b>&gt; ALL</b>: greater than <b>every</b> value, i.e. greater than the maximum.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<code>WHERE x NOT IN (subquery)</code> returns <b>no rows at all</b> if the subquery's result contains a NULL, because "x ≠ NULL" is unknown. <code>NOT EXISTS</code> doesn't have this problem.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Favourites: the second-highest salary query, WHERE vs HAVING, COUNT(*) vs COUNT(column), the result of BETWEEN at its edges, LIKE patterns with _ and %, UNION vs UNION ALL, and "a view stores no data".</div>
+</section>
+
+<section id="s10">
+<h3><span class="n">13.10</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Which keyword removes duplicate rows from a SELECT result?<br><b>Answer: DISTINCT.</b></div>
+<div class="num"><span class="t">Q2</span>Names with 'a' as the second letter: which pattern?<br><b>Answer: LIKE '_a%'.</b></div>
+<div class="num"><span class="t">Q3</span>Marks BETWEEN 40 AND 60 includes 40 and 60. True or false?<br><b>Answer: True.</b> BETWEEN is inclusive at both ends.</div>
+<div class="num"><span class="t">Q4</span>Which clause filters groups created by GROUP BY?<br><b>Answer: HAVING.</b></div>
+<div class="num"><span class="t">Q5</span>A table has 10 rows; 3 have NULL in Salary. COUNT(*) and COUNT(Salary)?<br><b>Answer: 10 and 7.</b></div>
+<div class="num"><span class="t">Q6</span>Which set operator keeps duplicates? (a) UNION (b) UNION ALL (c) INTERSECT (d) EXCEPT<br><b>Answer: (b) UNION ALL.</b></div>
+<div class="num"><span class="t">Q7</span>Write a query for the second-highest salary in Emp(Name, Salary).<br><b>Answer:</b> <code>SELECT MAX(Salary) FROM Emp WHERE Salary &lt; (SELECT MAX(Salary) FROM Emp);</code></div>
+<div class="num"><span class="t">Q8</span>A view is:<br><b>Answer: a virtual table</b>, defined by a stored query, with no data of its own (unless materialized).</div>
+<div class="num"><span class="t">Q9</span>A subquery that uses a column of the outer query is called:<br><b>Answer: a correlated subquery.</b> It's evaluated once per outer row.</div>
+<div class="num"><span class="t">Q10</span>"Salary &gt; ALL (SELECT Salary FROM Emp WHERE Dept = 'IT')" means:<br><b>Answer: salary greater than the highest IT salary.</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>SELECT (columns, π) FROM (tables) WHERE (rows, σ). DISTINCT removes duplicates. Marks + 10 AS NewMarks computes without storing. NULL + 10 = NULL.</li>
+<li>AND binds tighter than OR; use brackets. <b>BETWEEN</b> is inclusive. NULL passes neither BETWEEN nor NOT BETWEEN.</li>
+<li><b>LIKE</b>: % = any number of characters, _ = exactly one. '_a%' = second letter a.</li>
+<li><b>UNION / INTERSECT / EXCEPT</b> remove duplicates; <b>ALL</b> keeps them. Oracle: MINUS.</li>
+<li>Joins: INNER JOIN … ON, NATURAL JOIN, LEFT / RIGHT / FULL OUTER JOIN, CROSS JOIN, self join with aliases.</li>
+<li><b>Aggregates</b> ignore NULL except COUNT(*). AVG = SUM ÷ non-NULL count.</li>
+<li><b>GROUP BY</b> = one WhatsApp group per state, one result row per group. Non-aggregated SELECT columns must be in GROUP BY. <b>WHERE</b> filters rows before; <b>HAVING</b> filters groups after.</li>
+<li><b>ORDER BY</b> ASC (default) / DESC; runs almost last.</li>
+<li><b>View</b> = virtual table (stored query): student, teacher and admin each see what they need. Security, simplicity, data independence. ➕ Materialized view stores data.</li>
+<li><b>Subquery</b> = Inception: innermost first. Topper: WHERE Marks = (SELECT MAX…). Second highest: MAX where Marks &lt; MAX. ➕ Correlated = runs once per outer row.</li>
+<li>➕ Logical order: FROM → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT. Use IS NULL, never = NULL. NOT IN with a NULL returns nothing.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 13 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="12-SQL-Basics-and-DDL.html">← Ch 12: SQL Basics: Command Types and DDL</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
