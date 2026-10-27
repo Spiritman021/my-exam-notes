@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Serializability Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="17-Concurrency-Problems-and-Recoverability.html">← Ch 17: Concurrency Problems and Recoverability</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 18: Serializability</h1>
+  <p class="sub">Volume 05 · Part 18 · Follows the lecture outline for serializability, plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. How to tell whether an interleaved schedule is as safe as a serial one: conflicting pairs, swapping, the precedence-graph test, and view serializability.</p>
+  <ul class="tags"><li>Serializability</li><li>Conflicting operations</li><li>Conflict equivalence</li><li>Conflict serializable</li><li>Precedence graph</li><li>Cycle</li><li>Topological order</li><li>View serializable</li><li>Blind write</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">18.1</span>Serializability; Conflicting vs Non-Conflicting Pairs</a></li>
+<li><a href="#s2"><span class="n">18.2</span>Conflict Equivalence by Swapping Operations</a></li>
+<li><a href="#s3"><span class="n">18.3</span>Precedence Graph Test — Solved (Without and With a Cycle)</a></li>
+<li><a href="#s4"><span class="n">18.4</span>View Serializability: Initial Read and Final Write — Solved</a></li>
+<li><a href="#s5"><span class="n">18.5</span>Conflict vs View Serializability; Counting Serial Orders<span class="x">ADDED</span></a></li>
+<li><a href="#s6"><span class="n">18.6</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 18</div>
+<h2 class="ch">Serializability</h2>
+<p>Serial schedules are always correct but slow; interleaved schedules are fast but sometimes wrong (chapter 17). <b>Serializability</b> is the test that tells them apart: an interleaved schedule is acceptable if it gives the <b>same result as some serial schedule</b>. Schedules are written compactly: <b>R1(A)</b> means "T1 reads A", <b>W2(B)</b> means "T2 writes B", read left to right in time order.</p>
+
+<section id="s1">
+<h3><span class="n">18.1</span>Serializability; Conflicting vs Non-Conflicting Pairs</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+A schedule is <b>serializable</b> if it's equivalent to some serial schedule of the same transactions. There are two ways to define "equivalent": <b>conflict</b> equivalence (18.2–18.3) and <b>view</b> equivalence (18.4).
+<h4>Conflicting operations</h4>
+Two operations <b>conflict</b> if all three hold:
+<ol>
+<li>they belong to <b>different</b> transactions,</li>
+<li>they act on the <b>same</b> data item, and</li>
+<li><b>at least one</b> of them is a <b>write</b>.</li>
+</ol>
+The order of two conflicting operations affects the result, so it can't be changed. The order of non-conflicting operations doesn't matter.</div>
+<div class="tw"><table>
+<tr><th>Pair (T1 then T2)</th><th>Same item?</th><th>Conflict?</th><th>Why</th></tr>
+<tr><td>R1(A), R2(A)</td><td>Yes</td><td>No</td><td>Two reads never interfere</td></tr>
+<tr><td>R1(A), W2(A)</td><td>Yes</td><td><b>Yes (R–W)</b></td><td>T1 sees the old value only if it reads first</td></tr>
+<tr><td>W1(A), R2(A)</td><td>Yes</td><td><b>Yes (W–R)</b></td><td>T2 sees T1's value only if T1 writes first</td></tr>
+<tr><td>W1(A), W2(A)</td><td>Yes</td><td><b>Yes (W–W)</b></td><td>The later write is the one that survives</td></tr>
+<tr><td>W1(A), W2(B)</td><td>No</td><td>No</td><td>Different items</td></tr>
+<tr><td>R1(A), W1(A)</td><td>Yes</td><td>No</td><td>Same transaction: its own order is fixed anyway</td></tr>
+</table></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">18.2</span>Conflict Equivalence by Swapping Operations</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Two schedules are <b>conflict equivalent</b> if one can be turned into the other by repeatedly <b>swapping adjacent non-conflicting operations</b>. A schedule is <b>conflict serializable</b> if it's conflict equivalent to a serial schedule.
+<h4>Solved: S = R1(A) W1(A) R2(A) W2(A) R1(B) W1(B) R2(B) W2(B)</h4>
+Goal: move T1's B operations ahead of T2's A operations.
+<ul>
+<li>R1(B) is next to W2(A): different items → swap. Then next to R2(A): different items → swap. R1(B) is now right after W1(A).</li>
+<li>Do the same with W1(B): it passes W2(A) and R2(A) (different items).</li>
+</ul>
+Result: <b>R1(A) W1(A) R1(B) W1(B) R2(A) W2(A) R2(B) W2(B)</b> = T1 then T2, a serial schedule. So S is <b>conflict serializable</b>, equivalent to T1 → T2.
+<h4>When swapping gets stuck</h4>
+S = R1(A) R2(A) W1(A) W2(A). To make it T1 → T2, W1(A) must move ahead of R2(A), but they conflict (W–R on A). To make it T2 → T1, W2(A) must move ahead of R1(A)… also a conflict. Neither serial order is reachable → <b>not</b> conflict serializable. (This is chapter 17's lost update.)</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+Swapping works for small schedules but gets tedious. The precedence graph (18.3) gives the same answer mechanically, and is the method to use in exams.</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">18.3</span>Precedence Graph Test — Solved (Without and With a Cycle)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>How to build it</h4>
+<ol>
+<li>Draw one <b>node per transaction</b>.</li>
+<li>For every pair of conflicting operations where Ti's operation comes <b>before</b> Tj's, draw an edge <b>Ti → Tj</b>.</li>
+<li><b>No cycle</b> → conflict serializable. An equivalent serial order is any <b>topological order</b> of the graph (follow the arrows).</li>
+<li><b>Cycle</b> → not conflict serializable.</li>
+</ol>
+<h4>Solved 1 (no cycle): S = R1(A) W1(A) R2(A) R3(B) W2(A) W3(B) R1(B)</h4>
+Check every pair that touches the same item, with at least one write:
+<ul>
+<li>A: W1(A) before R2(A) → <b>T1 → T2</b>. (R1(A), W1(A) before W2(A) give the same edge.)</li>
+<li>B: W3(B) before R1(B) → <b>T3 → T1</b>. (R3(B) and R1(B) are both reads: no edge.)</li>
+</ul>
+Graph: T3 → T1 → T2. No cycle → <b>conflict serializable</b>, equivalent to the serial order <b>T3, T1, T2</b>.</div>
+<figure>
+<svg viewBox="0 0 680 150" role="img" aria-label="Two precedence graphs: one a chain with no cycle, one with a cycle">
+<circle class="ac" cx="60" cy="70" r="26"/><text x="60" y="75" text-anchor="middle" class="b">T3</text>
+<circle class="ac" cx="170" cy="70" r="26"/><text x="170" y="75" text-anchor="middle" class="b">T1</text>
+<circle class="ac" cx="280" cy="70" r="26"/><text x="280" y="75" text-anchor="middle" class="b">T2</text>
+<line class="lna" x1="86" y1="70" x2="136" y2="70"/><polygon class="aha" points="134,65 144,70 134,75"/>
+<line class="lna" x1="196" y1="70" x2="246" y2="70"/><polygon class="aha" points="244,65 254,70 244,75"/>
+<text x="170" y="130" text-anchor="middle" class="b">Solved 1: no cycle ✅ → T3, T1, T2</text>
+<circle class="ac" cx="450" cy="70" r="26"/><text x="450" y="75" text-anchor="middle" class="b">T1</text>
+<circle class="ac" cx="600" cy="70" r="26"/><text x="600" y="75" text-anchor="middle" class="b">T2</text>
+<path class="lna" d="M474 58 Q525 25 576 58" fill="none"/><polygon class="aha" points="570,52 580,61 568,62"/>
+<path class="lna" d="M576 82 Q525 115 474 82" fill="none"/><polygon class="aha" points="480,78 470,79 482,88"/>
+<text x="525" y="30" text-anchor="middle" class="mut">R1(A) → W2(A)</text>
+<text x="525" y="118" text-anchor="middle" class="mut">R2(A) → W1(A)</text>
+<text x="525" y="145" text-anchor="middle" class="b">Solved 2: cycle ❌</text>
+</svg>
+<figcaption>Edges point from the transaction whose conflicting operation came first</figcaption>
+</figure>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Solved 2 (cycle): S = R1(A) R2(A) W1(A) W2(A)</h4>
+<ul>
+<li>R1(A) before W2(A) → <b>T1 → T2</b>.</li>
+<li>R2(A) before W1(A) → <b>T2 → T1</b>.</li>
+<li>W1(A) before W2(A) → T1 → T2 (already there).</li>
+</ul>
+T1 → T2 → T1 is a <b>cycle</b> → <b>not conflict serializable</b>. Each transaction must come before the other, which is impossible in any serial order.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<ul>
+<li>Look at <b>every</b> pair, not just neighbours. In Solved 1, W1(A) and R2(A) are adjacent, but W3(B) and R1(B) are far apart and still create an edge.</li>
+<li>Don't draw edges for read–read pairs or for operations of the same transaction.</li>
+<li>"Not conflict serializable" doesn't mean "not serializable": it may still be <b>view</b> serializable (18.4).</li>
+</ul></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">18.4</span>View Serializability: Initial Read and Final Write — Solved</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Two schedules S and S′ are <b>view equivalent</b> if, for every data item:
+<ol>
+<li><b>Initial read</b>: the transaction that reads the item's <b>original</b> value in S does so in S′ too.</li>
+<li><b>Read-from (updated read)</b>: if Ti reads a value written by Tj in S, it reads the value written by Tj in S′ too.</li>
+<li><b>Final write</b>: the transaction that does the <b>last</b> write of the item in S does so in S′ too.</li>
+</ol>
+Every transaction then sees the same values and leaves the same final database, so the result is the same. A schedule is <b>view serializable</b> if it's view equivalent to some serial schedule.
+<h4>Solved: S = R1(A) W2(A) W1(A) W3(A)</h4>
+<b>Conflict test first</b>: R1(A) → W2(A) gives T1 → T2; W2(A) → W1(A) gives T2 → T1. Cycle → <b>not</b> conflict serializable.
+<br><br><b>View test</b>:
+<ul>
+<li>Initial read of A: <b>T1</b> (reads the original A).</li>
+<li>Read-from: none (no one reads a value another transaction wrote).</li>
+<li>Final write of A: <b>T3</b>.</li>
+</ul>
+So the serial order must have T1 reading A before anyone writes it (T1 first) and T3 writing last (T3 last). Try <b>T1, T2, T3</b> = R1(A) W1(A) W2(A) W3(A): initial read T1 ✅, final write T3 ✅, no read-from ✅. View equivalent → S is <b>view serializable</b>.</div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Why it passed: blind writes</h4>
+W2(A) and W3(A) are <b>blind writes</b>: writes without a prior read of the item in that transaction. T2's write is overwritten before anyone reads it, so its position doesn't matter to anyone. Conflict serializability is too strict to notice that; view serializability does.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">18.5</span>Conflict vs View Serializability; Counting Serial Orders<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Every conflict-serializable schedule is view serializable</b>, but not the other way round (18.4's example).</li>
+<li>If a schedule is view serializable but <b>not</b> conflict serializable, it <b>must contain a blind write</b>. No blind writes → the two tests agree.</li>
+<li>Testing conflict serializability is fast (build the graph, look for a cycle). Testing view serializability is <b>NP-complete</b>, which is why real DBMSs enforce conflict serializability (chapter 19's protocols).</li>
+<li>Serializability and recoverability (chapter 17) are separate questions: a schedule can be serializable and still irrecoverable.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 170" role="img" aria-label="Serial inside conflict serializable inside view serializable inside all schedules">
+<rect class="ln" x="20" y="10" width="640" height="150" rx="8" fill="none"/><text x="40" y="32" class="b">All schedules</text>
+<rect class="ln" x="90" y="42" width="560" height="110" rx="8" fill="none"/><text x="110" y="64" class="b">View serializable</text>
+<rect class="ac" x="200" y="74" width="440" height="70" rx="8"/><text x="220" y="96" class="b">Conflict serializable</text>
+<rect class="gr" x="460" y="96" width="160" height="40" rx="6"/><text x="540" y="121" text-anchor="middle" class="b">Serial</text>
+</svg>
+<figcaption>Serial ⊂ Conflict serializable ⊂ View serializable ⊂ All schedules</figcaption>
+</figure>
+<div class="box add"><span class="t">➕ Added for exam: how many serial schedules is it equivalent to?</span>
+A conflict-serializable schedule is equivalent to every <b>topological order</b> of its precedence graph. If the graph has edges T1 → T2 and T1 → T3 only, the orders are T1 T2 T3 and T1 T3 T2: <b>2</b> equivalent serial schedules. A chain T3 → T1 → T2 has exactly 1.</div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Expect: "which pairs conflict?", "draw the precedence graph / is it conflict serializable?", "equivalent serial order?", and "a schedule that is view serializable but not conflict serializable must have ___" (blind writes).</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">18.6</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Which pair is non-conflicting? (a) R1(X), W2(X) (b) W1(X), W2(X) (c) R1(X), R2(X) (d) W1(X), R2(X)<br><b>Answer: (c).</b> Two reads never conflict.</div>
+<div class="num"><span class="t">Q2</span>A schedule is conflict serializable if its precedence graph:<br><b>Answer: has no cycle.</b></div>
+<div class="num"><span class="t">Q3</span>S = R1(A) W1(A) R2(A) W2(A). Conflict serializable? Equivalent serial order?<br><b>Answer: Yes; T1 → T2.</b> The only edge is T1 → T2.</div>
+<div class="num"><span class="t">Q4</span>S = R1(A) R2(B) W1(B) W2(A). Conflict serializable?<br><b>Answer: No.</b> R1(A) before W2(A) gives T1 → T2; R2(B) before W1(B) gives T2 → T1; cycle.</div>
+<div class="num"><span class="t">Q5</span>A view-serializable schedule that isn't conflict serializable must contain:<br><b>Answer: a blind write.</b></div>
+<div class="num"><span class="t">Q6</span>Which three conditions define view equivalence?<br><b>Answer:</b> same initial reads, same read-from (updated reads), same final writes.</div>
+<div class="num"><span class="t">Q7</span>Every view-serializable schedule is conflict serializable. True or false?<br><b>Answer: False.</b> The converse is true.</div>
+<div class="num"><span class="t">Q8</span>A precedence graph has edges T2 → T1 and T2 → T3. How many equivalent serial schedules?<br><b>Answer: 2</b> (T2 T1 T3 and T2 T3 T1).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>Serializable</b> = equivalent to some serial schedule.</li>
+<li><b>Conflict</b> = different transactions + same item + at least one write (R–W, W–R, W–W). R–R never conflicts.</li>
+<li><b>Conflict serializable</b> = reach a serial schedule by swapping adjacent non-conflicting operations.</li>
+<li><b>Precedence graph</b>: node per transaction; Ti → Tj if Ti's conflicting operation comes first. No cycle ⇒ conflict serializable; serial order = topological order. Cycle ⇒ not.</li>
+<li>R1(A) W1(A) R2(A) R3(B) W2(A) W3(B) R1(B) → T3 → T1 → T2 ✅. R1(A) R2(A) W1(A) W2(A) → cycle ❌ (lost update).</li>
+<li><b>View equivalent</b>: same initial read, same read-from, same final write.</li>
+<li>R1(A) W2(A) W1(A) W3(A): not conflict serializable, but view serializable (≡ T1 T2 T3) thanks to <b>blind writes</b>.</li>
+<li>➕ Serial ⊂ Conflict ⊂ View ⊂ All. View-not-conflict ⇒ blind write. View test is NP-complete, so DBMSs enforce conflict serializability.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 18 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="17-Concurrency-Problems-and-Recoverability.html">← Ch 17: Concurrency Problems and Recoverability</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
