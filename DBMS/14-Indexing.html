@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Indexing Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="13-SQL-Queries.html">← Ch 13: SQL Queries</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 14: Indexing</h1>
+  <p class="sub">Volume 05 · Part 14 · Follows the lecture outline for indexing, plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. How records sit in disk blocks, why an index cuts the number of block reads, and the primary, clustered and secondary index types, with one numerical carried through the whole chapter.</p>
+  <ul class="tags"><li>Index</li><li>Block</li><li>Blocking factor</li><li>Block access</li><li>Primary index</li><li>Anchor record</li><li>Multi-level index</li><li>Dense index</li><li>Sparse index</li><li>Clustered index</li><li>Secondary index</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">14.1</span>Why Indexing (Book Index); Records in Blocks — Solved Numerical</a></li>
+<li><a href="#s2"><span class="n">14.2</span>Index Table Structure and Primary Indexing (Anchor Records) — Solved</a></li>
+<li><a href="#s3"><span class="n">14.3</span>Single-Level vs Multi-Level Indexing</a></li>
+<li><a href="#s4"><span class="n">14.4</span>Dense vs Sparse Index; Clustered Indexing</a></li>
+<li><a href="#s5"><span class="n">14.5</span>Secondary Indexing on Key and Non-Key Attributes</a></li>
+<li><a href="#s6"><span class="n">14.6</span>Comparing the Index Types<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">14.7</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 14</div>
+<h2 class="ch">Indexing</h2>
+<p>A table lives on disk, and the disk is read one <b>block</b> at a time. Reading a block is slow compared with anything done in memory, so the cost of a query is measured in <b>block accesses</b>. An <b>index</b> is a small extra file that tells the DBMS which block to read, so it doesn't have to scan them all. One example file runs through the whole chapter, so you can see each index type cut the number of block accesses.</p>
+
+<section id="s1">
+<h3><span class="n">14.1</span>Why Indexing (Book Index); Records in Blocks — Solved Numerical</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Analogy: the index at the back of a book</h4>
+To find "deadlock" in a 900-page book, you don't read every page. You look it up in the index at the back, which says "page 412", and jump straight there. The index is small and sorted, so it's quick to search, and it points to where the real content is. A database index works the same way: <b>search key → pointer to the block</b>.
+<h4>Records are stored in blocks</h4>
+<ul>
+<li>The disk is divided into <b>blocks</b> (pages) of fixed size, e.g. 1024 bytes. One read fetches one whole block.</li>
+<li><b>Blocking factor (bfr)</b> = number of records that fit in one block = ⌊block size ÷ record size⌋.</li>
+<li><b>Number of blocks</b> = ⌈number of records ÷ bfr⌉.</li>
+</ul></div>
+<div class="num"><span class="t">Solved</span>A file has <b>30,000 records</b> of <b>100 bytes</b> each. Block size is <b>1024 bytes</b>. Find the blocks needed and the block accesses to find a record.<br>
+<b>bfr</b> = ⌊1024 ÷ 100⌋ = <b>10 records per block</b> (24 bytes per block are unused).<br>
+<b>Blocks</b> = ⌈30,000 ÷ 10⌉ = <b>3,000 blocks</b>.<br>
+<b>No index, unsorted file</b>: linear search. Worst case 3,000 block accesses; average 3,000 ÷ 2 = <b>1,500</b>.<br>
+<b>No index, file sorted on the search key</b>: binary search on blocks = ⌈log₂ 3,000⌉ = <b>12</b> block accesses (2¹¹ = 2,048 &lt; 3,000 ≤ 4,096 = 2¹²).</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Unspanned</b> organization: a record never crosses a block boundary, so leftover space is wasted. Use ⌊ ⌋ for bfr. This is the default in exam questions.</li>
+<li><b>Spanned</b>: a record may continue into the next block. No space is wasted, but reading one record may need two blocks.</li>
+<li>Round <b>down</b> for "how many fit" (bfr), round <b>up</b> for "how many are needed" (blocks, log₂).</li>
+</ul></div>
+</section>
+
+<section id="s2">
+<h3><span class="n">14.2</span>Index Table Structure and Primary Indexing (Anchor Records) — Solved</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Structure of an index</h4>
+An index is itself a small, <b>sorted</b> file with two columns:
+<div class="formula">Index entry = &lt; search key value, block pointer &gt;</div>
+Because its entries are much smaller than full records, many more fit in a block, so the index occupies far fewer blocks than the data.
+<h4>Primary index</h4>
+Used when the data file is <b>sorted on its primary key</b> (an ordered, unique field).
+<ul>
+<li>One index entry <b>per data block</b>, not per record.</li>
+<li>The key stored for each block is the key of the <b>first record</b> in that block, called the <b>anchor record</b> (block anchor).</li>
+<li>To find key K: search the index for the last entry with key ≤ K, then read that one block.</li>
+</ul></div>
+<figure>
+<svg viewBox="0 0 680 200" role="img" aria-label="Primary index: one entry per block pointing to the block's first (anchor) record">
+<text x="90" y="20" text-anchor="middle" class="b">Index</text>
+<rect class="ac" x="40" y="30" width="100" height="34" rx="3"/><text x="90" y="52" text-anchor="middle">1 → B1</text>
+<rect class="ac" x="40" y="70" width="100" height="34" rx="3"/><text x="90" y="92" text-anchor="middle">11 → B2</text>
+<rect class="ac" x="40" y="110" width="100" height="34" rx="3"/><text x="90" y="132" text-anchor="middle">21 → B3</text>
+<text x="470" y="20" text-anchor="middle" class="b">Data file (sorted on Roll)</text>
+<rect class="gr" x="300" y="30" width="340" height="34" rx="3"/><text x="470" y="52" text-anchor="middle">B1: <tspan class="b">1</tspan>, 2, 3 … 10</text>
+<rect class="gr" x="300" y="70" width="340" height="34" rx="3"/><text x="470" y="92" text-anchor="middle">B2: <tspan class="b">11</tspan>, 12, 13 … 20</text>
+<rect class="gr" x="300" y="110" width="340" height="34" rx="3"/><text x="470" y="132" text-anchor="middle">B3: <tspan class="b">21</tspan>, 22, 23 … 30</text>
+<line class="lna" x1="140" y1="47" x2="292" y2="47"/><polygon class="aha" points="290,42 300,47 290,52"/>
+<line class="lna" x1="140" y1="87" x2="292" y2="87"/><polygon class="aha" points="290,82 300,87 290,92"/>
+<line class="lna" x1="140" y1="127" x2="292" y2="127"/><polygon class="aha" points="290,122 300,127 290,132"/>
+<text class="mut" x="340" y="178" text-anchor="middle">Bold = anchor record. Find Roll 17: last index key ≤ 17 is 11 → read B2</text>
+</svg>
+<figcaption>A primary index has one entry per block, keyed on that block's anchor record</figcaption>
+</figure>
+<div class="num"><span class="t">Solved</span>Same file (3,000 blocks). The key is <b>9 bytes</b> and a block pointer is <b>6 bytes</b>. How many block accesses with a primary index?<br>
+Index entry size = 9 + 6 = <b>15 bytes</b>.<br>
+Index bfr = ⌊1024 ÷ 15⌋ = <b>68 entries per block</b>.<br>
+Index entries = one per data block = <b>3,000</b>.<br>
+Index blocks = ⌈3,000 ÷ 68⌉ = <b>45 blocks</b>.<br>
+Binary search on the index = ⌈log₂ 45⌉ = 6 accesses, + 1 to read the data block = <b>7 block accesses</b> (down from 12 for binary search on the data file, and 1,500 for a linear scan).</div>
+</section>
+
+<section id="s3">
+<h3><span class="n">14.3</span>Single-Level vs Multi-Level Indexing</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Single-level index</h4>
+One index file over the data, searched by binary search. When the data is huge, the index itself can run to thousands of blocks, and binary search on it still costs many reads.
+<h4>Multi-level index</h4>
+The index is a sorted file, so we can build a <b>primary index on the index</b>. Keep adding levels until the top level fits in <b>one block</b>. A search then reads exactly one block per level, plus the data block. Like a big book with a short contents page that points to sections of the detailed index.
+<ul>
+<li><b>Fan-out (fo)</b> = index entries per block (68 above). Each level is about fo times smaller than the one below.</li>
+<li>Number of levels ≈ ⌈log<sub>fo</sub>(first-level entries)⌉.</li>
+<li>Block accesses = <b>number of levels + 1</b>.</li>
+</ul></div>
+<div class="num"><span class="t">Solved</span>Make the primary index above multi-level (fo = 68).<br>
+Level 1: 3,000 entries → 45 blocks.<br>
+Level 2: 45 entries (one per level-1 block) → ⌈45 ÷ 68⌉ = <b>1 block</b>. It fits in one block, so stop.<br>
+Levels = 2. Block accesses = 2 + 1 = <b>3</b> (down from 7 with a single-level index).</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+A static multi-level index is hard to keep balanced as rows are inserted and deleted. <b>B-trees and B+ trees</b> (chapter 15) are multi-level indexes that rebalance themselves automatically. That's what real databases use.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">14.4</span>Dense vs Sparse Index; Clustered Indexing</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Dense index</h4>
+One index entry for <b>every</b> search-key value (every record, if the key is unique). Works on any file, sorted or not. Bigger, but it can answer "does this value exist?" from the index alone.
+<h4>Sparse index</h4>
+Index entries for <b>only some</b> values, typically one per block (the anchor). Only possible when the data file is <b>sorted</b> on the search key, because you rely on the order to find records between anchors. Smaller and cheaper to maintain.
+<h4>Clustered (clustering) index</h4>
+Used when the data file is sorted on a <b>non-key</b> field, one with duplicates (e.g. records sorted by Dept, with many employees per department).
+<ul>
+<li>One index entry per <b>distinct value</b> of the field.</li>
+<li>The pointer goes to the <b>first block</b> containing that value; the rest follow in order.</li>
+<li>It's sparse: one entry per value, not per record.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th></th><th>Dense</th><th>Sparse</th></tr>
+<tr><td>Entries</td><td>One per search-key value / record</td><td>One per block (or per distinct value)</td></tr>
+<tr><td>File must be sorted?</td><td>No</td><td>Yes</td></tr>
+<tr><td>Size</td><td>Larger</td><td>Smaller</td></tr>
+<tr><td>Lookup</td><td>Faster: points straight at the record</td><td>Read the block, then scan inside it</td></tr>
+<tr><td>Examples</td><td>Secondary index</td><td>Primary index, clustering index</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+A file can be physically sorted in only <b>one</b> order, so it can have <b>at most one</b> primary <b>or</b> clustering index (not both), but <b>any number</b> of secondary indexes.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">14.5</span>Secondary Indexing on Key and Non-Key Attributes</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+A <b>secondary index</b> is built on a field the file is <b>not</b> sorted by. With no order to rely on, it must be <b>dense</b>.
+<h4>On a key (unique) field</h4>
+e.g. Aadhaar number in a file sorted by Roll. One entry per record, each pointing to the block (or record) holding it.
+<h4>On a non-key field (duplicates)</h4>
+e.g. City. Many records share each value, scattered across many blocks. Three ways to handle it:
+<ol>
+<li>One entry per <b>record</b>, repeating the value (a dense index with duplicate keys).</li>
+<li>One entry per <b>value</b> with a variable-length list of pointers.</li>
+<li>One entry per <b>value</b> pointing to a separate block of record pointers (an extra level of indirection). This is the most common, because index entries stay fixed in size.</li>
+</ol></div>
+<div class="num"><span class="t">Solved</span>Same file (30,000 records, 3,000 blocks), secondary index on a unique 9-byte field with 6-byte pointers.<br>
+Index entries = one per record = <b>30,000</b>. Index bfr = 68.<br>
+Index blocks = ⌈30,000 ÷ 68⌉ = <b>442 blocks</b> (68 × 441 = 29,988, so one more block).<br>
+Binary search = ⌈log₂ 442⌉ = 9 (2⁹ = 512), + 1 data block = <b>10 block accesses</b>, against an average of 1,500 for a linear scan (the file isn't sorted on this field, so binary search on the data isn't possible).<br>
+Made multi-level: 442 → ⌈442 ÷ 68⌉ = 7 → 1 block. 3 levels + 1 = <b>4 block accesses</b>.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">14.6</span>Comparing the Index Types<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span></div>
+<div class="tw"><table>
+<tr><th>Index</th><th>Data file sorted on it?</th><th>Field</th><th>Dense / sparse</th><th>Entries</th><th>Per file</th></tr>
+<tr><td>Primary</td><td>Yes</td><td>Key (unique)</td><td>Sparse</td><td>= number of data blocks</td><td>At most 1</td></tr>
+<tr><td>Clustering</td><td>Yes</td><td>Non-key</td><td>Sparse</td><td>= number of distinct values</td><td>At most 1 (instead of primary)</td></tr>
+<tr><td>Secondary</td><td>No</td><td>Key or non-key</td><td>Dense</td><td>= number of records (key)</td><td>Many</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Our 30,000-record file</th><th>Block accesses</th></tr>
+<tr><td>Linear search (no index)</td><td>1,500 average, 3,000 worst</td></tr>
+<tr><td>Binary search on the sorted data file</td><td>12</td></tr>
+<tr><td>Secondary index (single level)</td><td>10</td></tr>
+<tr><td>Primary index (single level)</td><td>7</td></tr>
+<tr><td>Secondary index (multi-level)</td><td>4</td></tr>
+<tr><td>Primary index (multi-level)</td><td>3</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Indexes speed up reads but slow down INSERT, UPDATE and DELETE, because every index must be updated too. They also take disk space.</li>
+<li>In SQL: <code>CREATE INDEX idx_city ON Student(City);</code> and <code>DROP INDEX idx_city;</code>. Most DBMSs create an index on the primary key automatically.</li>
+<li><b>Hashing</b> is the alternative to an ordered index: it finds an exact key in about 1 block access, but it can't do range queries (BETWEEN, &lt;, &gt;).</li>
+</ul></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Expect a numerical: compute bfr, blocks, index entries, index blocks, and block accesses (⌈log₂ index blocks⌉ + 1). Then theory: dense vs sparse, which index needs a sorted file, and how many primary/clustering/secondary indexes a file can have.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">14.7</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Block size 512 bytes, record size 50 bytes, unspanned. Blocking factor?<br><b>Answer: 10</b> (⌊512 ÷ 50⌋).</div>
+<div class="num"><span class="t">Q2</span>10,000 records at a blocking factor of 10. Blocks needed? Block accesses for binary search?<br><b>Answer: 1,000 blocks; ⌈log₂ 1,000⌉ = 10 accesses.</b></div>
+<div class="num"><span class="t">Q3</span>A primary index on a file of 1,000 blocks has how many entries?<br><b>Answer: 1,000</b>, one per block (anchor record).</div>
+<div class="num"><span class="t">Q4</span>Which index needs the data file to be sorted on the search key? (a) dense (b) sparse (c) secondary (d) all<br><b>Answer: (b) sparse.</b></div>
+<div class="num"><span class="t">Q5</span>A secondary index on a key field is:<br><b>Answer: dense</b>, one entry per record.</div>
+<div class="num"><span class="t">Q6</span>How many clustering indexes can a file have?<br><b>Answer: at most one</b>, and only if it has no primary index.</div>
+<div class="num"><span class="t">Q7</span>A multi-level index has 3 levels. Block accesses to fetch a record?<br><b>Answer: 4</b> (one per level + the data block).</div>
+<div class="num"><span class="t">Q8</span>Index entry = 10-byte key + 6-byte pointer, block size 2,048 bytes. Fan-out?<br><b>Answer: 128</b> (⌊2,048 ÷ 16⌋).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Index = book's back index: <b>search key → block pointer</b>. Cost is counted in <b>block accesses</b>.</li>
+<li><b>bfr</b> = ⌊block ÷ record⌋; <b>blocks</b> = ⌈records ÷ bfr⌉. 30,000 × 100 B, 1,024 B blocks → bfr 10, 3,000 blocks.</li>
+<li>No index: linear = b/2 average (1,500); sorted file binary = ⌈log₂ b⌉ (12).</li>
+<li><b>Primary index</b>: file sorted on key, one entry per block (<b>anchor record</b> = first record of the block), sparse. 15-B entries → 68/block → 45 blocks → 6 + 1 = 7 accesses.</li>
+<li><b>Multi-level</b>: index on the index until the top fits in one block; accesses = levels + 1 (45 → 1 ⇒ 3 accesses). Leads to B/B+ trees.</li>
+<li><b>Dense</b> = entry per record, any file. <b>Sparse</b> = entry per block, sorted file only.</li>
+<li><b>Clustering index</b>: file sorted on a non-key field; one entry per distinct value → first block with it.</li>
+<li><b>Secondary index</b>: on an unsorted field, dense. Key: one entry per record (442 blocks → 10 accesses). Non-key: usually one entry per value → block of record pointers.</li>
+<li>One primary <b>or</b> clustering index per file; many secondary.</li>
+<li>➕ Indexes speed reads, slow writes. Hashing: ~1 access for exact match, no range queries.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 14 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="13-SQL-Queries.html">← Ch 13: SQL Queries</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
