@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS SQL Basics Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="11-Relational-Calculus.html">← Ch 11: Relational Calculus</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 12: SQL Basics: Command Types and DDL</h1>
+  <p class="sub">Volume 05 · Part 12 · Follows the lecture outline for SQL command types and DDL, plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. The four families of SQL commands, building and changing tables, adding and removing rows, and controlling permissions and transactions.</p>
+  <ul class="tags"><li>SQL</li><li>DDL</li><li>DML</li><li>DCL</li><li>TCL</li><li>CREATE</li><li>ALTER</li><li>DROP</li><li>TRUNCATE</li><li>CHAR vs VARCHAR</li><li>GRANT</li><li>COMMIT</li><li>ROLLBACK</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">12.1</span>Introduction to SQL; DDL, DML, DCL, TCL (House on an Empty Plot; Mom's Kitchen)</a></li>
+<li><a href="#s2"><span class="n">12.2</span>CREATE DATABASE, CREATE TABLE and Data Types (CHAR vs VARCHAR)</a></li>
+<li><a href="#s3"><span class="n">12.3</span>ALTER, RENAME, DROP and TRUNCATE</a></li>
+<li><a href="#s4"><span class="n">12.4</span>Foreign Key Syntax, INSERT and DELETE</a></li>
+<li><a href="#s5"><span class="n">12.5</span>GRANT/REVOKE and COMMIT/ROLLBACK</a></li>
+<li><a href="#s6"><span class="n">12.6</span>DELETE vs TRUNCATE vs DROP; Constraints in CREATE TABLE<span class="x">ADDED</span></a></li>
+<li><a href="#s7"><span class="n">12.7</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 12</div>
+<h2 class="ch">SQL Basics: Command Types and DDL</h2>
+<p><b>SQL</b> (Structured Query Language) is the standard language for relational databases. Chapters 10 and 11 were the theory; SQL is what you actually type. This chapter covers the commands that <b>build and change</b> tables, put rows in and take them out, and control who may do what. Chapter 13 covers querying with SELECT.</p>
+
+<section id="s1">
+<h3><span class="n">12.1</span>Introduction to SQL; DDL, DML, DCL, TCL (House on an Empty Plot; Mom's Kitchen)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+SQL is <b>declarative</b>: you say what you want, and the DBMS decides how to do it. It's case-insensitive for keywords, and each statement ends with a semicolon. Its commands fall into families:
+<h4>Analogy: a house on an empty plot</h4>
+A new database is an empty plot. <b>DDL</b> builds the house: the rooms (tables), their size and layout (columns and types), and the rules (constraints). <b>DML</b> is moving in and living there: putting furniture in, moving it around, throwing things out (rows). You can rearrange furniture every day without touching the walls, but knocking down a wall (DROP) takes the furniture with it.
+<h4>Analogy: Mom's kitchen</h4>
+The kitchen has rules about <b>who</b> may use it and <b>what</b> they may touch. That's <b>DCL</b>: GRANT gives someone access, REVOKE takes it back. And while cooking, nothing is final until the dish is served. That's <b>TCL</b>: COMMIT serves the dish, ROLLBACK throws away the attempt and starts over.</div>
+<div class="tw"><table>
+<tr><th>Family</th><th>Full form</th><th>Works on</th><th>Commands</th></tr>
+<tr><td><b>DDL</b></td><td>Data Definition Language</td><td>Structure (schema)</td><td>CREATE, ALTER, DROP, TRUNCATE, RENAME</td></tr>
+<tr><td><b>DML</b></td><td>Data Manipulation Language</td><td>Data (rows)</td><td>INSERT, UPDATE, DELETE (and SELECT)</td></tr>
+<tr><td><b>DCL</b></td><td>Data Control Language</td><td>Permissions</td><td>GRANT, REVOKE</td></tr>
+<tr><td><b>TCL</b></td><td>Transaction Control Language</td><td>Transactions</td><td>COMMIT, ROLLBACK, SAVEPOINT</td></tr>
+</table></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Many books list a fifth family, <b>DQL</b> (Data Query Language), containing only <b>SELECT</b>. Others put SELECT under DML. If DQL is an option, choose it for SELECT.</li>
+<li>SQL was developed at IBM (as SEQUEL, for System R) in the 1970s and became an ANSI standard in 1986.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>TRUNCATE is DDL</b>, not DML, even though it removes rows. <b>DELETE is DML</b>. This is the most-asked classification question in SQL.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">12.2</span>CREATE DATABASE, CREATE TABLE and Data Types (CHAR vs VARCHAR)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Create the plot, then the house</h4>
+<div class="formula">CREATE DATABASE College;<br>USE College;</div>
+<div class="formula">CREATE TABLE Student (<br>&nbsp;&nbsp;Roll INT PRIMARY KEY,<br>&nbsp;&nbsp;Name VARCHAR(50) NOT NULL,<br>&nbsp;&nbsp;Gender CHAR(1),<br>&nbsp;&nbsp;City VARCHAR(30) DEFAULT 'Delhi',<br>&nbsp;&nbsp;Marks DECIMAL(5,2) CHECK (Marks BETWEEN 0 AND 100),<br>&nbsp;&nbsp;DOB DATE<br>);</div>
+Each column gets a name, a <b>data type</b> and optional <b>constraints</b>.
+<h4>Common data types</h4></div>
+<div class="tw"><table>
+<tr><th>Type</th><th>Stores</th><th>Example</th></tr>
+<tr><td>INT / INTEGER, SMALLINT, BIGINT</td><td>Whole numbers</td><td>Roll INT</td></tr>
+<tr><td>DECIMAL(p, s) / NUMERIC(p, s)</td><td>Exact decimals: p digits in total, s after the point</td><td>DECIMAL(5,2) → up to 999.99</td></tr>
+<tr><td>FLOAT, REAL, DOUBLE</td><td>Approximate decimals</td><td>Scientific values</td></tr>
+<tr><td>CHAR(n)</td><td>Fixed-length text</td><td>Gender CHAR(1), PIN CHAR(6)</td></tr>
+<tr><td>VARCHAR(n)</td><td>Variable-length text up to n</td><td>Name VARCHAR(50)</td></tr>
+<tr><td>DATE, TIME, TIMESTAMP</td><td>Dates and times</td><td>DOB DATE</td></tr>
+<tr><td>BOOLEAN</td><td>TRUE / FALSE</td><td>IsActive</td></tr>
+<tr><td>BLOB, CLOB</td><td>Large binary / large text objects</td><td>Photos, documents</td></tr>
+</table></div>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>CHAR vs VARCHAR</h4>
+Store 'Ram' in both CHAR(10) and VARCHAR(10):
+<ul>
+<li><b>CHAR(10)</b> always uses 10 characters: 'Ram' plus 7 padding spaces. Space is wasted, but every value is the same size, so access is slightly faster.</li>
+<li><b>VARCHAR(10)</b> uses 3 characters, plus a small length marker (1–2 bytes). Nothing is wasted.</li>
+</ul>
+Use CHAR when every value has the same length (gender, PIN code, state code); VARCHAR when lengths vary (names, addresses).</div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Oracle's name for VARCHAR is <b>VARCHAR2</b>. Its NUMBER(p, s) plays the role of DECIMAL.</li>
+<li>The maximum CHAR length is usually 255 (MySQL) or 2000 bytes (Oracle); VARCHAR goes much higher.</li>
+<li>Text and date values go in single quotes: 'Delhi', '2026-10-27'.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">12.3</span>ALTER, RENAME, DROP and TRUNCATE</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>ALTER TABLE: change the structure</h4>
+<ul>
+<li>Add a column: <code>ALTER TABLE Student ADD Phone VARCHAR(15);</code></li>
+<li>Change a column's type: <code>ALTER TABLE Student MODIFY Name VARCHAR(80);</code> (MySQL, Oracle; SQL Server uses ALTER COLUMN)</li>
+<li>Remove a column: <code>ALTER TABLE Student DROP COLUMN Phone;</code></li>
+<li>Rename a column: <code>ALTER TABLE Student RENAME COLUMN City TO HomeCity;</code></li>
+<li>Add a constraint later: <code>ALTER TABLE Student ADD CONSTRAINT uq_name UNIQUE (Name);</code></li>
+</ul>
+<h4>RENAME: change a table's name</h4>
+<code>RENAME TABLE Student TO Pupil;</code> (MySQL), <code>RENAME Student TO Pupil;</code> (Oracle), or the portable <code>ALTER TABLE Student RENAME TO Pupil;</code>
+<h4>TRUNCATE: empty the house, keep the walls</h4>
+<code>TRUNCATE TABLE Student;</code> removes <b>all rows at once</b>. The table, its columns and constraints remain. No WHERE clause is allowed.
+<h4>DROP: knock the house down</h4>
+<code>DROP TABLE Student;</code> removes the rows <b>and</b> the table itself: its structure, indexes, constraints and permissions. <code>DROP DATABASE College;</code> removes the whole database.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+ALTER changes the <b>structure</b>; UPDATE (DML) changes the <b>data</b>. "Increase every salary by 10%" is UPDATE, not ALTER. "Add a Salary column" is ALTER.</div>
+</section>
+
+<section id="s4">
+<h3><span class="n">12.4</span>Foreign Key Syntax, INSERT and DELETE</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>Foreign key (chapter 4.3 in SQL)</h4>
+<div class="formula">CREATE TABLE Enrol (<br>&nbsp;&nbsp;Roll INT,<br>&nbsp;&nbsp;Course VARCHAR(10),<br>&nbsp;&nbsp;PRIMARY KEY (Roll, Course),<br>&nbsp;&nbsp;FOREIGN KEY (Roll) REFERENCES Student(Roll)<br>&nbsp;&nbsp;&nbsp;&nbsp;ON DELETE CASCADE ON UPDATE CASCADE<br>);</div>
+Enrol is the <b>referencing</b> (child) table; Student is the <b>referenced</b> (parent) table. The ON DELETE / ON UPDATE options decide what happens to child rows when the parent row changes (chapter 4.4):
+<ul>
+<li><b>CASCADE</b>: delete or update the child rows too.</li>
+<li><b>SET NULL</b>: set the child's foreign key to NULL.</li>
+<li><b>RESTRICT / NO ACTION</b> (the default): refuse to delete the parent while children exist.</li>
+</ul>
+<h4>INSERT: add rows</h4>
+<ul>
+<li>All columns, in table order: <code>INSERT INTO Student VALUES (1, 'Asha', 'F', 'Pune', 82.5, '2004-05-10');</code></li>
+<li>Named columns (others get DEFAULT or NULL): <code>INSERT INTO Student (Roll, Name) VALUES (2, 'Ravi');</code> — City becomes 'Delhi' from the DEFAULT.</li>
+<li>Several rows at once: <code>INSERT INTO Enrol VALUES (1, 'DBMS'), (1, 'OS'), (2, 'DBMS');</code></li>
+<li>Copy rows from a query: <code>INSERT INTO Alumni SELECT * FROM Student WHERE Marks &gt; 90;</code></li>
+</ul>
+<h4>DELETE: remove rows</h4>
+<ul>
+<li>Some rows: <code>DELETE FROM Student WHERE Roll = 2;</code></li>
+<li>All rows (table stays): <code>DELETE FROM Student;</code></li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam: UPDATE</span>
+<code>UPDATE Student SET Marks = Marks + 5, City = 'Mumbai' WHERE Roll = 1;</code> Leaving out WHERE updates <b>every</b> row, the most common real-world SQL accident.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+Inserting into Enrol a Roll that doesn't exist in Student fails (referential integrity). Deleting a Student who has Enrol rows fails too, <b>unless</b> the foreign key says ON DELETE CASCADE or SET NULL.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">12.5</span>GRANT/REVOKE and COMMIT/ROLLBACK</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<h4>DCL: who may do what</h4>
+<ul>
+<li><code>GRANT SELECT, INSERT ON Student TO ravi;</code> — Ravi may read and add rows.</li>
+<li><code>GRANT ALL PRIVILEGES ON Student TO admin1;</code></li>
+<li><code>GRANT SELECT ON Student TO ravi WITH GRANT OPTION;</code> — Ravi may pass the permission on to others.</li>
+<li><code>REVOKE INSERT ON Student FROM ravi;</code> — take it back.</li>
+</ul>
+<h4>TCL: making changes final</h4>
+<ul>
+<li><b>COMMIT</b> makes every change since the last commit permanent.</li>
+<li><b>ROLLBACK</b> undoes every change since the last commit.</li>
+<li><b>SAVEPOINT</b> s1 marks a point inside a transaction; <b>ROLLBACK TO s1</b> undoes only the changes after it.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Step</th><th>Command</th><th>Rows in Student afterwards</th></tr>
+<tr><td>1</td><td>INSERT Roll 1; COMMIT;</td><td>{1} (permanent)</td></tr>
+<tr><td>2</td><td>INSERT Roll 2;</td><td>{1, 2}</td></tr>
+<tr><td>3</td><td>SAVEPOINT s1;</td><td>{1, 2}</td></tr>
+<tr><td>4</td><td>INSERT Roll 3;</td><td>{1, 2, 3}</td></tr>
+<tr><td>5</td><td>ROLLBACK TO s1;</td><td>{1, 2}: Roll 3 undone</td></tr>
+<tr><td>6</td><td>ROLLBACK;</td><td>{1}: back to the last COMMIT</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+In Oracle and MySQL, every <b>DDL statement commits automatically</b> (an implicit COMMIT before and after it). So after <code>INSERT …; CREATE TABLE …; ROLLBACK;</code> the INSERT is <b>not</b> undone; the CREATE already committed it. For the same reason, TRUNCATE and DROP can't be rolled back there.</div>
+</section>
+
+<section id="s6">
+<h3><span class="n">12.6</span>DELETE vs TRUNCATE vs DROP; Constraints in CREATE TABLE<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span></div>
+<div class="tw"><table>
+<tr><th></th><th>DELETE</th><th>TRUNCATE</th><th>DROP</th></tr>
+<tr><td>Family</td><td>DML</td><td>DDL</td><td>DDL</td></tr>
+<tr><td>Removes</td><td>Chosen rows (or all)</td><td>All rows</td><td>Rows + table structure</td></tr>
+<tr><td>WHERE clause</td><td>Yes</td><td>No</td><td>No</td></tr>
+<tr><td>Rollback</td><td>Yes (before COMMIT)</td><td>No (Oracle/MySQL)</td><td>No (Oracle/MySQL)</td></tr>
+<tr><td>Speed</td><td>Slow: row by row, each logged</td><td>Fast: frees whole data pages</td><td>Fast</td></tr>
+<tr><td>Triggers fire</td><td>Yes</td><td>No</td><td>No</td></tr>
+<tr><td>Auto-increment counter</td><td>Keeps going</td><td>Reset</td><td>Gone with the table</td></tr>
+<tr><td>Table still exists</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Constraint</th><th>Ensures</th><th>Example</th></tr>
+<tr><td>NOT NULL</td><td>Value must be given</td><td>Name VARCHAR(50) NOT NULL</td></tr>
+<tr><td>UNIQUE</td><td>No two rows share the value (NULLs allowed)</td><td>Email VARCHAR(80) UNIQUE</td></tr>
+<tr><td>PRIMARY KEY</td><td>UNIQUE + NOT NULL; one per table</td><td>Roll INT PRIMARY KEY</td></tr>
+<tr><td>FOREIGN KEY</td><td>Value exists in the parent table</td><td>REFERENCES Student(Roll)</td></tr>
+<tr><td>CHECK</td><td>Value satisfies a condition</td><td>CHECK (Marks &gt;= 0)</td></tr>
+<tr><td>DEFAULT</td><td>Value used when none is given</td><td>City … DEFAULT 'Delhi'</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+The SQL questions that come up most: classify a command (DDL / DML / DCL / TCL), DELETE vs TRUNCATE vs DROP, CHAR vs VARCHAR, PRIMARY KEY vs UNIQUE (one per table vs many; NULL not allowed vs allowed), and what ROLLBACK undoes after a SAVEPOINT.</div>
+</section>
+
+<section id="s7">
+<h3><span class="n">12.7</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Which is a DDL command? (a) INSERT (b) UPDATE (c) TRUNCATE (d) GRANT<br><b>Answer: (c) TRUNCATE.</b> INSERT and UPDATE are DML; GRANT is DCL.</div>
+<div class="num"><span class="t">Q2</span>Which command removes a table's rows and its structure?<br><b>Answer: DROP TABLE.</b></div>
+<div class="num"><span class="t">Q3</span>A column of type CHAR(8) stores 'SQL'. How many characters does it occupy?<br><b>Answer: 8</b> (padded with 5 spaces). VARCHAR(8) would use 3.</div>
+<div class="num"><span class="t">Q4</span>Which command can delete specific rows using a condition? (a) DROP (b) TRUNCATE (c) DELETE (d) ALTER<br><b>Answer: (c) DELETE.</b></div>
+<div class="num"><span class="t">Q5</span>Which command adds a new column to an existing table?<br><b>Answer: ALTER TABLE … ADD.</b></div>
+<div class="num"><span class="t">Q6</span>COMMIT and ROLLBACK belong to:<br><b>Answer: TCL</b> (Transaction Control Language).</div>
+<div class="num"><span class="t">Q7</span>Which clause lets a user pass a privilege on to other users?<br><b>Answer: WITH GRANT OPTION.</b></div>
+<div class="num"><span class="t">Q8</span>DECIMAL(6, 2) can hold a maximum value of:<br><b>Answer: 9999.99</b> (6 digits in total, 2 after the point).</div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li><b>DDL</b> (structure): CREATE, ALTER, DROP, TRUNCATE, RENAME. Builds the house on the empty plot.</li>
+<li><b>DML</b> (data): INSERT, UPDATE, DELETE (+ SELECT, or DQL). Living in the house.</li>
+<li><b>DCL</b>: GRANT, REVOKE. Who may use Mom's kitchen. <b>TCL</b>: COMMIT, ROLLBACK, SAVEPOINT.</li>
+<li><b>CHAR(n)</b> fixed length, padded; <b>VARCHAR(n)</b> variable length, no padding. DECIMAL(p, s) = p digits, s after the point.</li>
+<li><b>ALTER</b> ADD / MODIFY / DROP COLUMN / RENAME COLUMN changes structure; <b>UPDATE</b> changes data.</li>
+<li><b>TRUNCATE</b> = all rows, keeps table, no WHERE, DDL. <b>DROP</b> = rows + structure. <b>DELETE</b> = DML, WHERE allowed, can roll back.</li>
+<li>FK: FOREIGN KEY (Roll) REFERENCES Student(Roll) ON DELETE CASCADE / SET NULL / RESTRICT.</li>
+<li>INSERT INTO … VALUES (…); named columns get the rest as DEFAULT/NULL. DELETE FROM … WHERE …; no WHERE = all rows.</li>
+<li>GRANT … ON … TO … [WITH GRANT OPTION]; REVOKE … ON … FROM …</li>
+<li>ROLLBACK TO savepoint undoes only later changes; ROLLBACK undoes to the last COMMIT. ➕ DDL auto-commits in Oracle/MySQL.</li>
+</ul>
+</div>
+<div class="end">End of Chapter 12 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="11-Relational-Calculus.html">← Ch 11: Relational Calculus</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
