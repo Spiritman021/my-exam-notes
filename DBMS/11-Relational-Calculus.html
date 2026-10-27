@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBMS Relational Calculus Notes</title>
+<script src="../assets/embed.js"></script>
+<style>
+:root{
+  --ground:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4;
+  --ink:#0E171D; --muted:#5C6E79; --line:#D8E1E6;
+  --accent:#0B5E8A; --accent-soft:#E2EEF5;
+  --lec:#4C6E5D; --lec-bg:#E6EEE9;
+  --add:#6B4FA0; --add-bg:#EEE8F6;
+  --warn:#8A5A12; --warn-bg:#F6EEDF;
+  --alert:#A8501C; --alert-bg:#F6EAE1;
+  --ok:#2F6B4F; --bad:#A33A3A;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --code:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+    --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+    --accent:#4FA6DC; --accent-soft:#152A38;
+    --lec:#82AB92; --lec-bg:#182620;
+    --add:#B39DDB; --add-bg:#221C30;
+    --warn:#D9A441; --warn-bg:#2A2113;
+    --alert:#DE8A55; --alert-bg:#2A1E16;
+    --ok:#7FB79A; --bad:#E07A7A;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1317; --surface:#131E24; --surface-2:#1A272E;
+  --ink:#E4ECF1; --muted:#8AA0AC; --line:#2A3B44;
+  --accent:#4FA6DC; --accent-soft:#152A38;
+  --lec:#82AB92; --lec-bg:#182620;
+  --add:#B39DDB; --add-bg:#221C30;
+  --warn:#D9A441; --warn-bg:#2A2113;
+  --alert:#DE8A55; --alert-bg:#2A1E16;
+  --ok:#7FB79A; --bad:#E07A7A;
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--accent)}
+button.themer{position:fixed;top:12px;right:12px;font:12px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;z-index:5}
+
+/* cover */
+.cover{margin:28px 0 24px;padding:28px 24px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:6px}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cover h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:10px 0 6px}
+.cover .sub{color:var(--muted);margin:0 0 16px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.tags li{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .l1::before{background:var(--lec)} .legend .l2::before{background:var(--add)}
+.legend .l3::before{background:var(--warn)} .legend .l4::before{background:var(--alert)}
+
+/* toc */
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin-bottom:28px}
+nav.toc h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc ol{columns:2 300px;margin:0;padding-left:0;list-style:none;font-size:14.5px}
+nav.toc li{break-inside:avoid;padding:2px 0}
+nav.toc a{text-decoration:none;color:var(--ink)} nav.toc a:hover{color:var(--accent)}
+nav.toc .n{color:var(--accent);font-variant-numeric:tabular-nums;display:inline-block;min-width:38px}
+nav.toc .x{font-size:11px;color:var(--add);border:1px solid var(--add);border-radius:3px;padding:0 4px;margin-left:4px}
+
+/* chapter + sections */
+.chapter{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:40px 0 0}
+h2.ch{font-size:clamp(24px,4vw,32px);margin:4px 0 12px;line-height:1.15}
+section{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;margin:18px 0}
+section h3{font-size:21px;margin:0 0 10px;line-height:1.25}
+section h3 .n{color:var(--accent);margin-right:8px}
+section h4{font-size:16.5px;margin:18px 0 6px}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;vertical-align:3px;margin-left:8px;padding:1px 6px;border-radius:3px;color:var(--add);border:1px solid var(--add)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:3px 0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 4px 4px 0;margin:10px 0}
+.def b:first-child{color:var(--accent)}
+
+/* callouts */
+.box{border-radius:5px;padding:10px 14px;margin:12px 0;border:1px solid}
+.box .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.lec{background:var(--lec-bg);border-color:var(--lec)} .lec .t{color:var(--lec)}
+.add{background:var(--add-bg);border-color:var(--add)} .add .t{color:var(--add)}
+.trap{background:var(--warn-bg);border-color:var(--warn)} .trap .t{color:var(--warn)}
+.alert{background:var(--alert-bg);border-color:var(--alert)} .alert .t{color:var(--alert)}
+.num{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:12px 16px;margin:14px 0}
+.num .t{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.formula{font-family:var(--code);font-size:14.5px;background:var(--surface);border:1px dashed var(--line);padding:8px 12px;border-radius:4px;margin:8px 0;overflow-x:auto;white-space:pre}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+
+/* figures */
+figure{margin:16px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:600}
+svg text{fill:var(--ink);font-family:var(--body);font-size:13px}
+svg .mut{fill:var(--muted);font-size:11.5px}
+svg .b{font-weight:700}
+svg .bx{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .ac{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .gr{fill:var(--lec-bg);stroke:var(--lec);stroke-width:1.5}
+svg .or{fill:var(--alert-bg);stroke:var(--alert);stroke-width:1.5}
+svg .pu{fill:var(--add-bg);stroke:var(--add);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .lna{stroke:var(--accent);stroke-width:2;fill:none}
+svg .dash{stroke-dasharray:5 4}
+svg .hard{stroke:var(--bad);stroke-width:2.5;fill:none}
+svg .soft{stroke:var(--ok);stroke-width:2.5;fill:none}
+svg .ah{fill:var(--muted)} svg .aha{fill:var(--accent)}
+
+/* rapid revision */
+.rapid{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:18px 22px;margin:28px 0}
+.rapid h3{margin:0 0 8px;color:var(--accent)}
+.rapid li{margin:5px 0}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px;margin-top:30px}
+code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.topnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 0;font-size:14px}
+.topnav a{text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:5px 10px;border-radius:4px}
+.topnav a:hover{border-color:var(--accent)}
+.topnav .off{color:var(--muted);border:1px dashed var(--line);padding:5px 10px;border-radius:4px}
+@media (max-width:600px){section{padding:16px 14px} .cover{padding:20px 16px}}
+@media print{
+  button.themer{display:none}
+  body{background:#fff;font-size:12.5px}
+  section,.rapid,.cover,nav.toc{break-inside:auto;border-color:#bbb}
+  figure,.box,.num,table{break-inside:avoid}
+  section h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<button class="themer" id="themer" type="button">Theme</button>
+<div class="wrap">
+<nav class="topnav" aria-label="Chapter navigation"><a href="10-Relational-Algebra.html">← Ch 10: Relational Algebra</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+<header class="cover">
+  <div class="brand">IBPS SO IT Mains · RRB SO IT · Professional Knowledge</div>
+  <h1>DBMS — Chapter 11: Relational Calculus</h1>
+  <p class="sub">Volume 05 · Part 11 · Follows the lecture outline for relational calculus, plus exam points. The lecture transcript wasn't available for this chapter, so the 🎓 boxes cover the lecture's subtopics and examples from the outline, in standard textbook wording rather than the lecturer's words. Tuple and domain relational calculus, the quantifiers ∃ and ∀, why some expressions are unsafe, and how calculus compares with relational algebra.</p>
+  <ul class="tags"><li>Non-procedural</li><li>Tuple relational calculus</li><li>Domain relational calculus</li><li>∃ exists</li><li>∀ for all</li><li>Free and bound variables</li><li>Unsafe expression</li><li>Relational completeness</li></ul>
+  <div class="legend"><span class="l1">🎓 Lecture topic (from outline)</span><span class="l2">➕ Added for exam (not in lecture)</span><span class="l3">⚠️ Exam trap</span><span class="l4">🎯 IBPS exam alert</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol>
+<li><a href="#s1"><span class="n">11.1</span>Tuple Relational Calculus: Syntax and Connectors (∃, ∀)</a></li>
+<li><a href="#s2"><span class="n">11.2</span>Unsafe Expressions</a></li>
+<li><a href="#s3"><span class="n">11.3</span>Domain Relational Calculus</a></li>
+<li><a href="#s4"><span class="n">11.4</span>Algebra vs TRC vs DRC; Relational Completeness<span class="x">ADDED</span></a></li>
+<li><a href="#s5"><span class="n">11.5</span>Solved Exam Questions<span class="x">ADDED</span></a></li>
+<li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li></ol></nav>
+
+<div class="chapter">Chapter 11</div>
+<h2 class="ch">Relational Calculus</h2>
+<p>Relational algebra (chapter 10) says <b>how</b> to compute an answer, step by step. <b>Relational calculus</b> only <b>describes</b> the answer: "the set of all t such that t satisfies this condition". It is <b>non-procedural</b>, and it's the idea SQL's WHERE clause is built on. There are two forms: <b>tuple</b> calculus, whose variables stand for whole rows, and <b>domain</b> calculus, whose variables stand for single column values.</p>
+<p>Tables used throughout: <b>Student(Roll, Name, City, Marks)</b>, <b>Enrol(Roll, Course)</b>, <b>Course(Course)</b>.</p>
+
+<section id="s1">
+<h3><span class="n">11.1</span>Tuple Relational Calculus: Syntax and Connectors (∃, ∀)</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+<div class="formula">{ t | P(t) } — the set of all tuples t for which the condition P(t) is true</div>
+<h4>Building blocks</h4>
+<ul>
+<li><b>Tuple variable</b>: t ranges over rows. <b>t ∈ Student</b> says t is a row of Student.</li>
+<li><b>Attribute access</b>: t.Marks is the Marks value of row t.</li>
+<li><b>Comparisons</b>: =, ≠, &lt;, ≤, &gt;, ≥ between attributes and constants.</li>
+<li><b>Connectors</b>: ∧ (and), ∨ (or), ¬ (not), ⇒ (implies).</li>
+<li><b>Quantifiers</b>: <b>∃</b> s ∈ R (P) = "there exists a row s in R for which P holds". <b>∀</b> s ∈ R (P) = "for every row s in R, P holds".</li>
+</ul>
+<h4>Examples</h4>
+<ul>
+<li>Students with marks above 70 (whole rows):<br><b>{ t | t ∈ Student ∧ t.Marks &gt; 70 }</b> (like σ<sub>Marks&gt;70</sub>(Student))</li>
+<li>Only their names:<br><b>{ t.Name | t ∈ Student ∧ t.Marks &gt; 70 }</b> (like π<sub>Name</sub>(σ<sub>Marks&gt;70</sub>(Student)))</li>
+<li>Names of students enrolled in DBMS (needs ∃ to reach into Enrol):<br><b>{ t.Name | t ∈ Student ∧ ∃ e ∈ Enrol (e.Roll = t.Roll ∧ e.Course = 'DBMS') }</b></li>
+<li>Students enrolled in <b>every</b> course (needs ∀, like division):<br><b>{ t.Roll | t ∈ Student ∧ ∀ c ∈ Course ( ∃ e ∈ Enrol (e.Roll = t.Roll ∧ e.Course = c.Course) ) }</b></li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Free variable</b>: not bound by a quantifier; it's what the result is built from (t above). <b>Bound variable</b>: introduced by ∃ or ∀ (e, c above). Only free variables may appear left of the bar.</li>
+<li>∀ can always be rewritten with ∃: <b>∀ x (P) ≡ ¬∃ x (¬P)</b>. "Every course is taken" = "there is no course that isn't taken". That's exactly how SQL writes division, with NOT EXISTS … NOT EXISTS.</li>
+<li>P ⇒ Q ≡ ¬P ∨ Q.</li>
+</ul></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+"Students not enrolled in any course" uses ¬∃: { t | t ∈ Student ∧ ¬∃ e ∈ Enrol (e.Roll = t.Roll) }. Writing ∃ e ∈ Enrol (e.Roll ≠ t.Roll) is wrong: it's true for almost every student, because some other enrolment row will always have a different Roll.</div>
+</section>
+
+<section id="s2">
+<h3><span class="n">11.2</span>Unsafe Expressions</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+Calculus describes a set, and some descriptions describe an <b>infinite</b> set:
+<div class="formula">{ t | ¬(t ∈ Student) } — every tuple in the universe that is not a student</div>
+That includes every possible combination of every possible value: infinitely many rows. No database can return it. Such an expression is <b>unsafe</b>.
+<h4>Safe expression</h4>
+An expression is <b>safe</b> if every value in its result comes from the <b>domain of the expression</b>: values that appear in the relations it mentions, plus the constants written in it. A safe expression always gives a finite answer.
+<ul>
+<li>Unsafe: { t | ¬(t ∈ Student) }</li>
+<li>Safe: { t | t ∈ Student ∧ ¬(t.City = 'Delhi') }. The ¬ only filters rows that are already tied to Student.</li>
+</ul></div>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li>Rule of thumb: every free variable must be <b>tied to a relation</b> with a positive "t ∈ R" before ¬ is applied to it.</li>
+<li>Relational algebra can never be unsafe: every operator takes finite relations and returns a finite relation. Unsafety is a problem only for calculus.</li>
+</ul></div>
+</section>
+
+<section id="s3">
+<h3><span class="n">11.3</span>Domain Relational Calculus</h3>
+<div class="box lec"><span class="t">🎓 Lecture topic (from outline)</span>
+In <b>DRC</b> the variables range over <b>attribute values</b> (domains), not whole rows. You list one variable per column.
+<div class="formula">{ &lt;x<sub>1</sub>, x<sub>2</sub>, …, x<sub>n</sub>&gt; | P(x<sub>1</sub>, x<sub>2</sub>, …, x<sub>n</sub>) }</div>
+<b>&lt;r, n, c, m&gt; ∈ Student</b> means "there is a Student row with Roll r, Name n, City c and Marks m". The variables follow the column order.
+<h4>The same queries in DRC</h4>
+<ul>
+<li>Names of students with marks above 70:<br><b>{ &lt;n&gt; | ∃ r, c, m ( &lt;r, n, c, m&gt; ∈ Student ∧ m &gt; 70 ) }</b></li>
+<li>Names of students enrolled in DBMS:<br><b>{ &lt;n&gt; | ∃ r, c, m ( &lt;r, n, c, m&gt; ∈ Student ∧ &lt;r, 'DBMS'&gt; ∈ Enrol ) }</b><br>The shared variable r does the joining: the same r in both relations.</li>
+<li>Rolls of students in every course:<br><b>{ &lt;r&gt; | ∃ n, c, m ( &lt;r, n, c, m&gt; ∈ Student ) ∧ ∀ k ( &lt;k&gt; ∈ Course ⇒ &lt;r, k&gt; ∈ Enrol ) }</b></li>
+</ul></div>
+<div class="tw"><table>
+<tr><th></th><th>Tuple RC</th><th>Domain RC</th></tr>
+<tr><td>Variables stand for</td><td>Whole rows (tuples)</td><td>Single column values</td></tr>
+<tr><td>Form</td><td>{ t | P(t) }</td><td>{ &lt;x<sub>1</sub>, …, x<sub>n</sub>&gt; | P }</td></tr>
+<tr><td>Membership</td><td>t ∈ Student</td><td>&lt;r, n, c, m&gt; ∈ Student</td></tr>
+<tr><td>Join written as</td><td>e.Roll = t.Roll</td><td>The same variable in both relations</td></tr>
+<tr><td>Real language based on it</td><td>SQL</td><td>QBE (Query By Example)</td></tr>
+</table></div>
+</section>
+
+<section id="s4">
+<h3><span class="n">11.4</span>Algebra vs TRC vs DRC; Relational Completeness<span class="badge">ADDED</span></h3>
+<div class="box add"><span class="t">➕ Added for exam</span>
+<ul>
+<li><b>Codd's theorem</b>: relational algebra, <b>safe</b> TRC and <b>safe</b> DRC have <b>exactly the same expressive power</b>. Any query written in one can be written in the other two.</li>
+<li>A query language is <b>relationally complete</b> if it can express every relational algebra query. SQL is relationally complete (and goes further, with aggregates, sorting and grouping that basic algebra lacks).</li>
+<li>Neither basic algebra nor calculus has aggregates (SUM, COUNT…) or recursion.</li>
+</ul></div>
+<div class="tw"><table>
+<tr><th>Algebra</th><th>Calculus equivalent (TRC)</th></tr>
+<tr><td>σ (selection)</td><td>A condition on t: t.Marks &gt; 70</td></tr>
+<tr><td>π (projection)</td><td>What's written left of the bar: t.Name</td></tr>
+<tr><td>⋈ (join)</td><td>∃ plus an equality: ∃ e ∈ Enrol (e.Roll = t.Roll)</td></tr>
+<tr><td>∪</td><td>∨</td></tr>
+<tr><td>−</td><td>∧ ¬</td></tr>
+<tr><td>÷ (division)</td><td>∀</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+Typical one-liners: "Relational calculus is a ____ language" → non-procedural. "QBE is based on" → domain relational calculus. "SQL is based on" → tuple relational calculus (and relational algebra). "Which expressions can return an infinite result?" → unsafe calculus expressions.</div>
+</section>
+
+<section id="s5">
+<h3><span class="n">11.5</span>Solved Exam Questions<span class="badge">ADDED</span></h3>
+<div class="num"><span class="t">Q1</span>Relational calculus is:<br><b>Answer: non-procedural (declarative).</b> It says what to retrieve, not how.</div>
+<div class="num"><span class="t">Q2</span>In tuple relational calculus, variables range over:<br><b>Answer: tuples (rows) of a relation.</b> In DRC, they range over attribute domains.</div>
+<div class="num"><span class="t">Q3</span>Which expression is unsafe? (a) { t | t ∈ R ∧ t.A &gt; 5 } (b) { t | ¬(t ∈ R) } (c) { t | t ∈ R ∨ t ∈ S } with R, S compatible (d) { t | t ∈ R ∧ ¬(t ∈ S) }<br><b>Answer: (b).</b> It describes everything outside R, an infinite set.</div>
+<div class="num"><span class="t">Q4</span>Query By Example (QBE) is based on:<br><b>Answer: domain relational calculus.</b></div>
+<div class="num"><span class="t">Q5</span>Which quantifier corresponds to relational algebra's division?<br><b>Answer: ∀ (universal quantifier).</b></div>
+<div class="num"><span class="t">Q6</span>Relational algebra, safe TRC and safe DRC are:<br><b>Answer: equivalent in expressive power</b> (Codd's theorem).</div>
+<div class="num"><span class="t">Q7</span>∀ x P(x) is equivalent to:<br><b>Answer: ¬∃ x ¬P(x).</b></div>
+</section>
+
+<div class="rapid" id="rr">
+<h3>⚡ Rapid Revision</h3>
+<ul>
+<li>Relational calculus = <b>non-procedural</b>: describe the result, not the steps.</li>
+<li><b>TRC</b>: { t | P(t) }, t ranges over rows; t ∈ Student, t.Marks &gt; 70. Connectors ∧ ∨ ¬ ⇒.</li>
+<li><b>∃</b> = there exists (used for joins). <b>∀</b> = for all (used for division). ∀x P ≡ ¬∃x ¬P.</li>
+<li>Free variable = in the result; bound variable = introduced by ∃ or ∀.</li>
+<li><b>Unsafe</b> expression = infinite result, e.g. { t | ¬(t ∈ Student) }. Safe = values only from the relations and constants used.</li>
+<li><b>DRC</b>: { &lt;x<sub>1</sub>…x<sub>n</sub>&gt; | P }, variables range over column values; a shared variable joins relations. Basis of <b>QBE</b>.</li>
+<li>➕ Codd's theorem: algebra = safe TRC = safe DRC in power. SQL is relationally complete (and has more, like aggregates).</li>
+</ul>
+</div>
+<div class="end">End of Chapter 11 · Volume 05 — DBMS</div>
+
+<nav class="topnav" aria-label="Chapter navigation"><a href="10-Relational-Algebra.html">← Ch 10: Relational Algebra</a><a href="index.html">☰ All topics</a><span class="off">Next chapter coming soon</span></nav>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themer');
+  try{var s=localStorage.getItem('notes-theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nxt=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nxt);
+    try{localStorage.setItem('notes-theme',nxt);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
