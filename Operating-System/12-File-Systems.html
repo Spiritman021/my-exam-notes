@@ -150,7 +150,7 @@ code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding
   <ul class="tags">
     <li>File &amp; Block–Sector Mapping</li><li>File Operations</li><li>File Attributes</li><li>Access Methods</li>
     <li>Contiguous Allocation</li><li>External Fragmentation</li><li>Linked Allocation &amp; FAT</li><li>Indexed Allocation</li>
-    <li>UNIX inode Numerical</li><li>Directory Structures</li><li>Free-Space Management</li><li>Protection (rwx)</li><li>Hard vs Soft Links</li><li>FAT / NTFS / ext4</li>
+    <li>UNIX inode Numerical</li><li>Directory Structures</li><li>Free-Space Management</li><li>Protection (rwx)</li><li>Hard vs Soft Links</li><li>FAT / NTFS / ext4</li><li>Access Matrix (ACL vs Capability)</li>
   </ul>
   <div class="legend">
     <span class="l1">🎓 From the lecture</span>
@@ -176,6 +176,7 @@ code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding
     <li><a href="#s9"><span class="n">12.9</span>Directory Structures<span class="x">ADDED</span></a></li>
     <li><a href="#s10"><span class="n">12.10</span>Free-Space Management<span class="x">ADDED</span></a></li>
     <li><a href="#s11"><span class="n">12.11</span>Protection, Links, Mounting &amp; Real File Systems<span class="x">ADDED</span></a></li>
+    <li><a href="#s12"><span class="n">12.12</span>Protection Domains &amp; Access Matrix<span class="x">ADDED</span></a></li>
     <li><a href="#rr"><span class="n">⚡</span>Rapid Revision</a></li>
     <li><a href="#fin"><span class="n">🏁</span>Course Conclusion</a></li>
   </ol>
@@ -491,6 +492,36 @@ Other mechanisms: <b>access-control lists (ACLs)</b> per file and per user, and 
 </ul></div>
 </section>
 
+<!-- 12.12 -->
+<section id="s12">
+<h3><span class="n">12.12</span>Protection Domains &amp; the Access Matrix (ACL vs Capability List) <span class="badge">ADDED</span></h3>
+<div class="def"><b>Principle of Least Privilege:</b> a process, user or program is given <b>exactly the privileges it needs</b> to do its task, and nothing more. A bug or attack can then do only limited damage.</div>
+<ul>
+<li>A system is a set of <b>processes (subjects)</b> and <b>objects</b> (files, printers, memory segments).</li>
+<li><b>Access right</b> = an ordered pair <b>&lt;object, {rights}&gt;</b>, e.g. <code>&lt;File X, {read, write}&gt;</code>.</li>
+<li><b>Domain</b> = a <b>set of access rights</b>. It specifies exactly which objects a process may touch and how. A domain can be a user, a process or a procedure.</li>
+</ul>
+<h4>Access matrix</h4>
+<p>Conceptually the OS keeps one global matrix: <b>rows = domains</b> (users / processes), <b>columns = objects</b>, and cell (i, j) = the rights domain i has on object j.</p>
+<div class="tw"><table>
+<tr><th>Domain ↓ / Object →</th><th>File 1</th><th>File 2</th><th>Printer 1</th></tr>
+<tr><td><b>D1</b> (User A)</td><td>read, write</td><td>read</td><td>—</td></tr>
+<tr><td><b>D2</b> (User B)</td><td>—</td><td>read, write, execute</td><td>print</td></tr>
+<tr><td><b>D3</b> (Admin)</td><td>read, write, delete</td><td>read, write, delete</td><td>print, config</td></tr>
+</table></div>
+<p>The full matrix is huge and <b>mostly empty</b>, so it is never stored as-is. It is sliced by column or by row:</p>
+<div class="tw"><table>
+<tr><th>Basis</th><th>Access Control List (ACL)</th><th>Capability List</th></tr>
+<tr><td>Slice of the matrix</td><td><b>Column</b> (one per object)</td><td><b>Row</b> (one per domain)</td></tr>
+<tr><td>Attached to</td><td>The <b>object</b> (file): "who may access me?"</td><td>The <b>domain / process</b>: "what may I access?"</td></tr>
+<tr><td>Analogy</td><td>Guest list at the door</td><td><b>Keyring</b> held by the user</td></tr>
+<tr><td>Revoking a right</td><td>Easy: edit the object's list</td><td>Hard: capabilities are scattered across domains</td></tr>
+<tr><td>Example</td><td><b>Windows NTFS</b> (Properties → Security), UNIX rwx is a simplified ACL</td><td>Capability-based systems (Hydra, CAP); open-file descriptors behave like capabilities</td></tr>
+</table></div>
+<div class="box alert"><span class="t">🎯 IBPS exam alert</span>
+<b>Column-wise = ACL</b> (stored with the object). <b>Row-wise = Capability list</b> (stored with the domain). The rule "give only the minimum rights needed" is the <b>Principle of Least Privilege</b>.</div>
+</section>
+
 <!-- Rapid revision -->
 <div class="rapid" id="rr">
 <h3>⚡ Rapid Revision — Chapter 12</h3>
@@ -504,6 +535,7 @@ Other mechanisms: <b>access-control lists (ACLs)</b> per file and per user, and 
 <li><b>Indexed</b>: directory = index block (5) → [1, 7, 30, 11, 16]. No external fragmentation, easy random access; index-block overhead. The <b>UNIX inode</b> has 12 direct + single, double and triple indirect pointers (4 KB blocks give about 4 TB maximum).</li>
 <li>Directories: single-level → two-level → tree → acyclic graph → general graph. Free space: bitmap (1 TB / 4 KB → 32 MB), linked list, grouping, counting.</li>
 <li>Protection: rwx = 4/2/1 (754 = rwxr-xr--). Hard link = same inode; soft link = a path (can dangle). FAT32 has a 4 GB limit; NTFS and ext4 use journaling.</li>
+<li><b>Access matrix</b>: rows = domains, columns = objects. Column slice = <b>ACL</b> (with the file); row slice = <b>capability list</b> (with the process, a "keyring"). <b>Least privilege</b> = only the minimum rights needed.</li>
 </ul>
 </div>
 

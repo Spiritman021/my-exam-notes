@@ -279,7 +279,7 @@ Galvin lists <b>six</b> categories: Process control, File management, Device man
 <!-- 3.2 -->
 <section id="s2">
 <h3><span class="n">3.2</span>User Mode and Kernel Mode (Mode Bit)</h3>
-<div class="def"><b>Dual-mode operation:</b> the CPU runs in one of two modes, set by a hardware <b>mode bit</b>. <b>Mode bit = 1 → User mode</b>; <b>mode bit = 0 → Kernel mode</b>. This protects the OS and hardware from errant or malicious user programs.</div>
+<div class="def"><b>Dual-mode operation:</b> the CPU runs in one of two modes, set by a hardware <b>mode bit</b>. <b>Mode bit = 1 → User mode</b>; <b>mode bit = 0 → Kernel mode</b>. This protects the OS and hardware from errant or malicious user programs. The mode bit is typically kept in the CPU's <b>Program Status Word (PSW)</b> / flags register.</div>
 
 <div class="box lec"><span class="t">🎓 From the lecture — Mode bit &amp; the kitchen again</span>
 <ul>
@@ -589,6 +589,8 @@ The question: if the parent is running fine, why make identical copies of it?
 </table></div>
 <div class="box trap"><span class="t">⚠️ Exam trap (fork vs exec)</span>
 <b>fork</b> = same program, <b>new process</b>. <b>exec</b> = <b>same process (same PID)</b>, <b>new program</b>. The first user-space process in Linux is <b>init / systemd with PID 1</b>, and it is the ancestor of every other user process. The Windows equivalent of fork + exec is a single call, <code>CreateProcess()</code>.</div>
+<div class="box trap"><span class="t">⚠️ Exam trap (killing a zombie)</span>
+Can <code>kill -9</code> remove a zombie? <b>No.</b> A zombie is already dead; it has no code running to kill, only a process-table entry. It disappears only when the <b>parent calls wait()</b> (reaps it). The fix is to send the parent <b>SIGCHLD</b> so it reaps the child, or to kill the <b>parent</b>, after which init (PID 1) adopts and reaps the zombie.</div>
 </section>
 
 <!-- Rapid revision -->
@@ -607,7 +609,7 @@ The question: if the parent is running fine, why make identical copies of it?
 <li><b>fork()</b> returns <b>0 in the child</b>, <b>the child's PID (&gt;0) in the parent</b> and <b>−1 on error</b>. The child is a copy of the parent with its own address space, a new PID and its own PCB.</li>
 <li><b>n forks → 2ⁿ processes, 2ⁿ − 1 children</b>. A printf inside a loop of n forks prints 2ⁿ⁺¹ − 2 times. <code>fork() &amp;&amp; fork() || fork()</code> → 5 processes.</li>
 <li><b>Why fork</b>: the "identical workers build the wall" analogy; it is cheaper than creating from scratch. <b>Overhead</b>: each child needs its own PCB, memory and resources ("wages"). The fixes are <b>Copy-on-Write</b>, vfork and <b>threads</b>.</li>
-<li><b>exec</b> replaces the program with the same PID. <b>wait</b> makes the parent block. <b>Zombie</b> = dead child not yet waited for. <b>Orphan</b> = parent died, so init/systemd (PID 1) adopts the child.</li>
+<li><b>exec</b> replaces the program with the same PID. <b>wait</b> makes the parent block. <b>Zombie</b> = dead child not yet waited for. <b>Orphan</b> = parent died, so init/systemd (PID 1) adopts the child. <code>kill -9</code> cannot remove a zombie; the parent must wait() (SIGCHLD) or be killed.</li>
 </ul>
 </div>
 <div class="end">End of Volume 01 — Part 3 · Next: Chapter 4 — Threads</div>

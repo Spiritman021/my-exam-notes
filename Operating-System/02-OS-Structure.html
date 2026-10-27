@@ -149,7 +149,7 @@ code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding
   <p class="sub">Volume 01 · Part 2 · Built from the one-shot OS lecture transcript (section 2), plus the exam points the lecture skipped.</p>
   <ul class="tags">
     <li>Simple (MS-DOS)</li><li>Monolithic Kernel</li><li>Layered</li><li>Microkernel</li>
-    <li>Modular (LKM)</li><li>Hybrid</li><li>Exokernel / Nanokernel</li><li>Virtual Machines</li><li>CLI vs GUI</li><li>Shells</li>
+    <li>Modular (LKM)</li><li>Hybrid</li><li>Exokernel / Nanokernel</li><li>Virtual Machines</li><li>CLI vs GUI</li><li>Shells</li><li>Linux Commands</li>
   </ul>
   <div class="legend">
     <span class="l1">🎓 From the lecture</span>
@@ -538,6 +538,17 @@ A <b>normal / naive user</b> should go for the <b>GUI</b>. A <b>tech-savvy perso
 <li><b>WIMP</b> = Windows, Icons, Menus, Pointer, the core GUI elements. The GUI was pioneered at <b>Xerox PARC (Xerox Alto, 1973)</b> and popularised by <b>Apple Macintosh (1984)</b> and <b>Microsoft Windows (1985)</b>.</li>
 <li>In Linux, the GUI is a separate layer: the <b>X Window System / Wayland</b> plus a <b>desktop environment</b> (GNOME, KDE).</li>
 </ul></div>
+<div class="box add"><span class="t">➕ Added for exam — High-yield Linux shell commands</span>
+<div class="tw"><table>
+<tr><th>Command</th><th>What it does</th></tr>
+<tr><td><code>grep</code></td><td><b>G</b>lobal <b>R</b>egular <b>E</b>xpression <b>P</b>rint: prints lines matching a pattern (e.g. searching server logs)</td></tr>
+<tr><td><code>awk</code></td><td>Pattern-scanning / text-processing language; splits lines into fields (columns) for reports</td></tr>
+<tr><td><code>sed</code></td><td><b>S</b>tream <b>ed</b>itor: find-and-replace and other edits on a text stream without opening an editor</td></tr>
+<tr><td><code>chmod</code> / <code>chown</code></td><td>Change permissions (rwx, octal like 754) / change the owner and group of a file</td></tr>
+<tr><td><code>ps</code> / <code>top</code></td><td>Snapshot list of processes with PIDs / live, real-time view of CPU and memory per process</td></tr>
+<tr><td><code>kill -9 PID</code></td><td>Sends <b>SIGKILL</b> (signal 9): immediate forced termination, cannot be caught or ignored. Plain <code>kill</code> sends SIGTERM (15), which allows cleanup.</td></tr>
+</table></div>
+<p>Layering in UNIX: <b>hardware → kernel → shell → user applications/utilities</b>. The shell turns typed commands into system calls to the kernel.</p></div>
 <div class="box trap"><span class="t">⚠️ Exam trap</span>
 <b>Shell ≠ kernel</b>. The shell is the user-facing interpreter; the kernel is the core that talks to hardware. <b>MS-DOS is CLI</b>, not GUI. Windows 1.0–3.x were <b>GUI shells running on top of MS-DOS</b>. <b>bash</b> = "<b>Bourne Again SHell</b>".</div>
 </section>

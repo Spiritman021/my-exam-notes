@@ -176,7 +176,7 @@ code{font-family:var(--code);font-size:.92em;background:var(--surface-2);padding
     <li><a href="#s8a"><span class="n">1.8A</span>Network OS vs Distributed OS<span class="x">ADDED</span></a></li>
     <li><a href="#s9"><span class="n">1.9</span>Embedded Operating System</a></li>
     <li><a href="#s10"><span class="n">1.10</span>Batch Operating System</a></li>
-    <li><a href="#s10a"><span class="n">1.10A</span>Spooling and Buffering<span class="x">ADDED</span></a></li>
+    <li><a href="#s10a"><span class="n">1.10A</span>Spooling, Buffering, Caching &amp; Device Drivers<span class="x">ADDED</span></a></li>
     <li><a href="#s11"><span class="n">1.11</span>Multiprogramming and Multitasking</a></li>
     <li><a href="#s12"><span class="n">1.12</span>Selfie Analogy: Multiprogramming vs Multitasking</a></li>
     <li><a href="#s13"><span class="n">1.13</span>Multiprocessing Operating System</a></li>
@@ -480,6 +480,15 @@ Connecting many systems <b>unites their power</b>, so "1 + 1 = 11". The cluster 
 <li><b>Disadvantages</b>: complex software, network dependency, security risk, hard to keep data consistent.</li>
 <li>Examples: <b>Amoeba</b>, <b>LOCUS</b>, Mach, Plan 9. Distributed applications include Google search and blockchain.</li>
 </ul></div>
+<div class="box add"><span class="t">➕ Added for exam — Remote Procedure Call (RPC)</span>
+<p>RPC lets a program on machine A call a function that lives on machine B <b>as if it were a local call</b>; the network details are hidden from the programmer.</p>
+<ol>
+<li><b>Client stub</b>: the client calls a local stub, which <b>marshals</b> (packs/serialises) the parameters into a network message.</li>
+<li><b>Transport</b>: the OS sends the message over the network (TCP/UDP).</li>
+<li><b>Server stub</b>: <b>unmarshals</b> the parameters, converting them to the server's format (e.g. big- vs little-endian, using a standard representation such as XDR), and calls the real function.</li>
+<li><b>Return</b>: the result is marshalled and sent back; the client stub unmarshals it and returns it to the caller.</li>
+</ol>
+<p>The client finds the server's port through a <b>binder / matchmaker (portmapper)</b>. Java's version is <b>RMI</b>.</p></div>
 </section>
 
 <!-- 1.8A -->
@@ -576,7 +585,7 @@ An <b>AC</b> cools and a <b>washing machine</b> washes clothes. Tell the AC to w
 
 <!-- 1.10A -->
 <section id="s10a">
-<h3><span class="n">1.10A</span>Spooling and Buffering <span class="badge">ADDED</span></h3>
+<h3><span class="n">1.10A</span>Spooling, Buffering, Caching &amp; Device Drivers <span class="badge">ADDED</span></h3>
 <div class="def"><b>SPOOL = Simultaneous Peripheral Operations On-Line.</b> Data for a slow device (e.g. a printer) is first written to a <b>fast disk</b> (spool area/queue). The device then reads it from there at its own pace, so the <b>CPU does not wait for the slow device</b>.</div>
 <ul>
 <li>Classic example: <b>print spooling</b>. Many documents queue on disk while the printer prints them one by one, and the user keeps working.</li>
@@ -588,6 +597,20 @@ An <b>AC</b> cools and a <b>washing machine</b> washes clothes. Tell the AC to w
 <tr><td>Overlaps I/O of one job with computation of <b>other jobs</b></td><td>Overlaps I/O and computation of the <b>same job</b></td></tr>
 <tr><td>Can queue many jobs</td><td>Limited size</td></tr>
 </table></div>
+<div class="tw"><table>
+<tr><th>Buffering</th><th>Caching</th></tr>
+<tr><td>Temporary memory area holding data <b>in transit</b> between two devices (or a device and the CPU)</td><td>Fast memory holding a <b>copy</b> of data that also lives in slower storage</td></tr>
+<tr><td>Holds the <b>only copy</b> of that data at that moment</td><td>Holds a <b>redundant copy</b>; the original stays on the slower device</td></tr>
+<tr><td>Absorbs the <b>speed mismatch</b> (e.g. a modem fills a buffer, the disk writes it in one burst)</td><td>Avoids reading the slow device at all on a hit</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Device controller</th><th>Device driver</th></tr>
+<tr><td><b>Hardware</b>: the chip/circuit on or attached to the device (disk controller, NIC chip)</td><td><b>Software</b>: a module inside the OS kernel</td></tr>
+<tr><td>Works with electrical signals and its own registers/local buffer</td><td>Translates generic OS commands ("read block 7") into the controller's register-level commands</td></tr>
+<tr><td>One per device type/port</td><td>One per device type; supplied by the vendor or the OS</td></tr>
+</table></div>
+<div class="box trap"><span class="t">⚠️ Exam trap</span>
+<b>Driver = software in the kernel; controller = hardware.</b> Spooling is used for devices that <b>cannot interleave</b> jobs (a printer cannot print one line from each of 5 users), so whole jobs are queued on disk.</div>
 </section>
 
 <!-- 1.11 -->
@@ -876,7 +899,7 @@ int main() {
 <li><b>Objectives</b>: Convenience (primary), Efficiency (secondary), Ability to evolve.</li>
 <li><b>Functions</b>: process, memory, file, I/O device, disk management; security (<b>CIA</b>), networking, error detection, accounting.</li>
 <li><b>Batch</b>: operator groups similar jobs; one job at a time; <b>CPU idle during I/O</b>; no interaction. Lecture example: 2 h busy of 6 h = 33% utilisation.</li>
-<li><b>Spooling</b> (Simultaneous Peripheral Operations On-Line) uses the disk as a buffer for slow devices, e.g. print queue.</li>
+<li><b>Spooling</b> (Simultaneous Peripheral Operations On-Line) uses the disk as a buffer for slow devices, e.g. print queue. <b>Buffer</b> = only copy, in transit; <b>cache</b> = redundant copy. <b>Driver</b> = kernel software; <b>controller</b> = device hardware.</li>
 <li><b>Multiprogramming</b>: many programs in RAM; switch when a process waits → <b>max CPU utilisation</b> (lecture: non-preemptive). Utilisation = 1 − pⁿ.</li>
 <li><b>Multitasking / Time-sharing</b>: forced switching after a <b>time slice</b> (preemptive) → <b>min response time</b>. Selfie analogy: 10 selfies each vs 5 per turn.</li>
 <li><b>Multiprocessing</b>: 2+ CPUs sharing memory and I/O; true parallelism; SMP (peers) vs AMP (master–slave); tightly coupled; graceful degradation.</li>
